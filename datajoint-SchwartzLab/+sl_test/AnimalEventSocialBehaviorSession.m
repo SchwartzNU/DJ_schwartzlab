@@ -2,7 +2,7 @@
 # Session in 3 chamber circular social behavior device. Animal here is the TEST (center) animal
 -> sl_test.AnimalEvent                               # includes date of session
 --- 
--> sl_test.User.proj(experimenter='name')                    # who did it
+(experimenter) -> sl_test.User(name)            # who did it
 recorded : tinyint unsigned                          # 0 = false or 1 = true
 fname : varchar(128)                                 # root filename if session was recorded
 session_time : time                                  # session time
