@@ -1,17 +1,18 @@
 %{
-# IP injection of tamoxifen or some other substance
--> sl_test.AnimalEvent(move_date='date')                   # date the move ocurred
+# eye injections
+-> sl_test.AnimalEvent(inject_date='date')
 ---
 -> sl_test.InjectionSubstance
+-> sl_test.Eye
 inject_time: time                    # time of day
-concentration: float                 # mg per Kg body weight
+dilution: float                      # dilution of substance
+tags: longblog
 notes: varchar(256)                  # injection notes (can include people who assisted)
 -> sl_test.User(injected_by='name')  # who did the injection
-
 %}
 
-classdef AnimalEvent_IPinjection < dj.Part
-     properties(SetAccess=protected)
+classdef AnimalEventEyeInjection < dj.Part
+    properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end
 end

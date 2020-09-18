@@ -7,7 +7,7 @@ cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other',
 
 %}
 
-classdef AnimalEvent_Deceased < dj.Part
+classdef AnimalEventDeceased < dj.Part
      properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end

@@ -5,7 +5,7 @@
 number_of_pups : tinyint unsigned                    # how many babies
 %}
 
-classdef AnimalEvent_GaveBirth < dj.Part
+classdef AnimalEventGaveBirth < dj.Part
      properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end

@@ -14,7 +14,7 @@ notes = NULL: varchar(256)           # surgery notes (can include people who ass
 -> sl_test.User(injected_by='name')  # who did the injection
 %}
 
-classdef AnimalEvent_BrainInjection < dj.Part
+classdef AnimalEventBrainInjection < dj.Part
     properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end

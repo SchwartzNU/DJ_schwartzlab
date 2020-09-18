@@ -9,7 +9,7 @@ notes = NULL : varchar(128)                   # any extra notes
 -> sl_test.User(moved_by='name')             # who did the move (we can have a User entry for CCM staff)
 %}
 
-classdef AnimalEvent_MoveCage < dj.Part
+classdef AnimalEventMoveCage < dj.Part
      properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end

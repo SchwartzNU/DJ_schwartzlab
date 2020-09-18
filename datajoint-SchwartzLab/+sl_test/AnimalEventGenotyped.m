@@ -7,7 +7,7 @@ notes: varchar(128)                                               # comment if t
 -> sl_test.User(genotyped_by='name')                              # who did the genotye
 %}
 
-classdef AnimalEvent_Genotyped < dj.Part
+classdef AnimalEventGenotyped < dj.Part
      properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end

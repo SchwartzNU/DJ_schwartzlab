@@ -7,7 +7,7 @@ notes: varchar(256)                                  # notes about the animal's 
 -> sl_test.User(handled_by='name')                   # who did it
 %}
 
-classdef AnimalEvent_Handling < dj.Part
+classdef AnimalEventHandling < dj.Part
      properties(SetAccess=protected)
         master = sl_test.AnimalEvent
     end
