@@ -1,0 +1,10 @@
+*.m~
+mym/
+*.mltbx
+*.env
+notebook
+docker-compose.yml
+.vscode
+matlab.prf
+win.*
+macos.*
