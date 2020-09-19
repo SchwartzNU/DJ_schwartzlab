@@ -2,7 +2,7 @@
  # Projection testB (temporary)
 item_id : int unsigned
  ---
--> sl_test.ProjTestA.proj(mynum='prim_num')
+(mynum) -> sl_test.ProjTestA(prim_num)
 
 %}
 classdef ProjTestB < dj.Manual
