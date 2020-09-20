@@ -1,17 +1,16 @@
 %{
 # brain injections
--> sl_test.AnimalEvent(inject_date='date')
+(inject_date) -> sl_test.AnimalEvent(date)
 ---
 -> sl_test.InjectionSubstance
-target: varchar(32)                  # brain area targeted
+(target) -> sl_test.BrainArea(name)  # brain area targeted
 hemisphere: enum('L', 'R')           # left or right side
 inject_time: time                    # time of day
 head_rotation : float                # degrees, if not straight down
-coordinates: longblob                # 3 element vector of coordinates in the standard order
+coordinates: longblob                # 3 element vector of coordinates in the standard order (AP, ML, DV)
 dilution: float                      # dilution of substance (or 0 if not applicable or non-diluted)
-tags: longblog
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
--> sl_test.User(injected_by='name')  # who did the injection
+(injected_by) -> sl_test.User(name)  # who did the injection
 %}
 
 classdef AnimalEventBrainInjection < dj.Part
