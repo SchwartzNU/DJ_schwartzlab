@@ -1,0 +1,40 @@
+function [] = add_animal(key, isAlive, isGenotyped)
+C = dj.conn;
+C.startTransaction
+try    
+    key.animal_id = max(fetchn(sl_test.Animal, 'animal_id')) + 1; 
+    key_animal = key;
+    if isfield(key_animal, 'cage_number')
+        key_animal = rmfield(key_animal, 'cage_number');
+    end
+    if isfield(key_animal, 'genotype_status')
+        key_animal = rmfield(key_animal, 'genotype_status');
+    end        
+    insert(sl_test.Animal, key_animal);
+        
+    if isAlive
+        key_live.animal_id = key.animal_id;
+        key_live.cage_number = key.cage_number;
+        insert(sl_test.AnimalLive, key_live);
+    end
+    
+    if isGenotyped
+        
+        insert(sl_test.AnimalGenotyped, paramStruct, 'IGNORE');
+    end
+    disp('Insert successful');
+    C.commitTransaction;    
+catch
+    disp('Insert failed');
+    C.cancelTransaction;
+end
+
+% -> sl_test.Genotype                             # genotype of animal
+% is_tagged = 0 : tinyint unsigned                # 0 (false) or (1) true
+% tag_id = 0 : int unsigned                       # id number from our spreadsheets
+% species = 'Lab mouse' : varchar(64)             # species
+% dob = NULL : date                               # mouse date of birth
+% sex = 'Unknown' : enum('Male', 'Female', 'Unknown')          # sex of mouse - Male, Female, or Unknown/Unclassified
+% punch = 'none' : enum('L','R','LR','none')      # earpunch
+% animal_tags = NULL : longblob                   # struct with tags
+% initial_cage_number = NULL : int unsigned       # cage number in which animal was born or first placed
