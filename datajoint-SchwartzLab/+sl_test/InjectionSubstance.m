@@ -3,11 +3,10 @@
 substance_id : smallint auto_increment 
 ---
 source : varchar(32)                 # vendor or lab
-description: varchar(32)             # name of substance (e.g. AAV2-Cre)
+substance_name : varchar(32)         # name of substance (e.g. AAV2-Cre)
 catalog_number: varchar(32)          # catalog number (as text)
 storage_location: varchar(128)       # storage location in the lab
-notes: varchar(256)                  # anything about this substance
-tags: longblog
+description: varchar(256)            # anything about this substance
 %}
 
 classdef InjectionSubstance < dj.Lookup
