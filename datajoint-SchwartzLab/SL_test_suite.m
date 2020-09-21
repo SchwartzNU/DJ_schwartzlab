@@ -2,6 +2,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
 
     properties
         tables
+        results = containers.Map();
     end
 
     methods (TestClassSetup)
@@ -29,7 +30,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
     methods (TestClassTeardown)
 
         function teardownDB(testCase)
-            dj.suppressPrompt = false;
+            dj.set('suppressPrompt',false);
         end
 
     end
@@ -54,7 +55,12 @@ classdef SL_test_suite < matlab.unittest.TestCase
 
         function makeNAnimals(testCase)
             testCase.generateEntries(sl_test.Animal, 10); %populate sl_test.Animal with 10 mice
-            testCase.verifyEqual(length(fetch(sl_test.Animal)), 10, 'Did not generate expected number of mice');
+
+            q = fetch(sl_test.Animal, '*'); %query the DB
+          
+            
+            testCase.verifyEqual(length(q), 10, 'Did not generate expected number of mice');
+            testCase.results('makeNAnimals') = q;
         end
 
     end
@@ -106,7 +112,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
                 if isempty(s(1).(k(i).name)) &&~k(i).isautoincrement
 
                     if k(i).isNumeric
-                        attrs = num2cell(randi(256, 1, N)); %random tiny int
+                        attrs = num2cell(randi(256, 1, N)-1); %random tiny int
 
                     elseif contains(k(i).type, 'enum')
                         attrs = regexp(k(i).type, '(\w+)', 'match');
