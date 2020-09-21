@@ -1,11 +1,10 @@
 %{
-# Live animal
+# Animal used for any eye or brain injection
 -> sl_test.Animal                                    # which animal
 ---
-cage_number : smallint unsigned                      # cage number in which animal is currently housed
 %}
 
-classdef AnimalLive < dj.Part
+classdef AnimalForExperimentalInjection < dj.Part
     properties(SetAccess=protected)
         master = sl_test.Animal
     end
