@@ -62,6 +62,22 @@ classdef SL_test_suite < matlab.unittest.TestCase
             testCase.verifyEqual(length(q), 10, 'Did not generate expected number of mice');
             testCase.results('makeNAnimals') = q;
         end
+        
+        function makeAnimalPartTables(testCase)
+            testCase.generateEntries(sl_test.AnimalLive, 5); %populate sl_test.AnimalLive with 5 mice
+            testCase.generateEntries(sl_test.AnimalForBehavior, 5); %populate sl_test.AnimalForBehavior with 5 mice
+            testCase.generateEntries(sl_test.AnimalForExperimentalInjection, 5); %populate sl_test.AnimalForBehavior with 5 mice
+            
+            liveAnimals = sl_test_Animal & sl_test.AnimalLive;
+            behAnimals = sl_test_Animal & sl_test.AnimalForBehavior;
+            injAnimals = sl_test_Animal & sl_test.AnimalForExperimentalInjection;
+            
+            testCase.verifyEqual(length(liveAnimals), 5, 'Did not generate expected number of live mice');
+            %testCase.verifyEqual(length(behAnimals), 5, 'Did not generate expected number of beh mice');
+            %testCase.verifyEqual(length(injAnimals), 5, 'Did not generate expected number of inj mice');
+            
+            testCase.results('makeAnimalPartTables') = liveAnimals;
+        end
 
     end
 
