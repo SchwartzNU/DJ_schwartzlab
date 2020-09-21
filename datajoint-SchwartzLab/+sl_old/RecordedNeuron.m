@@ -1,17 +1,17 @@
 %{
-# RecordedNeuron (loose definition, more like Cell: see caveats in Neuron)
+# RecordedNeuron
 -> sl.Neuron
+
 ---
 position_x : float              # x position in the retina, optic nerve at 0,0
 position_y : float              # y position in the retina, blank for unknown
 which_eye : enum('R', 'L', 'U') # Right, Left, or unknown
 number_of_epochs : int unsigned # total number of recorded epochs
+cell_type : varchar(64)         # type of cell
+experimenter : varchar(64)      # who recorded it
 online_label : varchar(128)     # text in cellType field in symphony during recording
 notes = NULL : varchar(1000)    # unstructured text for notes
 tags : longblob                 # struct with tags
-recording_date: date            # date of recording
--> sl.Rig                  # electrophysiology rig 
--> sl.User(recorded_by='name') # who did the recording
 %}
 
 classdef RecordedNeuron < dj.Imported
@@ -35,17 +35,7 @@ classdef RecordedNeuron < dj.Imported
             cellNames = strtrim(split(key.cell_id,','));
             N_cellData = length(cellNames);
             for n=1:N_cellData
-                [curName, ch] = strtok(cellNames{n}, '-');
-                channel = 1;
-                if ~isempty(ch)
-                    channel = str2double(ch(4));
-                end
-%                 key.cell_data_list{n} = curName;
-%                 key.channel_list(n) = channel;
-                
                 cellData = loadAndSyncCellData(curName);
-%                 key.dataset_list{n} = cellData.savedDataSets;
-                
                 if isKey(cellData.attributes, 'symphonyVersion') %if has this key at all, it has fname
                     raw_data_filename = cellData.get('fname');
                 else
@@ -107,9 +97,15 @@ classdef RecordedNeuron < dj.Imported
                 
                 %add all epochs
                 for e=1:key.number_of_epochs
-                    %disp(['trying add epoch ' num2str(e)]);                    
+                    %                 datasetsMap = cellData.savedDataSets;
+                    %                 k = datasetsMap.keys;
+                    %                 s = struct;
+                    %                 s.cell_id = key.cell_id;
+                    %                 s.channel = channel;
+                    %                 s.cell_data = curName;
                     epoch_insert_error = false;
-                    epoch_init_struct = key;
+                    epoch_init_struct = struct;
+                    epoch_init_struct.cell_id = key.cell_id;
                     epoch_init_struct.number = e;
                     epoch_init_struct.cell_data = curName;
                     epoch_init_struct.protocol_params = struct;
@@ -173,20 +169,6 @@ classdef RecordedNeuron < dj.Imported
                         end
                     end
                 end
-                
-               %add all datasets
-               datasetNames = cellData.savedDataSets.keys;
-               N_datasets = length(datasetNames);
-               for d=1:N_datasets
-                   s = key;
-                   s.cell_data = curName;
-                   s.channel = channel;
-                   s.dataset_name = datasetNames{d};
-                   s.dataset_name = strrep(s.dataset_name, '.', '_dot_'); %make sure dataset_name is legal
-                   disp(['Adding dataset: '  s.dataset_name]);
-                   sl.Dataset.makeTuples(sl.Dataset, s);
-               end
-    
             end
             
         end
@@ -197,7 +179,3 @@ end
 
 %-> sl.image
 %data sets
-
-% cell_data_list : longblob       # cell array of cellData names
-% channel_list : longblob         # vector of channel numbers, same size as cell_data_list
-% dataset_list : longblob         # cell array of data_set maps

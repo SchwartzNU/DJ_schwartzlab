@@ -9,5 +9,5 @@ cp -r +$1 +$2
 for f in $(find +$2);
 do
   echo $f;
-  sed -i "s/$1/$2/g" $f;
+  sed -i'.bak' "s/$1/$2/g" $f;
 done
