@@ -1,7 +1,6 @@
 classdef SL_test_suite < matlab.unittest.TestCase
 
     properties
-        tables
         results = containers.Map();
     end
 
@@ -11,11 +10,11 @@ classdef SL_test_suite < matlab.unittest.TestCase
             import dj.*;
             %drop all the root tables and then re-create them
 
-            testCase.tables = sl_test.getSchema().classNames;
+            tables = sl_test.getSchema().classNames;
 
             dj.set('suppressPrompt',true);
 
-            for table = testCase.tables
+            for table = tables
                 t = feval(table{1});
                 if length(t.ancestors) == 1
                     drop(t);
@@ -40,7 +39,9 @@ classdef SL_test_suite < matlab.unittest.TestCase
         function setupTables(testCase)
             %delete all the entries from all the root tables
             %this is important to make sure that tests don't depend on each other
-            for table = testCase.tables
+            
+            tables = sl_test.getSchema().classNames;
+            for table = tables
                 del(feval(table{1}));
             end
 
@@ -58,25 +59,28 @@ classdef SL_test_suite < matlab.unittest.TestCase
 
             q = fetch(sl_test.Animal, '*'); %query the DB
           
-            
-            testCase.verifyEqual(length(q), 10, 'Did not generate expected number of mice');
             testCase.results('makeNAnimals') = q;
+            testCase.verifyEqual(length(q), 10, 'Did not generate expected number of mice');
         end
         
         function makeAnimalPartTables(testCase)
+            testCase.generateEntries(sl_test.Animal, 10); 
+            
             testCase.generateEntries(sl_test.AnimalLive, 5); %populate sl_test.AnimalLive with 5 mice
             testCase.generateEntries(sl_test.AnimalForBehavior, 5); %populate sl_test.AnimalForBehavior with 5 mice
             testCase.generateEntries(sl_test.AnimalForExperimentalInjection, 5); %populate sl_test.AnimalForBehavior with 5 mice
             
-            liveAnimals = sl_test_Animal & sl_test.AnimalLive;
-            behAnimals = sl_test_Animal & sl_test.AnimalForBehavior;
-            injAnimals = sl_test_Animal & sl_test.AnimalForExperimentalInjection;
+            q = fetch(sl_test.AnimalLive, '*');
+            testCase.results('makeAnimalPartTables') = q;
+         
+%             behAnimals = sl_test.Animal & sl_test.AnimalForBehavior;
+%             injAnimals = sl_test.Animal & sl_test.AnimalForExperimentalInjection;
             
-            testCase.verifyEqual(length(liveAnimals), 5, 'Did not generate expected number of live mice');
+            testCase.verifyEqual(length(q), 5, 'Did not generate expected number of live mice');
             %testCase.verifyEqual(length(behAnimals), 5, 'Did not generate expected number of beh mice');
             %testCase.verifyEqual(length(injAnimals), 5, 'Did not generate expected number of inj mice');
             
-            testCase.results('makeAnimalPartTables') = liveAnimals;
+            
         end
 
     end
@@ -84,6 +88,8 @@ classdef SL_test_suite < matlab.unittest.TestCase
     methods
 
         function generateEntries(testCase, table, N)
+            fN = 20*N; %make extra entries and then delete them, to ensure primary key uniqueness.... 
+            
             %create random entries in the input table and any tables it
             %depends on
 
@@ -106,19 +112,23 @@ classdef SL_test_suite < matlab.unittest.TestCase
 
             %create an empty structure with fields matching the table
             k = table.tableHeader.attributes;
-            c = cell(length(k), N);
+            c = cell(length(k), fN);
             s = cell2struct(c, {k(:).name});
 
-            p = strsplit(lower(table.className), '.');
+            p = strsplit(table.className, '.');
             fk = table.schema.conn.foreignKeys;
-            thisFK = fk(strcmp({fk.from}, sprintf('`%s`.`%s`', p{1}, p{2})));
+            thisFK = fk(strcmp({fk.from}, sprintf('`%s`.`%s`',p{1},table.plainTableName))); %sprintf('`%s`.`%s`', p{1}, p{2})
 
             for i = 1:numel(thisFK)
-                q = regexp(thisFK(i).ref, '.+\#(?<key>\w+)', 'names'); %get the referred table name
+                q = regexp(thisFK(i).ref, '`\W?(?<key>\w+)`$', 'names'); %get the referred table name
                 q.key(1) = upper(q.key(1));
                 ref_attrs = fetchn(sl_test.(q.key), thisFK(i).ref_attrs{:}); %fetch entries by the referred attribute
-                ref_attrs = ref_attrs(randi(length(ref_attrs), 1, N)); %randomly select dependent entries
+                ref_attrs = ref_attrs(randi(length(ref_attrs), 1, fN)); %randomly select dependent entries
 
+                if isa(ref_attrs,'double')
+                   ref_attrs = num2cell(ref_attrs);
+                end
+                
                 [s.(thisFK(i).attrs{:})] = ref_attrs{:};
             end
 
@@ -128,21 +138,21 @@ classdef SL_test_suite < matlab.unittest.TestCase
                 if isempty(s(1).(k(i).name)) &&~k(i).isautoincrement
 
                     if k(i).isNumeric
-                        attrs = num2cell(randi(256, 1, N)-1); %random tiny int
+                        attrs = num2cell(randi(256, 1, fN)-1); %random tiny int
 
                     elseif contains(k(i).type, 'enum')
                         attrs = regexp(k(i).type, '(\w+)', 'match');
                         attrs = attrs(2:end); %drop the 'enum'
-                        attrs = attrs(randi(length(attrs), 1, N)); %random selection of values in enum list
+                        attrs = attrs(randi(length(attrs), 1, fN)); %random selection of values in enum list
 
                     elseif strcmp(k(i).type, 'date')
-                        attrs = cellstr(datestr(3650 * rand(1, N) + datenum('2010-01-01'), 'yyyy-mm-dd')); %random date in the 2010s
+                        attrs = cellstr(datestr(3650 * rand(1, fN) + datenum('2010-01-01'), 'yyyy-mm-dd')); %random date in the 2010s
 
                     elseif contains(k(i).type, 'blob')
-                        attrs = cell(N, 1); %empty
+                        attrs = cell(fN, 1); %empty
 
                     else %isString
-                        attrs = cellstr(char(randi([33 126], N, 10))); %N random strings of length 10
+                        attrs = cellstr(char(randi([33 126], fN, 10))); %N random strings of length 10
 
                     end
 
@@ -151,6 +161,15 @@ classdef SL_test_suite < matlab.unittest.TestCase
 
             end
 
+            if any([k(:).iskey] & [k(:).isautoincrement])
+                %this table is guaranteed to have unique PKs by mySQL
+                s = s(1:N);
+            else
+                [~,a,c] = unique(cell2mat({s(:).([k([k(:).iskey]).name])}'), 'rows'); %get the entries with unique PKs
+                s = s(a(1:N));
+            end
+            
+         
             %now that we've generated the fake data we can insert
             insert(table, s);
         end
