@@ -1,6 +1,6 @@
 %{
 # IP injection of tamoxifen or some other substance
--> sl_test.AnimalEvent(move_date='date')                   # date the move ocurred
+-> sl_test.AnimalEvent(inject_date='date')   # date the injection ocurred
 ---
 -> sl_test.InjectionSubstance
 inject_time: time                    # time of day

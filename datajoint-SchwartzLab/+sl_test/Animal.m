@@ -13,6 +13,10 @@ born_in_cage_number = NULL : int unsigned       # cage number in which animal wa
 %}
 
 classdef Animal < dj.Manual
+    properties
+       genotype_status
+    end
+    
     methods
         function answer = isAlive(key) %is key automatic here?
             answer = true;

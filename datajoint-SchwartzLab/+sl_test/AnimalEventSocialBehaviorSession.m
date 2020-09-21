@@ -8,8 +8,7 @@ fname : varchar(128)                                 # root filename if session 
 session_time : time                                  # session time
 duration_mins : smallint unsigned                    # approximate duration (minutes)
 notes : varchar(256)                                 # notes about the animal's state and comfort level, other people involvd, etc. 
-social_behavior_session_tags : longblob              # extra tags
-purpose : varchar(64)                                # type of experiment, like social dominance, mate preference familiarity with rig, etc.  
+(purpose) -> SocialBehaviorExperimentType(name)      # type of experiment, like social dominance, mate preference familiarity with rig, etc.  
 (animal_in_A) -> sl_test.Animal(animal_id)  # animal at position A (null for empty)
 (animal_in_B) -> sl_test.Animal(animal_id)  # animal at position B (null for empty)
 (animal_in_C) -> sl_test.Animal(animal_id)  # animal at position C (null for empty)
