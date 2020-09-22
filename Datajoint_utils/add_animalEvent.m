@@ -61,6 +61,6 @@ try
     C.commitTransaction;    
 catch ME    
     errordlg('Insert failed');
-    rethrow(ME)
     C.cancelTransaction;
+    rethrow(ME)
 end
