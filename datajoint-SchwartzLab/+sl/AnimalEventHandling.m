@@ -4,7 +4,8 @@
 ---
 duration_mins : smallint unsigned                    # approximate duration (minutes)
 notes: varchar(256)                                  # notes about the animal's state and comfort level
--> sl.User(handled_by='name')                   # who did it
+(handled_by) -> sl.User(name)                   # who did it
+handle_time: time                    # time of day
 %}
 
 classdef AnimalEventHandling < dj.Part

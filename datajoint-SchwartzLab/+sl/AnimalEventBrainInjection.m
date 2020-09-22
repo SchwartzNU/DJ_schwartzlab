@@ -1,10 +1,10 @@
 %{
 # brain injections
-(inject_date) -> sl.AnimalEvent(date)
+-> sl.AnimalEvent
 ---
 -> sl.InjectionSubstance
 (target) -> sl.BrainArea(name)  # brain area targeted
-hemisphere: enum('L', 'R')           # left or right side
+hemisphere: enum('Left', 'Right')           # left or right side
 inject_time: time                    # time of day
 head_rotation : float                # degrees, if not straight down
 coordinates: longblob                # 3 element vector of coordinates in the standard order (AP, ML, DV)

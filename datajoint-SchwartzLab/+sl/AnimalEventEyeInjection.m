@@ -1,14 +1,13 @@
 %{
 # eye injections
--> sl.AnimalEvent(inject_date='date')
+-> sl.AnimalEvent 
 ---
 -> sl.InjectionSubstance
 -> sl.Eye
 inject_time: time                    # time of day
 dilution: float                      # dilution of substance
-tags: longblog
 notes: varchar(256)                  # injection notes (can include people who assisted)
--> sl.User(injected_by='name')  # who did the injection
+(injected_by) -> sl.User(name)       # who did the injection
 %}
 
 classdef AnimalEventEyeInjection < dj.Part

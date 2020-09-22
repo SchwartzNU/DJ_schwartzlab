@@ -1,10 +1,10 @@
 %{
 # mouse has left the house
--> sl.AnimalEvent(dod='date')                   # date of death
+-> sl.AnimalEvent                    # includes date of death
 ---
 cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown')  # cause of death
-notes: varchar(128)                                  # anything
--> sl.User(sacrificed_by='name')                # who did the deed (need to add empty user for this)
+notes: varchar(128)                             # anything
+(sacrificed_by) -> sl.User(name)                # who did the deed (need to add empty user for this)
 
 %}
 
@@ -13,4 +13,4 @@ classdef AnimalEventDeceased < dj.Part
         master = sl.AnimalEvent
     end
 end
-
+%need to make a method to remove the animal from the Live list
