@@ -21,7 +21,7 @@ classdef Animal < dj.Manual
     methods(Static)
         function animals = living()
             %mice minus deceased
-            animals = sl_test.Animal - sl_test.AnimalEventDeceased;
+            animals = fetch(sl_test.Animal - sl_test.AnimalEventDeceased, '*');
 
         end
 

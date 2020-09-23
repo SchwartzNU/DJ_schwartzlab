@@ -69,7 +69,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
             testCase.generateEntries(sl_test.AnimalEvent, 50);
             testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
 
-            q = fetch(sl_test.Animal.living(), '*');
+            q = sl_test.Animal.living();
 
             testCase.results('killNAnimals') = q;
             testCase.verifyEqual(length(q), 5, 'Did not generate expected number of mice');
