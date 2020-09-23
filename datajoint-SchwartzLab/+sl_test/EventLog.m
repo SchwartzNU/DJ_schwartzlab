@@ -14,8 +14,8 @@ classdef EventLog < dj.internal.GeneralRelvar
                 [limit, per, args] = makeLimitClause(varargin{:});
                 selectors = parseArgs(args);
                 ret = self.schema.conn.query(sprintf(...
-                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM `%s`.`%s`) AS x WHERE rnk <= %s%s', ...
-                    selectors,per.selector, per.order, self.schema.dbname, self.plainTableName, per.limit, limit ...
+                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM %s) AS x WHERE rnk <= %s%s', ...
+                    selectors,per.selector, per.order, self.sql, per.limit, limit ...
                 ));
                 ret = dj.struct.fromFields(rmfield(ret,'rnk'));
             else
@@ -24,7 +24,50 @@ classdef EventLog < dj.internal.GeneralRelvar
 
         end
 
-        
+        function varargout = fetchn(self, varargin)
+            if any(cellfun(@(x) contains(x, 'PER'), varargin))
+                [limit, per, args] = makeLimitClause(varargin{:});
+                
+
+                returnKey = nargout==length(args)+1;
+
+                assert(returnKey || (nargout==length(args) || (nargout==0 && length(args)==1)), ...
+                    'The number of fetchn() outputs must match the number of requested attributes')
+                assert(~isempty(args),'insufficient inputs');
+                assert(~any(strcmp(args,'*')), '"*" is not allowed in fetchn()');
+
+                selectors = parseArgs(args);
+                
+                ret = self.schema.conn.query(sprintf(...
+                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM `%s`.`%s`) AS x WHERE rnk <= %s%s', ...
+                    selectors,per.selector, per.order, self.schema.dbname, self.plainTableName, per.limit, limit ...
+                ));
+            
+                varargout = struct2cell(rmfield(ret,'rnk'));
+                
+                if returnKey
+                    varargout{end+1} = dj.struct.fromFields(dj.struct.proj(ret, self.primaryKey{:}));
+                end
+            
+            else
+                varargout = cell(nargout,1);
+                [varargout{:}] = fetchn@dj.internal.GeneralRelvar(self, varargin{:});
+            end
+        end
+
+        function varargout = fetch1(self, varargin)
+            varargout = cell(nargout,1);
+            [varargout{:}] = self.fetchn(varargin{:});
+
+            assert(length(varargout{1}) == 1,'fetch1 can only retrieve a single existing tuple.');
+            % if any(cellfun(@(x) contains(x, 'PER'), varargin))
+            %     varargout = sl_test.EventLog.fetchn(self, varargin);
+
+            % else
+            %     varargout = cell(nargout,1);
+            %     [varargout{:}] = fetch1@dj.internal.GeneralRelvar(self, varargin{:});
+            % end
+        end
     end
 
 end
