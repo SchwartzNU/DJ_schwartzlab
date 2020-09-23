@@ -51,6 +51,9 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             
             if any(cellfun(@(x) contains(x, 'PER'), varargin))
                 [limit, per, args] = makeLimitClause(varargin{:});
+                if isempty(args)
+                    args = self.primaryKey;
+                end
                 selectors = parseArgs(args);
                 ret = self.schema.conn.query(sprintf(...
                     'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY %s %s) AS rnk FROM %s) AS x WHERE rnk <= %s%s', ...
@@ -131,9 +134,9 @@ end
 
 if ischar(lastArg) && contains(lastArg,'PER')
     per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(?<orderby>(\w+)?)\s*(?<order>(DESC)?(ASC)?)','names');
-%     if isempty(per.selector)
-%         per.selector = 'animal_id';
-%     end
+    %     if isempty(per.selector)
+    %         per.selector = 'animal_id';
+    %     end
     if isempty(per.order)
         per.order = 'DESC';
     end
@@ -146,9 +149,5 @@ end
 end
 
 function selectors = parseArgs(args)
-if isempty(args)
-    selectors = '*,';
-else
-    selectors = sprintf('%s,',args{:});
-end
+selectors = sprintf('%s,',args{:});
 end
