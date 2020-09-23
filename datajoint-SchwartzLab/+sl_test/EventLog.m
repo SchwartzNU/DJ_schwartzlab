@@ -14,8 +14,8 @@ classdef EventLog < dj.internal.GeneralRelvar
                 [limit, per, args] = makeLimitClause(varargin{:});
                 selectors = parseArgs(args);
                 ret = self.schema.conn.query(sprintf(...
-                    'SELECT * FROM ( SELECT %s, RANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM `%s`.`%s`) AS x WHERE rnk <= %s%s', ...
-                    selectors, per.selector, per.order, self.schema.dbname, self.plainTableName, per.limit, limit ...
+                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM `%s`.`%s`) AS x WHERE rnk <= %s%s', ...
+                    selectors,per.selector, per.order, self.schema.dbname, self.plainTableName, per.limit, limit ...
                 ));
                 ret = dj.struct.fromFields(rmfield(ret,'rnk'));
             else
@@ -52,10 +52,15 @@ function [limit, per, args] = makeLimitClause(varargin)
         if isempty(per.order)
             per.order = 'DESC';
         end
+        args = args(1:end-1);
     end
 
 end
 
 function selectors = parseArgs(args)
-    selectors = '*';
+    if isempty(args)
+        selectors = '*';
+    else
+        selectors = sprintf('%s,',args{:});
+    end
 end
