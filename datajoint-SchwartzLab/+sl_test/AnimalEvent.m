@@ -134,7 +134,7 @@ end
 
 function selectors = parseArgs(args)
 if isempty(args)
-    selectors = '*';
+    selectors = '*,';
 else
     selectors = sprintf('%s,',args{:});
 end
