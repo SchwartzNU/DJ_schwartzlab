@@ -46,8 +46,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 [limit, per, args] = makeLimitClause(varargin{:});
                 selectors = parseArgs(args);
                 ret = self.schema.conn.query(sprintf(...
-                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM %s) AS x WHERE rnk <= %s%s', ...
-                    selectors,per.selector, per.order, self.sql, per.limit, limit ...
+                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY %s %s) AS rnk FROM %s) AS x WHERE rnk <= %s%s', ...
+                    selectors, per.selector, per.orderby, per.order, self.sql, per.limit, limit ...
                     ));
                 ret = dj.struct.fromFields(rmfield(ret,'rnk'));
             else
@@ -71,8 +71,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 selectors = parseArgs(args);
                 
                 ret = self.schema.conn.query(sprintf(...
-                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY datetime %s) AS rnk FROM %s) AS x WHERE rnk <= %s%s', ...
-                    selectors,per.selector, per.order, self.sql, per.limit, limit ...
+                    'SELECT * FROM ( SELECT %sRANK() OVER (PARTITION BY %s ORDER BY %s %s) AS rnk FROM %s) AS x WHERE rnk <= %s%s', ...
+                    selectors, per.selector, per.orderby, per.order, self.sql, per.limit, limit ...
                     ));
                 
                 varargout = struct2cell(rmfield(ret,'rnk'));
@@ -123,9 +123,15 @@ elseif isnumeric(lastArg)
 end
 
 if ischar(lastArg) && contains(lastArg,'PER')
-    per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(?<order>(DESC)?(ASC)?)','names');
+    per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(?<orderby>(\w+)?)\s*(?<order>(DESC)?(ASC)?)','names');
+%     if isempty(per.selector)
+%         per.selector = 'animal_id';
+%     end
     if isempty(per.order)
         per.order = 'DESC';
+    end
+    if isempty(per.orderby)
+        per.orderby = 'date';
     end
     args = args(1:end-1);
 end
