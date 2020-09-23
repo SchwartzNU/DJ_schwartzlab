@@ -25,8 +25,9 @@ classdef Animal < dj.Manual
 
         end
 
-        function caged
-            %
+        function animals = caged()
+            %get the current cage for living mice
+            % animals = sl_test.Animal.living()
         end
     end
 end

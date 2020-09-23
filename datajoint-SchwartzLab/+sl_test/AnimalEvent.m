@@ -2,6 +2,8 @@
 # Any animal event
 -> sl_test.Animal
 datetime: datetime          #time of this event
+---
+notes: varchar(128)                                  # anything
 
 %}
 
