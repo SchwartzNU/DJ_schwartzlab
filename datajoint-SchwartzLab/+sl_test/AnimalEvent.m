@@ -6,6 +6,13 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
     
     methods(Static)
         function res = get(varargin)
+            if isa(varargin{1},'function_handle')
+                args = varargin(2:end);
+                fn = varargin{1};
+            else
+                args = varargin;
+                fn = @deal; %just pass the input to the output
+            end
             %fetch all corresponding events from all event tables
             res = [];
             tables = sl_test.getSchema().tableNames.keys();
@@ -14,7 +21,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 m = metaclass(t);
                 if any(strcmp({m.SuperclassList(:).Name},'sl_test.AnimalEvent'))
                     %this table is an event table
-                    q = t.fetch(varargin{:});
+                    q = fetch(fn(t), args{:});
                     [q.event_type] = deal(erase(table{:},'sl_test.AnimalEvent'));
                     if isempty(res)
                         res = q;
