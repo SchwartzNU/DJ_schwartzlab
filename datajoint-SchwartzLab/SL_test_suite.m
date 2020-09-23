@@ -66,13 +66,25 @@ classdef SL_test_suite < matlab.unittest.TestCase
         
         function killNAnimals(testCase)
             testCase.generateEntries(sl_test.Animal, 10);
-            testCase.generateEntries(sl_test.AnimalEvent, 50);
+            % testCase.generateEntries(sl_test.AnimalEvent, 50);
             testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
 
             q = sl_test.Animal.living();
 
             testCase.results('killNAnimals') = q;
             testCase.verifyEqual(length(q), 5, 'Did not generate expected number of mice');
+
+        end
+
+        function simpleEventLog(testCase)
+            testCase.generateEntries(sl_test.Animal, 10);
+            testCase.generateEntries(sl_test.AnimalEventMoveCage, 15);
+            testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
+
+            q = sl_test.AnimalEvent.get();
+
+            testCase.results('simpleEventLog') = q;
+            testCase.verifyEqual(length(q), 20, 'Did not generate expected number of events');
 
         end
 
@@ -168,6 +180,9 @@ classdef SL_test_suite < matlab.unittest.TestCase
                     
                     elseif strcmp(k(i).type, 'datetime')
                         attrs = cellstr(datestr(datetime(floor([2010 01 01 00 00 00] + rand(fN,6).*[10 11 11 24 60 60])), 'yyyy-mm-dd HH:MM:SS')); %random date in the 2010s
+
+                    elseif strcmp(k(i).type, 'time')
+                        attrs = cellstr(datestr(rand(1,fN), 'HH:MM:SS'));
 
                     elseif contains(k(i).type, 'blob')
                         attrs = cell(fN, 1); %empty

@@ -1,15 +1,17 @@
 %{
 # mouse has left the house
-(animal_id, dod) -> sl_test.AnimalEvent(animal_id, datetime)
+
+event_id : int unsigned auto_increment
 ---
-cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown')  # cause of death
-(sacrificed_by) -> sl_test.User(name)                # who did the deed (need to add empty user for this)
+-> sl_test.Animal
+-> sl_test.User
+date : date
+time = NULL : time
+cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown') #cause of death
+
 unique index (animal_id)
 %}
 
-classdef AnimalEventDeceased < dj.Part
-     properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end
+classdef AnimalEventDeceased < sl_test.AnimalEvent & dj.Manual
 end
 

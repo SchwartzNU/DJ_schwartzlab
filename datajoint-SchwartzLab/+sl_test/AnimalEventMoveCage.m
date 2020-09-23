@@ -1,16 +1,19 @@
 %{
 # animal has switched houses
--> sl_test.AnimalEvent                       # includes date the move occurred
+
+event_id : int unsigned auto_increment
 ---
-cage_number: int unsigned            # cage number mouse was moved to
-cause = NULL : enum('weaning', 'set as breeder', 'experiment', 'crowding', 'other','unknown')     # cause of move
-(moved_by) -> sl_test.User(name)             # who did the move (we can have a User entry for CCM staff)
+-> sl_test.Animal
+-> sl_test.User
+date : date
+time = NULL : time
+cause = NULL : enum('weaning', 'set as breeder', 'experiment', 'crowding', 'other','unknown') #reason for move
+
+cage_number: int unsigned       # cage number mouse was moved to
 %}
 
-classdef AnimalEventMoveCage < sl_test.EventLog & dj.Part    
-    properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end 
+
+classdef AnimalEventMoveCage < sl_test.AnimalEvent & dj.Manual   
 end
 % move_from_cage_number: int unsigned          # from cage number
 % move_to_
