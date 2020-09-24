@@ -1,14 +1,14 @@
 %{
 # babies!
--> sl.AnimalEvent                                    # event
+event_id : int unsigned auto_increment
 ---
+-> sl.Animal
 number_of_pups : tinyint unsigned                    # how many babies
+date : date
 notes: varchar(128)                                  # anything
 %}
 
-classdef AnimalEventGaveBirth < dj.Part
-     properties(SetAccess=protected)
-        master = sl.AnimalEvent
-    end
+classdef AnimalEventGaveBirth < sl.AnimalEvent & dj.Manual   
+
 end
 

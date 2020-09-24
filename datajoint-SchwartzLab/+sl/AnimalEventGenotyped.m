@@ -1,15 +1,15 @@
 %{
 # animal genotyped
--> sl.AnimalEvent                                                # date of genotype
+event_id : int unsigned auto_increment
 ---
-result: enum('Het', 'Homo', 'Non-carrier', 'Carrier', 'Unknown')  # positive means positive for multiple genes if double or triple trans., het or homo only if we know 
-notes: varchar(128)                                               # comment if the result was ambiguous or any additional notes
-(genotyped_by) -> sl.User(name)                              # who did the genotye
+-> sl.Animal
+(genotyped_by)-> sl.User(name)                              # who did the genotye
+date : date
+notes = NULL : varchar(256)                                 # notes about the event
+genotype_status: enum('het', 'homo', 'non-carrier', 'carrier', 'unknown')  # positive means positive for multiple genes if double or triple trans., het or homo only if we know 
 %}
 
-classdef AnimalEventGenotyped < dj.Part
-     properties(SetAccess=protected)
-        master = sl.AnimalEvent
-    end
+classdef AnimalEventGenotyped < sl.AnimalEvent & dj.Manual
+    
 end
 

@@ -1,16 +1,17 @@
 %{
 # mouse has left the house
--> sl.AnimalEvent                    # includes date of death
----
-cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown')  # cause of death
-notes: varchar(128)                             # anything
-(sacrificed_by) -> sl.User(name)                # who did the deed (need to add empty user for this)
 
+event_id : int unsigned auto_increment
+---
+-> sl.Animal
+(sacrificed_by) -> sl.User(name)
+date : date
+time = NULL : time
+cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown') #cause of death
+notes = NULL : varchar(256)                                 # notes about the event
+unique index (animal_id)
 %}
 
-classdef AnimalEventDeceased < dj.Part
-     properties(SetAccess=protected)
-        master = sl.AnimalEvent
-    end
+classdef AnimalEventDeceased < sl.AnimalEvent & dj.Manual
 end
-%need to make a method to remove the animal from the Live list
+
