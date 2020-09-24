@@ -62,8 +62,32 @@ classdef Animal < dj.Manual
             end
         end
         
+        function ind_struct = hasEvent(eventType, liveOnly)
+            %has this event
+            if nargin<2
+                liveOnly = false;
+            end
+            if liveOnly
+               animals = fetchn(sl.Animal - sl.AnimalEventDeceased, 'animal_id');
+               animals_withEvent = fetchn((sl.Animal - sl.AnimalEventDeceased) & eval(['sl.AnimalEvent' eventType]), 'animal_id');
+            else
+               animals = fetchn(sl.Animal, 'animal_id');
+               animals_withEvent = fetchn(sl.Animal & eval(['sl.AnimalEvent' eventType]), 'animal_id');
+            end
+            ind = ismember(animals,animals_withEvent);
+            field_name = ['hasEvent_' eventType];
+            ind_struct = struct;
+            for i=1:length(animals)
+                ind_struct(i).animal_id = animals(i);
+                ind_struct(i).(field_name) = ind(i);
+            end   
+        end
+        
         function c = cage_numbers(liveOnly, single_id)
             %get latest cage number
+            if nargin<2
+                single_id = [];
+            end            
             if nargin<1
                 liveOnly = false;
             end
