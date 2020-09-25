@@ -10,7 +10,6 @@ dob = NULL : date                               # mouse date of birth
 sex = 'Unknown' : enum('Male', 'Female', 'Unknown')          # sex of mouse - Male, Female, or Unknown/Unclassified
 punch = 'none' : enum('L','R','Both','None')      # earpunch
 animal_tags = NULL : longblob                   # struct with tags
-initial_cage_number = NULL : int unsigned       # cage number in which animal was born or first placed
 %}
 
 classdef Animal < dj.Manual

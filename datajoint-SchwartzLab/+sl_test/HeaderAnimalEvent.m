@@ -39,15 +39,20 @@ classdef HeaderAnimalEvent < handle
             
             if isa(sql_,'cell') %we're unioning
                 sql = string(join(cellfun(@(x,y) sprintf('SELECT %s FROM %s',x,y), h, sql_, 'uniformoutput',false), ' UNION '));
+                
+                %fix h so that it's no longer a cell and strip the aliases
+                h = cellfun(@(x) regexp(x,'`(\w+)`','match'), strsplit(h{1}, ','), 'UniformOutput', false);
+                h = join(horzcat(h{:}), ',');
+                h = h{:};
             else
-                sql = sprintf('SELECT %s FROM %s', hdr.sql, sql_);
+                sql = sprintf('SELECT %s FROM %s', h, sql_);
             end
             
             if nargin>3 && isa(varargin{2}, 'struct')
                 %we're doing a limit by group operation
                 per = varargin{2};
-                sql = sprintf('SELECT * FROM ( SELECT *,RANK() OVER (PARTITION BY %s ORDER BY %s %s) AS rnk FROM (%s) AS grouplimitA) AS grouplimitB WHERE rnk <= %s',...
-                    per.selector, per.orderby, per.order, sql, per.limit...
+                sql = sprintf('SELECT %s FROM ( SELECT %s,RANK() OVER (PARTITION BY %s ORDER BY %s %s) AS rnk FROM (%s) AS grouplimitA) AS grouplimitB WHERE rnk <= %s',...
+                    h, h, per.selector, per.orderby, per.order, sql, per.limit...
                     );
             end
             

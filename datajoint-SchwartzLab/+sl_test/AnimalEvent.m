@@ -99,9 +99,9 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             
             
             ret = sl_test.getSchema().conn.query(sql);
-            if ~isempty(per)
-               ret =rmfield(ret,'rnk'); 
-            end
+            % if ~isempty(per)
+            %    ret =rmfield(ret,'rnk'); 
+            % end
             ret = dj.struct.fromFields(ret);
             
             if nargout>1
