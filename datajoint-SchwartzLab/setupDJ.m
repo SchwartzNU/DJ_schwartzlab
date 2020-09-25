@@ -41,7 +41,10 @@ function setupDJ(skipPathAddition, force)
     
     % run mymSetup.m
     fprintf('Setting up mym...\n')
-    run(fullfile(mymdir, 'mymSetup.m'))
-    
+    if isdeployed
+        mymSetup();
+    else
+        run(fullfile(mymdir, 'mymSetup.m'))
+    end
     INVOKED = 1;
 end
