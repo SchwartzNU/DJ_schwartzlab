@@ -7,6 +7,8 @@ event_id : int unsigned auto_increment
 -> sl_test.User
 date : date
 time = NULL : time
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown') #cause of death
 
 unique index (animal_id)

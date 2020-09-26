@@ -1,14 +1,17 @@
 %{
 # babies!
--> sl_test.AnimalEvent(labor_day='date')             # date of labor
+event_id : int unsigned auto_increment
 ---
+-> sl_test.Animal
 number_of_pups : tinyint unsigned                    # how many babies
+date : date
+time = NULL : time    #unlikely to be recorded, but all events should have a time field
+
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 notes: varchar(128)                                  # anything
 %}
 
-classdef AnimalEventGaveBirth < dj.Part
-     properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end
+classdef AnimalEventGaveBirth < sl_test.AnimalEvent & dj.Manual
 end
 

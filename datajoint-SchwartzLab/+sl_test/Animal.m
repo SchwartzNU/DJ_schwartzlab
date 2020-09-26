@@ -20,14 +20,10 @@ classdef Animal < dj.Manual
     methods(Static)
         function animals = living()
             %mice minus deceased
-            animals = fetch(sl_test.Animal - sl_test.AnimalEventDeceased, '*');
+            animals = sl_test.Animal() - sl_test.AnimalEventDeceased();
 
         end
-
-        function animals = caged()
-            %get the current cage for living mice
-            % animals = sl_test.Animal.living()
-        end
+        
     end
 end
 

@@ -1,18 +1,17 @@
 %{
 # eye injections
--> sl_test.AnimalEvent(inject_date='date')
+event_id : int unsigned auto_increment
 ---
 -> sl_test.InjectionSubstance
 -> sl_test.Eye
-inject_time: time                    # time of day
+-> sl_test.User                      # who did the injection
+time: time                    # time of day
+date : date
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 dilution: float                      # dilution of substance
-tags: longblog
 notes: varchar(256)                  # injection notes (can include people who assisted)
--> sl_test.User(injected_by='name')  # who did the injection
 %}
 
-classdef AnimalEventEyeInjection < dj.Part
-    properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end
+classdef AnimalEventEyeInjection < sl_test.AnimalEvent & dj.Manual
 end

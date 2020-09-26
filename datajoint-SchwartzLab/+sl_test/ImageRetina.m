@@ -1,19 +1,25 @@
 %{
--> sl_test.Eye
-image_id : tinyint unsigned     #unique image id
+# An image of a retina or part of a retina; more than a cell but less than a brain
+
+image_id : int unsigned auto_increment    #unique image id
 ---
+-> sl_test.Eye              #what eye does the image correspond to?
+-> sl_test.User             #who took the image?
+-> sl_test.ChannelSet       #color and meaning of each channel
+-> sl_test.Microscope       # how was the image collected?
+
+orientation : enum('ventral down', 'unknown', 'other') #orientation of retina
+
 fname : varchar(128)            # root image file name
-notes = NULL : varchar(256)     # image notes
--> sl_test.ImageChannelMap      # color and meaning of each channel
--> sl_test.Microscope           # scope on which image was taken
-orientation : enum('Ventral down', 'Unknown') #orientation of retina
--> sl_test.User(imaged_by='name') # who did the imaging
 scaleX : float                  # microns per pixel X
 scaleY : float                  # microns per pixel Y
 scaleZ : float                  # microns per pixel Z (0 if 2D image)
+
+notes = NULL : varchar(256)     # image notes
+
 %}
 
-classdef FullRetinaImage < dj.Manual
+classdef ImageRetina < sl_test.Image & dj.Imported
     
 end
 

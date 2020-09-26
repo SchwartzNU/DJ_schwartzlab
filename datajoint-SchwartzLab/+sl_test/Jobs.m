@@ -1,5 +1,5 @@
 %{
-# the job reservation table for +sl
+# the job reservation table for +sl_test
 table_name : varchar(255) # className of the table
 key_hash   : char(32)     # key hash
 -----

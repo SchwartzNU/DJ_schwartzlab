@@ -1,15 +1,17 @@
 %{
 # just handling mice to get them used to humans
--> sl_test.AnimalEvent                               # includes date
+event_id : int unsigned auto_increment
 ---
-duration_mins : smallint unsigned                    # approximate duration (minutes)
-notes: varchar(256)                                  # notes about the animal's state and comfort level
--> sl_test.User(handled_by='name')                   # who did it
+-> sl_test.Animal
+-> sl_test.User                   # handler
+date: date
+time: time
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+duration : time                  # approximate duration
+
+notes = NULL : varchar(256)                                  # notes about the animal's state and comfort level
 %}
 
-classdef AnimalEventHandling < dj.Part
-     properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end
+classdef AnimalEventHandling < sl_test.AnimalEvent & dj.Manual
 end
 

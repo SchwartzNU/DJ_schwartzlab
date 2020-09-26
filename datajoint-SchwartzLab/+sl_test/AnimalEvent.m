@@ -27,43 +27,6 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 end
             end
         end
-        
-        function res = get(varargin)
-            if isa(varargin{1},'function_handle')
-                args = varargin(2:end);
-                fn = varargin{1};
-            else
-                args = varargin;
-                fn = @deal; %just pass the input to the output
-            end
-            %fetch all corresponding events from all event tables
-            res = [];
-            tables = sl_test.getSchema().tableNames.keys();
-            for table = tables
-                t = feval(table{:});
-                m = metaclass(t);
-                if any(strcmp({m.SuperclassList(:).Name},'sl_test.AnimalEvent'))
-                    %this table is an event table
-                    q = fetch(fn(t), args{:});
-                    [q.event_type] = deal(erase(table{:},'sl_test.AnimalEvent'));
-                    if isempty(res)
-                        res = q;
-                    else
-                        for field = setdiff(fieldnames(q), fieldnames(res))'
-                            if ~isempty(field)
-                                [res.(field{:})] = deal('NULL');
-                            end
-                        end
-                        for field = setdiff(fieldnames(res), fieldnames(q))'
-                            if ~isempty(field)
-                                [q.(field{:})] = deal('NULL');
-                            end
-                        end
-                        res = vertcat(res,q);
-                    end
-                end
-            end
-        end
     end
     
     methods
@@ -379,6 +342,10 @@ args = varargin;
 limit = '';
 per = [];
 
+if isempty(args)
+   return 
+end
+
 lastArg = args{end};
 
 %check if there is a limit operation at the end
@@ -397,7 +364,7 @@ elseif isnumeric(lastArg)
 end
 
 if ischar(lastArg) && contains(lastArg,'PER')
-    per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY\s)?(?<orderby>(\w+)?)\s*(?<order>(DESC)?(ASC)?)','names');
+    per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?\s*(?<orderby>([a-z0-9_]*,?)*)\s*(?<order>(DESC)?(ASC)?)','names');
     %     if isempty(per.selector)
     %         per.selector = 'animal_id';
     %     end
@@ -405,7 +372,7 @@ if ischar(lastArg) && contains(lastArg,'PER')
         per.order = 'DESC';
     end
     if isempty(per.orderby)
-        per.orderby = 'date';
+        per.orderby = 'date,time,entry_time'; %default sorting
     end
     args = args(1:end-1);
     if ~isempty(args)

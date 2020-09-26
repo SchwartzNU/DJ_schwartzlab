@@ -1,20 +1,21 @@
 %{
 # brain injections
-(inject_date) -> sl_test.AnimalEvent(date)
+event_id : int unsigned auto_increment
 ---
+-> sl_test.Animal
 -> sl_test.InjectionSubstance
-(target) -> sl_test.BrainArea(name)  # brain area targeted
-hemisphere: enum('L', 'R')           # left or right side
-inject_time: time                    # time of day
+-> sl_test.User                          # who did the injection
+-> sl_test.BrainArea                     # targeted brain area
+hemisphere: enum('Left', 'Right')    # left or right side
+date: date
+time: time                           # time of 
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 head_rotation : float                # degrees, if not straight down
 coordinates: longblob                # 3 element vector of coordinates in the standard order (AP, ML, DV)
 dilution: float                      # dilution of substance (or 0 if not applicable or non-diluted)
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
-(injected_by) -> sl_test.User(name)  # who did the injection
-%}
 
-classdef AnimalEventBrainInjection < dj.Part
-    properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end
+%}
+classdef AnimalEventBrainInjection < dj.Manual
 end

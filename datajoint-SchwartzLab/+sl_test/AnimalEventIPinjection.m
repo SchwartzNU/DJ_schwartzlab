@@ -1,17 +1,18 @@
 %{
 # IP injection of tamoxifen or some other substance
--> sl_test.AnimalEvent(inject_date='date')   # date the injection ocurred
+event_id : int unsigned auto_increment
 ---
+-> sl_test.Animal
 -> sl_test.InjectionSubstance
-inject_time: time                    # time of day
-concentration: float                 # mg per Kg body weight
-notes: varchar(256)                  # injection notes (can include people who assisted)
--> sl_test.User(injected_by='name')  # who did the injection
+-> sl_test.User                          # who did the injection
+date : date
+time: time                    # time of day
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 
+concentration: float                 # mg per Kg body weight
+notes = NULL : varchar(256)          # notes about the event
 %}
 
-classdef AnimalEventIPinjection < dj.Part
-     properties(SetAccess=protected)
-        master = sl_test.AnimalEvent
-    end
+
+classdef AnimalEventIPinjection < sl_test.AnimalEvent & dj.Manual
 end

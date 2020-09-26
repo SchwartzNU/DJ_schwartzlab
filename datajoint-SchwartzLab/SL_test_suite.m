@@ -69,7 +69,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
             % testCase.generateEntries(sl_test.AnimalEvent, 50);
             testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
 
-            q = sl_test.Animal.living();
+            q = sl_test.Animal.living().fetch('*');
 
             testCase.results('killNAnimals') = q;
             testCase.verifyEqual(length(q), 5, 'Did not generate expected number of mice');
@@ -81,7 +81,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
             testCase.generateEntries(sl_test.AnimalEventMoveCage, 15);
             testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
 
-            q = sl_test.AnimalEvent.get();
+            q = sl_test.AnimalEvent.all().fetch('*');
 
             testCase.results('simpleEventLog') = q;
             testCase.verifyEqual(length(q), 20, 'Did not generate expected number of events');
@@ -163,7 +163,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
             end
 
             %fill the table with values...
-            for i = 1:numel(k)
+            for i = 1:numel(k) %go in reverse order so we can remove elements
 
                 if isempty(s(1).(k(i).name)) &&~k(i).isautoincrement
 
@@ -186,7 +186,10 @@ classdef SL_test_suite < matlab.unittest.TestCase
 
                     elseif contains(k(i).type, 'blob')
                         attrs = cell(fN, 1); %empty
-
+                        
+                    elseif contains(k(i).type, 'timestamp')
+                        s = rmfield(s, k(i).name);
+                        continue;
                     else %isString
                         attrs = cellstr(char(randi([33 126], fN, 10))); %N random strings of length 10
 
