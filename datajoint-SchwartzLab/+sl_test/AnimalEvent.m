@@ -255,8 +255,18 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     header.project(self.operands(2:end));
                     
                 case 'aggregate'
-                    [header, sql] = compile(self.operands{1},2);
-                    [header2, sql2] = compile(self.operands{2},2);
+                    if ~isa(self.operands{1}, 'sl_test.AnimalEvent')
+                        header = sl_test.HeaderAnimalEvent(self.operands{1}.header);
+                        sql = self.operands{1}.sql;
+                    else
+                        [header, sql] = compile(self.operands{1},2);
+                    end
+                    if ~isa(self.operands{2}, 'sl_test.AnimalEvent')
+                        header2 = sl_test.HeaderAnimalEvent(self.operands{2}.header);
+                        sql2 = self.operands{2}.sql;
+                    else
+                        [header2, sql2] = compile(self.operands{2},2);
+                    end
                     commonBlobs = intersect(header.blobNames, header2.blobNames);
                     assert(isempty(commonBlobs), 'join cannot be done on blob attributes')
                     pkey = sprintf(',`%s`', header.primaryKey{:});
@@ -301,7 +311,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     header.stripAliases;
                 end
                 
-                isPer = contains(self.restrictions,'PER');
+                isPer = cellfun(@(x) isa(x,'char') && contains(x,'PER'), self.restrictions);
                 if any(isPer)
                     assert(nnz(isPer)==1, 'only one PER state is allowed for a single relation.');
                     [~,per,~] = makeLimitClause(self.restrictions{isPer});
