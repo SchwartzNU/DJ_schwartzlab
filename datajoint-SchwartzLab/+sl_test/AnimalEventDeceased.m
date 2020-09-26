@@ -15,5 +15,10 @@ unique index (animal_id)
 %}
 
 classdef AnimalEventDeceased < sl_test.AnimalEvent & dj.Manual
+  methods(Static)
+    function animals = living()
+      animals = sl_test.Animal() - sl_test.AnimalEventDeceased();
+    end
+  end
 end
 
