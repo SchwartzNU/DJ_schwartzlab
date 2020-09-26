@@ -75,6 +75,35 @@ classdef SL_test_suite < matlab.unittest.TestCase
             testCase.verifyEqual(length(q), 5, 'Did not generate expected number of mice');
 
         end
+        
+        function moveAnimals(testCase)
+            import matlab.unittest.constraints.IsGreaterThanOrEqualTo
+            import matlab.unittest.constraints.IsLessThanOrEqualTo
+            
+            testCase.generateEntries(sl_test.Animal, 10);
+            testCase.generateEntries(sl_test.AnimalEventMoveCage, 15);
+            
+            q = sl_test.AnimalEventMoveCage().fetch('*');
+            g = sl_test.AnimalEventMoveCage.initial().fetch('*');
+            h = sl_test.AnimalEventMoveCage.current().fetch('*');
+            
+            testCase.results('moveAnimals') = {q,g,h};
+            
+            
+            %we expect that each animal in q will be in g and h
+            ga = [g(:).animal_id];
+            ha = [h(:).animal_id];
+            
+            %we expect that the min date for each animal in q will be the
+            %same as the date in g... max in h
+            for i = 1:numel(q)
+                %any corresponding animal id's in g should be <= date
+                testCase.verifyThat(datetime({g(ga == q(i).animal_id).date}), IsLessThanOrEqualTo(datetime(q(i).date)), 'initial cage numbers must occur before all others');
+                testCase.verifyThat(datetime({h(ha == q(i).animal_id).date}), IsGreaterThanOrEqualTo(datetime(q(i).date)), 'current cage numbers must occur after all others');
+              
+            end
+            
+        end
 
         function simpleEventLog(testCase)
             testCase.generateEntries(sl_test.Animal, 10);

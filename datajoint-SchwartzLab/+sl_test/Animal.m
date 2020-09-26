@@ -19,11 +19,14 @@ classdef Animal < dj.Manual
 
     methods(Static)
         function animals = living()
-            %mice minus deceased
+            %returns a query object representing the living mice
             animals = sl_test.Animal() - sl_test.AnimalEventDeceased();
-
         end
-        
+
+        function animals = cageCurrent()
+            %returns a query object representing the living mice joined with their current cage
+        end
+
     end
 end
 

@@ -16,7 +16,17 @@ cage_number: int unsigned       # cage number mouse was moved to
 %}
 
 
-classdef AnimalEventMoveCage < sl_test.AnimalEvent & dj.Manual   
+classdef AnimalEventMoveCage < sl_test.AnimalEvent & dj.Manual
+    methods(Static)
+        function cage = current()
+            cage = sl_test.AnimalEventMoveCage() & 'LIMIT 1 PER animal_id DESC';
+        end
+
+        function cage = initial()
+            cage = sl_test.AnimalEventMoveCage() & 'LIMIT 1 PER animal_id ASC';
+        end
+    end
+    
 end
 % move_from_cage_number: int unsigned          # from cage number
 % move_to_

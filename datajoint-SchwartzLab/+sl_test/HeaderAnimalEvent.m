@@ -31,6 +31,10 @@ classdef HeaderAnimalEvent < handle
             if nargin > 1
                 self.eventType = erase(className,'sl_test.AnimalEvent');
             end
+            
+%             if nargin > 2
+%                 self.per = per;
+%             end
         end
         
         function sql = enclose(hdr, sql_, varargin)
@@ -51,9 +55,17 @@ classdef HeaderAnimalEvent < handle
             if nargin>3 && isa(varargin{2}, 'struct')
                 %we're doing a limit by group operation
                 per = varargin{2};
-                sql = sprintf('SELECT %s FROM ( SELECT %s,RANK() OVER (PARTITION BY %s ORDER BY %s %s) AS rnk FROM (%s) AS grouplimitA) AS grouplimitB WHERE rnk <= %s',...
-                    h, h, per.selector, per.orderby, per.order, sql, per.limit...
-                    );
+                if ~isa(varargin{1},'char')
+                    sql = sprintf('SELECT %s FROM ( SELECT %s,RANK() OVER (PARTITION BY %s ORDER BY %s) AS rnk FROM (%s) AS `$a%x`) AS `$a%x` WHERE rnk <= %s',...
+                        h, h, per.selector, per.orderby, sql, varargin{1}+1, varargin{1}+2, per.limit...
+                        );
+                else
+                    sql = sprintf('SELECT %s FROM ( SELECT %s,RANK() OVER (PARTITION BY %s ORDER BY %s) AS rnk FROM (%s) AS grouplimitA) AS grouplimitB WHERE rnk <= %s',...
+                        h, h, per.selector, per.orderby, sql, per.limit...
+                        );
+                end
+                
+                
             end
             
             if nargin>3 && strcmp(varargin{2},'count')

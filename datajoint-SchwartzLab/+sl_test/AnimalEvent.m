@@ -211,18 +211,6 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             fprintf('%d tuples (%.3g s)\n\n', self.count, toc)
         end
         
-        %         function s = get.query(self)
-        %             fprintf('getting sql via AnimalEvent');
-        %             [~,s] = self.compile;
-        %             %             if strcmp(self.operator,'union')
-        %             %                 %union is not yet implemented for general tables but we can
-        %             %                 %override for this case...
-        %             %
-        %             %             else
-        %             %                 s = self.sql; %return the sql code via the superclass
-        %             %             end
-        %         end
-        
         function n = count(self)
             % COUNT - the number of tuples in the relation.
             [hdr, sql_] = self.compile(3);
@@ -235,9 +223,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             
             persistent aliasCount
             if isempty(aliasCount)
-                aliasCount = 0;
+                aliasCount = 1;
             end
-            aliasCount = aliasCount + 1;
             if nargin<2
                 enclose = 0;
             end
@@ -309,15 +296,38 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 % clear aliases and enclose
                 if header.hasAliases
                     %                     sql = sprintf('(SELECT %s FROM %s) as `$s%x`', header.sql, sql, aliasCount);
-                    sql = enclose(hdr, sql, aliasCount);
+                    sql = header.enclose(sql, aliasCount);
+                    aliasCount = aliasCount + 1;
                     header.stripAliases;
                 end
+                
+                isPer = contains(self.restrictions,'PER');
+                if any(isPer)
+                    assert(nnz(isPer)==1, 'only one PER state is allowed for a single relation.');
+                    [~,per,~] = makeLimitClause(self.restrictions{isPer});
+                    perInd = find(isPer);
+                else
+                    perInd = length(self.restrictions);
+                end
+                
                 % add WHERE clause
                 sql = sprintf('%s%s', sql); %?????
-                whereClause = makeWhereClause(header, self.restrictions);
+                whereClause = makeWhereClause(header, self.restrictions(1:perInd-1));
                 if ~isempty(whereClause)
                     sql = sprintf('%s WHERE %s', sql, whereClause);
                 end
+                
+                if any(isPer)
+                    sql = header.enclose(sql, aliasCount, per);
+                    aliasCount = aliasCount + 3;
+                    % add WHERE clause
+                    sql = sprintf('%s%s', sql); %?????
+                    whereClause = makeWhereClause(header, self.restrictions(perInd+1:end));
+                    if ~isempty(whereClause)
+                        sql = sprintf('%s WHERE %s', sql, whereClause);
+                    end
+                end
+                
             end
             
             % enclose in subquery if necessary
@@ -326,6 +336,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     || enclose==3 && strcmp(self.operator, 'aggregate')
                 %                 sql = sprintf('(SELECT %s FROM %s) AS `$a%x`', header.sql, sql, aliasCount);
                 sql = header.enclose(sql, aliasCount);
+                aliasCount = aliasCount + 1;
                 header.stripAliases;
             end
         end
@@ -364,15 +375,19 @@ elseif isnumeric(lastArg)
 end
 
 if ischar(lastArg) && contains(lastArg,'PER')
-    per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?\s*(?<orderby>([a-z0-9_]*,?)*)\s*(?<order>(DESC)?(ASC)?)','names');
+    per = regexp(lastArg,'^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))','names');
     %     if isempty(per.selector)
     %         per.selector = 'animal_id';
     %     end
-    if isempty(per.order)
-        per.order = 'DESC';
-    end
-    if isempty(per.orderby)
-        per.orderby = 'date,time,entry_time'; %default sorting
+    if isempty(per.orderby) || strcmp(per.orderby,'DESC')
+        per.orderby = '`date` DESC, `time` DESC, `entry_time` DESC'; %default sorting
+    elseif strcmp(per.orderby, 'ASC')
+        per.orderby = '`date` ASC, `time` ASC, `entry_time` ASC';
+    else 
+        tokens = regexp(per.orderby, '([a-z0-9_]+)','tokens');
+        order = regexp(per.orderby, '((DESC)?(ASC)?)','tokens');
+        per.orderby = join(cellfun(@(x,y) sprintf('`%s` %s',x,y),horzcat(tokens{:}), horzcat(order{:}), 'uniformOutput', false),',');
+        per.orderby = per.orderby{:};
     end
     args = args(1:end-1);
     if ~isempty(args)
