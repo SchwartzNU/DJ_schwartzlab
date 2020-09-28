@@ -1,10 +1,10 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="906715698" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalLogger.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalLogger" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="2068657319" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalLogger.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalLogger" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalLogger</param.appname>
     <param.intermediate>${PROJECT_ROOT}/WebApp</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalLogger</param.files.only>
     <param.output />
-    <param.checkbox>false</param.checkbox>
+    <param.checkbox>true</param.checkbox>
     <param.logdir>${PROJECT_ROOT}/WebApp</param.logdir>
     <param.target.type>subtarget.web.app</param.target.type>
     <param.user.defined.mcr.options />
@@ -12,7 +12,6 @@
     <unset>
       <param.files.only />
       <param.output />
-      <param.checkbox />
       <param.target.type />
       <param.user.defined.mcr.options />
       <param.support.packages />
@@ -102,6 +101,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/Epoch.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/PSTHParamSet.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/SpikeTrain.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mym.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/setupDJ.m</file>
       <file>/Users/gws584/matlab/SymphonyAnalysis/core/loadAndSyncCellData.m</file>
     </fileset.depfun>
