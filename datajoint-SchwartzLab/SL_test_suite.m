@@ -69,7 +69,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
             % testCase.generateEntries(sl_test.AnimalEvent, 50);
             testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
 
-            q = sl_test.Animal.living().fetch('*');
+            q = sl_test.Animal.living();
 
             testCase.results('killNAnimals') = q;
             testCase.verifyEqual(length(q), 5, 'Did not generate expected number of mice');
@@ -109,11 +109,12 @@ classdef SL_test_suite < matlab.unittest.TestCase
             testCase.generateEntries(sl_test.Animal, 10);
             testCase.generateEntries(sl_test.AnimalEventMoveCage, 15);
             testCase.generateEntries(sl_test.AnimalEventDeceased, 5);
+            testCase.generateEntries(sl_test.AnimalEventGenotyped, 10);
 
             q = sl_test.AnimalEvent.all().fetch('*');
 
             testCase.results('simpleEventLog') = q;
-            testCase.verifyEqual(length(q), 20, 'Did not generate expected number of events');
+            testCase.verifyEqual(length(q), 30, 'Did not generate expected number of events');
 
         end
 
@@ -200,7 +201,7 @@ classdef SL_test_suite < matlab.unittest.TestCase
                         attrs = num2cell(randi(256, 1, fN)-1); %random tiny int
 
                     elseif contains(k(i).type, 'enum')
-                        attrs = regexp(k(i).type, '([\w\s]+)', 'match');
+                        attrs = regexp(k(i).type, '([\w\s-]+)', 'match');
                         attrs = attrs(2:end); %drop the 'enum'
                         attrs = attrs(randi(length(attrs), 1, fN)); %random selection of values in enum list
 

@@ -161,21 +161,21 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             %this is because we don't have access to the GeneralRelvar
             %props
             
-            if ~strcmp(self.operator, 'union')
-                operandList = {self};
-            else
-                operandList = self.operands;
-            end
-            
-            % expand recursive unions
-            if ~strcmp(arg.operator, 'union')
-                operandList = [operandList {arg}];
-            else
-                operandList = [operandList arg.operands];
-            end
-            ret = init(sl_test.AnimalEvent, 'union', operandList);
+%             if ~strcmp(self.operator, 'union')
+%                 operandList = {self};
+%             else
+%                 operandList = self.operands;
+%             end
+%             
+%             % expand recursive unions
+%             if ~strcmp(arg.operator, 'union')
+%                 operandList = [operandList {arg}];
+%             else
+%                 operandList = [operandList arg.operands];
+%             end
+            ret = init(sl_test.AnimalEvent, 'union', [{self} {arg}]);
             ret.operator = 'union';
-            ret.operands = operandList;
+            ret.operands = [{self} {arg}];
         end
         
         function disp(self)

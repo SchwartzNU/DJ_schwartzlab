@@ -100,12 +100,12 @@ classdef HeaderAnimalEvent < handle
             assert(~isempty(self.attributes))
             for i = 1:length(self.attributes)
                 for j=1:1+isUnion
-                    if strcmp(self.attributes(i).type, 'fake')
-                        if isempty(self.headers{j}.eventType)
-                            sql{j} = sprintf('%s,`%s`', sql{j}, self.attributes(i).name);
-                        else
+                    if strcmp(self.attributes(i).type, 'fake') && ~isempty(self.headers{j}.eventType)
+%                         if isempty(self.headers{j}.eventType)
+%                             sql{j} = sprintf('%s,`%s`', sql{j}, self.attributes(i).name);
+%                         else
                             sql{j} = sprintf('%s,''%s'' as `%s`', sql{j}, self.headers{j}.eventType, self.attributes(i).name);
-                        end
+%                         end
                     elseif isUnion && ~ismember(self.attributes(i).name, self.headers{j}.names)
                         sql{j} = sprintf('%s,Null as `%s`', sql{j}, self.names{i});
                     elseif isempty(self.attributes(i).alias)
@@ -156,18 +156,20 @@ classdef HeaderAnimalEvent < handle
                 end
             end
             %             ret.header = derive(
-            f = fieldnames(ret.attributes);
-            attr = cell2struct(cell(size(f)), f);
-            attr.name = 'event_type';
-            attr.type = 'fake';
-            attr.iskey = true;
-            attr.isnullable = true;
-            attr.isautoincrement = false;
-            attr.isNumeric = false;
-            attr.isString = true;
-            attr.isBlob = false;
-            attr.alias = '';
-            ret.attributes(end+1) = attr;
+            if ~ismember('event_type',{ret.attributes.name})
+                f = fieldnames(ret.attributes);
+                attr = cell2struct(cell(size(f)), f);
+                attr.name = 'event_type';
+                attr.type = 'fake';
+                attr.iskey = true;
+                attr.isnullable = true;
+                attr.isautoincrement = false;
+                attr.isNumeric = false;
+                attr.isString = true;
+                attr.isBlob = false;
+                attr.alias = '';
+                ret.attributes(end+1) = attr;
+            end
         end
         
         %cast functionality to dj.internal.Header

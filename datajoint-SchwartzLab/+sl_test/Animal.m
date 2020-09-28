@@ -29,17 +29,17 @@ classdef Animal < dj.Manual
             result = ismember(animal_ids, [result(:).animal_id]);
         end
 
-        function animals = age(liveOnly, animal_ids)
+        function animals = age(animal_ids, liveOnly)
             %returns age as a calendarDuration object
             
-            if nargin && liveOnly
+            if nargin>1 && liveOnly
                 %restrict by living mice
                 q = sl_test.AnimalEventDeceased.living();
             else 
                 q = sl_test.Animal();
             end
 
-            if nargin>1
+            if nargin && ~isempty(animal_ids)
                 %restrict by animal_id
                 q = restrict_by_animal_ids(q,animal_ids);
             end
@@ -54,16 +54,16 @@ classdef Animal < dj.Manual
             
         end
         
-        function animals = genotype_status(liveOnly, animal_ids)
+        function animals = genotypeStatus(animal_ids, liveOnly)
             %get latest genotype status
 
             q = sl_test.AnimalEventGenotyped();
 
-            if nargin && liveOnly
+            if nargin>1 && liveOnly
                 q = q & sl_test.AnimalEventDeceased.living();
             end
 
-            if nargin>1
+            if nargin && ~isempty(animal_ids)
                 %restrict by animal_id
                 q = restrict_by_animal_ids(q,animal_ids);
             end
@@ -72,37 +72,34 @@ classdef Animal < dj.Manual
 
         end
         
-        % function ind_struct = hasEvent(eventType, liveOnly)
-        %     %has this event
-        %     if nargin<2
-        %         liveOnly = false;
-        %     end
-        %     if liveOnly
-        %        animals = fetchn(sl.Animal - sl.AnimalEventDeceased, 'animal_id');
-        %        animals_withEvent = fetchn((sl.Animal - sl.AnimalEventDeceased) & eval(['sl.AnimalEvent' eventType]), 'animal_id');
-        %     else
-        %        animals = fetchn(sl.Animal, 'animal_id');
-        %        animals_withEvent = fetchn(sl.Animal & eval(['sl.AnimalEvent' eventType]), 'animal_id');
-        %     end
-        %     ind = ismember(animals,animals_withEvent);
-        %     field_name = ['hasEvent_' eventType];
-        %     ind_struct = struct;
-        %     for i=1:length(animals)
-        %         ind_struct(i).animal_id = animals(i);
-        %         ind_struct(i).(field_name) = ind(i);
-        %     end   
-        % end
+        function animals = hasEvent(eventType, animal_ids, liveOnly)
+            %has this event
+
+            if nargin>2 && liveOnly 
+                q = sl_test.AnimalEventDeceased.living();
+            else
+                q = sl_test.Animal();
+            end
+            q = q & feval(sprintf('sl_test.AnimalEvent%s', eventType));
+
+            if nargin>1 && ~isempty(animal_ids)
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id');
+
+        end
         
-        function animals = cage_number(liveOnly, animal_ids)
+        function animals = cageNumber(animal_ids, liveOnly)
 
             q = sl_test.AnimalEventMoveCage.current();
 
-            if nargin && liveOnly
+            if nargin>1 && liveOnly
                 %restrict by living mice
                 q = q & sl_test.AnimalEventDeceased.living();
             end
 
-            if nargin>1
+            if nargin && ~isempty(animal_ids)
                 %restrict by animal_id
                 q = restrict_by_animal_ids(q,animal_ids);
             end
