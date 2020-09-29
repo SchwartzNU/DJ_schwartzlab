@@ -51,15 +51,20 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             %                 [hdr, sql_] = self.compile;
             %             end
             
-            [limit, per, args] = makeLimitClause(varargin{:});
+            [limit, per, args, outer] = makeLimitClause(varargin{:});
             
             if ~isempty(args)
                 self = self.proj(args{:});
             end
             [hdr, sql_] = self.compile;
             
-            sql = enclose(hdr, sql_, limit, per); %need to pass limit, per, args...
-            
+            if ~isempty(outer)
+            sql = enclose(hdr, sql_, inf, per); %need to pass limit, per, args...
+            hdr.attributes = hdr.attributes(ismember(hdr.names, outer));
+            sql = enclose(hdr, sql, limit);
+            else
+               sql = enclose(hdr, sql_, limit, per); 
+            end
             
             ret = sl_test.getSchema().conn.query(sql);
             % if ~isempty(per)
@@ -178,6 +183,31 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             ret.operands = [{self} {arg}];
         end
         
+        function ret = and(self, arg)
+            % AND - relational restriction
+            %
+            % R1 & cond  yeilds a relation containing all the tuples in R1
+            % that match the condition cond. The condition cond could be an
+            % structure array, another relation, or an sql boolean
+            % expression.
+            %
+            % Examples:
+            %   tp.Scans & struct('mouse_id',3, 'scannum', 4);
+            %   tp.Scans & 'lens=10'
+            %   tp.Mice & (tp.Scans & 'lens=10')
+            ret = self.copy;
+            if isa(arg,'dj.internal.GeneralRelvar') && ~isa(arg,'sl_test.AnimalEvent')
+%                 th = arg.tableHeader;
+                newarg = init(sl_test.AnimalEvent, 'wrapper', {arg});
+                newarg.operator = 'wrapper';
+                newarg.operands = {arg};
+%                 arg.tableHeader = th;
+            else
+                newarg = arg;
+            end
+            ret.restrict(newarg);
+        end
+        
         function disp(self)
             fprintf('displaying via AnimalEvent');
             %union is not yet implemented for general tables but we can
@@ -257,6 +287,10 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     tab = self;
                     header = sl_test.HeaderAnimalEvent(derive(tab.tableHeader), tab.className);
                     sql = tab.fullTableName;
+                case 'wrapper'
+%                     [header, sql] = compile(self.operands{1},1);
+                    header = sl_test.HeaderAnimalEvent(derive(self.operands{1}.tableHeader));
+                    sql = self.operands{1}.fullTableName;
                     
                 case 'proj'
                     [header, sql] = compile(self.operands{1},1);
@@ -352,7 +386,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 %                     sql = sprintf('%s%s', sql); %?????
                     whereClause = makeWhereClause(header, self.restrictions(perInd+1:end));
                     if ~isempty(whereClause)
-                        if isa(sql, cell) %can't actually be a cell here because of the enclose...
+                        if isa(sql, 'cell') %can't actually be a cell here because of the enclose...
                             sql = horzcat(sql{:}, 'WHERE %s', whereClause);
                         else
                             sql = sprintf('%s WHERE %s', sql, whereClause);
@@ -380,10 +414,11 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
     end
 end
 
-function [limit, per, args] = makeLimitClause(varargin)
+function [limit, per, args, outer] = makeLimitClause(varargin)
 args = varargin;
 limit = '';
 per = [];
+outer = {};
 
 if isempty(args)
    return 
@@ -413,8 +448,10 @@ if ischar(lastArg) && contains(lastArg,'PER')
     %     end
     if isempty(per.orderby) || strcmp(per.orderby,'DESC')
         per.orderby = '`date` DESC, `time` DESC, `entry_time` DESC'; %default sorting
+        tokens = {'date', 'time', 'entry_time'};
     elseif strcmp(per.orderby, 'ASC')
         per.orderby = '`date` ASC, `time` ASC, `entry_time` ASC';
+        tokens = {'date', 'time', 'entry_time'};
     else 
         tokens = regexp(per.orderby, '([a-z0-9_]+)','tokens');
         order = regexp(per.orderby, '((DESC)?(ASC)?)','tokens');
@@ -425,14 +462,16 @@ if ischar(lastArg) && contains(lastArg,'PER')
     if ~isempty(args)
        %we need to make sure that orderby and selector are both in
        %projection
-       
-       if all(cellfun(@isempty, regexp(args, sprintf('^(?<selector>%s)',per.selector))))
+       outer = args;
+       if ~ismember(per.selector, args)%all(cellfun(@isempty, regexp(args, sprintf('^(?<selector>%s)',per.selector))))
            args{end+1} = per.selector;
        end
        
-       if all(cellfun(@isempty, regexp(args, sprintf('^(?<orderby>%s)',per.orderby))))
-           args{end+1} = per.orderby;
-       end
+       args = union(args, tokens);
+%        
+%        if all(cellfun(@isempty, regexp(args, sprintf('^(?<orderby>%s)',per.orderby))))
+%            args = horzcat(args, tokens);
+%        end
        
     end
 end

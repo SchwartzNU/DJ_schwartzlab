@@ -1,9 +1,8 @@
 %{
 # Brain area
-name : varchar(32)                  # Short (atlas) name
+target : varchar(32)                  # Short (atlas) name
 ---
 long_name : varchar(128)            # long version of the name
 %}
 classdef BrainArea < dj.Lookup
-    
 end

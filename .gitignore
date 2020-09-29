@@ -3,3 +3,5 @@
 *.asv
 AnimalLogger/
 AnimalLogger.prj
+*.bak
+datajoint-SchwartzLab/+sl_092920*

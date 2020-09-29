@@ -1,13 +1,13 @@
 %{
-# Stimulus mouse in an arm of the behavior rig 
 -> sl.AnimalEventSocialBehaviorSession   # the session, defined by the central mouse
-(stim_mouse) -> sl.Animal(animal_id)
----
 arm : enum('A', 'B', 'C')            # location of the mouse in the arena
+---
+(stimulus_mouse) -> sl.Animal(animal_id) # the animal in this arm
+
+unique index (stimulus_mouse)
 %}
 
-classdef AnimalEventSocialBehaviorSessionStimMouse < sl.AnimalEvent & dj.Part
-
+classdef AnimalEventSocialBehaviorSessionMouse < dj.Part
     properties (SetAccess = protected)
         master = sl.AnimalEventSocialBehaviorSession
     end

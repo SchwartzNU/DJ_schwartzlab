@@ -3,14 +3,15 @@
 event_id : int unsigned auto_increment
 ---
 -> sl.Animal
+-> sl.User                   # handler
 date: date
-handle_time: time
-duration_mins : smallint unsigned                    # approximate duration (minutes)
+time: time
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+duration : time                  # approximate duration
+
 notes = NULL : varchar(256)                                  # notes about the animal's state and comfort level
-(handled_by)-> sl.User(name)                   # who did it
 %}
 
-classdef AnimalEventHandling < sl.AnimalEvent & dj.Manual   
-
+classdef AnimalEventHandling < sl.AnimalEvent & dj.Manual
 end
 

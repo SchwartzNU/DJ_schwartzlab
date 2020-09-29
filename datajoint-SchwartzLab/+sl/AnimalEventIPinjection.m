@@ -4,13 +4,15 @@ event_id : int unsigned auto_increment
 ---
 -> sl.Animal
 -> sl.InjectionSubstance
-inject_time: time                    # time of day
+-> sl.User                          # who did the injection
 date : date
+time: time                    # time of day
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 concentration: float                 # mg per Kg body weight
 notes = NULL : varchar(256)          # notes about the event
-(injected_by) -> sl.User(name)  # who did the injection
 %}
 
-classdef AnimalEventIPinjection < sl.AnimalEvent & dj.Manual   
 
+classdef AnimalEventIPinjection < sl.AnimalEvent & dj.Manual
 end

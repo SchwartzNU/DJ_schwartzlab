@@ -29,7 +29,7 @@ classdef HeaderAnimalEvent < handle
             self.headers = header;
             
             if nargin > 1
-                self.eventType = erase(className,'sl_test.AnimalEvent');
+                self.eventType = erase(className,'sl.AnimalEvent');
             end
             
 %             if nargin > 2
@@ -148,7 +148,7 @@ classdef HeaderAnimalEvent < handle
         
         function ret = union(self, other)
             %add new functionality
-            ret = sl_test.HeaderAnimalEvent(self);
+            ret = sl.HeaderAnimalEvent(self);
             ret.headers = {self, other, 'union'};
             
             ret.attributes = self.attributes;
@@ -266,7 +266,7 @@ classdef HeaderAnimalEvent < handle
                 end
             end
             self.attributes = self.attributes(include);
-            ret = sl_test.HeaderAnimalEvent(self);
+            ret = sl.HeaderAnimalEvent(self);
             ret.headers = {self, [], 'project'};
             
         end
@@ -275,7 +275,7 @@ classdef HeaderAnimalEvent < handle
             % form the header of a relational join
             
             % merge primary keys
-            ret = sl_test.HeaderAnimalEvent();
+            ret = sl.HeaderAnimalEvent();
             ret.headers = {hdr1, hdr2, 'join'};
             
             ret.attributes = [hdr1.attributes([hdr1.attributes.iskey])
@@ -314,14 +314,14 @@ classdef HeaderAnimalEvent < handle
             for arg = restrictions
                 cond = arg{1};
                 switch true
-                    case isa(cond, 'sl_test.AnimalEvent') && strcmp(cond.operator, 'union')
+                    case isa(cond, 'sl.AnimalEvent') && strcmp(cond.operator, 'union')
                         % union
                         s = cellfun(@(x) makeWhereClause(header, {x}), cond.operands, 'uni', false);
                         assert(~isempty(s))
                         s = sprintf('(%s) OR ', s{:});
                         clause = sprintf('%s AND %s(%s)', clause, not, s(1:end-4));  % strip trailing " OR "
                         
-                    case isa(cond, 'sl_test.AnimalEvent') && strcmp(cond.operator, 'not')
+                    case isa(cond, 'sl.AnimalEvent') && strcmp(cond.operator, 'not')
                         clause = sprintf('%s AND NOT(%s)', clause, ...
                             makeWhereClause(header, cond.operands));
                         

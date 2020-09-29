@@ -1,11 +1,11 @@
 %{
 # Eye
 -> sl.Animal
-eye_id : tinyint unsigned
+side: enum('L', 'R', 'Unknown1', 'Unknown2')   # left, right, or unknown (could have 2 unknown eyes)
 ---
-side: enum('Left', 'Right', 'Unknown')                 # left, right, or unknown
+tags : longblob                 # struct with tags
+
 %}
 
-classdef Eye < dj.Manual
-    
+classdef Eye < dj.Manual 
 end
