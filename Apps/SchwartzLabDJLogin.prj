@@ -1,0 +1,146 @@
+<deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
+  <configuration file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/SchwartzLabDJLogin.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="SchwartzLabDJLogin" target="target.webdeploy" target-name="Web App Compiler">
+    <param.appname>SchwartzLabDJLogin</param.appname>
+    <param.intermediate>${PROJECT_ROOT}/SchwartzLabDJLogin</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}/SchwartzLabDJLogin</param.files.only>
+    <param.output />
+    <param.checkbox>false</param.checkbox>
+    <param.logdir>${PROJECT_ROOT}/SchwartzLabDJLogin</param.logdir>
+    <param.target.type>subtarget.web.app</param.target.type>
+    <param.user.defined.mcr.options />
+    <param.support.packages />
+    <unset>
+      <param.intermediate />
+      <param.files.only />
+      <param.output />
+      <param.checkbox />
+      <param.logdir />
+      <param.target.type />
+      <param.user.defined.mcr.options />
+      <param.support.packages />
+    </unset>
+    <fileset.web.main>
+      <file>${PROJECT_ROOT}/login.mlapp</file>
+    </fileset.web.main>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}/AnimalLogger.mlapp</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/User.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/UserActive.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/dialog.so</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libmysqlclient.so</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libmysqlclient.so.18</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libz.so.1</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libz.so.1.2.3</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/mym.mexa64</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/dialog.so</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/libmysqlclient.18.dylib</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/libmysqlclient.a</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/libmysqlclient.dylib</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/mym.mexmaci64</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexw64/dialog.dll</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexw64/libmysql.dll</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexw64/mym.mexw64</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/lib/mexa64/libz.so.1</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/lib/mexa64/libz.so.1.2.3</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/lib/mexglx/libz.so.1</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/lib/mexglx/libz.so.1.2.3.4</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/lib/mexw32/zlib.lib</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/lib/mexw64/zlib.lib</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mex_compilation/compile_linux.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mex_compilation/compile_mexmaci64.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mex_compilation/compile_windows.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mym.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mymSetup.m</file>
+    </fileset.resources>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}/AddAnimal.mlapp</file>
+      <file>${PROJECT_ROOT}/AddGenotype.mlapp</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animal.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/GeneralRelvar.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/Header.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/Master.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/Table.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/TableAccessor.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/UserRelation.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/ask.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/fromCamelCase.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/hash.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/shorthash.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/toCamelCase.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+lib/DataHash.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+lib/getpass.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+lib/isString.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+lib/startsWith.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Connection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/ERD.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Lookup.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Manual.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Part.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Relvar.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Schema.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/Table.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/conn.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/set.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/struct.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Animal.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventAssignCage.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventDeceased.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventGenotyped.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventSocialBehaviorSession.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventSocialBehaviorSessionStimMouse.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/BrainArea.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Eye.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Genotype.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/HeaderAnimalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/InjectionSubstance.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/SocialBehaviorExperimentType.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/getSchema.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/setupDJ.m</file>
+    </fileset.depfun>
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}/SchwartzLabDJLogin" name="SchwartzLabDJLogin.ctf" optional="false">/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/SchwartzLabDJLogin/SchwartzLabDJLogin.ctf</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2020a.app</root>
+      <toolboxes>
+        <toolbox name="matlabcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.15.7</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
