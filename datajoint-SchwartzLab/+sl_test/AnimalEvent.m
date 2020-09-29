@@ -211,10 +211,18 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             fprintf('%d tuples (%.3g s)\n\n', self.count, toc)
         end
         
-        function n = count(self)
+        function n = count(self, varargin)
             % COUNT - the number of tuples in the relation.
-            [hdr, sql_] = self.compile(3);
-            sql = hdr.enclose(sql_, '', 'count');
+            [limit, per, args] = makeLimitClause(varargin{:});
+            
+            self = self.proj(args{:});
+                
+            [hdr, sql_] = self.compile;
+            
+            sql = enclose(hdr, sql_, limit, per, 'count'); %need to pass limit, per, args...
+            
+%             [hdr, sql_] = self.compile(3);
+%             sql = hdr.enclose(sql_, '', 'count');
             n = sl_test.getSchema().conn.query(sql);
             n = double(n.n);
         end
@@ -252,7 +260,11 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     
                 case 'proj'
                     [header, sql] = compile(self.operands{1},1);
-                    header.project(self.operands(2:end));
+                    if isa(sql,'cell')
+                        sql = header.enclose(sql, aliasCount);
+                        aliasCount = aliasCount+1;
+                    end
+                    header = header.project(self.operands(2:end));
                     
                 case 'aggregate'
                     if ~isa(self.operands{1}, 'sl_test.AnimalEvent')
@@ -320,21 +332,31 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     perInd = length(self.restrictions);
                 end
                 
+                
                 % add WHERE clause
-                sql = sprintf('%s%s', sql); %?????
+                %NEED to parse case that sql is a cell ~~~~
                 whereClause = makeWhereClause(header, self.restrictions(1:perInd-1));
                 if ~isempty(whereClause)
-                    sql = sprintf('%s WHERE %s', sql, whereClause);
+                    if isa(sql, cell)
+                        sql = horzcat(sql{:}, 'WHERE %s', whereClause);
+                    else
+                        sql = sprintf('%s WHERE %s', sql, whereClause);
+                    end
                 end
                 
                 if any(isPer)
                     sql = header.enclose(sql, aliasCount, per);
+%                     header 
                     aliasCount = aliasCount + 3;
                     % add WHERE clause
-                    sql = sprintf('%s%s', sql); %?????
+%                     sql = sprintf('%s%s', sql); %?????
                     whereClause = makeWhereClause(header, self.restrictions(perInd+1:end));
                     if ~isempty(whereClause)
-                        sql = sprintf('%s WHERE %s', sql, whereClause);
+                        if isa(sql, cell) %can't actually be a cell here because of the enclose...
+                            sql = horzcat(sql{:}, 'WHERE %s', whereClause);
+                        else
+                            sql = sprintf('%s WHERE %s', sql, whereClause);
+                        end
                     end
                 end
                 

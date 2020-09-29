@@ -42,12 +42,16 @@ classdef HeaderAnimalEvent < handle
             h = hdr.sql;
             
             if isa(sql_,'cell') %we're unioning
-                sql = string(join(cellfun(@(x,y) sprintf('SELECT %s FROM %s',x,y), h, sql_, 'uniformoutput',false), ' UNION '));
+                sql = string(join(cellfun(@(x,y) sprintf('SELECT %s FROM %s',x,y), h, sql_(1:2), 'uniformoutput',false), ' UNION '));
                 
                 %fix h so that it's no longer a cell and strip the aliases
                 h = cellfun(@(x) regexp(x,'`(\w+)`','match'), strsplit(h{1}, ','), 'UniformOutput', false);
                 h = join(horzcat(h{:}), ',');
                 h = h{:};
+                
+                if length(sql_)>2
+                   sql = string(join(sql,sql_(3:end),' '));
+                end
             else
                 sql = sprintf('SELECT %s FROM %s', h, sql_);
             end
@@ -68,12 +72,17 @@ classdef HeaderAnimalEvent < handle
                 
             end
             
-            if nargin>3 && strcmp(varargin{2},'count')
+            if nargin>2 && ~isempty(varargin{1})
+                if isa(varargin{1},'char') %we're dealing with a limit operation...
+                    sql = sprintf('(%s)%s', sql, varargin{1});
+                else %we're aliasing
+                    sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
+                end
+            end
+            
+            
+            if nargin>4 && strcmp(varargin{end},'count')
                 sql = sprintf('SELECT count(*) as n FROM (%s) as counting', sql);
-            elseif isa(varargin{1},'char') %we're dealing with a limit operation...
-                sql = sprintf('(%s)%s', sql, varargin{1});
-            else %we're aliasing
-                sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
             end
             %aliasCount and limit are mutually exclusive
             
@@ -190,7 +199,7 @@ classdef HeaderAnimalEvent < handle
         end
         
         function names = get.notBlobs(self)
-            names = self.names(~[self.atributes.isBlob]);
+            names = self.names(~[self.attributes.isBlob]);
         end
         
         function yes = hasAliases(self)
@@ -209,7 +218,10 @@ classdef HeaderAnimalEvent < handle
             end
         end
         
-        function project(self, params)
+        function ret = project(self, params)
+            ret = sl_test.HeaderAnimalEvent(self);
+            ret.headers = {self, [], 'project'};
+            
             include = [self.attributes.iskey];  % always include the primary key
             for iAttr=1:length(params)
                 if strcmp('*',params{iAttr})
