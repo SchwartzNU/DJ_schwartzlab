@@ -30,4 +30,8 @@ end
 % cell_locations : longblob       # location of each counted soma (pixels)
 % cell_sizes : longblob           # area of each counted soma (pixels)
 % cell_intensities : longblob     # intensity of each counted soma
+<<<<<<< HEAD
 % tags : longblob                 # struct with tags
+=======
+% tags : longblob                 # struct with tags
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b

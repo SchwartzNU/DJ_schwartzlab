@@ -3,6 +3,6 @@
 *.asv
 AnimalLogger/
 AnimalLogger.prj
-datajoint-SchwartzLab/+sl/Animal_changed_yesterday.m
 datajoint-SchwartzLab/+sl_old/*
 *.bak
+datajoint-SchwartzLab/+sl_092920*

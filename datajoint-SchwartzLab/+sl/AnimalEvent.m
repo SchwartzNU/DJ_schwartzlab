@@ -13,11 +13,11 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
     methods(Static)
         function query = all()
             query = [];
-            tables = sl_test.getSchema().tableNames.keys();
+            tables = sl.getSchema().tableNames.keys();
             for table = tables
                 t = feval(table{:});
                 m = metaclass(t);
-                if any(strcmp({m.SuperclassList(:).Name},'sl_test.AnimalEvent'))
+                if any(strcmp({m.SuperclassList(:).Name},'sl.AnimalEvent'))
                     %this table is an event table
                     if isempty(query)
                         query = t;
@@ -51,17 +51,22 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             %                 [hdr, sql_] = self.compile;
             %             end
             
-            [limit, per, args] = makeLimitClause(varargin{:});
+            [limit, per, args, outer] = makeLimitClause(varargin{:});
             
             if ~isempty(args)
                 self = self.proj(args{:});
             end
             [hdr, sql_] = self.compile;
             
-            sql = enclose(hdr, sql_, limit, per); %need to pass limit, per, args...
+            if ~isempty(outer)
+            sql = enclose(hdr, sql_, inf, per); %need to pass limit, per, args...
+            hdr.attributes = hdr.attributes(ismember(hdr.names, outer));
+            sql = enclose(hdr, sql, limit);
+            else
+               sql = enclose(hdr, sql_, limit, per); 
+            end
             
-            
-            ret = sl_test.getSchema().conn.query(sql);
+            ret = sl.getSchema().conn.query(sql);
             % if ~isempty(per)
             %    ret =rmfield(ret,'rnk'); 
             % end
@@ -93,7 +98,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             [hdr, sql_] = self.compile;
             sql = enclose(hdr, sql_, limit, per);
             
-            ret = sl_test.getSchema().conn.query(sql);
+            ret = sl.getSchema().conn.query(sql);
             if ~isempty(per)
                ret =rmfield(ret,'rnk'); 
             end
@@ -117,7 +122,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             
             assert(length(varargout{1}) == 1,'fetch1 can only retrieve a single existing tuple.');
             % if any(cellfun(@(x) contains(x, 'PER'), varargin))
-            %     varargout = sl_test.EventLog.fetchn(self, varargin);
+            %     varargout = sl.EventLog.fetchn(self, varargin);
             
             % else
             %     varargout = cell(nargout,1);
@@ -132,7 +137,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
         function ret = join(self, arg)
             assert(isa(arg, 'dj.internal.GeneralRelvar'), ...
                 'mtimes requires another relvar as operand')
-            ret = init(sl_test.AnimalEvent, 'join', {self arg});
+            ret = init(sl.AnimalEvent, 'join', {self arg});
             ret.operator = 'join';
             ret.operands = {self arg};
         end
@@ -143,7 +148,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 ret = self.aggr(varargin{1}, varargin{2:end});
             else
                 assert(iscellstr(varargin), 'proj() requires a list of strings as attribute args')
-                ret = init(sl_test.AnimalEvent, 'proj', [{self} varargin]);
+                ret = init(sl.AnimalEvent, 'proj', [{self} varargin]);
                 ret.operator = 'proj';
                 ret.operands = [{self} varargin];
             end
@@ -151,13 +156,13 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
         
         function ret = aggr(self, other, varargin)
             assert(iscellstr(varargin), 'proj() requires a list of strings as attribute args')
-            ret = init(sl_test.AnimalEvent, 'aggregate', [{self, other} varargin]);
+            ret = init(sl.AnimalEvent, 'aggregate', [{self, other} varargin]);
             ret.operator = 'aggregate';
             ret.operands = [{self, other} varargin];
         end
         
         function ret = or(self, arg)
-            assert(isa(arg, 'sl_test.AnimalEvent'),'cannot unify inputs. Did you mean to switch the operand order?');
+            assert(isa(arg, 'sl.AnimalEvent'),'cannot unify inputs. Did you mean to switch the operand order?');
             %this is because we don't have access to the GeneralRelvar
             %props
             
@@ -173,9 +178,34 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 %             else
 %                 operandList = [operandList arg.operands];
 %             end
-            ret = init(sl_test.AnimalEvent, 'union', [{self} {arg}]);
+            ret = init(sl.AnimalEvent, 'union', [{self} {arg}]);
             ret.operator = 'union';
             ret.operands = [{self} {arg}];
+        end
+        
+        function ret = and(self, arg)
+            % AND - relational restriction
+            %
+            % R1 & cond  yeilds a relation containing all the tuples in R1
+            % that match the condition cond. The condition cond could be an
+            % structure array, another relation, or an sql boolean
+            % expression.
+            %
+            % Examples:
+            %   tp.Scans & struct('mouse_id',3, 'scannum', 4);
+            %   tp.Scans & 'lens=10'
+            %   tp.Mice & (tp.Scans & 'lens=10')
+            ret = self.copy;
+            if isa(arg,'dj.internal.GeneralRelvar') && ~isa(arg,'sl.AnimalEvent')
+%                 th = arg.tableHeader;
+                newarg = init(sl.AnimalEvent, 'wrapper', {arg});
+                newarg.operator = 'wrapper';
+                newarg.operands = {arg};
+%                 arg.tableHeader = th;
+            else
+                newarg = arg;
+            end
+            ret.restrict(newarg);
         end
         
         function disp(self)
@@ -223,7 +253,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             
 %             [hdr, sql_] = self.compile(3);
 %             sql = hdr.enclose(sql_, '', 'count');
-            n = sl_test.getSchema().conn.query(sql);
+            n = sl.getSchema().conn.query(sql);
             n = double(n.n);
         end
         
@@ -255,8 +285,12 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     %note that the tables derive from dj.Table, but the
                     %relations do not
                     tab = self;
-                    header = sl_test.HeaderAnimalEvent(derive(tab.tableHeader), tab.className);
+                    header = sl.HeaderAnimalEvent(derive(tab.tableHeader), tab.className);
                     sql = tab.fullTableName;
+                case 'wrapper'
+%                     [header, sql] = compile(self.operands{1},1);
+                    header = sl.HeaderAnimalEvent(derive(self.operands{1}.tableHeader));
+                    sql = self.operands{1}.fullTableName;
                     
                 case 'proj'
                     [header, sql] = compile(self.operands{1},1);
@@ -267,14 +301,14 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     header = header.project(self.operands(2:end));
                     
                 case 'aggregate'
-                    if ~isa(self.operands{1}, 'sl_test.AnimalEvent')
-                        header = sl_test.HeaderAnimalEvent(self.operands{1}.header);
+                    if ~isa(self.operands{1}, 'sl.AnimalEvent')
+                        header = sl.HeaderAnimalEvent(self.operands{1}.header);
                         sql = self.operands{1}.sql;
                     else
                         [header, sql] = compile(self.operands{1},2);
                     end
-                    if ~isa(self.operands{2}, 'sl_test.AnimalEvent')
-                        header2 = sl_test.HeaderAnimalEvent(self.operands{2}.header);
+                    if ~isa(self.operands{2}, 'sl.AnimalEvent')
+                        header2 = sl.HeaderAnimalEvent(self.operands{2}.header);
                         sql2 = self.operands{2}.sql;
                     else
                         [header2, sql2] = compile(self.operands{2},2);
@@ -288,17 +322,17 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                         'Aggregate operators must define at least one computation')
                     
                 case 'join'
-                    if ~isa(self.operands{1},'sl_test.AnimalEvent')
+                    if ~isa(self.operands{1},'sl.AnimalEvent')
                         %it's a relvar so we don't have access to compile
-                        header1 = sl_test.HeaderAnimalEvent(self.operands{1}.header);
+                        header1 = sl.HeaderAnimalEvent(self.operands{1}.header);
                         %                         sql1 = header1.enclose(self.operands{1}.sql, '');
                         sql1 = self.operands{1}.sql;
                     else
                         [header1, sql1] = compile(self.operands{1},2);
                     end
-                    if ~isa(self.operands{2},'sl_test.AnimalEvent')
+                    if ~isa(self.operands{2},'sl.AnimalEvent')
                         %it's a relvar so we don't have access to compile
-                        header2 = sl_test.HeaderAnimalEvent(self.operands{2}.header);
+                        header2 = sl.HeaderAnimalEvent(self.operands{2}.header);
                         %                         sql2 = header2.enclose(self.operands{2}.sql, '');
                         sql2 = self.operands{2}.sql;
                     else
@@ -352,7 +386,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 %                     sql = sprintf('%s%s', sql); %?????
                     whereClause = makeWhereClause(header, self.restrictions(perInd+1:end));
                     if ~isempty(whereClause)
-                        if isa(sql, cell) %can't actually be a cell here because of the enclose...
+                        if isa(sql, 'cell') %can't actually be a cell here because of the enclose...
                             sql = horzcat(sql{:}, 'WHERE %s', whereClause);
                         else
                             sql = sprintf('%s WHERE %s', sql, whereClause);
@@ -380,10 +414,11 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
     end
 end
 
-function [limit, per, args] = makeLimitClause(varargin)
+function [limit, per, args, outer] = makeLimitClause(varargin)
 args = varargin;
 limit = '';
 per = [];
+outer = {};
 
 if isempty(args)
    return 
@@ -413,8 +448,10 @@ if ischar(lastArg) && contains(lastArg,'PER')
     %     end
     if isempty(per.orderby) || strcmp(per.orderby,'DESC')
         per.orderby = '`date` DESC, `time` DESC, `entry_time` DESC'; %default sorting
+        tokens = {'date', 'time', 'entry_time'};
     elseif strcmp(per.orderby, 'ASC')
         per.orderby = '`date` ASC, `time` ASC, `entry_time` ASC';
+        tokens = {'date', 'time', 'entry_time'};
     else 
         tokens = regexp(per.orderby, '([a-z0-9_]+)','tokens');
         order = regexp(per.orderby, '((DESC)?(ASC)?)','tokens');
@@ -425,14 +462,16 @@ if ischar(lastArg) && contains(lastArg,'PER')
     if ~isempty(args)
        %we need to make sure that orderby and selector are both in
        %projection
-       
-       if all(cellfun(@isempty, regexp(args, sprintf('^(?<selector>%s)',per.selector))))
+       outer = args;
+       if ~ismember(per.selector, args)%all(cellfun(@isempty, regexp(args, sprintf('^(?<selector>%s)',per.selector))))
            args{end+1} = per.selector;
        end
        
-       if all(cellfun(@isempty, regexp(args, sprintf('^(?<orderby>%s)',per.orderby))))
-           args{end+1} = per.orderby;
-       end
+       args = union(args, tokens);
+%        
+%        if all(cellfun(@isempty, regexp(args, sprintf('^(?<orderby>%s)',per.orderby))))
+%            args = horzcat(args, tokens);
+%        end
        
     end
 end

@@ -76,7 +76,15 @@ classdef HeaderAnimalEvent < handle
                 if isa(varargin{1},'char') %we're dealing with a limit operation...
                     sql = sprintf('(%s)%s', sql, varargin{1});
                 else %we're aliasing
+<<<<<<< HEAD
                     sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
+=======
+                    if isinf(varargin{1})
+                        sql = sprintf('(%s) AS final', sql);
+                    else
+                        sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
+                    end
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b
                 end
             end
             
@@ -219,8 +227,11 @@ classdef HeaderAnimalEvent < handle
         end
         
         function ret = project(self, params)
+<<<<<<< HEAD
             ret = sl.HeaderAnimalEvent(self);
             ret.headers = {self, [], 'project'};
+=======
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b
             
             include = [self.attributes.iskey];  % always include the primary key
             for iAttr=1:length(params)
@@ -264,6 +275,12 @@ classdef HeaderAnimalEvent < handle
                 end
             end
             self.attributes = self.attributes(include);
+<<<<<<< HEAD
+=======
+            ret = sl.HeaderAnimalEvent(self);
+            ret.headers = {self, [], 'project'};
+            
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b
         end
         
         function ret = join(hdr1, hdr2)
@@ -291,7 +308,10 @@ classdef HeaderAnimalEvent < handle
             
         end
         
+<<<<<<< HEAD
         
+=======
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b
         function clause = makeWhereClause(header, restrictions)
             % make the where clause from self.restrictions
             persistent aliasCount
@@ -310,14 +330,22 @@ classdef HeaderAnimalEvent < handle
             for arg = restrictions
                 cond = arg{1};
                 switch true
+<<<<<<< HEAD
                     case isa(cond, 'dj.internal.GeneralRelvar') && strcmp(cond.operator, 'union')
+=======
+                    case isa(cond, 'sl.AnimalEvent') && strcmp(cond.operator, 'union')
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b
                         % union
                         s = cellfun(@(x) makeWhereClause(header, {x}), cond.operands, 'uni', false);
                         assert(~isempty(s))
                         s = sprintf('(%s) OR ', s{:});
                         clause = sprintf('%s AND %s(%s)', clause, not, s(1:end-4));  % strip trailing " OR "
                         
+<<<<<<< HEAD
                     case isa(cond, 'dj.internal.GeneralRelvar') && strcmp(cond.operator, 'not')
+=======
+                    case isa(cond, 'sl.AnimalEvent') && strcmp(cond.operator, 'not')
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b
                         clause = sprintf('%s AND NOT(%s)', clause, ...
                             makeWhereClause(header, cond.operands));
                         
@@ -393,6 +421,7 @@ classdef HeaderAnimalEvent < handle
             end
         end
         
+<<<<<<< HEAD
     end
 end
 
@@ -452,3 +481,55 @@ end
 %
 % sql = {sql1{:}, sql2{:}};
 % end
+=======
+        function ret = byName(self, name)
+            % get attribute structure by  name
+            ix = strcmp(name,{self.attributes.name});
+            assert(any(ix),'attribute %s not found', name)
+            ret = self.attributes(ix);
+        end
+        
+    end
+end
+
+function cond = struct2cond(keys, header)
+% convert the structure array into an SQL condition
+n = length(keys);
+assert(n>=1)
+if n>512
+    warning('DataJoint:longCondition', ...
+        'consider replacing the long array of keys with a more succinct condition')
+end
+cond = '';
+for key = keys(:)'
+    cond = sprintf('%s OR (%s)', cond, makeCond(key));
+end
+cond = cond(min(end,5):end);  % strip " OR "
+
+    function subcond = makeCond(key)
+        subcond = '';
+        for field = fieldnames(key)'
+            value = key.(field{1});
+            attr = header.byName(field{1});
+            assert(~attr.isBlob, 'The key must not include blob header.')
+            if attr.isString
+                assert(ischar(value), ...
+                    'Value for key.%s must be a string', field{1})
+                value = sprintf('''%s''', escapeString(value));
+            else
+                assert((isnumeric(value) || islogical(value)) && isscalar(value), ...
+                    'Value for key.%s must be a numeric scalar', field{1});
+                if isa(value, 'uint64')
+                    value = sprintf('%u', value);
+                elseif isa(value, 'int64')
+                    value = sprintf('%i', value);
+                else
+                    value = sprintf('%1.16g', value);
+                end
+            end
+            subcond = sprintf('%s AND `%s`=%s', subcond, field{1}, value);
+        end
+        subcond = subcond(min(6,end):end);  % strip " AND "
+    end
+end
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b

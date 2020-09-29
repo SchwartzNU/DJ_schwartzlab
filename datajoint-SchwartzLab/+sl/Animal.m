@@ -2,147 +2,152 @@
 # animal
 animal_id: int unsigned auto_increment           # unique animal id
 ---
--> sl.Genotype                                  # genotype of animal
+-> sl.Genotype                             # genotype of animal
 is_tagged = 'F': enum('T','F')                  # true or false
-tag_id = 0 : int unsigned                       # id number from our spreadsheets
+tag_id = 0 : int unsigned                       # id number from our spreadsheets (how to check for duplicates here?)
 species = 'Lab mouse' : varchar(64)             # species
 dob = NULL : date                               # mouse date of birth
 sex = 'Unknown' : enum('Male', 'Female', 'Unknown')          # sex of mouse - Male, Female, or Unknown/Unclassified
-punch = 'none' : enum('L','R','Both','None')    # earpunch
-initial_cage_number = NULL : int unsigned       # cage number in which animal was born or first placed
+punch = 'none' : enum('L','R','Both','None')      # earpunch
+animal_tags = NULL : longblob                   # struct with tags
 %}
 
 classdef Animal < dj.Manual
+    
     methods(Static)
         function animals = living()
-            %mice minus deceased
-            animals = fetch(sl.Animal - sl.AnimalEventDeceased, '*');
+            q = sl.AnimalEventDeceased.living();
+
+            animals = q.fetch('animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+
+        function [result, animals] = isLiving(animal_ids)
+            q = sl.AnimalEventDeceased.living();
+            q = restrict_by_animal_ids(q, animal_ids);
+            
+            animals = q.fetch('animal_id');
+            result = ismember(animal_ids, [animals.animal_id]);
+        end
+
+        function animals = age(animal_ids, liveOnly)
+            %returns age as a calendarDuration object
+            
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = sl.AnimalEventDeceased.living();
+            else 
+                q = sl.Animal();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+            
+            animals = q.fetch('animal_id','dob');
+
+            ages = num2cell(between(datetime({animals.dob}), date(),'weeks'));
+            [animals(:).age] = ages{:};
+            
+            % one-liner:
+            % [animals(:).ages] = subsref( num2cell(between(datetime({animals.dob}), date())), struct('type','{}', 'subs',':'))
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
         end
         
-        function a = age_in_weeks(liveOnly, single_id)
-            if nargin<2
-                single_id = [];
-            end
-            if nargin<1
-                liveOnly = false;
-            end
-            if liveOnly
-                a = fetch(sl.Animal - sl.AnimalEventDeceased, 'animal_id', 'dob');
-            else
-                if isempty(single_id)
-                    a = fetch(sl.Animal, 'animal_id', 'dob');
-                else
-                    a = fetch(sl.Animal & ['animal_id=' num2str(single_id)], 'animal_id', 'dob');
-                end
-            end
-            for i=1:length(a)
-                if ~isempty(a(i).dob)
-                    a(i).age = round(days(today('datetime') - a(i).dob) / 7, 1); %weeks
-                end
-            end
-            a = rmfield(a, 'dob');
-        end
-        
-        function g = genotype_status(liveOnly, single_id)
+        function animals = genotypeStatus(animal_ids, liveOnly)
             %get latest genotype status
-            if nargin<2
-                single_id = [];
+
+            q = sl.AnimalEventGenotyped();
+
+            if nargin>1 && liveOnly
+                q = q & sl.AnimalEventDeceased.living();
             end
-            if nargin<1
-                liveOnly = false;
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
             end
-            if liveOnly
-                g = fetch(sl.AnimalEventGenotyped & (sl.Animal - sl.AnimalEventDeceased), 'genotype_status', 'animal_id', 'LIMIT 1 PER animal_id');
-            else
-                if isempty(single_id)
-                    g = fetch(sl.AnimalEventGenotyped, 'genotype_status', 'animal_id', 'LIMIT 1 PER animal_id');
-                else
-                    g = fetch(sl.AnimalEventGenotyped & ['animal_id=' num2str(single_id)], 'genotype_status', 'animal_id', 'LIMIT 1 PER animal_id');
-                end
+
+            animals = q.fetch('animal_id', 'genotype_status', 'LIMIT 1 PER animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
             end
         end
         
-        function ind_struct = hasEvent(eventType, liveOnly)
+        function [result, animals] = isGenotyped(animal_ids)
+           animals = sl.Animal.genotypeStatus(animal_ids);
+           result = ismember(animal_ids, [animals.animal_id]);
+        end
+        
+        function animals = withEvent(eventType, animal_ids, liveOnly)
             %has this event
-            if nargin<2
-                liveOnly = false;
-            end
-            if liveOnly
-               animals = fetchn(sl.Animal - sl.AnimalEventDeceased, 'animal_id');
-               animals_withEvent = fetchn((sl.Animal - sl.AnimalEventDeceased) & eval(['sl.AnimalEvent' eventType]), 'animal_id');
+
+            if nargin>2 && liveOnly 
+                q = sl.AnimalEventDeceased.living();
             else
-               animals = fetchn(sl.Animal, 'animal_id');
-               animals_withEvent = fetchn(sl.Animal & eval(['sl.AnimalEvent' eventType]), 'animal_id');
+                q = sl.Animal();
             end
-            ind = ismember(animals,animals_withEvent);
-            field_name = ['hasEvent_' eventType];
-            ind_struct = struct;
-            for i=1:length(animals)
-                ind_struct(i).animal_id = animals(i);
-                ind_struct(i).(field_name) = ind(i);
-            end   
+            q = q & feval(sprintf('sl.AnimalEvent%s', eventType));
+
+            if nargin>1 && ~isempty(animal_ids)
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+
         end
         
-        function c = cage_numbers(liveOnly, single_id)
-            %get latest cage number
-            if nargin<2
-                single_id = [];
-            end            
-            if nargin<1
-                liveOnly = false;
-            end
-            if liveOnly
-                init_cage = fetch(sl.Animal().proj('initial_cage_number->cage_number') - sl.AnimalEventDeceased, 'animal_id', 'cage_number');
-                new_cage = fetch(sl.AnimalEventMoveCage & (sl.Animal - sl.AnimalEventDeceased), 'cage_number', 'animal_id', 'LIMIT 1 PER animal_id');
-            else
-                if isempty(single_id)
-                    init_cage = fetch(sl.Animal().proj('initial_cage_number->cage_number'), 'animal_id', 'cage_number');
-                    new_cage = fetch(sl.AnimalEventMoveCage, 'cage_number', 'animal_id', 'LIMIT 1 PER animal_id');
-                else
-                    init_cage = fetch(sl.Animal().proj('initial_cage_number->cage_number') & ['animal_id=' num2str(single_id)], 'cage_number');                    
-                    new_cage = fetch(sl.AnimalEventMoveCage & ['animal_id=' num2str(single_id)], 'cage_number', 'LIMIT 1 PER animal_id');
-                    if ~isempty(new_cage)
-                        c = new_cage.cage_number; 
-                    else
-                        c = init_cage.cage_number;
-                    end
-                    return;
-                end
-            end
-            ind = ismember([init_cage.animal_id],[new_cage.animal_id]);
-            c = init_cage;
-            c(ind).cage_number = new_cage.cage_number;
+        function [result, animals] = hasEvent(eventType, animal_ids)
+            animals = sl.Animal.withEvent(eventType, animal_ids);
+            result = ismember(animal_ids, [animals.animal_id]);
         end
-    end
-    
-    methods
-        function a = get_age_in_weeks(self)
-            id = fetch1(self,'animal_id');
-            a_struct = sl.Animal.age_in_weeks([], id);
-            if isempty(a_struct)
-                a = nan;
-            else
-                a = a_struct.age;
+        
+        function animals = cageNumber(animal_ids, liveOnly)
+
+            q = sl.AnimalEventAssignCage.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','cage_number');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
             end
         end
         
-        function g = get_genotype_status(self)
-            id = fetch1(self,'animal_id');
-            g_struct = sl.Animal.genotype_status([], id);
-            if isempty(g_struct)
-                g = '';
-            else
-                g = g_struct.genotype_status;
-            end
-        end
-        
-        function c = get_cage_number(self)
-            id = fetch1(self,'animal_id');
-            c = sl.Animal.cage_numbers([], id);
+        function [result, animals] = isCaged(animal_ids)
+            animals = sl.Animal.cageNumber(animal_ids);
+            result = ismember(animal_ids, [animals.animal_id]);
         end
         
     end
-    
+
 end
 
+function q = restrict_by_animal_ids(q, animal_ids)
+    if ~isa(animal_ids,'cell')
+        animal_ids = num2cell(animal_ids);
+    end
+    q = q & struct('animal_id', animal_ids);
+end
 

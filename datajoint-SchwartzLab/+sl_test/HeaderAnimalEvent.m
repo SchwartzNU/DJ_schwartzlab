@@ -76,7 +76,11 @@ classdef HeaderAnimalEvent < handle
                 if isa(varargin{1},'char') %we're dealing with a limit operation...
                     sql = sprintf('(%s)%s', sql, varargin{1});
                 else %we're aliasing
-                    sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
+                    if isinf(varargin{1})
+                        sql = sprintf('(%s) AS final', sql);
+                    else
+                        sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
+                    end
                 end
             end
             
@@ -219,8 +223,6 @@ classdef HeaderAnimalEvent < handle
         end
         
         function ret = project(self, params)
-            ret = sl_test.HeaderAnimalEvent(self);
-            ret.headers = {self, [], 'project'};
             
             include = [self.attributes.iskey];  % always include the primary key
             for iAttr=1:length(params)
@@ -264,6 +266,9 @@ classdef HeaderAnimalEvent < handle
                 end
             end
             self.attributes = self.attributes(include);
+            ret = sl_test.HeaderAnimalEvent(self);
+            ret.headers = {self, [], 'project'};
+            
         end
         
         function ret = join(hdr1, hdr2)
@@ -291,7 +296,6 @@ classdef HeaderAnimalEvent < handle
             
         end
         
-        
         function clause = makeWhereClause(header, restrictions)
             % make the where clause from self.restrictions
             persistent aliasCount
@@ -310,14 +314,14 @@ classdef HeaderAnimalEvent < handle
             for arg = restrictions
                 cond = arg{1};
                 switch true
-                    case isa(cond, 'dj.internal.GeneralRelvar') && strcmp(cond.operator, 'union')
+                    case isa(cond, 'sl_test.AnimalEvent') && strcmp(cond.operator, 'union')
                         % union
                         s = cellfun(@(x) makeWhereClause(header, {x}), cond.operands, 'uni', false);
                         assert(~isempty(s))
                         s = sprintf('(%s) OR ', s{:});
                         clause = sprintf('%s AND %s(%s)', clause, not, s(1:end-4));  % strip trailing " OR "
                         
-                    case isa(cond, 'dj.internal.GeneralRelvar') && strcmp(cond.operator, 'not')
+                    case isa(cond, 'sl_test.AnimalEvent') && strcmp(cond.operator, 'not')
                         clause = sprintf('%s AND NOT(%s)', clause, ...
                             makeWhereClause(header, cond.operands));
                         
@@ -393,62 +397,53 @@ classdef HeaderAnimalEvent < handle
             end
         end
         
+        function ret = byName(self, name)
+            % get attribute structure by  name
+            ix = strcmp(name,{self.attributes.name});
+            assert(any(ix),'attribute %s not found', name)
+            ret = self.attributes(ix);
+        end
+        
     end
 end
 
+function cond = struct2cond(keys, header)
+% convert the structure array into an SQL condition
+n = length(keys);
+assert(n>=1)
+if n>512
+    warning('DataJoint:longCondition', ...
+        'consider replacing the long array of keys with a more succinct condition')
+end
+cond = '';
+for key = keys(:)'
+    cond = sprintf('%s OR (%s)', cond, makeCond(key));
+end
+cond = cond(min(end,5):end);  % strip " OR "
 
-%
-% function [header1, sql] = hdr_union(header1, header2)
-% %form the header of the unified table...
-%
-% %assert that primary keys are the same
-%     %probably better to just assert that for AnimalEvent class in
-%     %general
-%
-% sql1 = regexp(header1.sql, '(\w+)', 'match');
-% sql2 = regexp(header2.sql, '(\w+)', 'match');
-%
-%
-% for i=1:numel(header2)
-%     [~,locb] = ismember(header2.names{i}, header1.names);
-%     if locb
-% %         assert(strcmp(header2.attributes(i).type, header1.attributes(locb).type), 'matching columns in union tables must be of same type');
-%     else
-%         header1.attributes(end+1) =header2.attributes(i);
-%         header1.names{end+1} = header2.names{i};
-%
-% %         sql1 = horzcat(sql1{1:i-1}, sprintf('Null as %s',sql2{i}), sql1{i:end});
-%
-%
-%         header1.dependentFields{end+1} = header2.names{i};
-%         if header2.attributes(i).isBlob
-%             header1.blobNames{end+1} = header2.names{i};
-%         else
-%             header1.notBlobs{end+1} = header2.names{i};
-%         end
-%     end
-% end
-%
-% % [~,s1] = setdiff(sql1, sql2); %indices s1 are missing from sql2
-% % [~,s2] = setdiff(sql2, sql1); %indices s2 are missing from sql1
-% %
-% % s1missing = cellfun(@(x) sprintf('Null as %s',x), sql2(s2),'uniformoutput',false);
-% % s2missing = cellfun(@(x) sprintf('Null as %s',x), sql1(s1),'uniformoutput',false);
-%
-% sql = union(sql1, sql2);
-% [~,s1] = setdiff(sql, sql1);
-% [~,s2] = setdiff(sql, sql2);
-%
-% sql1 = sql;
-% lsql = length(sql);
-% sql1(s1) = cellfun(@(x) sprintf('Null as `%s`',x), sql1(s1),'uniformoutput',false);
-% sql1(setdiff(1:lsql,s1)) = cellfun(@(x) sprintf('`%s`',x), sql1(setdiff(1:lsql,s1)),'uniformoutput',false);
-% sql1 = join(sql1, ',');
-%
-% sql2 = sql;
-% sql2(s2) = cellfun(@(x) sprintf('Null as `%s`',x), sql2(s2),'uniformoutput',false);
-% sql2(setdiff(1:lsql,s2)) = cellfun(@(x) sprintf('`%s`',x), sql2(setdiff(1:lsql,s2)),'uniformoutput',false);
-% sql2 = join(sql2, ',');
-%
-% sql = {sql1{:}, sql2{:}};
-% end
+    function subcond = makeCond(key)
+        subcond = '';
+        for field = fieldnames(key)'
+            value = key.(field{1});
+            attr = header.byName(field{1});
+            assert(~attr.isBlob, 'The key must not include blob header.')
+            if attr.isString
+                assert(ischar(value), ...
+                    'Value for key.%s must be a string', field{1})
+                value = sprintf('''%s''', escapeString(value));
+            else
+                assert((isnumeric(value) || islogical(value)) && isscalar(value), ...
+                    'Value for key.%s must be a numeric scalar', field{1});
+                if isa(value, 'uint64')
+                    value = sprintf('%u', value);
+                elseif isa(value, 'int64')
+                    value = sprintf('%i', value);
+                else
+                    value = sprintf('%1.16g', value);
+                end
+            end
+            subcond = sprintf('%s AND `%s`=%s', subcond, field{1}, value);
+        end
+        subcond = subcond(min(6,end):end);  % strip " AND "
+    end
+end

@@ -36,4 +36,8 @@ stratification_data : longblob    # 2 columns, IPL depth and dendritic length
 -> sl.ImageChannelMap        # color and meaning of each channel
 -> sl.User(imaged_by='name') # who did the imaging
 
+<<<<<<< HEAD
 %}
+=======
+%}
+>>>>>>> b5b06100d6d37fa75342a06db06f4c00b394179b

@@ -19,14 +19,18 @@ classdef Animal < dj.Manual
             q = sl_test.AnimalEventDeceased.living();
 
             animals = q.fetch('animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
         end
 
-        function result = isLiving(animal_ids)
+        function [result, animals] = isLiving(animal_ids)
             q = sl_test.AnimalEventDeceased.living();
             q = restrict_by_animal_ids(q, animal_ids);
             
-            result = q.fetch('animal_id');
-            result = ismember(animal_ids, [result(:).animal_id]);
+            animals = q.fetch('animal_id');
+            result = ismember(animal_ids, [animals.animal_id]);
         end
 
         function animals = age(animal_ids, liveOnly)
@@ -47,11 +51,14 @@ classdef Animal < dj.Manual
             animals = q.fetch('animal_id','dob');
 
             ages = num2cell(between(datetime({animals.dob}), date(),'weeks'));
-            [animals(:).ages] = ages{:};
+            [animals(:).age] = ages{:};
             
             % one-liner:
             % [animals(:).ages] = subsref( num2cell(between(datetime({animals.dob}), date())), struct('type','{}', 'subs',':'))
             
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
         end
         
         function animals = genotypeStatus(animal_ids, liveOnly)
@@ -69,10 +76,18 @@ classdef Animal < dj.Manual
             end
 
             animals = q.fetch('animal_id', 'genotype_status', 'LIMIT 1 PER animal_id');
-
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
         end
         
-        function animals = hasEvent(eventType, animal_ids, liveOnly)
+        function [result, animals] = isGenotyped(animal_ids)
+           animals = sl_test.Animal.genotypeStatus(animal_ids);
+           result = ismember(animal_ids, [animals.animal_id]);
+        end
+        
+        function animals = withEvent(eventType, animal_ids, liveOnly)
             %has this event
 
             if nargin>2 && liveOnly 
@@ -87,12 +102,21 @@ classdef Animal < dj.Manual
             end
 
             animals = q.fetch('animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
 
+        end
+        
+        function [result, animals] = hasEvent(eventType, animal_ids)
+            animals = sl_test.Animal.withEvent(eventType, animal_ids);
+            result = ismember(animal_ids, [animals.animal_id]);
         end
         
         function animals = cageNumber(animal_ids, liveOnly)
 
-            q = sl_test.AnimalEventMoveCage.current();
+            q = sl_test.AnimalEventAssignCage.current();
 
             if nargin>1 && liveOnly
                 %restrict by living mice
@@ -106,11 +130,16 @@ classdef Animal < dj.Manual
 
             animals = q.fetch('animal_id','cage_number');
             animals = rmfield(animals, 'event_id');
-
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
         end
-
-
-
+        
+        function [result, animals] = isCaged(animal_ids)
+            animals = sl_test.Animal.cageNumber(animal_ids);
+            result = ismember(animal_ids, [animals.animal_id]);
+        end
+        
     end
 
 end
