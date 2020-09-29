@@ -9,7 +9,7 @@ date : date
 time = NULL : time
 entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 
-cause = NULL : enum('assigned at database insert','weaning','set as breeder','experiment','crowding','other','unknown') #reason for move
+cause = NULL : enum('assigned at database insert','weaning','set as breeder','experiment','crowding','other','unknown') #assignment type/cause
 notes = NULL : varchar(256)                                 # notes about the event
 
 cage_number: int unsigned       # cage number mouse was moved to

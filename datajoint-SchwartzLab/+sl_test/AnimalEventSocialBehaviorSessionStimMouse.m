@@ -7,7 +7,7 @@ arm : enum('A', 'B', 'C')            # location of the mouse in the arena
 unique index (stimulus_mouse)
 %}
 
-classdef AnimalEventSocialBehaviorSessionMouse < dj.Part
+classdef AnimalEventSocialBehaviorSessionStimMouse < dj.Part
     properties (SetAccess = protected)
         master = sl_test.AnimalEventSocialBehaviorSession
     end
