@@ -4,14 +4,21 @@
 event_id : int unsigned auto_increment
 ---
 -> sl.Animal
-(sacrificed_by) -> sl.User(name)
+-> sl.User
 date : date
 time = NULL : time
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown') #cause of death
-notes = NULL : varchar(256)                                 # notes about the event
+
 unique index (animal_id)
 %}
 
 classdef AnimalEventDeceased < sl.AnimalEvent & dj.Manual
+  methods(Static)
+    function animals = living()
+      animals = sl.Animal() - sl.AnimalEventDeceased();
+    end
+  end
 end
 

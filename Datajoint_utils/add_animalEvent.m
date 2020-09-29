@@ -3,27 +3,19 @@ C = dj.conn;
 C.startTransaction
 try
     if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
-        thisEye = sl.Eye & ['animal_id=' num2str(key.animal_id)] & ['side=' '"' key.whichEye '"'];
-        if thisEye.exists
-            key.eye_id = fetch1(thisEye, 'eye_id');
-        else
-            eyesSoFar = max(fetchn(sl.Eye & ['animal_id=' num2str(key.animal_id)], 'eye_id'));
-            if isempty(eyesSoFar)
-                key_eye.eye_id = 1;
-            else
-                key_eye.eye_id = eyesSoFar+1;
-            end
+        thisEye = sl.Eye & ['side=' '"' key.whichEye '"'];
+        if ~thisEye.exists
             key_eye.animal_id = key.animal_id;
             key_eye.side = key.whichEye;
             insert(sl.Eye,key_eye);
-            key.eye_id = key_eye.eye_id;
         end
+        key.side = key.whichEye;
         key = rmfield(key,'whichEye');        
     end
     
     if strcmp(event_type, 'SocialBehaviorSession') %need to add stim mice
         for i=1:length(key.stimAnimals)
-            stimAnimalKeys(i).stim_mouse = key.stimAnimals(i);
+            stimAnimalKeys(i).stimulus_mouse = key.stimAnimals(i);
             stimAnimalKeys(i).arm = key.stimArms{i};
         end
         key = rmfield(key,'stimAnimals');
@@ -33,7 +25,7 @@ try
     insert(eval(['sl.AnimalEvent' event_type]), key);
     
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
-        this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
+        this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));        
         for i=1:length(stimAnimalKeys)
             stimAnimalKeys(i).event_id = this_event_id;
             insert(sl.AnimalEventSocialBehaviorSessionStimMouse, stimAnimalKeys(i));
@@ -44,7 +36,7 @@ try
     disp('Insert successful');
     C.commitTransaction;    
 catch ME    
-    errordlg('Insert failed');
+    disp('Insert failed');
     C.cancelTransaction;
     rethrow(ME)
 end

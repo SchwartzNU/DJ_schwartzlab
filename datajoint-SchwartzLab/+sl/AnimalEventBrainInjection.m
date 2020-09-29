@@ -4,17 +4,18 @@ event_id : int unsigned auto_increment
 ---
 -> sl.Animal
 -> sl.InjectionSubstance
-(target) -> sl.BrainArea(name)  # brain area targeted
+-> sl.User                          # who did the injection
+-> sl.BrainArea                     # targeted brain area
 hemisphere: enum('Left', 'Right')    # left or right side
 date: date
-inject_time: time                    # time of day
+time: time                           # time of 
+entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+
 head_rotation : float                # degrees, if not straight down
 coordinates: longblob                # 3 element vector of coordinates in the standard order (AP, ML, DV)
 dilution: float                      # dilution of substance (or 0 if not applicable or non-diluted)
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
-(injected_by) -> sl.User(name)  # who did the injection
+
 %}
-
-classdef AnimalEventBrainInjection < sl.AnimalEvent & dj.Manual   
-
+classdef AnimalEventBrainInjection < dj.Manual
 end

@@ -1,6 +1,7 @@
 %{
 # injected substance (virus, beads, dye, etc)
-substance_id : smallint auto_increment 
+
+substance_id : smallint unsigned auto_increment 
 ---
 source : varchar(32)                 # vendor or lab
 substance_name : varchar(32)         # name of substance (e.g. AAV2-Cre)
