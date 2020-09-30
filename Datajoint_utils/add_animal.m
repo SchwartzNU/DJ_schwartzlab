@@ -1,21 +1,38 @@
 function [] = add_animal(key, cage_key)
+C = dj.conn;
+C.startTransaction;
 try
     %test for duplicate tag_id
-    if isfield(key,'tag_id')
-        matchingIDEntry = sl.Animal & ['tag_id=' num2str(key.tag_id)];
-        if matchingIDEntry.exists
-            errordlg(['Animal with tag_id: ' num2str(key.tag_id) ' already in database']);
-            error('Duplicate entry');
-        end
-    end
+    % if isfield(key,'tag_id')
+    %     matchingIDEntry = sl.Animal & ['tag_id=' num2str(key.tag_id)];
+    %     if matchingIDEntry.exists
+    %         errordlg(['Animal with tag_id: ' num2str(key.tag_id) ' already in database']);
+    %         error('Duplicate entry');
+    %     end
+    % end
     insert(sl.Animal, key);
-    disp('Animal insert successful');
-    id = max(fetchn(sl.Animal, 'animal_id')); %last animmal added
+    
+    % id = max(fetchn(sl.Animal, 'animal_id')); %last animmal added
+    id = C.query('SELECT max(animal_id) as last FROM sl.animal').last; %this is guaranteed by datajoint, less data transfer than above
+    %there is a potential issue here if two people are inserting animals at the same time
+    %at the moment we're just assuming that won't happen
+    %but maybe we can limit the number of simultaneous transactions?
+
+
     cage_key.animal_id = id;
     cage_key.cause = 'assigned at database insert';
-    add_animalEvent(cage_key, 'AssignCage'); %already a transaction here - so can't embed in a transaction like I would like to
-    disp('Cage assigment successful');
+    text = add_animalEvent(cage_key, 'AssignCage', C);
+    % disp('Cage assigment successful');
+    C.commitTransaction;
+    fprintf('Animal insert successful.\n%s', text);
+
 catch ME
+    if contains(ME.message, 'Duplicate entry') && contains(ME.message,'tag_id')
+        disp('Animal with that tag ID already exists in database!');
+    else
+        % disp('Unknown error occurred while inserting animal.');
+    end
     disp('Animal insert failed');
+    C.cancelTransaction;
     rethrow(ME)
 end
