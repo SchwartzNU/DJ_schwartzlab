@@ -3,7 +3,7 @@ C = dj.conn;
 C.startTransaction
 try
     if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
-        thisEye = sl.Eye & ['side=' '"' key.whichEye '"'];
+        thisEye = sl.Eye & ['animal_id =' num2str(key.animal_id)] & ['side=' '"' key.whichEye '"'];
         if ~thisEye.exists
             key_eye.animal_id = key.animal_id;
             key_eye.side = key.whichEye;
