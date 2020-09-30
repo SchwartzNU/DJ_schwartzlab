@@ -3,5 +3,4 @@
 %         that record images
 %
 classdef Image
-
 end

@@ -10,8 +10,7 @@ date: date
 time : time                                         # session start time
 entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 
-duration : time                # approximate duration
-recorded = 'F': enum('T','F')                        # was video recorded
+duration : time                 # approximate duration
 fname = NULL : varchar(128)                          # root filename if session was recorded
 notes : varchar(256)                                 # notes about the animal's state and comfort level, other people involvd, etc. 
 %}

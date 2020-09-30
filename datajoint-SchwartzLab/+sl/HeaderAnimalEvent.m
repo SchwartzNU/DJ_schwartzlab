@@ -268,6 +268,7 @@ classdef HeaderAnimalEvent < handle
             self.attributes = self.attributes(include);
             ret = sl.HeaderAnimalEvent(self);
             ret.headers = {self, [], 'project'};
+            
         end
         
         function ret = join(hdr1, hdr2)
@@ -319,6 +320,7 @@ classdef HeaderAnimalEvent < handle
                         assert(~isempty(s))
                         s = sprintf('(%s) OR ', s{:});
                         clause = sprintf('%s AND %s(%s)', clause, not, s(1:end-4));  % strip trailing " OR "
+                        
                     case isa(cond, 'sl.AnimalEvent') && strcmp(cond.operator, 'not')
                         clause = sprintf('%s AND NOT(%s)', clause, ...
                             makeWhereClause(header, cond.operands));

@@ -10,5 +10,3 @@ classdef AnimalEventSocialBehaviorSessionStimMouse < dj.Part
     end
 
 end
-
-%unique index (stimulus_mouse)
