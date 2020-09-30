@@ -9,3 +9,6 @@ meaning : varchar(64)   # eye injection, viral trace from brain region, transgen
 
 classdef Channel < dj.Lookup 
 end
+
+% should color be an integer ~ peak wavelength?
+% should 'meaning' be broken down into something like 'target' and 'source'? e.g. 'all RGCs', 'cre' 
