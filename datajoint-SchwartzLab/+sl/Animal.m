@@ -9,8 +9,6 @@ species = 'Lab mouse' : varchar(64)             # species
 dob = NULL : date                               # mouse date of birth
 sex = 'Unknown' : enum('Male', 'Female', 'Unknown')          # sex of mouse - Male, Female, or Unknown/Unclassified
 punch = 'none' : enum('L','R','Both','None')      # earpunch
-animal_tags = NULL : longblob                   # struct with tags
-
 unique index (tag_id)
 %}
 
@@ -83,6 +81,28 @@ classdef Animal < dj.Manual
                animals = reshape(animals,0,1); 
             end
         end
+        
+        function animals = reservedProject(animal_ids, liveOnly)
+            %get latest genotype status
+
+            q = sl.AnimalEventReservedForProject();
+
+            if nargin>1 && liveOnly
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id', 'project_name', 'LIMIT 1 PER animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
         
         function [result, animals] = isGenotyped(animal_ids)
            animals = sl.Animal.genotypeStatus(animal_ids);
