@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="571003938" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3538804495" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface</param.files.only>
@@ -35,10 +35,14 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventGenotyped.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventHandling.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventIPinjection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventReservedForProject.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventReservedForSession.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventSocialBehaviorSession.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalEventSocialBehaviorSessionStimMouse.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/BrainArea.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/CellTrace.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/CellType.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Channel.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ChannelSet.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Dataset.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/DatasetOMS.m</file>
@@ -47,10 +51,19 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Eye.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Genotype.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/HeaderAnimalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Image.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ImageBrainSection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ImageCell.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ImageRetina.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ImagingModality.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/InjectionSubstance.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Jobs.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Microscope.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Neuron.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/PSTHParamSet.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Plane.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Project.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ProjectUser.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/RecordedNeuron.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Rig.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/SMSSpikeData.m</file>
@@ -59,21 +72,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/User.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/UserActive.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/getSchema.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/dialog.so</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libmysqlclient.so</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libmysqlclient.so.18</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libmysqlclient.so.18.4</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libz.so.1</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/libz.so.1.2.3</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64/mym.mexa64</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/dialog.so</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/libmysqlclient.18.dylib</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/libmysqlclient.a</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/libmysqlclient.dylib</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/mym.mexmaci64</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexw64/dialog.dll</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexw64/libmysql.dll</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexw64/mym.mexw64</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mym.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mymSetup.m</file>
     </fileset.resources>
