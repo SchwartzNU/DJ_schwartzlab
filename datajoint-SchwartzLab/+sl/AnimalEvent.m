@@ -363,7 +363,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                     [~,per,~] = makeLimitClause(self.restrictions{isPer});
                     perInd = find(isPer);
                 else
-                    perInd = length(self.restrictions);
+                    perInd = length(self.restrictions)+1;
                 end
                 
                 
@@ -371,7 +371,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 %NEED to parse case that sql is a cell ~~~~
                 whereClause = makeWhereClause(header, self.restrictions(1:perInd-1));
                 if ~isempty(whereClause)
-                    if isa(sql, cell)
+                    if isa(sql, 'cell')
                         sql = horzcat(sql{:}, 'WHERE %s', whereClause);
                     else
                         sql = sprintf('%s WHERE %s', sql, whereClause);
