@@ -1,8 +1,9 @@
-function text = add_animalEvent(key, event_type, C)
+function [inserted, text] = add_animalEvent(key, event_type, C)
 if nargin<3
     C = dj.conn;
     C.startTransaction;
 end
+inserted = false;
 text = sprintf('');
 try
     if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
@@ -47,12 +48,14 @@ try
     if nargin<3
         C.commitTransaction;   
         fprintf(text);
+        inserted = true;
     end 
 catch ME    
     fprintf('%s insert failed.\n', event_type);
     if nargin<3
         C.cancelTransaction;
     end
+    inserted = false;
     rethrow(ME)
 end
 % try 

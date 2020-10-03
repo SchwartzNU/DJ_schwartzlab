@@ -1,6 +1,8 @@
-function [] = add_animal(key, cage_key)
+function [inserted, txt] = add_animal(key, cage_key)
 C = dj.conn;
 C.startTransaction;
+inserted = false;
+txt = '';
 try
 
     insert(sl.Animal, key);
@@ -19,13 +21,18 @@ try
     % disp('Cage assigment successful');
     fprintf('Animal insert successful.\n%s', text);
     C.commitTransaction;
+    txt = 'Animal insert successful.';
+    inserted = true;
 catch ME
     if contains(ME.message, 'Duplicate entry') && contains(ME.message,'tag_id')
         disp('Animal with that tag ID already exists in database!');
+        txt = 'Animal with that tag ID already exists in database!';
     else
         disp('Unknown error occurred while inserting animal.');
+        txt = 'Unknown error occurred while inserting animal.';
     end
     disp('Animal insert failed');
     C.cancelTransaction;
-    rethrow(ME)
+    inserted = false;
+    %rethrow(ME)
 end
