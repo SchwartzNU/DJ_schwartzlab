@@ -16,5 +16,20 @@ notes = NULL : varchar(256)                                 # notes about the ev
 
 
 classdef AnimalEventReservedForProject < sl_test.AnimalEvent & dj.Manual
-    
+     methods(Access=public)
+        function s = printEvent(self)
+            eventStruct = fetch(self,'*');
+            if isempty(eventStruct.notes)
+                notes = '';
+            else
+                notes = sprintf('(%s)',eventStruct.notes);
+            end
+            s = sprintf('%s: Animal %d reserved for project "%s" by %s. %s', ...
+                eventStruct.date,...
+                eventStruct.animal_id,...
+                eventStruct.project_name,...
+                eventStruct.user_name,...
+                notes);
+        end
+    end
 end

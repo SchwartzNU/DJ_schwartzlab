@@ -27,6 +27,24 @@ classdef AnimalEventAssignCage < sl_test.AnimalEvent & dj.Manual
         end
     end
     
+     methods(Access=public)
+        function s = printEvent(self)
+            eventStruct = fetch(self,'*');
+            if isempty(eventStruct.notes)
+                notes = '';
+            else
+                notes = sprintf('(%s)',eventStruct.notes);
+            end
+            s = sprintf('%s: Animal %d moved to cage %d. Cause: %s. User: %s. %s', ...
+                eventStruct.date,...
+                eventStruct.animal_id,...
+                eventStruct.cage_number,...
+                eventStruct.cause,...
+                eventStruct.user_name,...
+                notes);
+        end
+    end
+
+    
+    
 end
-% move_from_cage_number: int unsigned          # from cage number
-% move_to_

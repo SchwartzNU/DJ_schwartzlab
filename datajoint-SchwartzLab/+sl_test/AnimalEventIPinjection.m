@@ -15,4 +15,24 @@ notes = NULL : varchar(256)          # notes about the event
 
 
 classdef AnimalEventIPinjection < sl_test.AnimalEvent & dj.Manual
+    
+    methods(Access=public)
+        function s = printEvent(self)
+            eventStruct = fetch(self,'*');
+            if isempty(eventStruct.notes)
+                notes = '';
+            else
+                notes = sprintf('(%s)',eventStruct.notes);
+            end
+            s = sprintf('%s %s: Animal %d had an IP injection of %s, %d mg/kg performed by %s. %s', ...
+                eventStruct.date,...
+                eventStruct.time,...
+                eventStruct.animal_id,...
+                eventStruct.substance_name,...
+                eventStruct.concentration,...
+                eventStruct.user_name,...
+                notes);
+        end        
+    end
+    
 end
