@@ -13,5 +13,24 @@ notes = NULL : varchar(256)                                  # notes about the a
 %}
 
 classdef AnimalEventHandling < sl.AnimalEvent & dj.Manual
+    
+    methods(Access=public)
+        function s = printEvent(self)
+            eventStruct = fetch(self,'*');
+            if isempty(eventStruct.notes)
+                notes = '';
+            else
+                notes = sprintf('(%s)',eventStruct.notes);
+            end
+            s = sprintf('%s: %s: Animal %d handled by %s for %s. %s', ...
+                eventStruct.date,...
+                eventStruct.time,...
+                eventStruct.animal_id,...
+                eventStruct.user_name,...
+                eventStruct.duration,...
+                notes);
+        end
+    end
+    
 end
 

@@ -13,5 +13,22 @@ genotype_status : enum('het', 'homo', 'non-carrier', 'carrier', 'unknown')  # po
 %}
 
 classdef AnimalEventGenotyped < sl.AnimalEvent & dj.Manual
+    methods(Access=public)
+        function s = printEvent(self)
+                eventStruct = fetch(self,'*');
+                if isempty(eventStruct.notes)
+                    notes = '';
+                else
+                    notes = sprintf('(%s)',eventStruct.notes);
+                end                
+                s = sprintf('%s: %s: Animal %d genotyped by %s. Result: %s%s', ...
+                    eventStruct.date,...
+                    eventStruct.time,...
+                    eventStruct.animal_id,...
+                    eventStruct.user_name,...
+                    eventStruct.genotype_status,...
+                    notes);                    
+        end
+    end
 end
 
