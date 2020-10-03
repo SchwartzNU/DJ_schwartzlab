@@ -14,7 +14,13 @@ notes: varchar(256)                  # injection notes (can include people who a
 %}
 
 classdef AnimalEventEyeInjection < sl_test.AnimalEvent & dj.Manual
-    
+        
+    properties
+        printStr = '%s %s: Animal %d had a %s eye injection of %s, dilluted 1:%d, performed by %s. (%s)\n';
+        printFields = {'date', 'time', 'animal_id', 'side', 'substance_name', 'dilution', 'user_name', 'notes'};
+    end
+
+
     methods(Access=public)
         function s = printEvent(self)
             eventStruct = fetch(self,'*');

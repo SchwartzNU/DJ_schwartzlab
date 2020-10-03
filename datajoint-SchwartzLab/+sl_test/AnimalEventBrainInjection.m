@@ -17,32 +17,11 @@ dilution: float                      # dilution of substance (or 0 if not applic
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
 
 %}
-classdef AnimalEventBrainInjection < dj.Manual
-    
-     methods(Access=public)
-        function s = printEvent(self)
-            eventStruct = fetch(self,'*');
-            if isempty(eventStruct.notes)
-                notes = '';
-            else
-                notes = sprintf('(%s)',eventStruct.notes);
-            end
-            coords = eventStruct.coordinates;
-            coords_str = sprintf('[%0.2f,%0.2f,%0.2f,%0.2f]', coords(1),coords(2),coords(3),eventStruct.head_rotation);
-            
-            s = sprintf('%s %s: Animal %d had a brain injection of %s dilluted 1:%d targeting the %s %s. Coordinates (AP,ML,DV,angle): %s. Performed by %s. %s', ...
-                eventStruct.date,...
-                eventStruct.time,...
-                eventStruct.animal_id,...
-                eventStruct.substance_name,...
-                eventStruct.dilution,...
-                eventStruct.hemisphere,...
-                eventStruct.target,...
-                coords_str,...
-                eventStruct.user_name,...
-                notes);
-        end        
+classdef AnimalEventBrainInjection < sl_test.AnimalEvent & dj.Manual
+
+    properties
+        printStr = '%s %s: Animal %d had a brain injection of %s dilluted 1:%d targeting the %s %s. Coordinates (AP,ML,DV,angle): [%0.2f, %0.2f, %0.2f]. Performed by %s. (%s)\n';
+        printFields = {'date','time','animal_id','substance_name','dilution','hemisphere','target','coords','user_name','notes'};
     end
 
-    
 end
