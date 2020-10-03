@@ -17,7 +17,7 @@ dilution: float                      # dilution of substance (or 0 if not applic
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
 
 %}
-classdef AnimalEventBrainInjection < dj.Manual
+classdef AnimalEventBrainInjection < sl.AnimalEvent & dj.Manual
     
      methods(Access=public)
         function s = printEvent(self)
