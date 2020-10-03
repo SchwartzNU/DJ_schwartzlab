@@ -30,16 +30,16 @@ try
     insert(feval(sprintf('sl.AnimalEvent%s',event_type)), key);
     
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
-        % this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
-        this_event_id = C.query('SELECT max(event_id) as last FROM sl.animal_event_social_behavior_session').last; %reduced overhead 
+        this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
+        %actually we need to do it this way because the event transaction
+        %is not comitted yet.
+        
+        %this_event_id = C.query('SELECT max(event_id) as last FROM sl.animal_event_social_behavior_session').last; %reduced overhead 
+        %this does not work because the event is not committed
+       
         [stimAnimalKeys.event_id] = deal(this_event_id);
         insert(sl.AnimalEventSocialBehaviorSessionStimMouse, stimAnimalKeys);
         text = sprintf('Stim mice insert successful.\n%s', text);
-%         for i=1:length(stimAnimalKeys)
-%             stimAnimalKeys(i).event_id = this_event_id;
-%             insert(sl.AnimalEventSocialBehaviorSessionStimMouse, stimAnimalKeys(i));
-%             text = sprintf('Stim mouse insert successful.\n%s', text);
-%         end
     end
     
     

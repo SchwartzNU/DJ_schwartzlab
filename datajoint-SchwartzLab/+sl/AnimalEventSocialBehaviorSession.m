@@ -9,6 +9,7 @@ event_id : int unsigned auto_increment
 date: date
 time : time                                         # session start time
 entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+recorded = 'F' : enum('T','F') # was session recorded
 
 duration : time                 # approximate duration
 fname = NULL : varchar(128)                          # root filename if session was recorded

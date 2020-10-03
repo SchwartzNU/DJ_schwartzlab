@@ -12,6 +12,7 @@ entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 cause = NULL : enum('sacrificed not needed','sacrificed for experiment','other','unknown') #cause of death
 
 unique index (animal_id)
+notes: varchar(256)                  # anything
 %}
 
 classdef AnimalEventDeceased < sl.AnimalEvent & dj.Manual
