@@ -37,9 +37,15 @@ classdef HeaderAnimalEvent < handle
 %             end
         end
         
-        function sql = enclose(hdr, sql_, varargin)
+        function [sql,aliasCount] = enclose(hdr, sql_, varargin)
             %a general function for enclosing sql operations
             h = hdr.sql;
+
+            if ~isa(varargin{1},'char') && ~isinf(varargin{1})
+                aliasCount = varargin{1};
+            else
+                aliasCount = [];
+            end
             
             if isa(sql_,'cell') %we're unioning
                 sql = string(join(cellfun(@(x,y) sprintf('SELECT %s FROM %s',x,y), h, sql_(1:2), 'uniformoutput',false), ' UNION '));
@@ -63,6 +69,7 @@ classdef HeaderAnimalEvent < handle
                     sql = sprintf('SELECT %s FROM ( SELECT %s,RANK() OVER (PARTITION BY %s ORDER BY %s) AS rnk FROM (%s) AS `$a%x`) AS `$a%x` WHERE rnk <= %s',...
                         h, h, per.selector, per.orderby, sql, varargin{1}+1, varargin{1}+2, per.limit...
                         );
+                    aliasCount = aliasCount + 2;
                 else
                     sql = sprintf('SELECT %s FROM ( SELECT %s,RANK() OVER (PARTITION BY %s ORDER BY %s) AS rnk FROM (%s) AS grouplimitA) AS grouplimitB WHERE rnk <= %s',...
                         h, h, per.selector, per.orderby, sql, per.limit...
@@ -80,6 +87,7 @@ classdef HeaderAnimalEvent < handle
                         sql = sprintf('(%s) AS final', sql);
                     else
                         sql = sprintf('(%s) AS `$a%x`', sql, varargin{1});
+                        aliasCount = aliasCount + 1;
                     end
                 end
             end
@@ -432,7 +440,7 @@ cond = cond(min(end,5):end);  % strip " OR "
                     'Value for key.%s must be a string', field{1})
                 value = sprintf('''%s''', escapeString(value));
             else
-                assert((isnumeric(value) || islogical(value)) && isscalar(value), ...
+                assert((isnumeric(value) || isl_testogical(value)) && isscalar(value), ...
                     'Value for key.%s must be a numeric scalar', field{1});
                 if isa(value, 'uint64')
                     value = sprintf('%u', value);

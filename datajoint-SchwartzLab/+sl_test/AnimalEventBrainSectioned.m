@@ -1,5 +1,5 @@
 %{
-# brain slicing
+# brain sl_testicing
 
 event_id : int unsigned auto_increment
 ---
@@ -10,7 +10,7 @@ date: date
 time: time
 entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 
-thickness: smallint unsigned    #thickness of the slice in microns
+thickness: smallint unsigned    #thickness of the sl_testice in microns
 
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
 

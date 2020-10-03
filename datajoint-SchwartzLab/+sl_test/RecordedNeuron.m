@@ -195,7 +195,7 @@ end
 
 
 
-%-> sl.image
+%-> sl_test.image
 %data sets
 
 % cell_data_list : longblob       # cell array of cellData names

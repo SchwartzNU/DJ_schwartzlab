@@ -2,7 +2,7 @@
 # Image of a brain section
 image_id : int unsigned auto_increment   #unique image id
 ---
--> sl_test.AnimalEventBrainSectionedSlice   # what slice does the image correspond to?
+-> sl_test.AnimalEventBrainSectionedSlice   # what sl_testice does the image correspond to?
 -> sl_test.User                             # who took the image?
 -> sl_test.ChannelSet                       # color and meaning of each channel
 -> sl_test.Microscope                       # how was the image collected?
