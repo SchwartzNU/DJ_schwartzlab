@@ -19,26 +19,4 @@ classdef AnimalEventHandling < sl_test.AnimalEvent & dj.Manual
         printFields = {'date', 'time', 'animal_id', 'user_name', 'duration', 'notes'};
     end
 
-    methods (Access = public)
-
-        function s = printEvent(self)
-            eventStruct = fetch(self, '*');
-
-            if isempty(eventStruct.notes)
-                notes = '';
-            else
-                notes = sprintf('(%s)', eventStruct.notes);
-            end
-
-            s = sprintf('%s %s: Animal %d handled by %s for %s. %s', ...
-                eventStruct.date, ...
-                eventStruct.time, ...
-                eventStruct.animal_id, ...
-                eventStruct.user_name, ...
-                eventStruct.duration, ...
-                notes);
-        end
-
-    end
-
 end

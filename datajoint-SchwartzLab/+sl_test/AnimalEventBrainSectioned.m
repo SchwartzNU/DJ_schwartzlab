@@ -18,8 +18,8 @@ notes = NULL:varchar(256) # surgery notes (can include people who assisted)
 classdef AnimalEventBrainSectioned < sl_test.AnimalEvent & dj.Manual
 
     properties
-        % printStr = '%s %s: Animal %d had a brain injection of %s dilluted 1:%d targeting the %s %s. Coordinates (AP,ML,DV,angle): [%0.2f, %0.2f, %0.2f]. Performed by %s. (%s)\n';
-        % printFields = {'date', 'time', 'animal_id', 'substance_name', 'dilution', 'hemisphere', 'target', 'coords', 'user_name', 'notes'};
+        printStr = '%s: Animal %d brain sectioned in %s plane with thickness %d microns by %s.  (%s)\n';
+        printFields = {'date', 'animal_id', 'orientation', 'thickness', 'user_name', 'notes'};
     end
 
 end

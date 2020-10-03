@@ -37,6 +37,27 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
     end
 
     methods
+        function s = printEvents(self)
+            events = cell(size(self.printFields));
+            [events{:}] = self.fetchn(self.printFields{:}); %fetch only the desired fields
+
+            recorded = strcmp(self.printFields,'recorded');
+            if any(recorded) %we want to parse these
+                fname = strcmp(self.printFields,'fname');
+                isRecorded = strcmp(events{recorded},'T');
+                [events{recorded}{isRecorded}] = events{fname}{isRecorded};
+                [events{recorded}{~isRecorded}] = deal('Not recorded');
+                events(fname) = [];
+            end
+
+            numeric = cellfun(@(x) ~isa(x,'cell'), events);
+            events(numeric) = cellfun(@num2cell, events(numeric),'uniformoutput', false); %convert everything to a cell array
+            events = horzcat(events{:})';
+
+            s = strrep(sprintf(self.printStr, events{:}),' ()',''); %events are in same order as printFields
+            
+        end
+
 
         function [ret, keys] = fetch(self, varargin)
             %note that any operations to the table should return a generalrelvar object, so we should be safe

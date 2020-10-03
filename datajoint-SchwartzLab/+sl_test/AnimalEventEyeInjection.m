@@ -19,26 +19,5 @@ classdef AnimalEventEyeInjection < sl_test.AnimalEvent & dj.Manual
         printStr = '%s %s: Animal %d had a %s eye injection of %s, dilluted 1:%d, performed by %s. (%s)\n';
         printFields = {'date', 'time', 'animal_id', 'side', 'substance_name', 'dilution', 'user_name', 'notes'};
     end
-
-
-    methods(Access=public)
-        function s = printEvent(self)
-            eventStruct = fetch(self,'*');
-            if isempty(eventStruct.notes)
-                notes = '';
-            else
-                notes = sprintf('(%s)',eventStruct.notes);
-            end
-            s = sprintf('%s %s: Animal %d had a %s eye injection of %s, dilluted 1:%d, performed by %s. %s', ...
-                eventStruct.date,...
-                eventStruct.time,...
-                eventStruct.animal_id,...
-                eventStruct.side,...
-                eventStruct.substance_name,...
-                eventStruct.dilution,...
-                eventStruct.user_name,...
-                notes);
-        end        
-    end
     
 end
