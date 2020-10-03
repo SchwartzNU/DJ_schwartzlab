@@ -13,5 +13,20 @@ notes: varchar(128)                                  # anything
 %}
 
 classdef AnimalEventGaveBirth < sl.AnimalEvent & dj.Manual
+    methods(Access=public)
+        function s = printEvent(self)
+            eventStruct = fetch(self,'*');
+            if isempty(eventStruct.notes)
+                notes = '';
+            else
+                notes = sprintf('(%s)',eventStruct.notes);
+            end
+            s = sprintf('%s: Animal %d gave birth to %d pups. %s', ...
+                eventStruct.date,...
+                eventStruct.animal_id,...
+                eventStruct.number_of_pups,...
+                notes);
+        end
+    end
 end
 
