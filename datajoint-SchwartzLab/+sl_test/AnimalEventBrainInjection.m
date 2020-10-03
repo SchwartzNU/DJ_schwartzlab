@@ -17,5 +17,11 @@ dilution: float                      # dilution of substance (or 0 if not applic
 notes = NULL: varchar(256)           # surgery notes (can include people who assisted)
 
 %}
-classdef AnimalEventBrainInjection < dj.Manual
+classdef AnimalEventBrainInjection < sl_test.AnimalEvent & dj.Manual
+
+    properties
+        printStr = '%s %s: Animal %d had a brain injection of %s dilluted 1:%d targeting the %s %s. Coordinates (AP,ML,DV,angle): [%0.2f, %0.2f, %0.2f]. Performed by %s. (%s)\n';
+        printFields = {'date','time','animal_id','substance_name','dilution','hemisphere','target','coordinates','user_name','notes'};
+    end
+
 end

@@ -17,6 +17,12 @@ cage_number: int unsigned       # cage number mouse was moved to
 
 
 classdef AnimalEventAssignCage < sl_test.AnimalEvent & dj.Manual
+    properties
+        printStr = '%s: Animal %d moved to cage %d. Cause: %s. User: %s. (%s)\n';
+        printFields = {'date','animal_id','cage_number','cause','user_name','notes'};
+    end
+
+
     methods(Static)
         function cage = current()
             cage = sl_test.AnimalEventAssignCage() & 'LIMIT 1 PER animal_id DESC';
@@ -28,5 +34,3 @@ classdef AnimalEventAssignCage < sl_test.AnimalEvent & dj.Manual
     end
     
 end
-% move_from_cage_number: int unsigned          # from cage number
-% move_to_
