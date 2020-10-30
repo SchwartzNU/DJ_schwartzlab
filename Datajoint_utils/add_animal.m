@@ -1,10 +1,9 @@
-function [inserted, txt] = add_animal(key, cage_key)
+function [inserted, txt] = add_animal(key, cage_key, protocol_key)
 C = dj.conn;
 C.startTransaction;
 inserted = false;
 txt = '';
 try
-
     insert(sl.Animal, key);
     
     id = max(fetchn(sl.Animal, 'animal_id')); %last animmal added
@@ -18,7 +17,13 @@ try
     cage_key.animal_id = id;
     cage_key.cause = 'assigned at database insert';
     text = add_animalEvent(cage_key, 'AssignCage',C);
-    % disp('Cage assigment successful');
+    %disp('Cage assigment successful');
+    
+    %add protocol assignment event
+    protocol_key.animal_id = id;
+    add_animalEvent(protocol_key, 'AssignProtocol',C);
+    %disp('Protocol assigment successful');
+    
     fprintf('Animal insert successful.\n%s', text);
     C.commitTransaction;
     txt = 'Animal insert successful.';

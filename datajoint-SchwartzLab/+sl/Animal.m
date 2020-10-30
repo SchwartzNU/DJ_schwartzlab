@@ -2,13 +2,15 @@
 # animal
 animal_id: int unsigned auto_increment           # unique animal id
 ---
--> sl.Genotype                             # genotype of animal
+-> sl.Genotype                                  # genotype of animal
+(parent_cage) -> sl.BreedingCage(cage_number)   # breeding cage this animal came from
 is_tagged = 'F': enum('T','F')                  # true or false
-tag_id = NULL : int unsigned                       # id number from our spreadsheets (how to check for duplicates here?)
+tag_id = NULL : int unsigned                    # id number
 species = 'Lab mouse' : varchar(64)             # species
 dob = NULL : date                               # mouse date of birth
 sex = 'Unknown' : enum('Male', 'Female', 'Unknown')          # sex of mouse - Male, Female, or Unknown/Unclassified
-punch = 'none' : enum('L','R','Both','None')      # earpunch
+tag_ear = 'Unknown' : enum('None', 'L', 'R', 'Unknown')   # which ear has the tag
+punch = 'None' : enum('L','R','Both','None')      # earpunch
 unique index (tag_id)
 %}
 
@@ -82,6 +84,45 @@ classdef Animal < dj.Manual
             end
         end
         
+        function result = isBreeder(animal_ids, liveOnly)
+            %get latest breeder status
+
+            q_set = sl.AnimalEventSetAsBreeder();
+            q_rem = sl.AnimalEventRetireAsBreeder();
+
+            if nargin>1 && liveOnly
+                q_set = q_set & sl.AnimalEventSetAsBreeder.living();
+                q_rem = q_rem & sl.AnimalEventRetireAsBreeder.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q_set = restrict_by_animal_ids(q_set,animal_ids);
+                q_rem = restrict_by_animal_ids(q_rem,animal_ids);
+            end
+                        
+            ev_set = q_set.fetch('animal_id', 'entry_time', 'LIMIT 1 PER animal_id');
+            ev_rem = q_rem.fetch('animal_id', 'entry_time', 'LIMIT 1 PER animal_id');
+            
+            set_ids = [ev_set.animal_id];
+            ret_ids = [ev_rem.animal_id];
+            set_times = {ev_set.entry_time};
+            ret_times = {ev_rem.entry_time};
+            
+            [C,ia,ib] = intersect(set_ids, ret_ids);
+            
+            if isempty(C)
+                result = ismember(animal_ids, set_ids);
+            else
+                timeDiff = datetime(ret_times(ib)) - datetime(set_times(ia));
+                retired_ind = timeDiff>0;
+                set_ids = set_ids(setdiff(1:length(set_ids),ia(retired_ind)));
+                result = ismember(animal_ids, set_ids);
+            end
+            
+        end
+        
+        
         function animals = reservedProject(animal_ids, liveOnly)
             %get latest genotype status
 
@@ -151,6 +192,27 @@ classdef Animal < dj.Manual
             end
 
             animals = q.fetch('animal_id','cage_number');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+        function animals = roomNumber(animal_ids, liveOnly)
+
+            q = sl.AnimalEventAssignCage.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','room_number');
             animals = rmfield(animals, 'event_id');
             if isempty(animals)
                animals = reshape(animals,0,1); 

@@ -18,32 +18,84 @@ try
         key = rmfield(key,'whichEye');     
     end
     
+    if strcmp(event_type, 'PairBreeders') %need to make breeding cage first 
+        key_breedingCage = struct;
+        key_breedingCage.cage_number = key.cage_number;
+        insert(sl.BreedingCage, key_breedingCage);        
+        
+        %then do cage assignment for both animals
+        key_male_move = struct;
+        key_male_move.animal_id = key.male_id;
+        key_male_move.cage_number = key.cage_number;
+        key_male_move.room_number = key.room_number;
+        key_male_move.cause = 'set as breeder';
+        key_male_move.date = key.date;
+        key_male_move.user_name = key.user_name;        
+        insert(sl.AnimalEventAssignCage, key_male_move);
+        
+        key_female_move = key_male_move;
+        key_female_move.animal_id = key.female_id;
+        insert(sl.AnimalEventAssignCage, key_female_move);
+        
+        %activate breeding cage
+        key_activate = struct;
+        key_activate.cage_number = key.cage_number;
+        key_activate.date = key.date;
+        key_activate.user_name = key.user_name;
+        insert(sl.AnimalEventActivateBreedingCage, key_activate);
+    end
+    
+    if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals
+        %deactivate breeding cage
+        key_deactivate = struct;
+        key_deactivate.cage_number = key.cage_number;
+        key_deactivate.date = key.date;
+        key_deactivate.user_name = key.user_name;
+        insert(sl.AnimalEventDeactivateBreedingCage, key_deactivate);
+        
+        %then do cage assignment for both animals
+        key_male_move = struct;
+        key_male_move.animal_id = key.male_id;
+        key_male_move.cage_number = key.new_cage_male;
+        key_male_move.room_number = key.new_room_male;
+        key_male_move.cause = 'separated breeder';
+        key_male_move.date = key.date;
+        key_male_move.user_name = key.user_name;        
+        insert(sl.AnimalEventAssignCage, key_male_move);
+        
+        key_female_move = key_male_move;
+        key_female_move.animal_id = key.female_id;
+        key_female_move.cage_number = key.new_cage_female;
+        key_female_move.room_number = key.new_room_female;
+        insert(sl.AnimalEventAssignCage, key_female_move);
+        
+        %then retire each as breeders
+        key_retire_male = struct;
+        key_retire_male.animal_id = key.male_id;
+        key_retire_male.date = key.date;
+        key_retire_male.user_name = key.user_name;       
+        insert(sl.AnimalEventRetireAsBreeder, key_retire_male);
+        
+        key_retire_female = key_retire_male;
+        key_retire_female.animal_id = key.female_id;
+        insert(sl.AnimalEventRetireAsBreeder, key_retire_female);
+        
+    end
+    
     if strcmp(event_type, 'SocialBehaviorSession') %need to add stim mice
-%         for i=1:length(key.stimAnimals)
-%             stimAnimalKeys(i).stimulus_mouse = key.stimAnimals(i);
-%             stimAnimalKeys(i).arm = key.stimArms{i};
-%         end
         stimAnimalKeys = struct('stimulus_mouse',num2cell(key.stimAnimals),'arm',key.stimArms);
         key = rmfield(key,{'stimAnimals','stimArms'});
-        % key = rmfield(key,'stimArms');
     end
-        
+
     insert(feval(sprintf('sl.AnimalEvent%s',event_type)), key);
     
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
         this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
-        %actually we need to do it this way because the event transaction
-        %is not comitted yet.
-        
-        %this_event_id = C.query('SELECT max(event_id) as last FROM sl.animal_event_social_behavior_session').last; %reduced overhead 
-        %this does not work because the event is not committed
-       
         [stimAnimalKeys.event_id] = deal(this_event_id);
         insert(sl.AnimalEventSocialBehaviorSessionStimMouse, stimAnimalKeys);
         text = sprintf('Stim mice insert successful.\n%s', text);
     end
-    
-    
+        
     text = sprintf('%s insert successful.\n%s', event_type, text);
     if nargin<3
         C.commitTransaction;   
@@ -58,66 +110,3 @@ catch ME
     inserted = false;
     rethrow(ME)
 end
-% try 
-%     key_AnimalEvent.date = key.date;   
-%     key_AnimalEvent.animal_id = key.animal_id;
-%     eventsThisDate = sl.AnimalEvent & ['animal_id=' num2str(key.animal_id)] & ['date=' '"' key.date '"'];
-%     
-%     if eventsThisDate.exists
-%         key_AnimalEvent.event_id = max(fetchn(eventsThisDate, 'event_id')) + 1;
-%     else
-%         key_AnimalEvent.event_id = 1;
-%     end
-%     insert(sl.AnimalEvent, key_AnimalEvent);    
-%     
-%     key.event_id = key_AnimalEvent.event_id;
-%     if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
-%         if strcmp(key.whichEye, 'Left')
-%             thisEye = sl.Eye & ['animal_id=' num2str(key.animal_id)] & 'side="L"';
-%             if thisEye.exists
-%                 key.eye_id = fetch1(thisEye, 'eye_id');
-%             else
-%                 eyesSoFar = max(fetchn(sl.Eye & ['animal_id=' num2str(key.animal_id)], 'eye_id'));
-%                 if isempty(eyesSoFar)
-%                     key_eye.eye_id = 1;
-%                 else
-%                     key_eye.eye_id = eyesSoFar+1;
-%                 end
-%                 key_eye.animal_id = key.animal_id;
-%                 key_eye.side = 'L';
-%                 insert(sl.Eye,key_eye);
-%                 key.eye_id = key_eye.eye_id;
-%             end
-%         else %right eye
-%             thisEye = sl.Eye & ['animal_id=' num2str(key.animal_id)] & 'side="R"';
-%             if thisEye.exists
-%                 key.eye_id = fetch1(thisEye, 'eye_id');
-%             else
-%                 eyesSoFar = max(fetchn(sl.Eye & ['animal_id=' num2str(key.animal_id)], 'eye_id'));
-%                 if isempty(eyesSoFar)
-%                     key_eye.eye_id = 1;
-%                 else
-%                     key_eye.eye_id = eyesSoFar+1;
-%                 end
-%                 key_eye.animal_id = key.animal_id;
-%                 key_eye.side = 'R';
-%                 insert(sl.Eye,key_eye);   
-%                 key.eye_id = key_eye.eye_id;
-%             end
-%         end
-%         
-%         key = rmfield(key,'whichEye');        
-%     end
-%     insert(eval(['sl.AnimalEvent' event_type]), key);        
-%     disp('Insert successful');
-%     if strcmp(event_type, 'MoveCage')
-%         %need an extra command to do the move
-%         thisMove = sl.AnimalEventMoveCage & key;
-%         thisMove.doMove();
-%     end        
-%     C.commitTransaction;    
-% catch ME    
-%     errordlg('Insert failed');
-%     C.cancelTransaction;
-%     rethrow(ME)
-% end
