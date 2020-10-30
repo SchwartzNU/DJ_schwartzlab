@@ -40,6 +40,22 @@ classdef BreedingCage < dj.Manual
         end
     end
     methods
+        
+        function animal = getMember(obj, sex)
+            %get only breeders
+            allAnimals = fetch(sl.AnimalEventDeceased.living(),'*');
+            animal_ids = [allAnimals.animal_id]';
+            isBreeder = sl.Animal.isBreeder(animal_ids);
+            animal_ids = animal_ids(isBreeder);            
+            cageStruct = sl.Animal.cageNumber(animal_ids);
+                                    
+            thisCage = fetch1(obj, 'cage_number');        
+            ind = strcmp({cageStruct.cage_number}, thisCage);
+            animal_id_struct = rmfield(cageStruct(ind), 'cage_number');
+            
+            animal = sl.Animal & animal_id_struct & sprintf('sex="%s"', sex);
+        end
+        
         function [littersN, littersDates] = getLitters(obj)
             thisCage = fetch1(obj, 'cage_number');
             birthEvents = sl.AnimalEventGaveBirth & sprintf('cage_number="%s"',thisCage);
