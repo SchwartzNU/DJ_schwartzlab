@@ -69,16 +69,16 @@ try
         key_female_move.room_number = key.new_room_female;
         insert(sl.AnimalEventAssignCage, key_female_move);
         
-        %then retire each as breeders
-        key_retire_male = struct;
-        key_retire_male.animal_id = key.male_id;
-        key_retire_male.date = key.date;
-        key_retire_male.user_name = key.user_name;       
-        insert(sl.AnimalEventRetireAsBreeder, key_retire_male);
-        
-        key_retire_female = key_retire_male;
-        key_retire_female.animal_id = key.female_id;
-        insert(sl.AnimalEventRetireAsBreeder, key_retire_female);
+%         %then retire each as breeders
+%         key_retire_male = struct;
+%         key_retire_male.animal_id = key.male_id;
+%         key_retire_male.date = key.date;
+%         key_retire_male.user_name = key.user_name;       
+%         insert(sl.AnimalEventRetireAsBreeder, key_retire_male);
+%         
+%         key_retire_female = key_retire_male;
+%         key_retire_female.animal_id = key.female_id;
+%         insert(sl.AnimalEventRetireAsBreeder, key_retire_female);
         
     end
     
