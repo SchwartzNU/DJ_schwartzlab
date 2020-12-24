@@ -3,7 +3,10 @@
 animal_id: int unsigned auto_increment           # unique animal id
 ---
 -> sl.Genotype                                  # genotype of animal
-(parent_cage) -> sl.BreedingCage(cage_number)   # breeding cage this animal came from
+source: enum('vendor', 'breeding', 'other lab', 'other', 'unknown') # where the animal is from                
+source_id = NULL: varchar(64)                   # if breeding, this is the
+                                                # parent cage id, if vendor it is the catalog number, if PI it is the PI name
+                                                # + an ID if applicable
 is_tagged = 'F': enum('T','F')                  # true or false
 tag_id = NULL : int unsigned                    # id number
 species = 'Lab mouse' : varchar(64)             # species
@@ -218,6 +221,23 @@ classdef Animal < dj.Manual
                animals = reshape(animals,0,1); 
             end
         end
+        
+%         function animals = deceasedDate(animal_ids)
+% 
+%             %restrict by deceased mice
+%             q = sl.AnimalEventDeceased();
+% 
+%             if nargin && ~isempty(animal_ids)
+%                 %restrict by animal_id
+%                 q = restrict_by_animal_ids(q,animal_ids);
+%             end
+% 
+%             animals = q.fetch('animal_id','date');
+%             animals = rmfield(animals, 'event_id');
+%             if isempty(animals)
+%                animals = reshape(animals,0,1); 
+%             end
+%         end
         
         function [result, animals] = isCaged(animal_ids)
             animals = sl.Animal.cageNumber(animal_ids);

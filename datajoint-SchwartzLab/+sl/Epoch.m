@@ -1,15 +1,22 @@
 %{
 # Epoch
--> sl.RecordedNeuron
+-> sl.SymphonyRecordedCell
 number                      : int unsigned                  # epoch number
 cell_data                   : varchar(128)                  # name of cellData file
 ---
 sample_rate                 : int unsigned                  # samples per second
 epoch_start_time            : float                         # seconds since start of cell
+protocol_name               : varchar(64)                   # displayName variable name of protocol
+protocol_version            : int unsigned                  # version number of protocol
+rstar_mean=NULL             : float                        # background light intensity R*/rod/s
+stim_intensity=NULL         : float                        # stimulus intensity R*/rod/s
+frame_rate=NULL             : int unsigned                 # frames per second
 recording_mode              : enum('Cell attached','Whole cell','U','Off') # recording mode U = unknown
 recording2_mode             : enum('Cell attached','Whole cell','U','Off') # recording mode U = unknown
 amp_mode                    : enum('Vclamp','Iclamp','U')   # amplifier mode, U = unknown
 amp2_mode                   : enum('Vclamp','Iclamp','U')   # amplifier mode, U = unknown
+amp_hold                    : float                         # hold signal mV or pA 
+amp2_hold=NULL              : float                         # hold signal mV or pA
 protocol_params             : longblob                      # struct of protocol parameters
 raw_data_filename           : varchar(32)                   # raw data filename without .h5 extension
 data_link                   : varchar(512)                  # hdf5 location of raw data - channel 1
@@ -69,5 +76,4 @@ classdef Epoch < dj.Manual
     end
 end
 
-%raw_data_link : varchar(256)  # check this... hdf5 path
 

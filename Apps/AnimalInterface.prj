@@ -51,6 +51,8 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/AnimalProtocol.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/BrainArea.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/BreedingCage.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/CellEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/CellEventAssignType.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/CellTrace.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/CellType.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Channel.m</file>
@@ -69,17 +71,19 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ImagingModality.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/InjectionSubstance.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Jobs.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/MeasuredCell.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/MeasuredRetinalCell.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Microscope.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Neuron.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/PSTHParamSet.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Plane.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Project.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/ProjectUser.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/RecordedNeuron.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/Rig.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/SMSSpikeData.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/SocialBehaviorExperimentType.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/SpikeTrain.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/SymphonyRecordedCell.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/User.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/UserActive.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl/getSchema.m</file>
@@ -92,6 +96,8 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/DatajointAnalysis/spikesInInterval.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animal.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animals.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/cellID_to_dateAndRig.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/AutoPopulate.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/GeneralRelvar.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/+internal/Header.m</file>
@@ -126,6 +132,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/PSTHParamSet.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/SpikeTrain.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/escapeString.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/mym.mexmaci64</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/setupDJ.m</file>
       <file>/Users/gws584/matlab/SymphonyAnalysis/core/loadAndSyncCellData.m</file>
     </fileset.depfun>
