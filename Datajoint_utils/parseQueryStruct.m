@@ -17,9 +17,17 @@ end
 commandStr = [commandStr(1:end-1) ,';'];
 eval(commandStr);
 
-%TODO special case where logical comes first
+if length(queryState.operatorColumn) < 1 %empty so return
+    return
+end
 
-rowInd = 1:2:length(queryState.attributeColumn);
+
+if isempty(queryState.operatorColumn(1).value)
+    %special case where logical comes first
+    rowInd = 3:2:length(queryState.attributeColumn);
+else
+    rowInd = 1:2:length(queryState.attributeColumn);
+end
 
 for i=rowInd
     curOp = queryState.operatorColumn(i).value;
@@ -84,7 +92,7 @@ for i=1:length(entry)
             case 'AND NOT ANY OF ('
                 %special case for this because it needs to be a separate clause
                 Qstr = ['( ', Qstr ' )', ' - {'];    
-            case 'AND ANY OF ('
+            case 'AND ANY OF (' %% this is currently broken in DataJoint!!! https://github.com/datajoint/datajoint-matlab/issues/96
                 Qstr = [Qstr, '& { '];
             case 'ANY OF ('
                 Qstr = [Qstr, '{ '];
