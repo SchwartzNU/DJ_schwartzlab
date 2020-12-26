@@ -1,7 +1,7 @@
 %{
 # Epoch
 -> sl.SymphonyRecordedCell
-number                      : int unsigned                  # epoch number
+epoch_number                : int unsigned                  # epoch number
 cell_data                   : varchar(128)                  # name of cellData file
 ---
 sample_rate                 : int unsigned                  # samples per second

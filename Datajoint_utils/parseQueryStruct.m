@@ -1,5 +1,5 @@
 function q = parseQueryStruct(queryState)
-q = 'error';
+q = '';
 C = dj.conn;
 if ~C.isConnected
     disp('DataJoint connection failed.');

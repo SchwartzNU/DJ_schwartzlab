@@ -104,7 +104,7 @@ classdef SymphonyRecordedCell < dj.Imported
                     epoch_init_struct.animal_id = key.animal_id;
                     epoch_init_struct.cell_id = key.cell_id;
                     epoch_init_struct.cell_unid = key.cell_unid;
-                    epoch_init_struct.number = e;
+                    epoch_init_struct.epoch_number = e;
                     epoch_init_struct.cell_data = curName;
                     epoch_init_struct.protocol_params = struct;
                     epoch_init_struct.raw_data_filename = raw_data_filename;
@@ -160,7 +160,7 @@ classdef SymphonyRecordedCell < dj.Imported
                     
                     %insert epoch only if it's not already there
                     qstruct.cell_id = epoch_init_struct.cell_id;
-                    qstruct.number = epoch_init_struct.number;
+                    qstruct.epoch_number = epoch_init_struct.epoch_number;
                     qstruct.cell_data = epoch_init_struct.cell_data;
                     q = sl.Epoch & qstruct;
                     if q.count == 0 % epoch not already inserted
