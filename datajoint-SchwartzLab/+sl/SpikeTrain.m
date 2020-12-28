@@ -33,7 +33,7 @@ classdef SpikeTrain < dj.Imported
             end
             if strcmp(mode, 'Cell attached')
                 cellData = loadAndSyncCellData(key.cell_data);
-                epData = cellData.epochs(key.number);
+                epData = cellData.epochs(key.epoch_number);
                 if ch==1
                     key.sp = epData.get('spikes_ch1');
                 elseif ch==2
