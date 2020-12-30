@@ -1,0 +1,18 @@
+function [] = h5Export(pipeline, exportState, resultsStruct)
+saveFolder = [getenv('pipelines_folder'), pipeline, filesep, 'h5' filesep];
+if ~exist(saveFolder,'dir')
+    fprintf('Making new h5 folder for pipeline %s\n', pipeline);
+    mkdir(saveFolder);    
+end
+
+N = length(resultsStruct);
+for i=1:N
+    [filename, datasetname, variablenames] = parseExportSettings(exportState, resultsStruct(i));    
+    fields = fieldnames(resultsStruct(i).result);
+    for
+    for f=1:length(variablenames)
+        ind = contains(variablenames{f}, fields)
+        hdf5write([saveFolder, saveFolder], ['/' datasetname], variablenames{f}...
+           resultsStruct(i).result.(variablenames{f}), 'WriteMode', 'append');
+    end
+end
