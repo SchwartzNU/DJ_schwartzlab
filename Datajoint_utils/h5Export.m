@@ -11,21 +11,26 @@ if ~exist(saveFolder,'dir')
 end
 
 N = length(resultsStruct);
+old_filename = '';
 for i=1:N
+    fprintf('Exporting item %d of %d\n', i, N);    
     [filename, datasetname, variablenames] = parseExportSettings(exportState, resultsStruct(i));
     fields = fieldnames(resultsStruct(i).result);
     fullName = [saveFolder, filename];
     %create the file
     if ~exist(fullName, 'file')
         fid = fopen(fullName, 'w');
-        fclose(fid);
+        fclose(fid);        
     else
         if overwrite
-            delete(fullName); %delete old file
-            fid = fopen(fullName, 'w');
-            fclose(fid);
-        end
-        
+            if ~strcmp(old_filename, filename)
+                %only overwrite once per file
+                delete(fullName); %delete old file
+                fid = fopen(fullName, 'w');
+                fclose(fid);
+                old_filename = filename;
+            end
+        end        
     end
     
     for f=1:length(variablenames)
@@ -44,3 +49,4 @@ for i=1:N
         end
     end
 end
+disp('Export complete');
