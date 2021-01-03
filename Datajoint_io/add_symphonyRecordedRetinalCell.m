@@ -6,7 +6,7 @@ if isempty(cellData)
 end
 
 q.cell_id = cell_id;
-thisCell = sl.SymphonyRecordedCell & q;
+thisCell = sl.MeasuredCell & q;
 if thisCell.exists
     status = sprintf('%s is already in the database', cell_id);
     return;
@@ -28,7 +28,7 @@ if L > 0
         fprintf('Entry %d:\n', i); 
         animalList(1)
     end
-    str = input('Which entry and eye? [L or 1L = Entry 1 left eye; U for unknown eye; X to cancel] ','s')
+    str = input('Which entry and eye? [L or 1L = Entry 1 left eye; U for unknown eye; X to cancel] ','s');
     if strcmp(str,'X')
         disp('Cell insert aborted');
         return;
@@ -88,18 +88,12 @@ try
     key.side = animalEyeData.whichEye;
     insert(sl.MeasuredRetinalCell, key);
     
-    %load the cellData file into DJ through SymphonyRecordedCell
-%     key_symCell.animal_id = key.animal_id;
-%     key_symCell.cell_unid = key.cell_unid;
-%     key_symCell.cell_id = cell_id;
-%     insert(sl.SymphonyRecordedCell,key_symCell);
-       
     C.commitTransaction;
     disp('Cell creation successful');
 catch ME
     C.cancelTransaction;
     disp('Cell creation failed');
-    rethrow(ME);
+    %rethrow(ME);
 end
 
 %Assign type

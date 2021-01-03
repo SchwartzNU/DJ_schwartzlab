@@ -7,16 +7,22 @@ end
 
 switch funcType
     case 'Epoch'
-        if preload
-            [~, ep_in_datasets] = getEpochsInQuery(workingQuery);
-            [~, ep_in_datasets_prev] = getEpochsInQuery(workingQuery & [previousLoad.input]);
-            ep_in_datasets = ep_in_datasets - ep_in_datasets_prev.proj;
-            ep_count = ep_in_datasets.count;
-        else
-            [ep_count, ep_in_datasets] = getEpochsInQuery(workingQuery);
+        if ismember('epoch_number',workingQuery.header.primaryKey) %fed actual epochs
+            ep_count = workingQuery.count;
+            all_ep_struct = workingQuery.fetch();
+        else %fed datasets
+            if preload
+                [~, ep_in_datasets] = getEpochsInQuery(workingQuery);
+                [~, ep_in_datasets_prev] = getEpochsInQuery(workingQuery & [previousLoad.input]);
+                ep_in_datasets = ep_in_datasets - ep_in_datasets_prev.proj;
+                ep_count = ep_in_datasets.count;
+            else
+                [ep_count, ep_in_datasets] = getEpochsInQuery(workingQuery);
+            end
+            
+            all_ep_struct = ep_in_datasets.fetch();
         end
         
-        all_ep_struct = ep_in_datasets.fetch();
         fprintf('Running %s on %d epochs...\n', funcName, ep_count);
         
         s = struct('input', [], 'result', []);

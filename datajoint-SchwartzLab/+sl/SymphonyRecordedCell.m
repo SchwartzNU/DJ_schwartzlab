@@ -122,7 +122,9 @@ classdef SymphonyRecordedCell < dj.Imported
                     if isnan(stimI)
                         stimI = ep.get('RstarIntensity1');
                     end
-                    epoch_init_struct.stim_intensity = stimI;
+                    if isnumeric(stimI) && isscalar(stimI)
+                        epoch_init_struct.stim_intensity = stimI;
+                    end
                     epoch_init_struct.frame_rate = ep.get('frameRate');
                     epoch_init_struct.protocol_version = ep.get('protocolVersion');
                                         

@@ -7,7 +7,7 @@ cell_data                   : varchar(128)                  # name of cellData f
 sample_rate                 : int unsigned                  # samples per second
 epoch_start_time            : float                         # seconds since start of cell
 protocol_name               : varchar(64)                   # displayName variable name of protocol
-protocol_version            : int unsigned                  # version number of protocol
+protocol_version=NULL       : int unsigned                  # version number of protocol
 rstar_mean=NULL             : float                        # background light intensity R*/rod/s
 stim_intensity=NULL         : float                        # stimulus intensity R*/rod/s
 frame_rate=NULL             : int unsigned                 # frames per second
