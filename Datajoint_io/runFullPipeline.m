@@ -30,8 +30,8 @@ try
             %fprintf(fid,'Loading previously computed results.\n');
             %[analysisOutput, loaded_some, missed_some] = loadResult(pipeline, funcType, funcName, workingQuery);
             % look for results that will be needed but don't fetch them because that is slow
-            missingEntries = findResults(pipeline, funcType, funcName, workingQuery);
-            if missingEntries.exists
+            missingEntries = findResults(pipeline, funcType, funcName, workingQuery);           
+            if ~isempty(missingEntries) && missingEntries.exists
                 fprintf(fid,'Running function %s for %d entries not found in database.\n', funcName, missingEntries.count);
                 analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, []);
             else

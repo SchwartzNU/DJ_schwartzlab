@@ -31,12 +31,22 @@ if fname
         
         if ~error
             q.cell_id = cell_id;
-            thisCell = sl.MeasuredCell & q;
+            thisCell = sl.MeasuredCell & q;            
             if thisCell.exists
                 error = true;
                 fprintf(fid,'%d: %s is already in the database\n', i, cell_id);
             end
             inserted(i) = 2;
+            thisCell_struct = thisCell.fetch();
+            
+            %Assign type
+            cellType_online = cellData.get('type');
+            cellType_cellData = cellData.cellType;
+            fprintf('Cell type online file: %s\n', cellType_online);
+            fprintf('Cell type in cellData file: %s\n', cellType_cellData);                     
+            app = AssignCellType_dlg(thisCell_struct.cell_unid, thisCell_struct.animal_id, thisCell_struct.cell_id);
+            waitfor(app);
+            
         end
         
         if ~error
@@ -159,6 +169,12 @@ if fname
                 
                 C.commitTransaction;
                 fprintf(fid,'%d: Successfully inserted cell %s\n', i, cell_id);
+                
+                %Assign type
+                cellType_dataFile = cellData.get('type');
+                fprintf('Cell type in cellData file: %s\n', cellType_dataFile);
+                app = AssignCellType_dlg(key.cell_unid, key.animal_id, key.cell_id);
+                waitfor(app);
             catch ME
                 C.cancelTransaction;
                 fprintf(fid,'%d: Error inserting cell %s\n', i, cell_id);
@@ -178,3 +194,6 @@ if fname
     error_cells = cell_ids(inserted==0);
     already_in_cells = cell_ids(inserted==2);
 end
+
+
+

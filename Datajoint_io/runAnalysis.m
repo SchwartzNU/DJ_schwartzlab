@@ -64,7 +64,7 @@ switch funcType
         end
         
         allcells_struct = allcells.fetch();
-        fprintf('Running %s on %d datasets...\n', funcName, allcells.count);
+        fprintf('Running %s on %d cells...\n', funcName, allcells.count);
         s = struct('input', [], 'result', []);
         analysisOutput = repmat(s, allcells.count,1);
         
@@ -75,7 +75,7 @@ switch funcType
             analysisOutput(i).result = R;
         end
         
-    case 'Mulit-cell'
+    case 'Multi-cell'
         fprintf('Running %s ...\n', funcName);
         curInput = workingQuery;
         analysisOutput = struct('input', [], 'result', []);
