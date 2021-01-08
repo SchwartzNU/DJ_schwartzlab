@@ -15,7 +15,7 @@ recording_mode              : enum('Cell attached','Whole cell','U','Off') # rec
 recording2_mode             : enum('Cell attached','Whole cell','U','Off') # recording mode U = unknown
 amp_mode                    : enum('Vclamp','Iclamp','U')   # amplifier mode, U = unknown
 amp2_mode                   : enum('Vclamp','Iclamp','U')   # amplifier mode, U = unknown
-amp_hold                    : float                         # hold signal mV or pA 
+amp_hold=NULL               : float                         # hold signal mV or pA 
 amp2_hold=NULL              : float                         # hold signal mV or pA
 protocol_params             : longblob                      # struct of protocol parameters
 raw_data_filename           : varchar(32)                   # raw data filename without .h5 extension

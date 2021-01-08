@@ -19,14 +19,22 @@ psth_y = [];
 firstEpoch = sl.Epoch & sprintf('cell_id="%s"', cell_id) & sprintf('epoch_number=%d', epoch_numbers(1));
 ep_struct = firstEpoch.fetch('*');
 sampleRate = ep_struct.sample_rate;
-preTime = ep_struct.protocol_params.preTime;
+if isfield(ep_struct.protocol_params, 'preTime')
+    preTime = ep_struct.protocol_params.preTime;
+else
+    preTime = 0;
+end
+if isfield(ep_struct.protocol_params, 'tailTime')
+    postTime = ep_struct.protocol_params.tailTime;
+else
+    postTime = 0;
+end
 stimTime = ep_struct.protocol_params.stimTime;
-postTime = ep_struct.protocol_params.tailTime;
 
 Nepochs = length(epoch_numbers);
 N_samples = ceil((preTime + stimTime + postTime) / binSize);
 total_time_ms = preTime + stimTime + postTime; %ms
-psth_x = (1:N_samples) * binSize / 1E3 - preTime / 1E3; % units of seconds
+psth_x = (0:N_samples-1) * binSize / 1E3 - preTime / 1E3; % units of seconds
 
 allSpikes = [];
 for i=1:Nepochs
@@ -34,9 +42,17 @@ for i=1:Nepochs
     thisSpikeTrain = sl.SpikeTrain & thisEpoch & sprintf('channel=%d', channel);
     ep_struct = thisEpoch.fetch('*');
     cur_sampleRate = ep_struct.sample_rate;
-    cur_preTime = ep_struct.protocol_params.preTime;
+    if isfield(ep_struct.protocol_params, 'preTime')
+        cur_preTime = ep_struct.protocol_params.preTime;
+    else
+        cur_preTime = 0;
+    end
+    if isfield(ep_struct.protocol_params, 'tailTime')
+        cur_postTime = ep_struct.protocol_params.tailTime;
+    else
+        cur_postTime = 0;
+    end
     cur_stimTime = ep_struct.protocol_params.stimTime;
-    cur_postTime = ep_struct.protocol_params.tailTime;
     
     if cur_sampleRate~=sampleRate || cur_preTime~=preTime || cur_stimTime~=stimTime || cur_postTime~=postTime
         disp('Error: all epochs must have matching pre, stim, post time and sampleRate');

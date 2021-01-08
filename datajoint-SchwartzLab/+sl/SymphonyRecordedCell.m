@@ -145,7 +145,11 @@ classdef SymphonyRecordedCell < dj.Imported
                     epoch_init_struct.amp2_mode = amp2mode;
                     
                     epoch_init_struct.amp_hold = ep.get('ampHoldSignal');
+                    if isnan(epoch_init_struct.amp_hold)
+                        epoch_init_struct.amp_hold = 0; %TODO-fix back to NULL
+                    end
                     epoch_init_struct.amp2_hold = ep.get('amp2HoldSignal');
+                    
                     
                     %data links
                     try

@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="3538804495" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3309739266" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface</param.files.only>
@@ -92,8 +92,6 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mymSetup.m</file>
     </fileset.resources>
     <fileset.depfun>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/DatajointAnalysis/computePSTH.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/DatajointAnalysis/spikesInInterval.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animal.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animalEvent.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animals.m</file>
@@ -128,11 +126,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/conn.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/set.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+dj/struct.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/Epoch.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/PSTHParamSet.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/+sl_test/SpikeTrain.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/escapeString.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexmaci64/mym.mexmaci64</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/setupDJ.m</file>
       <file>/Users/gws584/matlab/SymphonyAnalysis/core/loadAndSyncCellData.m</file>
     </fileset.depfun>

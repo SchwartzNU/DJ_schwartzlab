@@ -26,7 +26,7 @@ for i=1:Nepochs
         data{i} = D';
     end
     L(i) = length(data{i});   
-    T{i} = (1:L(i)) ./ sampleRate - preTime / 1E3;
+    T{i} = (0:L(i)-1) ./ sampleRate - preTime / 1E3;
 end
 
 if Nepochs>1

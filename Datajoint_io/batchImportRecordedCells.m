@@ -52,6 +52,11 @@ if fname
         if ~error
             whichEye = cellData.get('eye');
             recordingBy = cellData.get('recordingBy');
+                     
+            if isnan(recordingBy)
+                recordingBy = 'Unknown';
+            end
+            
             %look for animal with matching date and rig in database
             [date, rig] = cellID_to_dateAndRig(cell_id);
             q = struct;
@@ -67,7 +72,7 @@ if fname
                 key.genotype_name = 'WT';
                 key.is_tagged = 'F';
                 %no DOB added so null
-                if isempty(whichEye)
+                if isempty(whichEye) || all(isnan(whichEye))
                     eyeUnknown = true;
                 else
                     eyeUnknown = false;
@@ -105,6 +110,7 @@ if fname
                 try
                     fprintf(fid,'Trying insert in sl.Animal\n');
                     insert(sl.Animal, key);
+                    
                     id = max(fetchn(sl.Animal, 'animal_id')); %last animmal added
                     
                     eye1.animal_id = id;
@@ -126,10 +132,11 @@ if fname
                     fprintf(fid,'Animal insert successful\n');
                     matchingAnimals = sl.Animal & (sl.AnimalEventReservedForSession & q);
                     animalData = matchingAnimals.fetch('animal_id','genotype_name','tag_id');
-                catch
+                catch 
                     C.cancelTransaction;
                     fprintf(fid,'Animal insert failed\n');
                     error = true;
+                    
                 end
             elseif L == 1 %found single matching animal, assume that eyes and events are added correctly
                 animalData = matchingAnimals.fetch('animal_id','genotype_name','tag_id');
@@ -153,7 +160,7 @@ if fname
                 
                 insert(sl.MeasuredCell, key);
                 id = max(fetchn(sl.MeasuredCell, 'cell_unid')); %last cell added
-                if isempty(whichEye) || strcmp(whichEye, 'Unknown')
+                if isempty(whichEye) || all(isnan(whichEye)) || strcmp(whichEye, 'Unknown')
                     whichEye = 'Unknown1'; %keep track of both unknown eyes?
                 elseif strcmp(whichEye, 'left')
                     whichEye = 'Left';
