@@ -81,7 +81,7 @@ classdef SymphonyRecordedCell < dj.Imported
                 tagsMap = cellData.tags;
                 k = tagsMap.keys;
                 s = struct;
-                key.experimenter = '';
+                key.experimenter = 'Unknown';
                 for i=1:length(k)
                     if strcmp(k{i}, 'RecordedBy')
                         key.experimenter = tagsMap('RecordedBy');
