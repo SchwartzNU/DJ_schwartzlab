@@ -1,4 +1,7 @@
-function [analysisOutput, loaded_some, missed_some] = loadResult(pipeline, funcType, funcName, workingQuery)
+function [analysisOutput, loaded_some, missed_some] = loadResult(pipeline, funcType, funcName, workingQuery, my_db_only)
+if nargin<5
+    my_db_only = true;
+end
 switch funcType
     case 'Epoch'
         disp('Loading epoch results from database');
@@ -16,7 +19,8 @@ switch funcType
             all_ep_struct(i).epoch_func_name = funcName;
             try
                 analysisOutput(i).input = all_ep_struct(i);
-                thisResult = sl.EpochResult & all_ep_struct(i);
+                thisResult = getStoredResult('Epoch', all_ep_struct(i), my_db_only);
+                %thisResult = sl.EpochResult & all_ep_struct(i);
                 analysisOutput(i).result = fetch1(thisResult, 'result');
                 loaded_some = true;
             catch
@@ -45,7 +49,8 @@ switch funcType
             all_datasets_struct(i).dataset_func_name = funcName;
             try
                 analysisOutput(i).input = all_datasets_struct(i);
-                thisResult = sl.DatasetResult & all_datasets_struct(i);
+                thisResult = getStoredResult('Dataset', all_datasets_struct(i), my_db_only);
+                %thisResult = sl.DatasetResult & all_datasets_struct(i);
                 analysisOutput(i).result = fetch1(thisResult, 'result');
                 loaded_some = true;
             catch
@@ -76,7 +81,8 @@ switch funcType
             %analysisOutput(i).result = []; %initialize to empty
             try
                 analysisOutput(i).input = allcells_struct(i);
-                thisResult = sl.CellResult & allcells_struct(i);
+                thisResult = getStoredResult('Cell', allcells_struct(i), my_db_only);
+                %thisResult = sl.CellResult & allcells_struct(i);
                 analysisOutput(i).result = fetch1(thisResult, 'result');
                 loaded_some = true;
             catch
@@ -96,7 +102,8 @@ switch funcType
         key.pipeline_name = pipeline;
         key.epoch_func_name = funcName;
         try
-            thisResult = sl.Result & key;
+            thisResult = getStoredResult('Multi-cell', key, my_db_only);
+            %thisResult = sl.Result & key;
             analysisOutput.result = fetch1(thisResult, 'result');
             loaded_some = true;
         catch

@@ -10,7 +10,7 @@ dataset_protocol_name=NULL          : varchar(64)                  # displayName
 dataset_protocol_version=NULL       : int unsigned                 # version number of protocol
 dataset_rstar_mean=NULL             : float                        # background light intensity R*/rod/s
 dataset_stim_intensity=NULL         : float                        # stimulus intensity R*/rod/s
-dataset_hold_signal                 : float                        # hold signal mV or pA 
+dataset_hold_signal=NULL            : float                        # hold signal mV or pA 
 epoch_ids=NULL              : longblob                     # set of epochs in this dataset
 %}
 
@@ -19,9 +19,19 @@ classdef Dataset < dj.Manual
         function makeTuples(self,key)
             cellData = loadAndSyncCellData(key.cell_data);
             datasetsMap = cellData.savedDataSets;
-            key.epoch_ids = datasetsMap(key.dataset_name);
             
-            N_epochs = length(key.epoch_ids);
+            try
+                key.epoch_ids = datasetsMap(key.dataset_name);            
+                N_epochs = length(key.epoch_ids);
+            catch
+                disp('Error getting epoch IDs');
+                return;
+            end
+            
+            if N_epochs == 0
+                return;
+            end
+                        
             allModes = cell(1,N_epochs);
             allHold = zeros(1,N_epochs);
             allMeanLevels = zeros(1,N_epochs);
@@ -62,7 +72,7 @@ classdef Dataset < dj.Manual
             if length(unique_Hold) == 1
                 key.dataset_hold_signal = unique_Hold(1);
             else
-                key.dataset_hold_signal = NaN;
+                key.dataset_hold_signal = 0; %should be NaN can I change this in header after the fact?
             end
             
             unique_MeanLevels = unique(allMeanLevels);            

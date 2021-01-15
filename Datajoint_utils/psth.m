@@ -39,7 +39,7 @@ psth_x = (0:N_samples-1) * binSize / 1E3 - preTime / 1E3; % units of seconds
 allSpikes = [];
 for i=1:Nepochs
     thisEpoch = sl.Epoch & sprintf('cell_id="%s"', cell_id) & sprintf('epoch_number=%d', epoch_numbers(i));
-    thisSpikeTrain = sl.SpikeTrain & thisEpoch & sprintf('channel=%d', channel);
+    thisSpikeTrain = sl_mutable.SpikeTrain & thisEpoch & sprintf('channel=%d', channel);
     ep_struct = thisEpoch.fetch('*');
     cur_sampleRate = ep_struct.sample_rate;
     if isfield(ep_struct.protocol_params, 'preTime')

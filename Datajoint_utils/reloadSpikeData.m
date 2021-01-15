@@ -3,9 +3,9 @@ if nargin < 2
     epochRange = [];
 end
 if isempty(epochRange)
-    theseSpikeTrains = sl.SpikeTrain & sprintf('cell_id="%s"', cell_id);
+    theseSpikeTrains = sl_mutable.SpikeTrain & sprintf('cell_id="%s"', cell_id);
 else
-    theseSpikeTrains = sl.SpikeTrain & sprintf('cell_id="%s"', cell_id) ...
+    theseSpikeTrains = sl_mutable.SpikeTrain & sprintf('cell_id="%s"', cell_id) ...
         & sprintf('epoch_number>=%d', epochRange(1)) & sprintf('epoch_number<=%d', epochRange(2)); 
 end
 
@@ -15,4 +15,4 @@ if ~theseSpikeTrains.exists
 end
 
 del(theseSpikeTrains);
-populate(sl.SpikeTrain, sprintf('cell_id="%s"', cell_id));
+populate(sl_mutable.SpikeTrain, sprintf('cell_id="%s"', cell_id));

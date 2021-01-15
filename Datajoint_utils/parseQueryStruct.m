@@ -15,8 +15,15 @@ currentTables = queryState.currentTables;
 commandStr = 'searchTable=';
 N = length(currentTables);
 for i=1:N
-    commandStr = [commandStr, 'sl.' currentTables{i} '*'];
+    if contains(currentTables{i}, 'Result')
+        commandStr = [commandStr, queryState.results_db '.' currentTables{i} '*'];
+    elseif strcmp(currentTables{i}, 'CurrentCellType')
+        commandStr = [commandStr, 'sl_mutable.' currentTables{i} '*'];
+    else
+        commandStr = [commandStr, 'sl.' currentTables{i} '*'];
+    end
 end
+
 %remove trailing *
 commandStr = [commandStr(1:end-1) ,';'];
 eval(commandStr);
@@ -79,7 +86,7 @@ for i=1:length(entry)
     if ~isempty(entry{i})
         Qstr = [Qstr, 'entry{' num2str(i) '} '];
         thisEntry = entry{i};
-        Qstr_human = [Qstr_human, thisEntry];
+        Qstr_human = [Qstr_human, '''' thisEntry ''''];
     end
     txt = queryState.logicButtonColumn(i+1).text;
     if ~isempty(txt)

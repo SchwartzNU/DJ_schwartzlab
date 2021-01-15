@@ -30,17 +30,33 @@ try
             %fprintf(fid,'Loading previously computed results.\n');
             %[analysisOutput, loaded_some, missed_some] = loadResult(pipeline, funcType, funcName, workingQuery);
             % look for results that will be needed but don't fetch them because that is slow
-            missingEntries = findResults(pipeline, funcType, funcName, workingQuery);           
+            missingEntries = findResults(pipeline, funcType, funcName, workingQuery);
             if ~isempty(missingEntries) && missingEntries.exists
                 fprintf(fid,'Running function %s for %d entries not found in database.\n', funcName, missingEntries.count);
-                analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, []);
+            %    missingEntries_struct = missingEntries.fetch();
+            %    for e=1:missingEntries.count
+            %        e
+            %        missingEntries_struct(e)
+            %        fprintf(fid,'Running function %s on entry %d\n', funcName, e);
+                    analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, []);
+%                    fprintf(fid,'Writing results of function %s for entry %d\n', funcName, e);
+                    writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
+           %     end
             else
                 fprintf(fid,'All results for %s found in database so not running analysis.\n', funcName);
                 foundAll = true;
             end
         else
-            fprintf(fid,'Running function %s for all entries.\n', funcName);
-            analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, []);
+            allEntries_struct = workingQuery.fetch();
+            fprintf(fid,'Running function %s for all %d entries.\n', funcName, length(allEntries_struct));
+            %for e=1:workingQuery.count
+            %    e
+            %    allEntries_struct(e)
+            %    fprintf(fid,'Running function %s on entry %d\n', funcName, e);
+                analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, []);
+            %    fprintf(fid,'Writing results of function %s for entry %d\n', funcName, e);
+                writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
+           % end
         end
         
         if ~foundAll

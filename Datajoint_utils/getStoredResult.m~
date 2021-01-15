@@ -1,5 +1,0 @@
-function [] = getStoredResult(level, key, my_db_only)
-
-switch level
-    case 'Epoch'
-        cas
