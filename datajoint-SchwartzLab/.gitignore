@@ -1,5 +1,6 @@
 *.m~
 mym/
++dj/
 *.mltbx
 *.env
 notebook
