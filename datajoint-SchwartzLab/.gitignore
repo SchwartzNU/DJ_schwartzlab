@@ -1,5 +1,4 @@
 *.m~
-mym/
 +dj/
 *.mltbx
 *.env
