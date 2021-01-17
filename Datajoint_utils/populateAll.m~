@@ -1,5 +1,0 @@
-function [] = populateAll()
-    populate(sl.SymphonyRecordedCell)
-    populate(sl.DatasetSMS)
-    populate(sl.SMSSpikeData)
-end

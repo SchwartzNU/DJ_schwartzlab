@@ -183,7 +183,12 @@ classdef SymphonyRecordedCell < dj.Imported
                         end
                         epoch_init_struct.protocol_params = paramStruct;
                         if ~epoch_insert_error
-                            insert(sl.Epoch, epoch_init_struct, 'REPLACE');
+                            %temp = sl.Epoch & qstruct;
+                            %if temp.exists
+                                insert(sl.Epoch, epoch_init_struct);
+                            %else
+                            %    insert(sl.Epoch, epoch_init_struct);
+                            %end
                         end
                     end
                 end

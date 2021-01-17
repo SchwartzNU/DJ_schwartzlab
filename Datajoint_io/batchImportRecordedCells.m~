@@ -177,7 +177,6 @@ if fname
                 fprintf('Cell type in cellData file: %s\n', cellType_cellData);
                 %Assign type
                 if auto_assign
-                    key_type = struct;
                     key_type.cell_unid = key.cell_unid;
                     key_type.cell_id = key.cell_id;
                     key_type.animal_id = key.animal_id;
@@ -186,27 +185,19 @@ if fname
                     
                     matchInd = strmatch(cellType_cellData, typeNames);
                     if ~isempty(matchInd)
-                        key_type.name_full = typeNames{matchInd};
+                        key_type.name_full = typeNames{match_ind};
                     else
                         matchInd = strmatch(cellType_cellData, matchTable.cellData_type);
                         if ~isempty(matchInd)
-                            key_type.name_full = matchTable.db_type{matchInd};
+                            key_type.name_full = matchTable.db_type{match_ind};
                         else
                             key_type.name_full = 'unknown';
                         end                        
                     end
-                    RGCtype = key_type.name_full;
                     C.startTransaction;
-                    insert(sl.CellEventAssignType,key_type);
-                    
-                    key_type = rmfield(key_type,'user_name');
-                    key_type.cell_type = key_type.name_full;
-                    key_type = rmfield(key_type,'name_full');
-                    insert(sl_mutable.CurrentCellType, key_type, 'REPLACE');
                     
                     C.commitTransaction;
-                    fprintf(fid,'Assigned cell %s cell as %s\n', cell_id, RGCtype);
-                    fprintf('Assigned cell %s cell as %s\n', cell_id, RGCtype);
+                    fprintf(fid,'%d: Assigned cinserted cell %s\n', i, cell_id);
                 else
                     app = AssignCellType_dlg(key.cell_unid, key.animal_id, key.cell_id, cellType_cellData);
                     waitfor(app);

@@ -3,13 +3,14 @@
 -> sl.Epoch
 channel = 1 : int unsigned  # amplifier channel
 ---
-sp : longblob               # the spike train (vector), or 'not computed', or 'NA'
+sp = NULL:longblob               # the spike train (vector), or 'not computed', or 'NA'
 %}
 
 classdef SpikeTrain < dj.Imported
     methods(Access=protected)
         function makeTuples(self, key)
             q = sl_mutable.SpikeTrain & key;
+            key.sp = [];
             if q.count > 0
                 previous_ch = fetch1(q, 'channel');
                 if previous_ch == 1
