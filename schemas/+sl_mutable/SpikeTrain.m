@@ -34,8 +34,8 @@ classdef SpikeTrain < dj.Imported
             end
             if strcmp(mode, 'Cell attached')
                 C = dj.conn;
-                if strcmp(C.host, 'loccalhost') 
-                    
+                if strcmp(C.host, 'localhost') 
+                    load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data]);
                 else
                     cellData = loadAndSyncCellData(key.cell_data);
                 end
