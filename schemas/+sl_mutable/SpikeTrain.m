@@ -33,7 +33,12 @@ classdef SpikeTrain < dj.Imported
                 disp(['SpikeTrain: invalid channel ' num2str(ch)]);
             end
             if strcmp(mode, 'Cell attached')
-                cellData = loadAndSyncCellData(key.cell_data);
+                C = dj.conn;
+                if strcmp(C.host, 'loccalhost') 
+                    
+                else
+                    cellData = loadAndSyncCellData(key.cell_data);
+                end
                 epData = cellData.epochs(key.epoch_number);
                 if ch==1
                     key.sp = epData.get('spikes_ch1');
