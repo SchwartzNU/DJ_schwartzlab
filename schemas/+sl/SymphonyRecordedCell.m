@@ -38,8 +38,12 @@ classdef SymphonyRecordedCell < dj.Imported
                 if ~isempty(ch)
                     channel = str2double(ch(4));
                 end
-
-                cellData = loadAndSyncCellData(curName);
+                C = dj.conn;
+                if strcmp(C.host, 'localhost') 
+                    load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data]);
+                else
+                    cellData = loadAndSyncCellData(key.cell_data);
+                end
                 [date,rig] = cellID_to_dateAndRig(curName);
                 key.rig_name = rig;
                 key.recording_date = date;
