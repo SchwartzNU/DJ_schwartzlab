@@ -40,9 +40,9 @@ classdef SymphonyRecordedCell < dj.Imported
                 end
                 C = dj.conn;
                 if strcmp(C.host, 'localhost') 
-                    load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data]);
+                    load(['/mnt/fsmresfiles/CellDataMaster/' curName '.mat']);
                 else
-                    cellData = loadAndSyncCellData(key.cell_data);
+                    cellData = loadAndSyncCellData(curName);
                 end
                 [date,rig] = cellID_to_dateAndRig(curName);
                 key.rig_name = rig;
