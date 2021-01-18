@@ -1,6 +1,10 @@
 dj.conn;
 while true
     disp(datestr(now));
-    populateAll();
+    try
+        populateAll();
+    catch
+        
+    end
     pause(10);
 end
