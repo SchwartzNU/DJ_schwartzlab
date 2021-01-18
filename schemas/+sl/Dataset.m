@@ -17,7 +17,12 @@ epoch_ids=NULL              : longblob                     # set of epochs in th
 classdef Dataset < dj.Manual
     methods(Static)
         function makeTuples(self,key)
-            cellData = loadAndSyncCellData(key.cell_data);
+            C = dj.conn;
+            if strcmp(C.host, 'localhost')
+                load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data '.mat']);
+            else
+                cellData = loadAndSyncCellData(key.cell_data);
+            end
             datasetsMap = cellData.savedDataSets;
             
             try
