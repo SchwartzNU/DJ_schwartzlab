@@ -4,8 +4,8 @@
 ---
 query_str = NULL: varchar(1024) #query string
 epoch_filter_func = NULL: varchar(64) #name of epoch filtering function if it has one
-query_state : longblob  #struct with full queryState including the tables in queryState.currentTables
-cell_id_list : longblob #cell array of cellIDs to use in restriction
+query_state = NULL : longblob  #struct with full queryState including the tables in queryState.currentTables
+cell_id_list = NULL: longblob #cell array of cellIDs to use in restriction
 use_query : enum('T', 'F') #use query to restrict
 use_cell_id_list : enum('T', 'F') #use cell_id list to restrict
 use_epoch_filter : enum('T', 'F') #use epoch filter to restrict

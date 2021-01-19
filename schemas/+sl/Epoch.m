@@ -27,7 +27,6 @@ classdef Epoch < dj.Manual
     methods
 
         function [data, xvals, units] = getData(self, channel)
-            global RAW_DATA_FOLDER;
             if nargin < 2
                 channel = 1;
             end
@@ -52,7 +51,7 @@ classdef Epoch < dj.Manual
             
             fname = fetch1(self,'raw_data_filename');
             
-            temp = h5read(fullfile(RAW_DATA_FOLDER, [fname '.h5']), dL);
+            temp = h5read(fullfile(getenv('raw_data_folder'), [fname '.h5']), dL);
             data = temp.quantity;
             if isfield(temp,'units')
                 units = deblank(temp.units(:,1)');
