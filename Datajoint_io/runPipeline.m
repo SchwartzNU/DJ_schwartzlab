@@ -6,7 +6,7 @@ if nargin < 3
     overwriteResults = false;
 end
 
-if ~exists([getenv('pipelines_folder'), pipeline], 'dir')
+if ~exist([getenv('pipelines_folder'), pipeline], 'dir')
     mkdir([getenv('pipelines_folder'), pipeline]);
 end
 
