@@ -262,8 +262,9 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
                 end
 
             end
-
-            maxRows = dj.set('maxPreviewRows');
+            
+            config = dj.config;
+            maxRows = config.displayLimit;
             preview = self.fetch(attrList{:}, sprintf('LIMIT %d', maxRows + 1));
 
             if ~isempty(preview)

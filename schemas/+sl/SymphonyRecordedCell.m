@@ -121,7 +121,12 @@ classdef SymphonyRecordedCell < dj.Imported
                     epoch_init_struct.protocol_name = ep.get('displayName');                    
                     
                     %some of these might return NaN, but that's ok
-                    epoch_init_struct.rstar_mean = ep.get('RstarMean'); 
+                    rstar_mean = ep.get('RstarMean');
+                    if isscalar(rstar_mean)
+                        epoch_init_struct.rstar_mean = rstar_mean;
+                    else
+                        epoch_init_struct.rstar_mean = NaN;
+                    end
                     stimI = ep.get('RstarIntensity');
                     if isnan(stimI)
                         stimI = ep.get('RstarIntensity1');
