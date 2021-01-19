@@ -1,34 +1,30 @@
-function [] = runPipeline(pipeline, loadFirst, export)
-if nargin < 3
+function [] = runPipeline(pipeline, user, overwriteResults, export)
+if nargin < 4
     export = false;
 end
-if nargin < 2
-    loadFirst = true;
+if nargin < 3
+    overwriteResults = false;
 end
 
-pipelineDir = [getenv('pipelines_folder'), pipeline filesep];
-if ~exist(pipelineDir, 'dir')
-    fprintf('Error: could not find pipeline folder %s\n', pipelineDir);
-    return;
+queryStruct = sl_mutable.PipelineQuery & sprintf('pipeline_name="%s"',pipeline);
+datasets = runPipelineQuery(queryStruct.fetch('*'));
+
+if ~overwriteResults    
+    %get only unanalyzed ones
+    analyzed = sl_mutable.DatasetAnalyzed & sprintf('pipeline_name="%s"', pipeline);
+    datasets = datasets - analyzed;
 end
 
-if exist([pipelineDir, 'dataGroup.mat'], 'file')
-    load([pipelineDir, 'dataGroup.mat'], 'workingGroup');    
-else
-    fprintf('Error: could not load dataGroup.mat\n');
-end
-    
-if exist([pipelineDir, 'analysisSteps.mat'], 'file')
-    load([pipelineDir, 'analysisSteps.mat'], 'analysisSteps'); 
-    if export
-        load([pipelineDir, 'analysisSteps.mat'], 'exportStates'); 
-    end
-else
-    fprintf('Error: could not load analysisSteps.mat\n');
-end
+workingGroup.primaryKeyStruct = datasets.fetch();
+query_state = fetch1(queryStruct,'query_state');
+workingGroup.searchTable = makeSearchTable(query_state.currentTables, user);
+
+analysisStepsQuery = sl_mutable.PipelineAnalysisSteps & sprintf('pipeline_name="%s"', pipeline);
+analysisSteps = analysisStepsQuery.fetch1('analysis_steps');
 
 if export
-    runFullPipeline(pipeline, workingGroup, analysisSteps, loadFirst, exportStates);
+    exportStates = analysisStepsQuery.fetch1('export_states');
+    runFullPipeline(pipeline, workingGroup, analysisSteps, false, exportStates);
 else
-    runFullPipeline(pipeline, workingGroup, analysisSteps, loadFirst);
+    runFullPipeline(pipeline, workingGroup, analysisSteps, false);
 end

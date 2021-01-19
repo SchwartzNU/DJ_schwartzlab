@@ -1,0 +1,25 @@
+function [] = runPipeline(pipeline, overwriteResults, export)
+if nargin < 3
+    export = false;
+end
+if nargin < 2
+    overwriteResults = false;
+end
+
+queryStruct = sl_mutable.PipelineQuery & sprintf('pipeline_name="%s"',pipeline);
+SMS_datasets = runPipelineQuery(queryStruct.fetch('*'))
+
+if exist([pipelineDir, 'analysisSteps.mat'], 'file')
+    load([pipelineDir, 'analysisSteps.mat'], 'analysisSteps'); 
+    if export
+        load([pipelineDir, 'analysisSteps.mat'], 'exportStates'); 
+    end
+else
+    fprintf('Error: could not load analysisSteps.mat\n');
+end
+
+if export
+    runFullPipeline(pipeline, workingGroup, analysisSteps, loadFirst, exportStates);
+else
+    runFullPipeline(pipeline, workingGroup, analysisSteps, loadFirst);
+end
