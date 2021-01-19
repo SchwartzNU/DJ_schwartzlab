@@ -6,6 +6,10 @@ if nargin < 3
     overwriteResults = false;
 end
 
+if ~exists([getenv('pipelines_folder'), pipeline], 'dir')
+    mkdir([getenv('pipelines_folder'), pipeline]);
+end
+
 queryStruct = sl_mutable.PipelineQuery & sprintf('pipeline_name="%s"',pipeline);
 datasets = runPipelineQuery(queryStruct.fetch('*'));
 
