@@ -57,7 +57,8 @@ classdef Dataset < dj.Manual
             
             for e=1:N_epochs
                 q.cell_id = key.cell_id;
-                q.epoch_number = key.epoch_ids(e);                
+                q.epoch_number = key.epoch_ids(e); 
+                q.cell_data = key.cell_data;
                 allModes{e} = fetch1(sl.Epoch & q, mode_param);
                 allHold(e) = fetch1(sl.Epoch & q, hold_param);
                 allMeanLevels(e) = fetch1(sl.Epoch & q, 'rstar_mean');
