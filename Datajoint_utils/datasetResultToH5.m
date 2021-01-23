@@ -1,5 +1,5 @@
-function [] = datasetResultToH5(cell_id, dataset_name, fname_prefix)
-if nargin<3
+function [] = datasetResultToH5(cell_id, dataset_name, user_db, fname_prefix)
+if nargin<4
     fname_prefix = '';
 end
 
@@ -14,9 +14,9 @@ if ~exist(fileName, 'file')
     fclose(fid);
 end
 
-ds_result = sl.DatasetResult & sprintf('cell_id="%s"', cell_id) & sprintf('dataset_name="%s"', dataset_name);
+ds_result = eval(sprintf('%s.DatasetResult', user_db)) & sprintf('cell_id="%s"', cell_id) & sprintf('dataset_name="%s"', dataset_name);
 if ~ds_result.exists %try dataset name as prefix
-    ds_result = sl.DatasetResult & sprintf('cell_id="%s"', cell_id) & sprintf('dataset_name LIKE "%s%%"', dataset_name);
+    ds_result = eval(sprintf('%s.DatasetResult', user_db)) & sprintf('cell_id="%s"', cell_id) & sprintf('dataset_name LIKE "%s%%"', dataset_name);
 end
 
 if ~ds_result.exists
