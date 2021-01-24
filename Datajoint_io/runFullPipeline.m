@@ -38,7 +38,7 @@ try
             %        e
             %        missingEntries_struct(e)
             %        fprintf(fid,'Running function %s on entry %d\n', funcName, e);
-                    analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, []);
+                    analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, [], fid);
 %                    fprintf(fid,'Writing results of function %s for entry %d\n', funcName, e);
                     writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
            %     end
@@ -53,7 +53,7 @@ try
             %    e
             %    allEntries_struct(e)
             %    fprintf(fid,'Running function %s on entry %d\n', funcName, e);
-                analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, []);
+                analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, [], fid);
             %    fprintf(fid,'Writing results of function %s for entry %d\n', funcName, e);
                 writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
            % end

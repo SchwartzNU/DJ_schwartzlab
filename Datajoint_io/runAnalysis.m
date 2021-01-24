@@ -1,4 +1,10 @@
-function analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, previousLoad)
+function analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, previousLoad, fid)
+if nargin < 7
+    fid = 0;
+end
+if nargin < 6
+    previousLoad = [];
+end
 if isempty(previousLoad)
     preload = false;
 else
@@ -23,7 +29,11 @@ switch funcType
             all_ep_struct = ep_in_datasets.fetch();
         end
         
-        fprintf('Running %s on %d epochs...\n', funcName, ep_count);
+        if fid
+            fprintf(fid, 'Running %s on %d epochs...\n', funcName, ep_count);
+        else
+            fprintf('Running %s on %d epochs...\n', funcName, ep_count);
+        end
         
         s = struct('input', [], 'result', []);
         analysisOutput = repmat(s, ep_count,1);
@@ -44,7 +54,11 @@ switch funcType
         end
         
         all_ds_struct = datasets.fetch();
-        fprintf('Running %s on %d datasets...\n', funcName, datasets.count);
+        if fid
+            fprintf(fid, 'Running %s on %d datasets...\n', funcName, datasets.count);
+        else
+            fprintf('Running %s on %d datasets...\n', funcName, datasets.count);
+        end
         s = struct('input', [], 'result', []);
         analysisOutput = repmat(s, datasets.count,1);
         
@@ -64,7 +78,11 @@ switch funcType
         end
         
         allcells_struct = allcells.fetch();
-        fprintf('Running %s on %d cells...\n', funcName, allcells.count);
+        if fid
+            fprintf(fid, 'Running %s on %d cells...\n', funcName, allcells.count);
+        else
+            fprintf('Running %s on %d cells...\n', funcName, allcells.count);
+        end
         s = struct('input', [], 'result', []);
         analysisOutput = repmat(s, allcells.count,1);
         
@@ -76,11 +94,19 @@ switch funcType
         end
         
     case 'Multi-cell'
-        fprintf('Running %s ...\n', funcName);
+        if fid
+            fprintf(fid, 'Running %s ...\n', funcName);
+        else
+            fprintf('Running %s ...\n', funcName);
+        end
         curInput = workingQuery;
         analysisOutput = struct('input', [], 'result', []);
         eval(sprintf('R=%s(curInput,pipeline,P);', funcName));
         analysisOutput.result = R;
         
 end
-fprintf('done\n');
+if fid
+    fprintf(fid,'done\n');
+else
+    fprintf('done\n');
+end

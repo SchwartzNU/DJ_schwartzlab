@@ -49,7 +49,7 @@ for i=1:N_epochs
     key = mergeStruct(ep_struct, result_key);
     ep_result = getStoredResult('Epoch', key);
     if ep_result.count~=1
-        keyboard;
+        %keyboard;
     end
     %ep_result = sl.EpochResult & ep & result_key;
 %     if ep_result.count>1
