@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="1938558719" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="1584497056" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_New</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_New</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_New</param.files.only>
@@ -23,6 +23,67 @@
       <file>${PROJECT_ROOT}/AnimalInterface.mlapp</file>
     </fileset.web.main>
     <fileset.resources>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Animal.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalCageRoom.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventActivateBreedingCage.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventAssignCage.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventAssignProtocol.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventBrainInjection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventBrainSectioned.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventBrainSectionedSlice.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventDeactivateBreedingCage.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventDeceased.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventEyeInjection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventGaveBirth.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventGenotyped.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventHandling.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventIPinjection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventPairBreeders.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventReservedForProject.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventReservedForSession.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventRetireAsBreeder.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSeparateBreeders.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSetAsBreeder.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSession.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSessionStimMouse.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventWeaned.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalProtocol.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BrainArea.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BreedingCage.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/CellEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/CellEventAssignType.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/CellTrace.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/CellType.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Channel.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/ChannelSet.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Dataset.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Epoch.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Eye.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Genotype.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m~</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Image.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/ImageBrainSection.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/ImageCell.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/ImageRetina.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/ImagingModality.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/InjectionSubstance.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Jobs.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/MeasuredCell.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/MeasuredRetinalCell.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Microscope.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Pipeline.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Plane.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Project.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/ProjectUser.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Rig.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/SocialBehaviorExperimentType.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/SymphonyRecordedCell.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/User.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/UserActive.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/UserDB.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/+dj/+internal/AutoPopulate.m</file>
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/+dj/+internal/GeneralRelvar.m</file>
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/+dj/+internal/Header.m</file>
@@ -75,34 +136,9 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animal.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animalEvent.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animals.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/cellID_to_dateAndRig.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/escapeString.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Animal.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalCageRoom.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEvent.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventActivateBreedingCage.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventAssignCage.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventDeactivateBreedingCage.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventDeceased.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventGaveBirth.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventGenotyped.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventReservedForProject.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventRetireAsBreeder.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSetAsBreeder.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSession.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSessionStimMouse.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventWeaned.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalProtocol.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BrainArea.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BreedingCage.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Eye.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Genotype.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/InjectionSubstance.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Project.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/Rig.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/SocialBehaviorExperimentType.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/User.m</file>
-      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
+      <file>/Users/gws584/matlab/SymphonyAnalysis/core/loadAndSyncCellData.m</file>
     </fileset.depfun>
     <fileset.package />
     <build-deliverables>

@@ -57,22 +57,16 @@ try
             %    allEntries_struct(e)
             %    fprintf(fid,'Running function %s on entry %d\n', funcName, e);
                 analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, [], fid);
-%                 fprintf(fid,'Writing results of %s to database.\n', funcName);
-%                 if ~isempty(user)
-%                     writeResult(pipeline, funcType, funcName, P, analysisOutput, true, user);
-%                 else
-%                     writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
-%                 end
+                fprintf(fid,'Writing results of %s to database.\n', funcName);
+                if ~isempty(user)
+                    writeResult(pipeline, funcType, funcName, P, analysisOutput, true, user);
+                e
            % end
         end
         
         if ~foundAll
             fprintf(fid,'Writing results of %s to database.\n', funcName);
-            if ~isempty(user)
-                writeResult(pipeline, funcType, funcName, P, analysisOutput, true, user);
-            else
-                writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
-            end
+            writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
         end
         
         if export

@@ -1,6 +1,8 @@
-function [] = writeResult(pipeline, funcType, funcName, P, analysisOutput, overwrite)
-C = dj.conn;
-user_db = sprintf('sl_%s', lower(C.user));
+function [] = writeResult(pipeline, funcType, funcName, P, analysisOutput, overwrite, user_db)
+if nargin < 7
+    C = dj.conn;
+    user_db = sprintf('sl_%s', lower(C.user));
+end
 switch funcType
     case 'Epoch'
         disp('Writing epoch results to database');
