@@ -5,6 +5,10 @@ end
 if nargin < 3
     overwriteResults = false;
 end
+if nargin < 2 || isempty(user)
+    C=dj.conn;
+    user = lower(C.user);
+end
 
 if ~exist([getenv('pipelines_folder'), pipeline], 'dir')
     mkdir([getenv('pipelines_folder'), pipeline]);
@@ -28,7 +32,7 @@ analysisSteps = analysisStepsQuery.fetch1('analysis_steps');
 
 if export
     exportStates = analysisStepsQuery.fetch1('export_states');
-    runFullPipeline(pipeline, workingGroup, analysisSteps, false, exportStates);
+    runFullPipeline(pipeline, workingGroup, analysisSteps, false, exportStates, user);
 else
-    runFullPipeline(pipeline, workingGroup, analysisSteps, false);
+    runFullPipeline(pipeline, workingGroup, analysisSteps, false, [], user);
 end
