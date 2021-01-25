@@ -2,7 +2,7 @@ function [] = runFullPipeline(pipeline, workingGroup, analysisSteps, loadFirst, 
 if nargin<6
     user = [];
 end
-if nargin<5
+if nargin<5 || isempty(exportStates)
     export = false;
 else
     export = true;
