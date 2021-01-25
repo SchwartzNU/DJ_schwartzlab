@@ -5,6 +5,7 @@ if nargin < 7
 else
     user_db = sprintf('sl_%s', user);
 end
+fprintf('Writing to schema: %s\n', user_db);
 switch funcType
     case 'Epoch'
         disp('Writing epoch results to database');
