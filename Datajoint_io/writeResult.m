@@ -1,6 +1,6 @@
 function [] = writeResult(pipeline, funcType, funcName, P, analysisOutput, overwrite, user)
+C = dj.conn;
 if nargin < 7
-    C = dj.conn;
     user_db = sprintf('sl_%s', lower(C.user));
 else
     user_db = sprintf('sl_%s', user);
