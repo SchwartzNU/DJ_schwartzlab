@@ -48,19 +48,7 @@ for i=1:N_epochs
     
     key = mergeStruct(ep_struct, result_key);
     ep_result = getStoredResult('Epoch', key);
-    if ep_result.count~=1
-        %keyboard;
-    end
-    %ep_result = sl.EpochResult & ep & result_key;
-%     if ep_result.count>1
-%         fprintf('Duplicate result for epoch %d', epoch_ids(i));
-%         R = [];
-%         return        
-%     end
-%     if ep_result.count ~= 1
-%         fprintf('SMS_spike_analysis: error loading epoch results from %s for epoch %d \n', ...
-%             result_key.epoch_func_name, ep_struct.epoch_number);
-%     end
+ 
     ep_result_R = ep_result.fetch1('result');
     computedVals.spikeRatePre(i) = ep_result_R.preCount / ep_result_R.preDur;
     computedVals.spikeRateStim(i) = ep_result_R.stimCount / ep_result_R.stimDur;

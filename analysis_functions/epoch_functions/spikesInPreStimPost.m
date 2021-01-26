@@ -20,7 +20,7 @@ try
     tailTime = ep_struct.protocol_params.tailTime;
     sample_rate = ep_struct.sample_rate;
 catch
-    fprintf('spikesInPreStimPost failed for cell %s, epoch %d. Unable to get preTime, stimTime, or tailTime or smaple_rate.\n', ...
+    fprintf('spikesInPreStimPost failed for cell %s, epoch %d. Unable to get preTime, stimTime, or tailTime or sampleRate.\n', ...
         ep_struct.cell_id, ep_struct.epoch_number);    
     return;
 end

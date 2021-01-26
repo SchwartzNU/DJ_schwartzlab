@@ -36,15 +36,7 @@ try
             missingEntries = findResults(pipeline, funcType, funcName, workingQuery);
             if ~isempty(missingEntries) && missingEntries.exists
                 fprintf(fid,'Running function %s for %d entries not found in database.\n', funcName, missingEntries.count);
-            %    missingEntries_struct = missingEntries.fetch();
-            %    for e=1:missingEntries.count
-            %        e
-            %        missingEntries_struct(e)
-            %        fprintf(fid,'Running function %s on entry %d\n', funcName, e);
-                    analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, [], fid);
-%                    fprintf(fid,'Writing results of function %s for entry %d\n', funcName, e);
-                    writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
-           %     end
+                analysisOutput = runAnalysis(pipeline, funcType, funcName, P, missingEntries, [], fid);
             else
                 fprintf(fid,'All results for %s found in database so not running analysis.\n', funcName);
                 foundAll = true;
@@ -52,26 +44,15 @@ try
         else
             allEntries_struct = workingQuery.fetch();
             fprintf(fid,'Running function %s for all %d entries.\n', funcName, length(allEntries_struct));
-            %for e=1:workingQuery.count
-            %    e
-            %    allEntries_struct(e)
-            %    fprintf(fid,'Running function %s on entry %d\n', funcName, e);
-                analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, [], fid);
-%                 fprintf(fid,'Writing results of %s to database.\n', funcName);
-%                 if ~isempty(user)
-%                     writeResult(pipeline, funcType, funcName, P, analysisOutput, true, user);
-%                 else
-%                     writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
-%                 end
-           % end
+            analysisOutput = runAnalysis(pipeline, funcType, funcName, P, workingQuery, [], fid);
         end
         
         if ~foundAll
             fprintf(fid,'Writing results of %s to database.\n', funcName);
             if ~isempty(user)
-                writeResult(pipeline, funcType, funcName, P, analysisOutput, true, user);
+                writeResult(pipeline, funcType, funcName, P, analysisOutput, true, user, fid);
             else
-                writeResult(pipeline, funcType, funcName, P, analysisOutput, true);
+                writeResult(pipeline, funcType, funcName, P, analysisOutput, true, [], fid);
             end
         end
         

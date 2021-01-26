@@ -39,12 +39,20 @@ switch funcType
         analysisOutput = repmat(s, ep_count,1);
         for i=1:ep_count
             if fid
-                fprintf(fid, 'Cell %s on %d epochs...\n', all_ep_struct(i).ccell_i, ep_count);
+                fprintf(fid, 'Cell %s, epoch_num %d...\n', all_ep_struct(i).cell_id, all_ep_struct(i).epoch_number);
             else
-                fprintf('Running %s on %d epochs...\n', funcName, ep_count);
+                fprintf('Cell %s, epoch_num %d...\n', all_ep_struct(i).cell_id, all_ep_struct(i).epoch_number);
             end
-            ep = sl.Epoch & all_ep_struct(i);            
-            eval(sprintf('R=%s(ep,pipeline,P);', funcName));
+            ep = sl.Epoch & all_ep_struct(i);    
+            try
+                eval(sprintf('R=%s(ep,pipeline,P);', funcName));
+            catch
+                if fid
+                    fprintf(fid, 'Error in analysis %s for cell %s, epoch_num %d...\n', funcName, all_ep_struct(i).cell_id, all_ep_struct(i).epoch_number);
+                else
+                    fprintf('Error in analysis %s for cell %s, epoch_num %d...\n', funcName, all_ep_struct(i).cell_id, all_ep_struct(i).epoch_number);
+                end
+            end
             analysisOutput(i).input = all_ep_struct(i);
             analysisOutput(i).result = R;
         end
@@ -68,8 +76,17 @@ switch funcType
         analysisOutput = repmat(s, datasets.count,1);
         
         for i=1:datasets.count
+            if fid
+                fprintf(fid, 'Cell %s, dataset %s...\n', all_ds_struct(i).cell_id, all_ds_struct(i).dataset_name);
+            else
+                fprintf('Cell %s, dataset %s...\n', all_ds_struct(i).cell_id, all_ds_struct(i).dataset_name);
+            end
             curDataSet = sl.Dataset & all_ds_struct(i);
-            eval(sprintf('R=%s(curDataSet,pipeline,P);', funcName));
+            try
+                eval(sprintf('R=%s(curDataSet,pipeline,P);', funcName));
+            catch
+                
+            end
             analysisOutput(i).input = all_ds_struct(i);
             analysisOutput(i).result = R;
         end
@@ -92,6 +109,11 @@ switch funcType
         analysisOutput = repmat(s, allcells.count,1);
         
         for i=1:allcells.count
+             if fid
+                fprintf(fid, 'Cell %s...\n', allcells_struct(i).cell_id);
+            else
+                fprintf('Cell %s...\n', allcells_struct(i).cell_id);
+            end
             curCell = sl.MeasuredCell & allcells_struct(i);
             eval(sprintf('R=%s(curCell,pipeline,P);', funcName));
             analysisOutput(i).input = allcells_struct(i);

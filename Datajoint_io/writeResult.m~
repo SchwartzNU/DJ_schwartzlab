@@ -37,11 +37,7 @@ switch funcType
                         try
                             eval(sprintf('insert(%s.EpochResult, key);', user_db));
                         catch
-                            if fid
-                                fprintf(fid, 'Duplicate result for function %s, cell %s, epoch number %d. Did not overwrite.\n', funcName, key.cell_id, key.epoch_number);
-                            else
-                                fprintf('Duplicate result for function %s, cell %s, epoch number %d. Did not overwrite.\n', funcName, key.cell_id, key.epoch_number);
-                            end
+                            disp([funcName ': duplicate result: did not overwrite']);
                         end
                     end
                 end
@@ -82,11 +78,7 @@ switch funcType
                         try
                             eval(sprintf('insert(%s.DatasetResult, key);', user_db));
                         catch
-                            if fid
-                                fprintf(fid, 'Duplicate result for function %s, cell %s, dataset %s. Did not overwrite.\n', funcName, key.cell_id, key.dataset_name);
-                            else
-                                fprintf('Duplicate result for function %s, cell %s, dataset %s. Did not overwrite.\n', funcName, key.cell_id, key.dataset_name);
-                            end
+                            disp([funcName ': duplicate result: did not overwrite']);
                         end
                     end
                     C.commitTransaction;
@@ -139,10 +131,11 @@ switch funcType
                 eval(sprintf('insert(%s.Result, key);', user_db));
             catch
                 if fid
-                    fprintf(fid, 'Duplicate result for function %s. Did not overwrite.\n', funcName);
+                    fprintf(fid, 'Duplicate result for function %s, cell %s. Did not overwrite.\n', funcName, key.cell_id);
                 else
-                    fprintf('Duplicate result for function %s. Did not overwrite.\n', funcName);
+                    fprintf('Duplicate result for function %s, cell %s. Did not overwrite.\n', funcName, key.cell_id);
                 end
+                disp([funcName ': duplicate result: did not overwrite']);
             end
         end
 
