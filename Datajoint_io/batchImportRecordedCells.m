@@ -1,12 +1,8 @@
-function [inserted_cells, error_cells, already_in_cells] = batchImportRecordedCells(fname, auto_assign)
+function [inserted_cells, error_cells, already_in_cells] = batchImportRecordedCells(fname)
 if nargin<1 || ~exist(fname, 'file')
     [fname, fpath] = uigetfile('*.txt','Select plain text file with cell names.');
 else
     fpath = '';
-end
-
-if nargin<2
-    auto_assign = true;
 end
 
 load([getenv('DJ_root') 'CellTypeNameMatches.mat'], 'matchTable');
@@ -18,8 +14,7 @@ error_cells = [];
 already_in_cells = [];
 
 if fname
-    curTime = datestr(now);
-    logName = sprintf('DJ_cell_import_log_%s.txt', curTime);
+    logName = 'DJ_cell_import_log.txt';
     fprintf('Writing log in current directory as "%s"\n', logName);
     cell_ids = importdata([fpath, fname]);
     Ncells = length(cell_ids);
@@ -73,6 +68,13 @@ if fname
                     L = matchingAnimals.count;
                     if L == 0 %add entry
                         fprintf(fid,'%d: No matching animal found for %s. Trying to add animal to database.\n', i, cell_id);
+                        okToInsert = input(sprintf('No matching animal found for %s. Ok to add new animal to database? [y|n]\n', cell_id), 's');
+                        
+                        if ~strcmp(okToInsert, 'y')
+                            disp('Aborting import');
+                            return;
+                        end
+                        
                         
                         %make insert key with default values
                         key = struct;
@@ -142,10 +144,12 @@ if fname
                         end
                     elseif L == 1 %found single matching animal, assume that eyes and events are added correctly
                         animalData = matchingAnimals.fetch('animal_id','genotype_name','tag_id');
-                        fprintf(fid,'%d: Found single matching animal for %s\n', i, cell_id);
+                        fprintf(fid,'Found single matching animal for %s: DJ_ID: %d \n', cell_id, animalData.animal_id);
+                        fprintf('Found single matching animal for %s: DJ_ID: %d \n', cell_id, animalData.animal_id);
                     else %found multiple matching animals - so error
                         error = true;
                         fprintf(fid,'%d: Found more than 1 possible matching animal for %s in the database, so it will need to be entered manually.\n', i, cell_id);
+                        fprintf('Found more than 1 possible matching animal for %s in the database, so it will need to be entered manually.\n', cell_id);
                     end
                 end
             end
@@ -199,41 +203,36 @@ if fname
                         fprintf('Cell type online file: %s\n', cellType_online);
                         fprintf('Cell type in cellData file: %s\n', cellType_cellData);
                         %Assign type
-                        if auto_assign
-                            key_type = struct;
-                            key_type.cell_unid = key.cell_unid;
-                            key_type.cell_id = key.cell_id;
-                            key_type.animal_id = key.animal_id;
-                            key_type.user_name = C.user;
-                            key_type.cell_class = 'RGC';
-                            
-                            matchInd = strmatch(cellType_cellData, typeNames);
-                            if ~isempty(matchInd)
-                                key_type.name_full = typeNames{matchInd};
-                            else
-                                matchInd = strmatch(cellType_cellData, matchTable.cellData_type);
-                                if ~isempty(matchInd)
-                                    key_type.name_full = matchTable.db_type{matchInd};
-                                else
-                                    key_type.name_full = 'unknown';
-                                end
-                            end
-                            RGCtype = key_type.name_full;
-                            C.startTransaction;
-                            insert(sl.CellEventAssignType,key_type);
-                            
-                            key_type = rmfield(key_type,'user_name');
-                            key_type.cell_type = key_type.name_full;
-                            key_type = rmfield(key_type,'name_full');
-                            insert(sl_mutable.CurrentCellType, key_type, 'REPLACE');
-                            
-                            C.commitTransaction;
-                            fprintf(fid,'Assigned cell %s cell as %s\n', cell_id, RGCtype);
-                            fprintf('Assigned cell %s cell as %s\n', cell_id, RGCtype);
+                        key_type = struct;
+                        key_type.cell_unid = key.cell_unid;
+                        key_type.cell_id = key.cell_id;
+                        key_type.animal_id = key.animal_id;
+                        key_type.user_name = C.user;
+                        key_type.cell_class = 'RGC';
+                        
+                        matchInd = strmatch(cellType_cellData, typeNames);
+                        if ~isempty(matchInd)
+                            key_type.name_full = typeNames{matchInd};
                         else
-                            app = AssignCellType_dlg(key.cell_unid, key.animal_id, key.cell_id, cellType_cellData);
-                            waitfor(app);
+                            matchInd = strmatch(cellType_cellData, matchTable.cellData_type);
+                            if ~isempty(matchInd)
+                                key_type.name_full = matchTable.db_type{matchInd};
+                            else
+                                key_type.name_full = 'unknown';
+                            end
                         end
+                        RGCtype = key_type.name_full;
+                        C.startTransaction;
+                        insert(sl.CellEventAssignType,key_type);
+                        
+                        key_type = rmfield(key_type,'user_name');
+                        key_type.cell_type = key_type.name_full;
+                        key_type = rmfield(key_type,'name_full');
+                        insert(sl_mutable.CurrentCellType, key_type, 'REPLACE');
+                        
+                        C.commitTransaction;
+                        fprintf(fid,'Assigned cell %s cell as %s\n', cell_id, RGCtype);
+                        fprintf('Assigned cell %s cell as %s\n', cell_id, RGCtype);
                     catch ME
                         C.cancelTransaction;
                         fprintf(fid,'%d: Error inserting cell %s\n', i, cell_id);
