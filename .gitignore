@@ -1,6 +1,7 @@
 
 .DS_Store
 *.asv
+*.m~
 AnimalLogger/
 AnimalLogger.prj
 datajoint-SchwartzLab/+sl_old/*

@@ -7,10 +7,11 @@ end
 
 if nargin<2
     auto_assign = true;
-    load([getenv('DJ_root') 'CellTypeNameMatches.mat'], 'matchTable');
-    rgcs = sl.CellType & 'cell_class="RGC"';
-    typeNames = rgcs.fetchn('name_full');
 end
+
+load([getenv('DJ_root') 'CellTypeNameMatches.mat'], 'matchTable');
+rgcs = sl.CellType & 'cell_class="RGC"';
+typeNames = rgcs.fetchn('name_full');
 
 inserted_cells = [];
 error_cells = [];
