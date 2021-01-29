@@ -11,11 +11,6 @@ errorbar(ax, R.spotSize, R.spikeRatePost_baselineSubtraced_mean, R.spikeRatePost
     'LineWidth',2);
 hold(ax,'off');
 
-% hold(ax2,'on');
-% xlabel(ax2, 'Spot size (microns)')
-% ylabel(ax2, 'Spike count from baseline');
-% hold(ax2,'off');
-
 tableData.RstarMean = R.RstarMean;
 tableData.Intensity = R.RstarIntensity1;
 tableData.bestSize_ON = R.bestSize_ON;
