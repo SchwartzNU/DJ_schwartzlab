@@ -73,7 +73,7 @@ if max_ON > min_ON
     outputStruct.bestSize_ON = outputStruct.spotSize(maxInd_ON);
     outputStruct.SI_ON = 1-outputStruct.response_norm_ON(end);
 else
-    %spike rate deccrease
+    %spike rate decrease
    outputStruct.response_norm_ON = outputStruct.spikeRateStim_baselineSubtraced_mean ./ min_ON;
    [~, minInd_ON] = min(outputStruct.response_norm_ON);
    outputStruct.bestSize_ON = outputStruct.spotSize(minInd_ON);
@@ -87,7 +87,7 @@ if max_OFF > min_OFF
     outputStruct.bestSize_OFF = outputStruct.spotSize(maxInd_OFF);
     outputStruct.SI_OFF = 1-outputStruct.response_norm_OFF(end);
 else
-   %spike rate deccrease
+   %spike rate decrease
    outputStruct.response_norm_OFF = outputStruct.spikeRatePost_baselineSubtraced_mean ./ min_OFF;
    [~, minInd_OFF] = min(outputStruct.response_norm_OFF);
    outputStruct.bestSize_OFF = outputStruct.spotSize(minInd_OFF);
