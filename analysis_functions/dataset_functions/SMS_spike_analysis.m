@@ -3,10 +3,10 @@ function R = SMS_spike_analysis(dataset, pipeline, P)
 R = []; %will be struct. error if isempty
 dataset_struct = dataset.fetch('*');
 
-if ~strcmp(dataset_struct.dataset_protocol_name, 'Spots Multi Size') && ~strcmp(dataset_struct.dataset_protocol_name,'Spots Multiple Sizes')
-    disp('Error: SMS_spike_analysis designed for datasets of type: Spots Multi Size');
-    return;
-end
+% if ~strcmp(dataset_struct.dataset_protocol_name, 'Spots Multi Size') && ~strcmp(dataset_struct.dataset_protocol_name,'Spots Multiple Sizes')
+%     disp('Error: SMS_spike_analysis designed for datasets of type: Spots Multi Size');
+%     return;
+% end
 
 paramsToSave = {'RstarMean', ...
     'RstarIntensity1'};
