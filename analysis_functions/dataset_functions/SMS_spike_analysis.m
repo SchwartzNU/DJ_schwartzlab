@@ -61,6 +61,21 @@ outputStruct = distributeAndOrder(spotSize, computedVals);
 outputStruct = renameStructField(outputStruct, 'keyVals', 'spotSize');
 outputStruct = renameStructField(outputStruct, 'key_N', 'Nepochs');
 
+%get SMS_PSTH
+Nsizes = length(outputStruct.spotSize);
+binSize = 10; %ms
+
+for j=1:Nsizes
+    [psth_x, psth_y] = psth(dataset_struct.cell_id, dataset_struct.epoch_ids(logical(outputStruct.key_ind(j,:))), binSize, [], [], [], dataset_struct.channel);
+    if j==1
+        Nbins = length(psth_x);
+        sms_psth = zeros(Nsizes, Nbins);
+        R.psth_x = psth_x;
+    end
+    sms_psth(j,:) = psth_y;
+end
+R.sms_psth = sms_psth;
+
 max_ON = abs(max(outputStruct.spikeRateStim_baselineSubtraced_mean));
 min_ON = abs(min(outputStruct.spikeRateStim_baselineSubtraced_mean));
 max_OFF = abs(max(outputStruct.spikeRatePost_baselineSubtraced_mean));
