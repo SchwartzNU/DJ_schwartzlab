@@ -11,7 +11,7 @@ dataset_struct = dataset.fetch('*');
 paramsToSave = {'RstarMean', ...
     'RstarIntensity1'};
 
-[protocol_params, changing_fields] = getExampleProtocolParametersForEpochInDataset(dataset_struct.cell_id, dataset_struct.dataset_name);
+[protocol_params, changing_fields] = getExampleProtocolParametersForEpochInDataset(dataset_struct.cell_data, dataset_struct.dataset_name);
 for i=1:length(paramsToSave)
     if ~ismember(changing_fields, paramsToSave{i})
         if isfield(protocol_params, paramsToSave{i})
@@ -66,7 +66,7 @@ Nsizes = length(outputStruct.spotSize);
 binSize = 10; %ms
 
 for j=1:Nsizes
-    [psth_x, psth_y] = psth(dataset_struct.cell_id, dataset_struct.epoch_ids(logical(outputStruct.key_ind(j,:))), binSize, [], [], [], dataset_struct.channel);
+    [psth_x, psth_y] = psth(dataset_struct.cell_data, dataset_struct.epoch_ids(logical(outputStruct.key_ind(j,:))), binSize, [], [], [], dataset_struct.channel);
     if j==1
         Nbins = length(psth_x);
         sms_psth = zeros(Nsizes, Nbins);

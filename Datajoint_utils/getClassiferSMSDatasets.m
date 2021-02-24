@@ -1,4 +1,4 @@
-function classifier_data = getClassiferSMSDatasets(classifier_labels, binSize)
+function classifier_data = getClassiferSMSDatasets(classifier_labels)
 %classifer labels is the table that is read in from 'classifier_include_types.txt'
 SMS_all = (sl_greg.DatasetResult & 'pipeline_name="typology_SMS_CA"') - ...
     proj((sl_mutable.DatasetExcludeList & 'pipeline_name="typology_SMS_CA"'));
@@ -21,8 +21,15 @@ for i=1:L
         s = rmfield(SMS_all_struct(i), {'pipeline_name', 'dataset_func_name'});
         s.SpotSizeVec = R.spotSize;
         s.label = curLabel;
-        s.PSTH_X = R.psth_x;
-        s.SMS_PSTH = R.sms_psth;
+        
+        try
+            s.PSTH_X = R.psth_x;
+            s.SMS_PSTH = R.sms_psth;
+        catch
+            sprintf('missing sms_psth data for cell %s\n', SMS_all_struct(i).cell_id);
+            s.PSTH_X = [];
+            s.SMS_PSTH = [];
+        end
         
         if z==1
             classifier_data = s;

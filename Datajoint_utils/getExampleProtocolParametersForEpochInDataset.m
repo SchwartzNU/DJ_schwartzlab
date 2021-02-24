@@ -1,5 +1,5 @@
-function [protocol_params, changing_fields, protocol_params_all] = getExampleProtocolParametersForEpochInDataset(cell_id, dataset_name)
-thisDataset = sl.Dataset & sprintf('cell_id="%s"', cell_id) & sprintf('dataset_name="%s"',dataset_name);
+function [protocol_params, changing_fields, protocol_params_all] = getExampleProtocolParametersForEpochInDataset(cell_data, dataset_name)
+thisDataset = sl.Dataset & sprintf('cell_data="%s"', cell_data) & sprintf('dataset_name="%s"',dataset_name);
 [ep_count, epochs] = getEpochsInQuery(thisDataset);
 protocol_params_all = epochs.fetchn('protocol_params');
 protocol_params = protocol_params_all{1};
