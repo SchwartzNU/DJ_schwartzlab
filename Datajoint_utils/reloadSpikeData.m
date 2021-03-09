@@ -15,4 +15,4 @@ if ~theseSpikeTrains.exists
 end
 
 del(theseSpikeTrains);
-populate(sl_mutable.SpikeTrain, sprintf('cell_id="%s"', cell_id));
+%populate(sl_mutable.SpikeTrain, sprintf('cell_id="%s"', cell_id));

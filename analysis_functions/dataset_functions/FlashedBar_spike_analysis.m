@@ -3,10 +3,10 @@ function R = FlashedBar_spike_analysis(dataset, pipeline, P)
 R = []; %will be struct. error if isempty
 dataset_struct = dataset.fetch('*');
 
-if ~strcmp(dataset_struct.dataset_protocol_name, 'Flashed Bar')
-    disp('Error: FlashedBar_spike_analysis designed for datasets of type: Flashed Bar');
-    return;
-end
+% if ~strcmp(dataset_struct.dataset_protocol_name, 'Flashed Bar')
+%     disp('Error: FlashedBar_spike_analysis designed for datasets of type: Flashed Bar');
+%     return;
+% end
 
 paramsToSave = {'barLength', ...
     'barWidth', ...

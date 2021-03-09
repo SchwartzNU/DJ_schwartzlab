@@ -1,15 +1,23 @@
 function [queryResult, searchTable] = runPipelineQuery(queryEntry_struct)
-if isempty(queryEntry_struct) || isempty(queryEntry_struct.query_state)
+if isempty(queryEntry_struct)
     queryResult = [];
     searchTable = [];
     return;
 end
-    
-searchTable = makeSearchTable(queryEntry_struct.query_state.currentTables);
-q = searchTable;
+
 if strcmp(queryEntry_struct.use_query, 'T')
-    q = eval(queryEntry_struct.query_str);
+    if isempty(queryEntry_struct.query_state)
+        searchTable = sl.Dataset;
+        q = sl.Dataset;
+    else
+        searchTable = makeSearchTable(queryEntry_struct.query_state.currentTables);
+        q = eval(queryEntry_struct.query_str);
+    end
+else
+    searchTable = sl.Dataset;
+    q = sl.Dataset;
 end
+
 if strcmp(queryEntry_struct.use_cell_id_list, 'T')
     q = q & struct('cell_id', queryEntry_struct.cell_id_list);
 end

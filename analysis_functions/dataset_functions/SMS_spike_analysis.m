@@ -3,15 +3,15 @@ function R = SMS_spike_analysis(dataset, pipeline, P)
 R = []; %will be struct. error if isempty
 dataset_struct = dataset.fetch('*');
 
-if ~strcmp(dataset_struct.dataset_protocol_name, 'Spots Multi Size') && ~strcmp(dataset_struct.dataset_protocol_name,'Spots Multiple Sizes')
-    disp('Error: SMS_spike_analysis designed for datasets of type: Spots Multi Size');
-    return;
-end
+% if ~strcmp(dataset_struct.dataset_protocol_name, 'Spots Multi Size') && ~strcmp(dataset_struct.dataset_protocol_name,'Spots Multiple Sizes')
+%     disp('Error: SMS_spike_analysis designed for datasets of type: Spots Multi Size');
+%     return;
+% end
 
 paramsToSave = {'RstarMean', ...
     'RstarIntensity1'};
 
-[protocol_params, changing_fields] = getExampleProtocolParametersForEpochInDataset(dataset_struct.cell_id, dataset_struct.dataset_name);
+[protocol_params, changing_fields] = getExampleProtocolParametersForEpochInDataset(dataset_struct.cell_data, dataset_struct.dataset_name);
 for i=1:length(paramsToSave)
     if ~ismember(changing_fields, paramsToSave{i})
         if isfield(protocol_params, paramsToSave{i})
@@ -60,6 +60,21 @@ computedVals.spikeRatePost_baselineSubtraced = computedVals.spikeRatePost - mean
 outputStruct = distributeAndOrder(spotSize, computedVals);
 outputStruct = renameStructField(outputStruct, 'keyVals', 'spotSize');
 outputStruct = renameStructField(outputStruct, 'key_N', 'Nepochs');
+
+%get SMS_PSTH
+Nsizes = length(outputStruct.spotSize);
+binSize = 10; %ms
+
+for j=1:Nsizes
+    [psth_x, psth_y] = psth(dataset_struct.cell_data, dataset_struct.epoch_ids(logical(outputStruct.key_ind(j,:))), binSize, [], [], [], dataset_struct.channel);
+    if j==1
+        Nbins = length(psth_x);
+        sms_psth = zeros(Nsizes, Nbins);
+        R.psth_x = psth_x;
+    end
+    sms_psth(j,:) = psth_y;
+end
+R.sms_psth = sms_psth;
 
 max_ON = abs(max(outputStruct.spikeRateStim_baselineSubtraced_mean));
 min_ON = abs(min(outputStruct.spikeRateStim_baselineSubtraced_mean));

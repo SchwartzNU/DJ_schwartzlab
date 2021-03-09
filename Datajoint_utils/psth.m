@@ -1,4 +1,4 @@
-function [psth_x, psth_y] = psth(cell_id, epoch_numbers, binSize, baseline_subtract, gauss_win, sliding_win, channel)
+function [psth_x, psth_y] = psth(cell_data, epoch_numbers, binSize, baseline_subtract, gauss_win, sliding_win, channel)
 if nargin < 7
     channel = 1;
 end
@@ -16,7 +16,7 @@ if nargin < 3
 end
 psth_y = [];
 
-firstEpoch = sl.Epoch & sprintf('cell_id="%s"', cell_id) & sprintf('epoch_number=%d', epoch_numbers(1));
+firstEpoch = sl.Epoch & sprintf('cell_data="%s"', cell_data) & sprintf('epoch_number=%d', epoch_numbers(1));
 ep_struct = firstEpoch.fetch('*');
 sampleRate = ep_struct.sample_rate;
 if isfield(ep_struct.protocol_params, 'preTime')
@@ -38,7 +38,7 @@ psth_x = (0:N_samples-1) * binSize / 1E3 - preTime / 1E3; % units of seconds
 
 allSpikes = [];
 for i=1:Nepochs
-    thisEpoch = sl.Epoch & sprintf('cell_id="%s"', cell_id) & sprintf('epoch_number=%d', epoch_numbers(i));
+    thisEpoch = sl.Epoch & sprintf('cell_data="%s"', cell_data) & sprintf('epoch_number=%d', epoch_numbers(i));
     thisSpikeTrain = sl_mutable.SpikeTrain & thisEpoch & sprintf('channel=%d', channel);
     ep_struct = thisEpoch.fetch('*');
     cur_sampleRate = ep_struct.sample_rate;
