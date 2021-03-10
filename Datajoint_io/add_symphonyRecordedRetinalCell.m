@@ -51,8 +51,30 @@ if L > 0
             otherwise
                 disp('unreognized entry');
                 disp('Cell insert aborted');
-                return;
+                return;            
         end
+        
+        %add the eyes now if they are not in the DB
+        these_eyes = sl.Eye & sprintf('animal_id=%d', animalEyeData.animal_id);
+        if these_eyes.count==0
+            if strcmp(animalEyeData.whichEye, 'Left') || strcmp(animalEyeData.whichEye, 'Right')
+                eye1.animal_id = animalEyeData.animal_id;
+                eye1.side = 'Left';
+                eye2.animal_id = animalEyeData.animal_id;
+                eye2.side = 'Right';
+                insert(sl.Eye, eye1);
+                insert(sl.Eye, eye2);
+            else
+                eye1.animal_id = animalEyeData.animal_id;
+                eye1.side = 'Unknown1';
+                eye2.animal_id = animalEyeData.animal_id;
+                eye2.side = 'Unknown2';
+                insert(sl.Eye, eye1);
+                insert(sl.Eye, eye2);
+            end
+            
+        end
+        
     end      
 else
     recordingBy = cellData.get('recordingBy');
