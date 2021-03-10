@@ -3,22 +3,22 @@
 -> sl.Epoch
 channel = 1 : int unsigned  # amplifier channel
 ---
-sp = NULL:longblob               # the spike train (vector), or 'not computed', or 'NA'
+sp: longblob                # the spike train (vector), NULL if 0 spikes
 %}
 
 classdef SpikeTrain < dj.Imported
     methods(Access=protected)
         function makeTuples(self, key)
-            q = sl_mutable.SpikeTrain & key;
-            key.sp = [];
+            q = self & key;
+            % key.sp = [];
             if q.count > 0
                 previous_ch = fetch1(q, 'channel');
                 if previous_ch == 1
                     ch = 2; 
-                    key.channel = 2;
+                    % key.channel = 2;
                 else
                     ch = 1; 
-                    key.channel = 1;
+                    % key.channel = 1;
                 end
             else
                 ch = 1;
@@ -30,8 +30,9 @@ classdef SpikeTrain < dj.Imported
             elseif ch==2
                 mode = fetch1(ep,'recording2_mode');
             else
-                disp(['SpikeTrain: invalid channel ' num2str(ch)]);
+                error(['SpikeTrain: invalid channel ' num2str(ch)]);
             end
+
             if strcmp(mode, 'Cell attached')
                 C = dj.conn;
                 if strcmp(C.host, 'localhost') 
@@ -40,15 +41,15 @@ classdef SpikeTrain < dj.Imported
                     cellData = loadAndSyncCellData(key.cell_data);
                 end
                 epData = cellData.epochs(key.epoch_number);
-                if ch==1
-                    key.sp = epData.get('spikes_ch1');
-                elseif ch==2
-                    key.sp = epData.get('spikes_ch2');
+                sp = epData.get(sprintf('spikes_ch%d', ch));
+                if isnan(sp)
+                    self.del(key); %make sure there's no entry
+                else
+                    key.sp = sp;
+                    key.channel = ch;
+                    self.insert(key);
                 end
-            else
-                key.sp = 'NA';
             end
-            self.insert(key);
         end
     end
 end
