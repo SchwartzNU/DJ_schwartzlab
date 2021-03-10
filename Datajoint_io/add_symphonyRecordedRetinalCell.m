@@ -16,7 +16,7 @@ end
 [date, rig] = cellID_to_dateAndRig(cell_id);
 q = struct;
 q.date = date;
-q.rig_name = rig;
+%q.rig_name = rig;
 matchingAnimals = sl.Animal & (sl.AnimalEventReservedForSession & q);
 L = matchingAnimals.count;
 if L > 0
@@ -26,7 +26,7 @@ if L > 0
     
     for i=1:L
         fprintf('Entry %d:\n', i); 
-        animalList(1)
+        animalList(i)
     end
     str = input('Which entry and eye? [L or 1L = Entry 1 left eye; U for unknown eye; X to cancel] ','s');
     if strcmp(str,'X')
@@ -82,7 +82,7 @@ try
     if strcmp(animalEyeData.whichEye, 'Unknown')
         h.data.whichEye = 'Unknown1'; %keep track of both unknown eyes?
     end
-    
+
     %MeasuredRetinalCell
     key.cell_unid = id;
     key.side = animalEyeData.whichEye;
