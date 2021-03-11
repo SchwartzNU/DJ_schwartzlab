@@ -16,5 +16,6 @@ classdef SpikeTrain < dj.Imported
   methods
     function declareMissing(self, key)
       self.insert(key);
+    end
   end
 end
