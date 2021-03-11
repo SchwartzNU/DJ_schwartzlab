@@ -7,6 +7,10 @@ sp: longblob                # the spike train (vector), NULL if 0 spikes
 %}
 
 classdef SpikeTrain < dj.Imported
+    properties (Constant)
+        keySource = proj(sl.Epoch() & "recording_mode='Cell attached' OR recording2_mode='Cell attached'") * sl_mutable.RecordingChannels - sl_mutable.SpikeTrainMissing;
+    end
+
     methods(Access=protected)
         function makeTuples(self, key)
             % q = self & key;
