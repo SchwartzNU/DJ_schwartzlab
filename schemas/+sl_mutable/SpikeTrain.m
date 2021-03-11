@@ -48,11 +48,15 @@ classdef SpikeTrain < dj.Imported
                 if strcmp(modes{ch}, 'Cell attached')
                     sp = epData.get(sprintf('spikes_ch%d', ch));
                     if isnan(sp)
-                        self.del(key); %make sure there's no entry
+                        new_key = key;
+                        new_key.channel = ch;
+                        self.del(new_key); %make sure there's no entry
+                        sl_mutable.SpikeTrainMissing().declareMissing(new_key);
                     else
-                        key.sp = sp;
-                        key.channel = ch;
-                        self.insert(key);
+                        new_key = key;
+                        new_key.sp = sp;
+                        new_key.channel = ch;
+                        self.insert(new_key);
                     end
                 end
             end
