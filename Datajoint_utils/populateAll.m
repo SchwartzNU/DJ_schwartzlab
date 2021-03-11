@@ -1,5 +1,5 @@
 function [] = populateAll()
-    parpopulate(sl.SymphonyRecordedCell);
+    %parpopulate(sl.SymphonyRecordedCell);
 
     % f = fetch(sl.Epoch & "recording_mode='Cell attached'");
     % [f.channel] = deal(1);

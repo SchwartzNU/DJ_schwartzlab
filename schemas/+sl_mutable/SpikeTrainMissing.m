@@ -3,7 +3,6 @@
 -> sl.Epoch
 channel = 1 : int unsigned  # amplifier channel
 ---
-sp: longblob                # the spike train (vector), NULL if 0 spikes
 %}
 
 classdef SpikeTrainMissing < dj.Imported
