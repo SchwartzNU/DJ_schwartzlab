@@ -9,7 +9,7 @@ sp: longblob                # the spike train (vector), NULL if 0 spikes
 classdef SpikeTrain < dj.Imported
     methods(Access=protected)
         function makeTuples(self, key)
-            q = self & key;
+            % q = self & key;
             % if q.count > 0
 
             %     previous_ch = fetch1(q, 'channel');
@@ -35,7 +35,7 @@ classdef SpikeTrain < dj.Imported
             end
             epData = cellData.epochs(key.epoch_number);
 
-            for ch = 1:q.count
+            for ch = 1:2
             
                 % if ch==1
                 %     mode = fetch1(ep,'recording_mode');
