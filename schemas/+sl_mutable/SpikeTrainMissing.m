@@ -6,7 +6,7 @@ channel = 1 : int unsigned  # amplifier channel
 sp: longblob                # the spike train (vector), NULL if 0 spikes
 %}
 
-classdef SpikeTrain < dj.Imported
+classdef SpikeTrainMissing < dj.Imported
   methods(Access=protected)
     function makeTuples(self, key)
       self.insert(key);
