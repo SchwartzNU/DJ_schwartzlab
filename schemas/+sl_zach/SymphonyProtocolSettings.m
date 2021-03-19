@@ -19,7 +19,7 @@ methods (Access = protected)
   end
 end
 
-methods %(Access = {?sl_zach.Symphony})
+methods (Access = {?sl_zach.Symphony})
   function [indices, remainingKeys, inserted] = addParameterGroup(self, keys)
     % assume keys will be a struct of size M,N
     % M is the number of keys per epoch, and N is the number of epochs
@@ -43,6 +43,7 @@ methods %(Access = {?sl_zach.Symphony})
     
     emp = cell(numel(u), 1);
     keys = struct('settings_id',emp, 'settings_count', repmat({size(keys,1)}, numel(u), 1));
+    %TODO: filter nans: instead of settings_count = size(keys,1), should be number of non-nans for each N in u 
 
     emp = cell(numel(u), size(params_FLOAT,1));
     keys_FLOAT = struct('settings_id', emp, 'parameter_name',emp, 'value', emp);
@@ -57,6 +58,7 @@ methods %(Access = {?sl_zach.Symphony})
       %if statements
       q = nan;
       c = join(arrayfun(@(x) sprintf('(parameter_name="%s" AND value=%f)', x.Name, x.Value), params_FLOAT(:,u(N)),'uniformoutput',false), ' OR ');
+      %TODO: filter nans for c... params_FLOAT(~isnan(params_FLOAT(:,u(N)))) ... or similar
       if ~isempty(c{1})
         q = sl_zach.SymphonyProtocolSettingsNumeric & c;
       end
@@ -81,6 +83,7 @@ methods %(Access = {?sl_zach.Symphony})
       end
       
       i = fetch(self.aggr(q, 'count(*)->n', 'settings_count') & "settings_count=n", 'settings_id');
+      %TODO: 
       if isempty(i)
         if isnan(count)
           count = self.count() + 1;
@@ -118,6 +121,9 @@ methods %(Access = {?sl_zach.Symphony})
     keys_BOOL(dups,:) = [];
     keys_STRING(dups,:) = [];
 
+    %TODO: filter nans:
+    %keys_FLOAT = keys_FLOAT(isnan(keys_FLOAT(:).Value)) or similar
+
     self.insert(keys);
     sl_zach.SymphonyProtocolSettingsNumeric().insert(keys_FLOAT(:));
     sl_zach.SymphonyProtocolSettingsBool().insert(keys_BOOL(:));
@@ -126,7 +132,7 @@ methods %(Access = {?sl_zach.Symphony})
   end
 end
 
-methods
+methods %TODO: remove this
 
   function fake(self)
     C = dj.conn();

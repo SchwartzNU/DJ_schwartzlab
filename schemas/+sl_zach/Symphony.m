@@ -34,11 +34,30 @@ methods
     % for n=1:numel(files)
     %   load(sprintf('%s%s',self.CELL_DATA_FOLDER,files(n).name),'cellData');
     %   check aliases...
-    %   processCellData...
+    %   [celldata_keys, param_struct] = processCellData...
     %     if empty keys, raise warning
+    %     check that number of channels is correct?
+    %   %add raw_data_filename, animal_id, cell_unid, cell_data to keys output as appropriate...
+    %   %merge across files...
     
-
-    %insert@dj.Manual(self, key);
+    % at this point, we have everything
+    %dj.conn.startTransaction()...
+    % insert@dj.Manual(self, {key.raw_data_filename, recording_date, retinas.experimenter, rig_name})
+    % insert(SymphonyCell, {raw_data_filename, alias, cell_unid, side_eye, pos_x, pos_y, n_epochs, online_label})
+    % insert(SymphonyCellDataset, {raw_data_filename, alias, dataset_name})
+    % [ind1, remain1] = addParameterGroup(SymphonyProtocolSettings, param_struct);
+    % [ind2, remain2] = addParameterGroup(SymphonyEpochSettings, param_struct);
+    % [ind3, remain3] = addParameterGroup(SymphonyProjectorSettings, param_struct);
+    % assert all(remain1 + remain2 + remain3) == 1
+    % keys.epochs(:).protocol_id = ind1;
+    % keys.epochs(:).epoch_id = ind2;
+    % keys.epochs(:).projector_id = ind3;
+    % insert(SymphonyEpoch, {raw_data_filename + keys.epochs})
+    % insert(SymphonyEpochChannel, ...)
+    % insert(SymphonySpikeTrain, ...)
+    % insert(SymphonyCellDatasetEpochs, ...)
+  
+    % dj.conn.commitTransaction
 
   end
 end
@@ -71,7 +90,9 @@ methods (Access=private)
       retinas(n).genotype = rinfo(n).Groups(2).Attributes(1).Value;
       retinas(n).eye = rinfo(n).Groups(2).Attributes(2).Value;
       retinas(n).orientation = rinfo(n).Groups(2).Attributes(3).Value;
-      retinas(n).experimenter = rinfo(n).Groups(2).Attributes(4).Value;
+      if length(rinfo(n).Groups(2).Attributes) > 3
+          retinas(n).experimenter = rinfo(n).Groups(2).Attributes(4).Value;
+      end
       
       cinfo = vertcat(...
         cell2mat(arrayfun(@(x) h5goto(hinfo, x.Value{1}),rinfo(n).Groups(4).Links, 'UniformOutput', false))',...
@@ -127,7 +148,11 @@ methods (Access=private)
                             epochs(epoch_count).data_link{2} = epoch.Groups(3).Groups(2).Name;
                           end
                           epochs(epoch_count).sample_rate = epoch.Groups(3).Groups(1).Attributes(2).Value;
-                          epochs(epoch_count).start_time = milliseconds(datetime(uint64(epoch.Attributes(2).Value),'convertfrom','.net','timezone',num2str(epoch.Attributes(3).Value))-recording_date);
+                          
+                          start_time = strcmp({epoch.Attributes(:).Name}, 'startTimeDotNetDateTimeOffsetTicks');
+                          time_zone = strcmp({epoch.Attributes(:).Name}, 'startTimeDotNetDateTimeOffsetOffsetHours');
+                          
+                          epochs(epoch_count).start_time = milliseconds(datetime(uint64(epoch.Attributes(start_time).Value),'convertfrom','.net','timezone',num2str(epoch.Attributes(time_zone).Value))-recording_date);
                           epochs(epoch_count).duration = (epoch.Attributes(4).Value - epoch.Attributes(2).Value)/1e4;
                           epochs(epoch_count).group = group_count;
                           epochs(epoch_count).block = k;
@@ -158,7 +183,7 @@ methods (Access=private)
     end
   end
 
-  function keys = processCellData(~, cellData, epochs, epoch_groups)
+  function [keys, param_struct] = processCellData(~, cellData, epochs, epoch_groups)
 
     if cellData.savedDatasets.Count < 1
       return%we will not insert this cell
@@ -223,15 +248,23 @@ methods (Access=private)
         end
 
         %prepare the epoch key
-        epochsDataset(l).protocol_name = epoch_groups(epochs(epoch_ind).group).blocks(epochs(epoch_ind).block).protocol;
+        % epochsDataset(l).protocol_name = epoch_groups(epochs(epoch_ind).group).blocks(epochs(epoch_ind).block).protocol;
         epochsDataset(l).start_time = epochs(epoch_ind).start_time;
         epochsDataset(l).duration = epochs(epoch_ind).duration;
         %TODO: params, spikes
+        %the params will just become one big struct array... Name, Value, Type... n_params -by -nEpochs
+        %since each epoch can have a different set of params... fill out with nan values
+        %SymphonyProtocolSettings and SymphonyEpochSettings will take care of the rest
+        % we will call those from makeTuples... they will return the settings ids
+        %still need to work out projector settings though... will be similar but easier since all settings are fixed
 
-
+        %for spikes:
+        %  first check if there are spikes in channel 1 and channel 2 (if recording)
+        %   if not, verify that it's not a spiking trial... otherwise we have an issue
       end
+
       %remove null epochs from epochsDataset, channels...
-      %flatten epochsDataset, channels, datasetEpochs and remove null channels
+      %don't think we want this here %%%%flatten epochsDataset, channels, datasetEpochs and remove null channels
 
       %concatenate keys
 
