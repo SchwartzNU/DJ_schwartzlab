@@ -6,7 +6,7 @@
   value : varchar(64)
 
 %}
-classdef SymphonyEpochSettingsString < dj.Part
+classdef SymphonyEpochSettingsString < sl_zach.SymphonySettings & dj.Part
   properties(SetAccess=protected)
     master = sl_zach.SymphonyEpochSettings;
   end

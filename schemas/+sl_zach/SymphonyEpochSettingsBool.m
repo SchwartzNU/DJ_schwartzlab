@@ -6,7 +6,7 @@
   value : enum('false','true')  #TODO: dj does not yet support bool...
 
 %}
-classdef SymphonyEpochSettingsBool < dj.Part
+classdef SymphonyEpochSettingsBool < sl_zach.SymphonySettings & dj.Part
   properties(SetAccess=protected)
     master = sl_zach.SymphonyEpochSettings;
   end

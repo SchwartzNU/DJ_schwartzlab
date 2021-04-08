@@ -6,7 +6,7 @@
   value : float
 
 %}
-classdef SymphonyEpochSettingsNumeric < dj.Part
+classdef SymphonyEpochSettingsNumeric < sl_zach.SymphonySettings & dj.Part
   properties(SetAccess=protected)
     master = sl_zach.SymphonyEpochSettings;
   end

@@ -129,17 +129,19 @@ classdef EpochData < handle
                 spikeTimes = obj.get('spikes_ch2');
             end
             
-            sampleRate = obj.get('sampleRate');
-            dataPoints = length(obj.getData(streamName));
-            stimStart = obj.get('preTime')*1E-3; %s
-            if isnan(stimStart)
-                stimStart = 0;
+            if nargout > 1
+                sampleRate = obj.get('sampleRate');
+                dataPoints = length(obj.getData(streamName));
+                stimStart = obj.get('preTime')*1E-3; %s
+                if isnan(stimStart)
+                    stimStart = 0;
+                end
+                timeAxis = (0:1/sampleRate:dataPoints/sampleRate) - stimStart;
             end
-            timeAxis = (0:1/sampleRate:dataPoints/sampleRate) - stimStart;
         end
         
         function [data, xvals, units] = getData(obj, streamName)
-            global RAW_DATA_FOLDER;
+            RAW_DATA_FOLDER = getenv('RAW_DATA_FOLDER');
             if nargin < 2
                 streamName = 'Amplifier_Ch1';
             end

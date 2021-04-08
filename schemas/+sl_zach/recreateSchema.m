@@ -1,20 +1,16 @@
-function recreateSchema
+function recreateSchema()
 
 %%drop everything
 safemode = dj.config('safemode');
 dj.config('safemode', false);
-for table = sl_zach.getSchema().tableNames.keys
-  drop(feval(table));
-end
+
+sl_zach.Symphony().drop();
+sl_zach.Cell().drop();
+sl_zach.SymphonyEpochSettings().drop();
+sl_zach.SymphonyProtocolSettings().drop();
+sl_zach.SymphonyProjectorSettings().drop();
+
 dj.config('safemode',safemode);
-
-
-% %MeasuredCell - moves the experimenter from SymphonyRecordedCell to MeasuredCell
-% sl_zach.MeasuredCell().insert(fetch(sl.MeasuredCell * sl.SymphonyRecordedCell,'experimenter'));
-
-% %SymphonyRecordedCell - subtracts experimenter
-% sl_zach.SymphonyRecordedCell().insert(fetch(sl.SymphonyRecordedCell, 'position_x','position_y','number_of_epochs','online_label','tags','recording_date','rig_name'));
-
 
 
 end

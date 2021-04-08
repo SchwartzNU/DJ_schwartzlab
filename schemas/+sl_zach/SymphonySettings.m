@@ -9,6 +9,73 @@ classdef SymphonySettings < dj.internal.GeneralRelvar
         operator = 'table'
         operands = {}
     end
+
+    methods(Static)
+
+        function query = all()
+            query = [];
+            tables = sl_zach.getSchema().tableNames.keys();
+            settings_types = {'Numeric', 'Bool', 'String', 'Blob'};
+            %don't really love this...
+
+            for table = tables
+                t = feval(table{:});
+                m = metaclass(t);
+
+                if endsWith(m.Name, settings_types) && any(strcmp({m.SuperclassList(:).Name}, 'sl_zach.SymphonySettings'))
+                    %this table is a settings table
+                    if isempty(query)
+                        query = t;
+                    else
+                        query = query | t;
+                    end
+                end
+            end
+        end
+
+        function [params, names, unhashed] = clean_parameters(params, names)
+            shapeMatrix = find(strcmp(names, 'shapeDataMatrix'));
+            shapeColumns = find(strcmp(names, 'shapeDataColumns'));
+
+            shapeHash = arrayfun(@(x) do_hash(params([shapeMatrix, shapeColumns],x),'shapeData'), 1:size(params,2),'uniformoutput',false);
+            
+            shapeData = params([shapeMatrix, shapeColumns],:);
+            params([shapeMatrix, shapeColumns], :) = [];
+            params(end+1,:) = shapeHash;
+            names([shapeMatrix, shapeColumns]) = [];
+            names{end+1, :} = 'shapeData';
+            
+            unhashed = repmat({nan}, size(params,1), size(params,2));
+            unhashed(end,:) = arrayfun(@(x) shapeData(:,x), 1:size(shapeData,2),'uniformoutput',false);
+
+        function hash = do_hash(data, data_type)
+            if any(cellfun(@(x) length(x)==1 && isnan(x),data))
+                hash = nan;
+                return
+            end
+            switch data_type
+            case 'shapeData'
+                size_hash = ...
+                    uint32(length(data{2})) +...
+                    500^1 * uint32(length(unique(data{2}))) +...
+                    500^2 * uint32(length(data{1})...
+                    );
+                if isa(data{1},'char')
+                   data{1} = str2num(data{1}); 
+                end
+                data_hash = typecast(...
+                    sum(...
+                    prod(...
+                    reshape(data{1},[],length(regexp(data{2},','))+1) + eps...
+                    ,2)...
+                    )...
+                    ,'uint32');
+                hash = bitxor(bitxor(data_hash(1),data_hash(2)), size_hash);
+            end
+        end
+    end
+    end
+
     methods
         function notnan = isnan(self)
             notnan = false;
@@ -459,11 +526,11 @@ function [limit, per, args, outer] = makeLimitClause(varargin)
     if ischar(lastArg) && contains(lastArg, 'PER')
         per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
         if isempty(per.orderby) || strcmp(per.orderby, 'DESC')
-            per.orderby = '`date` DESC, `time` DESC, `entry_time` DESC'; %default sorting
-            tokens = {'date', 'time', 'entry_time'};
+            per.orderby = '`settings_id` DESC'; %default sorting
+            tokens = {'settings_id'};
         elseif strcmp(per.orderby, 'ASC')
-            per.orderby = '`date` ASC, `time` ASC, `entry_time` ASC';
-            tokens = {'date', 'time', 'entry_time'};
+            per.orderby = '`settings_id` ASC';
+            tokens = {'settings_id'};
         else
             tokens = regexp(per.orderby, '([a-z0-9_]+)', 'tokens');
             order = regexp(per.orderby, '((DESC)?(ASC)?)', 'tokens');
