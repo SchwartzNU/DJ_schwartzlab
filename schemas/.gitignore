@@ -8,3 +8,5 @@ docker-compose.yml
 matlab.prf
 win.*
 macos.*
+interim.mat
+raw/
