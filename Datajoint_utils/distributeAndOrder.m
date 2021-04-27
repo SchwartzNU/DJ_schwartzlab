@@ -26,7 +26,7 @@ N = length(U);
 
 outputStruct.keyVals = U;
 outputStruct.key_N = zeros(N,1);
-outputStruct.key_ind = zeros(N,length(keyList));
+outputStruct.key_ind = false(N,length(keyList));
 
 for n=1:N_lists
     curName = listNames{n};
