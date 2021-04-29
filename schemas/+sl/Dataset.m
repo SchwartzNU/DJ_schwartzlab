@@ -22,11 +22,14 @@ classdef Dataset < dj.Manual
                 load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data '.mat']);
             else
                 cellData = loadAndSyncCellData(key.cell_data);
+%                  cellData = load(sprintf('%s/%s',getenv('CELL_DATA_FOLDER'), key.cell_data)).cellData;
             end
             datasetsMap = cellData.savedDataSets;
             
+            dataset_name = strrep(key.dataset_name, '_dot_', '.');
+            
             try
-                key.epoch_ids = datasetsMap(key.dataset_name);            
+                key.epoch_ids = datasetsMap(dataset_name);            
                 N_epochs = length(key.epoch_ids);
             catch
                 disp('Error getting epoch IDs');

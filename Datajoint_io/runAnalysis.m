@@ -48,11 +48,12 @@ switch funcType
                 eval(sprintf('R=%s(ep,pipeline,P);', funcName));
                 analysisOutput(i).input = all_ep_struct(i);
                 analysisOutput(i).result = R;
-            catch
+            catch ME
                 if fid
                     fprintf(fid, 'Error in analysis %s for cell %s, epoch_num %d\n', funcName, all_ep_struct(i).cell_id, all_ep_struct(i).epoch_number);
                 else
                     fprintf('Error in analysis %s for cell %s, epoch_num %d\n', funcName, all_ep_struct(i).cell_id, all_ep_struct(i).epoch_number);
+                    rethrow(ME);
                 end
             end
         end
@@ -86,11 +87,12 @@ switch funcType
                 eval(sprintf('R=%s(curDataSet,pipeline,P);', funcName));
                 analysisOutput(i).input = all_ds_struct(i);
                 analysisOutput(i).result = R;
-            catch
+            catch ME
                 if fid
                     fprintf(fid, 'Error in analysis %s for cell %s, dataset %s\n', funcName, all_ds_struct(i).cell_id,  all_ds_struct(i).dataset_name);
-                else
+                else                    
                     fprintf('Error in analysis %s for cell %s, dataset %s\n', funcName, all_ds_struct(i).cell_id,  all_ds_struct(i).dataset_name);
+                    rethrow(ME);
                 end
             end
         end
@@ -123,11 +125,12 @@ switch funcType
                 eval(sprintf('R=%s(curCell,pipeline,P);', funcName));
                 analysisOutput(i).input = allcells_struct(i);
                 analysisOutput(i).result = R;
-            catch
+            catch ME
                 if fid
                     fprintf(fid, 'Error in analysis %s for cell %s\n', funcName, allcells_struct(i).cell_id);
                 else
                     fprintf('Error in analysis %s for cell %s\n', funcName, allcells_struct(i).cell_id);
+                    rethrow(ME);
                 end
             end
             
@@ -144,11 +147,12 @@ switch funcType
         try
             eval(sprintf('R=%s(curInput,pipeline,P);', funcName));
             analysisOutput.result = R;
-        catch
+        catch ME
             if fid
                 fprintf(fid, 'Error in analysis %s\n', funcName);
             else
                 fprintf('Error in analysis %s\n', funcName);
+                rethrow(ME);
             end
         end
 end

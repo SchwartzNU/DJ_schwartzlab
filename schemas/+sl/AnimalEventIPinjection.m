@@ -16,8 +16,8 @@ notes = NULL:varchar(256) # notes about the event
 classdef AnimalEventIPinjection < sl.AnimalEvent & dj.Manual
 
     properties
-        printStr = '%s %s: Animal %d had an IP injection of %s, %d mg/kg performed by %s. (%s)\n';
-        printFields = {'date', 'time', 'animal_id', 'substance_name', 'concentration', 'user_name', 'notes'};
+        printStr = '%s %s: Animal %d had an IP injection of substance with id: %d, %d mg/kg performed by %s. (%s)\n';
+        printFields = {'date', 'time', 'animal_id', 'substance_id', 'concentration', 'user_name', 'notes'};
     end
 
 end
