@@ -109,10 +109,12 @@ classdef CellData < handle
                     vals{i} = double(vals{i});
                 end
             end
-            if allNumeric
+            if allNumeric       
+                if ~isscalar(vals{1})
+                    vals = []; %cannot handle vectors as epoch values
+                end
                 vals = cell2mat(vals);
-            end
-            
+            end            
         end
         
         function allKeys = getEpochKeysetUnion(obj, epochInd)
