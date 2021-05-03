@@ -114,7 +114,7 @@ classdef CellData < handle
                 end
             end
             if ~allScalar
-                vals = [];%cannot handle vectors as epoch values
+                vals = nan; %cannot handle vectors as epoch values
             end
             if allNumeric       
                 vals = cell2mat(vals);
