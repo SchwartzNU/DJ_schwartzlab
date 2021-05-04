@@ -9,6 +9,7 @@ end
 sl.UserDB
 user_dbs = fetchn(sl.UserDB,'db_name');
 N = length(user_dbs);
+try
 for i=1:N
     key.cell_id = cell_id;
     eval(sprintf('q=%s.EpochResult & key;', user_dbs{i}))
@@ -24,9 +25,15 @@ for i=1:N
         del(q);
     end    
 end
+catch
+    disp('No results deleted');
+end
 thisEntry_spikes = sl_mutable.SpikeTrain & sprintf('cell_id="%s"', cell_id);
 if thisEntry_spikes.exists
     del(thisEntry_spikes);
 end    
+
+
+
 del(thisEntry);
 populate(sl.SymphonyRecordedCell, sprintf('cell_id="%s"', cell_id));
