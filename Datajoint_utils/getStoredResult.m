@@ -63,4 +63,4 @@ end
 %TODO - match epoch params
 
 disp('Stored result not found');
-queryResult = q; %will be an empty one
+queryResult = []; %will be an empty one
