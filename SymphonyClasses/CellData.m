@@ -103,16 +103,15 @@ classdef CellData < handle
                 else
                     vals{i} = v;
                 end
-                if ~isnumeric(vals{i})
+                if ~isnumeric(vals{i}) || ~isscalar(vals{i})
                     allNumeric = false;
                 else
                     vals{i} = double(vals{i});
                 end
             end
-            if allNumeric
+            if allNumeric       
                 vals = cell2mat(vals);
-            end
-            
+            end            
         end
         
         function allKeys = getEpochKeysetUnion(obj, epochInd)
@@ -138,7 +137,7 @@ classdef CellData < handle
             if nargin < 3
                 excluded = '';
             end
-            excluded = {excluded, 'numberOfAverages', 'epochStartTime', 'identifier'};
+            excluded = {excluded, 'numberOfAverages', 'epochStartTime', 'identifier', 'uncaging_start_times'};
             allKeys = obj.getEpochKeysetUnion(epochInd);
             L = length(allKeys);
             params = {};

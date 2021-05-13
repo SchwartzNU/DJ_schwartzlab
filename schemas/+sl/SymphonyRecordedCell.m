@@ -43,6 +43,7 @@ classdef SymphonyRecordedCell < dj.Imported
                     load(['/mnt/fsmresfiles/CellDataMaster/' curName '.mat']);
                 else
                     cellData = loadAndSyncCellData(curName);
+%                     cellData = load(sprintf('%s/%s',getenv('CELL_DATA_FOLDER'), curName)).cellData;
                 end
                 [date,rig] = cellID_to_dateAndRig(curName);
                 key.rig_name = rig;
