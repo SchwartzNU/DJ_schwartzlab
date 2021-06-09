@@ -201,6 +201,48 @@ classdef Animal < dj.Manual
             end
         end
         
+        function animals = tagNumber(animal_ids, liveOnly)
+
+            q = sl.AnimalEventTag;
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','tag_id');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+        function animals = earPunch(animal_ids, liveOnly)
+
+            q = sl.AnimalEventTag;
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','punch');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
         function animals = roomNumber(animal_ids, liveOnly)
 
             q = sl.AnimalEventAssignCage.current();

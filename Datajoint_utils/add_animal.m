@@ -1,4 +1,4 @@
-function [inserted, txt] = add_animal(key, cage_key, protocol_key)
+function [inserted, txt] = add_animal(key, tag_key, cage_key, protocol_key)
 C = dj.conn;
 C.startTransaction;
 inserted = false;
@@ -14,9 +14,15 @@ try
 
     %there is no way around this being 2 transactions unfortunately
     %because the event has a foreign key to the animal
+    
+    %add tag assignment event
+    tag_key.animal_id = id;
+    text = add_animalEvent(tag_key, 'Tag',C);
+    
+    %add cage assignment event
     cage_key.animal_id = id;
     cage_key.cause = 'assigned at database insert';
-    text = add_animalEvent(cage_key, 'AssignCage',C);
+    add_animalEvent(cage_key, 'AssignCage',C);
     %disp('Cage assigment successful');
     
     %add protocol assignment event

@@ -15,8 +15,8 @@ notes = NULL:varchar(256) # notes about the event
 classdef AnimalEventTag < sl.AnimalEvent & dj.Manual
 
     properties
-        printStr = '%s %s: Animal %d given tag id: %d, ear punch: %s, performed by %s. (%s)\n';
-        printFields = {'date', 'time', 'animal_id', 'tag_id', 'punch', 'user_name', 'notes'};
+        printStr = '%s: Animal %d given tag id: %d, ear punch: %s, performed by %s. (%s)\n';
+        printFields = {'date', 'animal_id', 'tag_id', 'punch', 'user_name', 'notes'};
     end
 
 end

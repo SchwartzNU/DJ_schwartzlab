@@ -79,7 +79,7 @@ if fname
                         %make insert key with default values
                         key = struct;
                         key.genotype_name = 'WT';
-                        key.is_tagged = 'F';
+                        key.is_tagged = 'F'; %TODO - remove this
                         %no DOB added so null
                         if isempty(whichEye) || all(isnan(whichEye))
                             eyeUnknown = true;
