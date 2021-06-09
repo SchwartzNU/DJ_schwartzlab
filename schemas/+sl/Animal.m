@@ -1,20 +1,13 @@
 %{
 # animal
-animal_id: int unsigned auto_increment           # unique animal id
+animal_id                   : int unsigned AUTO_INCREMENT   # unique animal id
 ---
--> sl.Genotype                                  # genotype of animal
-source: enum('vendor', 'breeding', 'other lab', 'other', 'unknown') # where the animal is from                
-source_id = NULL: varchar(64)                   # if breeding, this is the
-                                                # parent cage id, if vendor it is the catalog number, if PI it is the PI name
-                                                # + an ID if applicable
-is_tagged = 'F': enum('T','F')                  # true or false
-tag_id = NULL : int unsigned                    # id number
-species = 'Lab mouse' : varchar(64)             # species
-dob = NULL : date                               # mouse date of birth
-sex = 'Unknown' : enum('Male', 'Female', 'Unknown')          # sex of mouse - Male, Female, or Unknown/Unclassified
-tag_ear = 'Unknown' : enum('None', 'L', 'R', 'Unknown')   # which ear has the tag
-punch = 'None' : enum('L','R','Both','None')      # earpunch
-unique index (tag_id)
+-> sl.Genotype
+source                      : enum('vendor','breeding','other lab','other','unknown') # where the animal is from
+source_id=null              : varchar(64)                   # if breeding, this is the
+species="Lab mouse"         : varchar(64)                   # species
+dob=null                    : date                          # mouse date of birth
+sex="Unknown"               : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
 %}
 
 classdef Animal < dj.Manual

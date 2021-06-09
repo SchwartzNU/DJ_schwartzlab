@@ -1,4 +1,4 @@
-function [inserted, txt] = add_animals(keyVec, cage_keyVec, protocol_keyVec)
+function [inserted, txt] = add_animals(keyVec, tag_keyVec, cage_keyVec, protocol_keyVec)
 C = dj.conn;
 C.startTransaction;
 inserted = false;
@@ -9,6 +9,7 @@ try
     for i=1:N_animals
         i
         key = keyVec(i)
+        tag_key = tag_keyVec(i);
         cage_key = cage_keyVec(i)
         protocol_key = protocol_keyVec(i)
         insert(sl.Animal, key);
@@ -24,8 +25,12 @@ try
         %because the event has a foreign key to the animal
         cage_key.animal_id = id;
         cage_key.cause = 'assigned at database insert';
-        text = add_animalEvent(cage_key, 'AssignCage',C);
+        add_animalEvent(cage_key, 'AssignCage',C);
         disp('Cage assigment successful');
+        
+        %add tag assignment event
+        tag_key.animal_id = id;
+        text = add_animalEvent(tag_key, 'Tag',C);
         
         %add protocol assignment event
         protocol_key.animal_id = id;
