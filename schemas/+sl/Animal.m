@@ -5,6 +5,7 @@ animal_id                   : int unsigned AUTO_INCREMENT   # unique animal id
 -> sl.Genotype
 source                      : enum('vendor','breeding','other lab','other','unknown') # where the animal is from
 source_id=null              : varchar(64)                   # if breeding, this is the
+is_tagged="F"               : enum('T','F')                 # true or false
 species="Lab mouse"         : varchar(64)                   # species
 dob=null                    : date                          # mouse date of birth
 sex="Unknown"               : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
@@ -196,7 +197,7 @@ classdef Animal < dj.Manual
         
         function animals = tagNumber(animal_ids, liveOnly)
 
-            q = sl.AnimalEventTag;
+            q = sl.AnimalEventTag.current();
 
             if nargin>1 && liveOnly
                 %restrict by living mice
@@ -217,7 +218,7 @@ classdef Animal < dj.Manual
         
         function animals = earPunch(animal_ids, liveOnly)
 
-            q = sl.AnimalEventTag;
+            q = sl.AnimalEventTag.current();
 
             if nargin>1 && liveOnly
                 %restrict by living mice

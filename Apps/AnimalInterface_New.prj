@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="1584497056" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3831264930" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_New</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_New</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_New</param.files.only>
@@ -138,6 +138,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animals.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/cellID_to_dateAndRig.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/escapeString.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventTag.m</file>
       <file>/Users/gws584/matlab/SymphonyAnalysis/core/loadAndSyncCellData.m</file>
     </fileset.depfun>
     <fileset.package />
