@@ -79,7 +79,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             %                 [hdr, sql_] = self.compile;
             %             end
 
-            [limit, per, args, outer] = makeLimitClause(varargin{:});
+            [limit, per, args, outer] = makeLimitClause(self.header.names, varargin{:});
 
             if ~isempty(args)
                 self = self.proj(args{:});
@@ -110,7 +110,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
         function varargout = fetchn(self, varargin)
 
-            [limit, per, args] = makeLimitClause(varargin{:});
+            [limit, per, args] = makeLimitClause(self.header.names, varargin{:});
             specs = args(cellfun(@(x) ischar(x) && ismember(x, varargin), args)); % attribute specifiers
             %             returnKey = nargout==length(specs)+1;
             returnKey = false;
@@ -287,7 +287,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
         function n = count(self, varargin)
             % COUNT - the number of tuples in the relation.
-            [limit, per, args] = makeLimitClause(varargin{:});
+            [limit, per, args] = makeLimitClause(self.header.names, varargin{:});
 
             self = self.proj(args{:});
 
@@ -413,7 +413,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
                 if any(isPer)
                     assert(nnz(isPer) == 1, 'only one PER state is allowed for a single relation.');
-                    [~, per, ~] = makeLimitClause(self.restrictions{isPer});
+                    [~, per, ~] = makeLimitClause(header.names, self.restrictions{isPer});
                     perInd = find(isPer);
                 else
                     perInd = length(self.restrictions) + 1;
@@ -475,7 +475,7 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
 end
 
-function [limit, per, args, outer] = makeLimitClause(varargin)
+function [limit, per, args, outer] = makeLimitClause(names, varargin)
     args = varargin;
     limit = '';
     per = [];
@@ -508,11 +508,21 @@ function [limit, per, args, outer] = makeLimitClause(varargin)
         %         per.selector = 'animal_id';
         %     end
         if isempty(per.orderby) || strcmp(per.orderby, 'DESC')
-            per.orderby = '`date` DESC, `time` DESC, `entry_time` DESC'; %default sorting
-            tokens = {'date', 'time', 'entry_time'};
+            if any(strcmp(names,'time'))
+                per.orderby = '`date` DESC, `time` DESC, `entry_time` DESC'; %default sorting
+                tokens = {'date', 'time', 'entry_time'};
+            else
+                per.orderby = '`date` DESC, `entry_time` DESC'; %default sorting
+                tokens = {'date', 'entry_time'};
+            end
         elseif strcmp(per.orderby, 'ASC')
-            per.orderby = '`date` ASC, `time` ASC, `entry_time` ASC';
-            tokens = {'date', 'time', 'entry_time'};
+            if any(strcmp(names,'time'))
+                per.orderby = '`date` ASC, `time` ASC, `entry_time` ASC';
+                tokens = {'date', 'time', 'entry_time'};
+            else
+                per.orderby = '`date` ASC, `entry_time` ASC';
+                tokens = {'date', 'entry_time'};
+            end
         else
             tokens = regexp(per.orderby, '([a-z0-9_]+)', 'tokens');
             order = regexp(per.orderby, '((DESC)?(ASC)?)', 'tokens');
