@@ -6,13 +6,12 @@ event_id:int unsigned auto_increment
 -> sl.Animal
 -> sl.User # who performed the experiment
 -> sl.SocialBehaviorExperimentType # type of experiment, like social dominance, mate preference familiarity with rig, etc.
+-> sl.TestAnimalType # type of the test animal
 date:date
 time:time # session start time
 entry_time = CURRENT_TIMESTAMP:timestamp # when this was entered into db
 recorded = 'F':enum('T', 'F') # was session recorded
 
-duration:time # approximate duration
-fname = NULL:varchar(128) # root filename if session was recorded
 notes:varchar(256) # notes about the animal's state and comfort level, other people involvd, etc.
 %}
 
