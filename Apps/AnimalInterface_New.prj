@@ -48,8 +48,10 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSetAsBreeder.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSession.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSessionStimMouse.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSessionStimulus.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventWeaned.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalProtocol.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BehaviorVisualStimulusType.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BrainArea.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/BreedingCage.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/CellEvent.m</file>
