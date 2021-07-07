@@ -83,8 +83,15 @@ try
     end
     
     if strcmp(event_type, 'SocialBehaviorSession') %need to add stim mice
-        stimAnimalKeys = struct('stimulus_mouse',num2cell(key.stimAnimals),'arm',key.stimArms);
-        key = rmfield(key,{'stimAnimals','stimArms'});
+        stimAnimalKeys = struct('stim_type',key.stimTypes,'arm',key.stimArms);
+        for i=1:length(stimAnimalKeys)
+            if key.stimIDs(i)
+                stimAnimalKeys(i).stimulus_animal_id = key.stimIDs(i);
+            else
+                stimAnimalKeys(i).stimulus_animal_id = nan;
+            end
+        end
+        key = rmfield(key,{'stimTypes','stimArms','stimIDs'});
     end
 
     insert(feval(sprintf('sl.AnimalEvent%s',event_type)), key);
@@ -92,8 +99,8 @@ try
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
         this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
         [stimAnimalKeys.event_id] = deal(this_event_id);
-        insert(sl.AnimalEventSocialBehaviorSessionStimMouse, stimAnimalKeys);
-        text = sprintf('Stim mice insert successful.\n%s', text);
+        insert(sl.AnimalEventSocialBehaviorSessionStimulus, stimAnimalKeys);
+        text = sprintf('Stimulus insert successful.\n%s', text);
     end
         
     text = sprintf('%s insert successful.\n%s', event_type, text);
