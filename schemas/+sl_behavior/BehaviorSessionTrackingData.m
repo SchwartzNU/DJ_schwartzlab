@@ -1,8 +1,9 @@
 %{
 # Behavior session tracking data
+
 -> sl.AnimalEventSocialBehaviorSession
 ---
-time_axis : longblob            # vector with units of seconds
+time_axis : longblob            # vector with units of seconds 
 dlc_raw : longblob              # struct with dlc positions and confidence data
 head_position_arc : longblob    # vector, units of radians
 body_speed : longblob           # vector 1 element shorter than time_axis, units of pixels per second
@@ -32,11 +33,11 @@ classdef BehaviorSessionTrackingData < dj.Imported
             if isempty(folder_name) %no folder for this one, so don't add anything
                return; 
             end
-            load([foldername filesep 'full_data.mat']);
+            load([folder_name filesep 'full_data.mat']);
             Nframes = length(bino_gaze.gaze.outer_wall.left);
             frameRate = 15; %Hz, TODO, read this in from calibration;
             
-            key.timeAxis = linspace(0,Nframes/frameRate,Nframes);            
+            key.time_axis = linspace(0,Nframes/frameRate,Nframes);            
             key.dlc_raw = DLC_tracking;
             key.head_position_arc = bino_gaze.body_position_arc';
             key.body_speed = bino_gaze.speed';
@@ -48,7 +49,9 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.gaze_right_outer = mono_gaze.gaze.outer_wall.right';
             key.cumulative_gaze_right = mono_gaze.accumulative_gaze.outer_wall.right;
             key.cumulative_body = bino_gaze.accumulative_body_position.outer_wall;
-                        
+               
+            key
+            
             self.insert(key);
         end
     end
