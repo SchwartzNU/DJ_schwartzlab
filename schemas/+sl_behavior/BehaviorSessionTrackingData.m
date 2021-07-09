@@ -49,9 +49,7 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.gaze_right_outer = mono_gaze.gaze.outer_wall.right';
             key.cumulative_gaze_right = mono_gaze.accumulative_gaze.outer_wall.right;
             key.cumulative_body = bino_gaze.accumulative_body_position.outer_wall;
-               
-            key
-            
+                           
             self.insert(key);
         end
     end
