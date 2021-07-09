@@ -3,7 +3,7 @@ function R = behaviorSessionAnalysis(trackingData, pipeline, P)
 %analysis parameters
 pause_speed_thres = P.pause_speed_thres; %speed threshold to consider a pause
 pause_duration_thres = P.pause_duration_thres; %threshold number of seconds to stay paused
-
+analysis_end = P.analysis_end %time in seconds after mouse exist chamber to stop analysis
 
 inches_per_pixel = 0.022031; %TODO, load from calibration
 frameRate = 15; %Hz, TODO, load from calibration
@@ -11,14 +11,50 @@ frameRate = 15; %Hz, TODO, load from calibration
 trackingData_struct = fetch(trackingData,'*');
 
 speed_inches_per_s = trackingData_struct.body_speed*inches_per_pixel*frameRate;
-R.meanSpeed = mean(speed_inches_per_s);
+R.meanSpeed = nanmean(speed_inches_per_s);
 
 [~, pause_frames, pause_widths] = findpeaks(-speed_inches_per_s,'MinPeakHeight', -pause_speed_thres, 'MinPeakWidth', pause_duration_thres*frameRate);
 
+trialStart = find(~isnan(trackingData_struct.head_position_arc),1);
+trialEnd = trialStart + round(analysis_end*frameRate);
 
+Nframes = length(trackingData_struct.head_position_arc);
+if trialEnd > Nframes
+    disp(['Warning: ' num2str(analysis_end) ' after mouse exits chamber is past end of recording.']);
+    trialEnd = Nframes;
+end
+    
+ind = pause_frames > trialStart + frameRate; %1 sec after mouse comes out start looking for pauses
+R.pause_frames = pause_frames(ind);
+R.pause_head_positions = trackingData_struct.head_position_arc(R.pause_frames);
+R.pause_widths = pause_widths(ind) / frameRate;
 
+R.Npauses = length(R.pause_frames);
+if R.pause_frames
+    R.first_pause_time = trackingData_struct.time_axis(R.pause_frames(1)); %seconds
+else
+    R.first_pause_time = nan;
+end
 
+%fix this in importer
+trackingData_struct.cumulative_gaze_bino = trackingData_struct.cumulative_gaze_bino';
 
+R.gaze_bino_s = double(trackingData_struct.cumulative_gaze_bino(trialEnd,:)) / frameRate; 
+R.gaze_bino_frac = R.gaze_bino_s / analysis_end;
+
+R.gaze_L_s = double(trackingData_struct.cumulative_gaze_left(trialEnd,:)) / frameRate; 
+R.gaze_L_frac = R.gaze_L_s / analysis_end;
+
+R.gaze_R_s = double(trackingData_struct.cumulative_gaze_right(trialEnd,:)) / frameRate; 
+R.gaze_R_frac = R.gaze_R_s / analysis_end;
+
+R.body_s = double(trackingData_struct.cumulative_body(trialEnd,:)) / frameRate; 
+R.body_frac = R.body_s / analysis_end;
+
+R.window_visibility_s = sum(trackingData_struct.window_visibility(trialStart:trialEnd,:)) / frameRate;
+R.window_visibility_frac = R.window_visibility_s / analysis_end;
+
+R.pause_visibility_frac = sum(trackingData_struct.window_visibility(R.pause_frames, :)) / length(R.pause_frames);
 
 % in BehaviorSessionTrackingData
 % time_axis : longblob            # vector with units of seconds 
