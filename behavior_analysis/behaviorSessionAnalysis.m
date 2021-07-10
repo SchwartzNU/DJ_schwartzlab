@@ -3,7 +3,7 @@ function R = behaviorSessionAnalysis(trackingData, pipeline, P)
 %analysis parameters
 pause_speed_thres = P.pause_speed_thres; %speed threshold to consider a pause
 pause_duration_thres = P.pause_duration_thres; %threshold number of seconds to stay paused
-analysis_end = P.analysis_end %time in seconds after mouse exist chamber to stop analysis
+analysis_end = P.analysis_end; %time in seconds after mouse exist chamber to stop analysis
 
 inches_per_pixel = 0.022031; %TODO, load from calibration
 frameRate = 15; %Hz, TODO, load from calibration
@@ -11,7 +11,6 @@ frameRate = 15; %Hz, TODO, load from calibration
 trackingData_struct = fetch(trackingData,'*');
 
 speed_inches_per_s = trackingData_struct.body_speed*inches_per_pixel*frameRate;
-R.meanSpeed = nanmean(speed_inches_per_s);
 
 [~, pause_frames, pause_widths] = findpeaks(-speed_inches_per_s,'MinPeakHeight', -pause_speed_thres, 'MinPeakWidth', pause_duration_thres*frameRate);
 
@@ -21,8 +20,10 @@ trialEnd = trialStart + round(analysis_end*frameRate);
 Nframes = length(trackingData_struct.head_position_arc);
 if trialEnd > Nframes
     disp(['Warning: ' num2str(analysis_end) ' after mouse exits chamber is past end of recording.']);
-    trialEnd = Nframes;
+    trialEnd = Nframes-1;
 end
+
+R.meanSpeed = nanmean(speed_inches_per_s(trialStart:trialEnd));
     
 ind = pause_frames > trialStart + frameRate; %1 sec after mouse comes out start looking for pauses
 R.pause_frames = pause_frames(ind);
@@ -31,7 +32,7 @@ R.pause_widths = pause_widths(ind) / frameRate;
 
 R.Npauses = length(R.pause_frames);
 if R.pause_frames
-    R.first_pause_time = trackingData_struct.time_axis(R.pause_frames(1)); %seconds
+    R.first_pause_time = double(trackingData_struct.time_axis(R.pause_frames(1)-trialStart)); %seconds
 else
     R.first_pause_time = nan;
 end
