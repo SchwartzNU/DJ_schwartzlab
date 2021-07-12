@@ -15,6 +15,7 @@ cumulative_gaze_left: longblob  # vector Nframes-1 * 3 of the number of frames s
 gaze_right_outer : longblob     # vector of estimated right eye gaze positions along the outer wall (radians)
 cumulative_gaze_right: longblob # vector Nframes-1 * 3 of the number of frames spent gazing of each window, right eye
 cumulative_body: longblob       # vector Nframes-1 * 3 of the number of frames body center is in front of each window
+nose_window_dist : longblob     # vector Nframes-1 * 3 of the number nose distance from each window
 %}
 
 classdef BehaviorSessionTrackingData < dj.Imported
@@ -49,6 +50,9 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.gaze_right_outer = mono_gaze.gaze.outer_wall.right';
             key.cumulative_gaze_right = mono_gaze.accumulative_gaze.outer_wall.right;
             key.cumulative_body = bino_gaze.accumulative_body_position.outer_wall;
+            key.nose_window_dist(:,1) = bino_gaze.nose_window_distance.window_A';
+            key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
+            key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
                            
             self.insert(key, 'REPLACE');
         end
