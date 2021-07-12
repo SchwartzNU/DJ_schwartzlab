@@ -12,8 +12,33 @@ ind = find(startsWith(session_folders, session_date));
 if isempty(ind)
     disp(['session folder for session ' num2str(session_id) ' not found']);
 elseif length(ind)>1
-    disp(['multiple folder matches found for for session ' num2str(session_id)]);
+    %disp(['multiple folder matches found for for session ' num2str(session_id)]);
     %TODO use other parts of folder name to figure it out
+    stims = sl.AnimalEventSocialBehaviorSessionStimulus & thisSession;
+    stims_stuct = fetch(stims, '*');
+    stim_str = [];
+    
+    for i=1:length(stims_stuct)
+        stimType = strrep(stims_stuct(i).stim_type, ' ', '_');
+        if strcmp(stimType, 'single_pup')
+            stimType = 'pup'; %HACK for inconsistent naming
+        end
+        stim_str = [stim_str, sprintf('(%s)%s_', stims_stuct(i).arm, stimType)];
+    end
+    stim_str = stim_str(1:end-1);
+    
+    if strcmp(stim_str, '(A)empty_(B)empty_(C)empty')
+        stim_str = 'habituation'; %HACK for inconsistent naming
+    end
+    
+    for i=1:length(ind)
+        curFolder = session_folders{ind(i)};
+        if endsWith(curFolder, stim_str)
+            folder_name = [rootFolder filesep num2str(animal_id) filesep session_folders{ind(i)}];
+            return;
+        end
+    end
+    
 else
     folder_name = [rootFolder filesep num2str(animal_id) filesep session_folders{ind}];
 end

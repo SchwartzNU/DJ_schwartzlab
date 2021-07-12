@@ -11,8 +11,10 @@ if L==0
     disp(['no matching session found for ' folder_name]);
     session_id = nan;
 elseif L>1
-    disp(['multiple matching sessions found for ' folder_name]);
+    %disp(['multiple matching sessions found for ' folder_name]);
     %use the rest of the name to figure it out
+    
+    
     session_id = nan;
 else
     session_id = thisSession.fetchn('event_id'); %why is fetch1 not working?

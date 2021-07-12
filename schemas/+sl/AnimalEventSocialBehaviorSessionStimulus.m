@@ -10,5 +10,5 @@ classdef AnimalEventSocialBehaviorSessionStimulus < dj.Part
     properties (SetAccess = protected)
         master = sl.AnimalEventSocialBehaviorSession
     end
-
+    
 end

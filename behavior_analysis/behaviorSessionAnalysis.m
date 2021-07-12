@@ -4,6 +4,8 @@ function R = behaviorSessionAnalysis(trackingData, pipeline, P)
 pause_speed_thres = P.pause_speed_thres; %speed threshold to consider a pause
 pause_duration_thres = P.pause_duration_thres; %threshold number of seconds to stay paused
 analysis_end = P.analysis_end; %time in seconds after mouse exist chamber to stop analysis
+nose_contact_thres = P.nose_contact_thres; %threshold (inches) for counting a nose contact
+nose_contact_duration_thres = P.nose_contact_duration_thres; %threshold (seconds) for counting a nose contact
 window_order = P.window_order; %3 element vector specifying how to order the windows
 
 inches_per_pixel = 0.022031; %TODO, load from calibration
@@ -17,6 +19,14 @@ speed_inches_per_s = trackingData_struct.body_speed*inches_per_pixel*frameRate;
 
 trialStart = find(~isnan(trackingData_struct.head_position_arc),1);
 trialEnd = trialStart + round(analysis_end*frameRate);
+
+[~, contact_frames_A, contact_widths_A] = findpeaks(-trackingData_struct.nose_window_dist(:,1),'MinPeakHeight', -nose_contact_thres, 'MinPeakWidth', nose_contact_duration_thres*frameRate);
+
+% plot(trackingData_struct.time_axis, trackingData_struct.nose_window_dist(:,1));
+% pause;
+
+[~, contact_frames_B, contact_widths_B] = findpeaks(-trackingData_struct.nose_window_dist(:,2),'MinPeakHeight', -nose_contact_thres, 'MinPeakWidth', nose_contact_duration_thres*frameRate);
+[~, contact_frames_C, contact_widths_C] = findpeaks(-trackingData_struct.nose_window_dist(:,3),'MinPeakHeight', -nose_contact_thres, 'MinPeakWidth', nose_contact_duration_thres*frameRate);
 
 Nframes = length(trackingData_struct.head_position_arc);
 if trialEnd > Nframes
@@ -58,6 +68,12 @@ R.window_visibility_s = sum(trackingData_struct.window_visibility(trialStart:tri
 R.window_visibility_frac = R.window_visibility_s / analysis_end;
 
 R.pause_visibility_frac = sum(trackingData_struct.window_visibility(R.pause_frames, window_order)) / length(R.pause_frames);
+
+Ncontacts = [length(contact_frames_A), length(contact_frames_B), length(contact_frames_C)];
+R.Ncontacts = Ncontacts(window_order);
+
+median_contact_dur = [nanmedian(double(contact_widths_A/frameRate)), nanmedian(double(contact_widths_B/frameRate)), nanmedian(double(contact_widths_C/frameRate))];
+R.median_contact_dur = median_contact_dur(window_order);
 
 % in BehaviorSessionTrackingData
 % time_axis : longblob            # vector with units of seconds 
