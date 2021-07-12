@@ -40,7 +40,7 @@ else
 end
 
 %fix this in importer
-trackingData_struct.cumulative_gaze_bino = trackingData_struct.cumulative_gaze_bino';
+%trackingData_struct.cumulative_gaze_bino = trackingData_struct.cumulative_gaze_bino';
 
 R.gaze_bino_s = double(trackingData_struct.cumulative_gaze_bino(trialEnd,window_order)) / frameRate; 
 R.gaze_bino_frac = R.gaze_bino_s / analysis_end;

@@ -21,7 +21,7 @@ classdef BehaviorSessionTrackingData < dj.Imported
      methods(Access=protected)
         function makeTuples(self, key)  
             C = dj.conn;
-            if strcmp(C.host, 'localhost') 
+            if strcmp(C.host, '127.0.0.1:3306') 
                rootFolder = '/mnt/fsmresfiles/behavior';
             elseif exist(getenv('SERVER_ROOT'), 'dir')
                rootFolder = [getenv('SERVER_ROOT') filesep 'Behavior'];
@@ -43,14 +43,14 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.body_speed = bino_gaze.speed';
             key.window_visibility = bino_gaze.window_visibility;
             key.gaze_bino_outer = bino_gaze.gaze.outer_wall.left';
-            key.cumulative_gaze_bino = bino_gaze.accumulative_gaze.outer_wall.left';
+            key.cumulative_gaze_bino = bino_gaze.accumulative_gaze.outer_wall.left;
             key.gaze_left_outer = mono_gaze.gaze.outer_wall.left';
             key.cumulative_gaze_left = mono_gaze.accumulative_gaze.outer_wall.left;
             key.gaze_right_outer = mono_gaze.gaze.outer_wall.right';
             key.cumulative_gaze_right = mono_gaze.accumulative_gaze.outer_wall.right;
             key.cumulative_body = bino_gaze.accumulative_body_position.outer_wall;
                            
-            self.insert(key);
+            self.insert(key, 'REPLACE');
         end
     end
 end

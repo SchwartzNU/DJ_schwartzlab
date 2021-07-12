@@ -32,7 +32,7 @@ for i=1:L
     trackingData = sl_behavior.BehaviorSessionTrackingData & session_ids(i);
     if trackingData.exists
         sessionData = behaviorSessionAnalysis(trackingData, 'test', curP);
-        R.session_id = session_ids(i);
+        R.session_id(i) = session_ids(i);
         fnames = fieldnames(sessionData);
         
         for f=1:length(fnames)
