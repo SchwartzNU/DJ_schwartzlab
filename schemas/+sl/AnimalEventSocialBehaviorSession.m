@@ -18,8 +18,8 @@ notes:varchar(256) # notes about the animal's state and comfort level, other peo
 classdef AnimalEventSocialBehaviorSession < sl.AnimalEvent & dj.Manual
 
     properties
-        printStr = '%s %s: Animal %d had a social behavior session of type "%s". Duration: %s. %s. Performed by %s. (%s)\n';
-        printFields = {'date', 'time', 'animal_id', 'purpose', 'duration', 'recorded', 'fname', 'user_name', 'notes'};
+        printStr = '%s %s: Animal %d had a social behavior session of type "%s". Performed by %s. (%s)\n';
+        printFields = {'date', 'time', 'animal_id', 'purpose', 'user_name', 'notes'};
     end
 
 end
