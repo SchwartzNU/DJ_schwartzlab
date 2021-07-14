@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="576452950" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3463606770" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_New</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_New</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_New</param.files.only>
@@ -132,50 +132,9 @@
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/setupDJ.m</file>
     </fileset.resources>
     <fileset.depfun>
-      <file>${MATLAB_ROOT}/toolbox/local/userpath.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/AutoPopulate.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Declare.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/ExternalMapping.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/ExternalTable.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/GeneralRelvar.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Header.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Master.m</file>
       <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Settings.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Table.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/TableAccessor.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/UserRelation.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/ask.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/fromCamelCase.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/hash.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/shorthash.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/toCamelCase.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/DataHash.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/getpass.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/isString.m</file>
       <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/saveJSONfile.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/startsWith.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/AutoPopulate.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Connection.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/ERD.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Imported.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Jobs.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Lookup.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Manual.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Part.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Relvar.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Schema.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Table.m</file>
       <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/config.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/conn.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/createSchema.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/setup.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/initialize.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/install.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/require.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/uninstall.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/compareVersions/compareVersions.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.m</file>
-      <file>/Users/gws584/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.mexmaci64</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animal.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animalEvent.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/add_animals.m</file>

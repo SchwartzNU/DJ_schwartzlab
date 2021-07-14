@@ -20,7 +20,7 @@ q.date = date;
 matchingAnimals = sl.Animal & (sl.AnimalEventReservedForSession & q);
 L = matchingAnimals.count;
 if L > 0
-    animalList = matchingAnimals.fetch('animal_id','genotype_name','tag_id');
+    animalList = matchingAnimals.fetch('animal_id','genotype_name');
     whichEye = cellData.get('eye');
     fprintf('Eye identified at recording time as: %s\n', whichEye);
     
