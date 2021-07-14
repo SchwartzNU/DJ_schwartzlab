@@ -26,7 +26,7 @@ classdef SpikeTrain < dj.Imported
         function makeTuples(self, key)
             
             C = dj.conn;
-            if strcmp(C.host, 'localhost') 
+            if strcmp(C.host, '127.0.0.1:3306') 
                 load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data]);
             else
 %               cellData = loadAndSyncCellData(key.cell_data);
