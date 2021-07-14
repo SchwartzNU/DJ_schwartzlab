@@ -29,10 +29,10 @@ classdef SpikeTrain < dj.Imported
             if strcmp(C.host, '127.0.0.1:3306') 
                 load(['/mnt/fsmresfiles/CellDataMaster/' key.cell_data]);
             else
-%               cellData = loadAndSyncCellData(key.cell_data);
+                cellData = loadAndSyncCellData(key.cell_data);
                 %TODO: should get local cell data if possible but seems
                 %busted right now
-                load(sprintf('%s/%s', getenv('CELL_DATA_MASTER'), key.cell_data));
+                %load(sprintf('%s/%s', getenv('CELL_DATA_FOLDER'), key.cell_data));
             end
             epData = cellData.epochs(key.epoch_number);
             sp = epData.get(sprintf('spikes_ch%d', key.channel));
