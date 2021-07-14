@@ -22,7 +22,9 @@ while true
     end
 
     try
-        del(sl_mutable.SpikeTrainMissing & newCellData);
+        if ~isempty(newCellData)
+            del(sl_mutable.SpikeTrainMissing & newCellData);
+        end
         populateAll();
     catch ME
         messagetext = getReport(ME);
