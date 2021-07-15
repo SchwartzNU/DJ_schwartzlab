@@ -4,7 +4,7 @@ if nargin < 4
 end
 
 saveFolder = [getenv('pipelines_folder'), pipeline, filesep, 'h5' filesep];
-saveFolder = strrep(saveFolder, '~', getenv('home_dir'));%hdf5write cannot deal with ~!!!
+saveFolder = strrep(saveFolder, '~/', getenv('home_dir'));%hdf5write cannot deal with ~!!!
 if ~exist(saveFolder,'dir')
     fprintf('Making new h5 folder for pipeline %s\n', pipeline);
     mkdir(saveFolder);
@@ -39,10 +39,12 @@ for i=1:N
                 curField = fields{g};
             end
         end
-        
+        if islogical(curVal)
+            curVal = double(curVal);
+        end
         try
             hdf5write(fullName, ['/' datasetname '/' variablenames{f}], ...
-                resultsStruct(i).result.(curField), 'WriteMode', 'append');
+                curVal, 'WriteMode', 'append');
         catch
             fprintf('Error writing hdf5 file %s\n', fullName);
             return;

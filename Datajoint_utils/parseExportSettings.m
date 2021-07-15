@@ -15,18 +15,19 @@ if isempty(input) %single result
        case 'variable names'
             var_parts = [var_parts,  '__r', 'varName'];
     end
-            
-    fields = fieldnames(results);
-    Nfields=length(fields);
-    variablenames = cell(Nfields,1);
-    for f=1:Nfields
-        variablenames{f} = '';
-        varName = fields{f};
-        for i=1:length(var_parts)
-            if rem(i,2)==1
-                variablenames{f} = [variablenames{f}, var_parts{i}];
-            else
-                variablenames{f} = [variablenames{f}, eval(var_parts{i})];
+    if ~isempty(results)
+        fields = fieldnames(results);
+        Nfields=length(fields);
+        variablenames = cell(Nfields,1);
+        for f=1:Nfields
+            variablenames{f} = '';
+            varName = fields{f};
+            for i=1:length(var_parts)
+                if rem(i,2)==1
+                    variablenames{f} = [variablenames{f}, var_parts{i}];
+                else
+                    variablenames{f} = [variablenames{f}, eval(var_parts{i})];
+                end
             end
         end
     end
