@@ -20,9 +20,13 @@ elseif length(ind)>1
     
     for i=1:length(stims_stuct)
         stimType = strrep(stims_stuct(i).stim_type, ' ', '_');
+        stimulus_animal_id = stims_stuct(i).stimulus_animal_id;
         if strcmp(stimType, 'single_pup')
             stimType = 'pup'; %HACK for inconsistent naming
         end
+        if ~isnan(stimulus_animal_id)
+            stimType = num2str(stimulus_animal_id);
+        end        
         stim_str = [stim_str, sprintf('(%s)%s_', stims_stuct(i).arm, stimType)];
     end
     stim_str = stim_str(1:end-1);

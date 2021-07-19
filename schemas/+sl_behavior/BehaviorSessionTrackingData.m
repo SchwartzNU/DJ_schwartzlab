@@ -16,6 +16,7 @@ gaze_right_outer : longblob     # vector of estimated right eye gaze positions a
 cumulative_gaze_right: longblob # vector Nframes-1 * 3 of the number of frames spent gazing of each window, right eye
 cumulative_body: longblob       # vector Nframes-1 * 3 of the number of frames body center is in front of each window
 nose_window_dist : longblob     # vector Nframes-1 * 3 of the number nose distance from each window
+squeak_times : longblob         # vector of identifies squeak times (in seconds)
 %}
 
 classdef BehaviorSessionTrackingData < dj.Imported
@@ -53,7 +54,8 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,1) = bino_gaze.nose_window_distance.window_A';
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
-                           
+            key.squeak_times = squeaks_time.('B&K_audio_squeaks');              
+                        
             self.insert(key, 'REPLACE');
         end
     end

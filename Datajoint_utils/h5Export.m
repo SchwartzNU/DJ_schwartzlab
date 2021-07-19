@@ -39,6 +39,7 @@ for i=1:N
                 curField = fields{g};
             end
         end
+        curVal = resultsStruct(i).result.(curField);
         if islogical(curVal)
             curVal = double(curVal);
         end
