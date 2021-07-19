@@ -55,7 +55,7 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
             
-            if isfield(squeaks_time, 'B&K_audio_squeaks')
+            if exist('squeaks_time','var')
                 key.squeak_times = squeaks_time.('B&K_audio_squeaks');           
             else
                 key.squeak_times = 'missing';
