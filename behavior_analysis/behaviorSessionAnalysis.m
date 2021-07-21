@@ -49,9 +49,6 @@ else
     R.first_pause_time = nan;
 end
 
-%fix this in importer
-%trackingData_struct.cumulative_gaze_bino = trackingData_struct.cumulative_gaze_bino';
-
 R.gaze_bino_s = double(trackingData_struct.cumulative_gaze_bino(trialEnd,window_order)) / frameRate; 
 R.gaze_bino_frac = R.gaze_bino_s / analysis_end;
 
@@ -72,8 +69,24 @@ R.pause_visibility_frac = sum(trackingData_struct.window_visibility(R.pause_fram
 Ncontacts = [length(contact_frames_A), length(contact_frames_B), length(contact_frames_C)];
 R.Ncontacts = Ncontacts(window_order);
 
+R.Ncontacts_per_min = 60 * R.Ncontacts./analysis_end;
+
 median_contact_dur = [nanmedian(double(contact_widths_A/frameRate)), nanmedian(double(contact_widths_B/frameRate)), nanmedian(double(contact_widths_C/frameRate))];
 R.median_contact_dur = median_contact_dur(window_order);
+
+if strcmp(trackingData_struct.squeak_times, 'missing')
+    R.Nsqueaks = nan;
+else
+    if ~trackingData_struct.squeak_times %none stored as logical false
+        R.Nsqueaks = 0;
+    else
+        R.Nsqueaks = length(trackingData_struct.squeak_times);
+    end
+end
+
+R.Nsqueaks_per_min = 60 * R.Nsqueaks./analysis_end;
+   
+R.Npauses_per_min = 60 * R.Npauses./analysis_end;
 
 % in BehaviorSessionTrackingData
 % time_axis : longblob            # vector with units of seconds 

@@ -11,7 +11,10 @@ for i=1:L
     trialResult(i) = behaviorSessionAnalysis(thisSession, 'test', P);
     trialDate{i} = datetime(fetch1(sl.AnimalEventSocialBehaviorSession & sprintf('event_id=%d',trials(i)), 'date'));  
     trialDateNum(i) = datenum(trialDate{i});
+    R.Npauses_per_min(i) = trialResult(i).Npauses_per_min;
+    R.Ncontacts_per_min(i) = sum(trialResult(i).Ncontacts_per_min);
     R.median_pause_width(i) = median(trialResult(i).pause_widths);
+    R.Nsqueaks_per_min(i) = trialResult(i).Nsqueaks_per_min;
 end
 
 [~, order] = sort(datenum(trialDateNum))

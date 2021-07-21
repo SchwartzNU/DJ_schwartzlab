@@ -12,8 +12,6 @@ ind = find(startsWith(session_folders, session_date));
 if isempty(ind)
     disp(['session folder for session ' num2str(session_id) ' not found']);
 elseif length(ind)>1
-    %disp(['multiple folder matches found for for session ' num2str(session_id)]);
-    %TODO use other parts of folder name to figure it out
     stims = sl.AnimalEventSocialBehaviorSessionStimulus & thisSession;
     stims_stuct = fetch(stims, '*');
     stim_str = [];
