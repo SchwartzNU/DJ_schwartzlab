@@ -59,17 +59,32 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
             
-            Ncrossings = length(bino_gaze.window_crossings.in_frame);
-            key.window_crossings_in_frame = zeros(Ncrossings,1);
-            key.window_crossings_out_frame = zeros(Ncrossings,1);
-            key.window_crossings_win = cell(Ncrossings,1);
-            key.window_crossings_type = cell(Ncrossings,1);
-            
-            for i=1:Ncrossings
-                key.window_crossings_in_frame(i) = bino_gaze.window_crossings.in_frame(i);
-                key.window_crossings_out_frame(i) = bino_gaze.window_crossings.out_frame(i);
-                key.window_crossings_win{i} = bino_gaze.window_crossings.window(i);
-                key.window_crossings_type{i} = deblank(bino_gaze.window_crossings.type(i,:));
+            if isfield(bino_gaze,'window_crossings')
+                Ncrossings = length(bino_gaze.window_crossings.in_frame);
+                if Ncrossings
+                    key.window_crossings_in_frame = zeros(Ncrossings,1);
+                    key.window_crossings_out_frame = zeros(Ncrossings,1);
+                    key.window_crossings_win = cell(Ncrossings,1);
+                    key.window_crossings_type = cell(Ncrossings,1);
+                    
+                    for i=1:Ncrossings
+                        key.window_crossings_in_frame(i) = bino_gaze.window_crossings.in_frame(i);
+                        key.window_crossings_out_frame(i) = bino_gaze.window_crossings.out_frame(i);
+                        key.window_crossings_win{i} = bino_gaze.window_crossings.window(i);
+                        key.window_crossings_type{i} = deblank(bino_gaze.window_crossings.type(i,:));
+                    end
+                else
+                    key.window_crossings_in_frame = 0;
+                    key.window_crossings_out_frame = 0;
+                    key.window_crossings_win = {'none'};
+                    key.window_crossings_type = {'none'};
+                end
+                
+            else
+                key.window_crossings_in_frame = 0;
+                key.window_crossings_out_frame = 0;
+                key.window_crossings_win = {'missing'};
+                key.window_crossings_type = {'missing'};
             end
             
             if exist('squeaks_time','var')
