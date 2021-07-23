@@ -17,6 +17,10 @@ cumulative_gaze_right: longblob # vector Nframes-1 * 3 of the number of frames s
 cumulative_body: longblob       # vector Nframes-1 * 3 of the number of frames body center is in front of each window
 nose_window_dist : longblob     # vector Nframes-1 * 3 of the number nose distance from each window
 squeak_times : longblob         # vector of identifies squeak times (in seconds)
+window_crossings_in_frame : longblob     # vector of frame times that begin window crossings
+window_crossings_out_frame  : longblob   # vector of frame times that end window crossings
+window_crossings_win  : longblob         # which window was crossed for each event
+window_crossings_type : longblob         # double back or straight through for each crossing 
 %}
 
 classdef BehaviorSessionTrackingData < dj.Imported
@@ -54,6 +58,19 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,1) = bino_gaze.nose_window_distance.window_A';
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
+            
+            Ncrossings = length(bino_gaze.window_crossings.in_frame);
+            key.window_crossings_in_frame = zeros(Ncrossings,1);
+            key.window_crossings_out_frame = zeros(Ncrossings,1);
+            key.window_crossings_win = cell(Ncrossings,1);
+            key.window_crossings_type = cell(Ncrossings,1);
+            
+            for i=1:Ncrossings
+                key.window_crossings_in_frame(i) = bino_gaze.window_crossings.in_frame(i);
+                key.window_crossings_out_frame(i) = bino_gaze.window_crossings.out_frame(i);
+                key.window_crossings_win{i} = bino_gaze.window_crossings.window(i);
+                key.window_crossings_type{i} = deblank(bino_gaze.window_crossings.type(i,:));
+            end
             
             if exist('squeaks_time','var')
                 key.squeak_times = squeaks_time.('B&K_audio_squeaks');           
