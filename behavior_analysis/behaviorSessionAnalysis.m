@@ -88,11 +88,60 @@ R.Nsqueaks_per_min = 60 * R.Nsqueaks./analysis_end;
    
 R.Npauses_per_min = 60 * R.Npauses./analysis_end;
 
+%window crossing part
+if trackingData_struct.window_crossings_in_frame %found some
+    ind = trackingData_struct.window_crossings_out_frame <= trialEnd;
+    inFrame = trackingData_struct.window_crossings_in_frame(ind);
+    outFrame = trackingData_struct.window_crossings_out_frame(ind);
+    crossWin = trackingData_struct.window_crossings_win(ind);
+    crossType = trackingData_struct.window_crossings_type(ind);
+    
+    ind = cell(3,1);
+    
+    ind{1} = strcmp(crossWin, 'A');
+    ind{2} = strcmp(crossWin, 'B');
+    ind{3} = strcmp(crossWin, 'C');
+    
+    through_crosses = strcmp(crossType, 'through');
+    
+    frames_in_cross = outFrame - inFrame;
+    time_in_cross = frames_in_cross ./ frameRate;
+    
+    N_crosses = zeros(1,3);
+    N_crosses_through = zeros(1,3);
+    frac_crosses_through = zeros(1,3);
+    median_cross_time = zeros(1,3);
+    min_cross_time = zeros(1,3);
+    max_cross_time = zeros(1,3);
+    mean_cross_time = zeros(1,3);
+    
+    for i=1:3 %each window A,B,C
+       curInd = ind{i};
+       N_crosses(i) = sum(curInd);
+       N_crosses_through(i) = sum(curInd & through_crosses);
+       throughInd = curInd & through_crosses;
+       
+       frac_crosses_through(i) = N_crosses_through(i) / N_crosses(i);
+       median_cross_time(i) = median(time_in_cross(throughInd));
+       min_cross_time(i) = min(time_in_cross(throughInd));
+       max_cross_time(i) = max(time_in_cross(throughInd));
+       mean_cross_time(i) = mean(time_in_cross(throughInd));
+    end
+    
+    R.N_crosses = N_crosses(window_order);
+    R.N_crosses_through = N_crosses_through(window_order);
+    R.frac_crosses_through = frac_crosses_through(window_order);
+    R.median_cross_time = median_cross_time(window_order);
+    R.min_cross_time = min_cross_time(window_order);
+    R.max_cross_time = max_cross_time(window_order);
+    R.mean_cross_time = mean_cross_time(window_order);    
+end
+
 % in BehaviorSessionTrackingData
 % time_axis : longblob            # vector with units of seconds 
 % dlc_raw : longblob              # struct with dlc positions and confidence data
 % head_position_arc : longblob    # vector, units of radians
-% body_speed : longblob           # vector 1 element shorter than time_axis, units of pixels per frane
+% body_speed : longblob           # vector 1 element shorter than time_axis, units of pixels per second
 % window_visibility : longblob    # logical vector Nframes x 3 columns marking times the animal is visible to windows A,B,C
 % gaze_bino_outer : longblob      # vector of estimated binocular gaze positions along the outer wall (radians)
 % cumulative_gaze_bino: longblob  # vector Nframes-1 * 3 of the number of frames gazing at each window
@@ -101,3 +150,9 @@ R.Npauses_per_min = 60 * R.Npauses./analysis_end;
 % gaze_right_outer : longblob     # vector of estimated right eye gaze positions along the outer wall (radians)
 % cumulative_gaze_right: longblob # vector Nframes-1 * 3 of the number of frames spent gazing of each window, right eye
 % cumulative_body: longblob       # vector Nframes-1 * 3 of the number of frames body center is in front of each window
+% nose_window_dist : longblob     # vector Nframes-1 * 3 of the number nose distance from each window
+% squeak_times : longblob         # vector of identifies squeak times (in seconds)
+% window_crossings_in_frame : longblob     # vector of frame times that begin window crossings
+% window_crossings_out_frame  : longblob   # vector of frame times that end window crossings
+% window_crossings_win  : longblob         # which window was crossed for each event
+% window_crossings_type : longblob         # double back or straight through for each crossing 
