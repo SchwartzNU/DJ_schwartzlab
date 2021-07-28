@@ -1,16 +1,13 @@
 %{
 # change breeder status
-
-event_id:int unsigned auto_increment
+event_id                    : int unsigned AUTO_INCREMENT   # 
 ---
 -> sl.Animal
 -> sl.User
-date:date
-time = NULL:time
-entry_time = CURRENT_TIMESTAMP:timestamp # when this was entered into db
-
-unique index (animal_id)
-notes = NULL:varchar(256) # anything
+date                        : date                          # 
+time=null                   : time                          # 
+entry_time=CURRENT_TIMESTAMP: timestamp                     # when this was entered into db
+notes=null                  : varchar(256)                  # anything
 %}
 
 classdef AnimalEventRetireAsBreeder < sl.AnimalEvent & dj.Manual
