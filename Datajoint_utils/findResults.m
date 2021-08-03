@@ -1,7 +1,11 @@
 function missingEntries = findResults(pipeline, funcType, funcName, workingQuery)
 %this will only look in your own db;
 C = dj.conn;
-user_db = sprintf('sl_%s', lower(C.user));
+if strcmp(C.User,'OfficeDesktop')
+    user_db = 'sl_shared';
+else
+    user_db = sprintf('sl_%s', lower(C.user));
+end
 
 key.pipeline_name = pipeline;
 key.epoch_func_name = funcName;
