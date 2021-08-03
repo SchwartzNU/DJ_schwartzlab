@@ -19,7 +19,7 @@ classdef SpikeTrain < dj.Imported
              (sl.Epoch & "recording_mode='Cell attached' OR recording2_mode='Cell attached' OR (recording_mode='Whole cell' AND (cell_id LIKE '040221Ac%' OR cell_id LIKE '040821Ac%' OR cell_id LIKE '041521Ac%' OR cell_id LIKE '042221Ac%' OR cell_id LIKE '051121Ac%' OR cell_id LIKE '051821Ac%'))")... #796 whole cell epochs, for testing
              * sl_mutable.RecordingChannels...
           ) - sl_mutable.SpikeTrainMissing...
-          & "(recording_mode='Cell attached' AND channel=1) OR (recording2_mode='Cell attached' AND channel=2) OR (recording_mode='Whole cell' AND channel=1 AND (cell_id LIKE '040221Ac%' OR cell_id LIKE '040821Ac%' OR cell_id LIKE '041521Ac%' OR cell_id LIKE '042221Ac%' OR cell_id LIKE '051121Ac%' OR cell_id LIKE '051821Ac%'))";
+          & "(recording_mode='Cell attached' AND channel=1) OR (recording2_mode='Cell attached' AND channel=2) OR (recording_mode='Whole cell' AND channel=1 AND (cell_id LIKE '040221Ac%' OR cell_id LIKE '040821Ac%' OR cell_id LIKE '041521Ac%' OR cell_id LIKE '042221Ac%' OR cell_id LIKE '051121Ac%' OR cell_id LIKE '051821Ac% OR cell_id LIKE '072721Ac%'))";
     end
 
     methods(Access=protected)
