@@ -4,9 +4,17 @@ if nargin < 8
     fid = 0;
 end
 if nargin < 7 || isempty(user)
-    user_db = sprintf('sl_%s', lower(C.user));
+    %if strcmp(C.user,'OfficeDesktop')
+        user_db = 'sl_shared';
+    %else
+    %    user_db = sprintf('sl_%s', lower(C.user));
+    %end
 else
-    user_db = sprintf('sl_%s', user);
+     if strcmp(C.user,'OfficeDesktop')
+        user_db = 'sl_shared';
+     else
+        user_db = sprintf('sl_%s', user);
+     end
 end
 if fid
     fprintf(fid, 'Writing to schema: %s\n', user_db);

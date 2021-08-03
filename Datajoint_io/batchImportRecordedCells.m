@@ -135,7 +135,7 @@ if fname
                             C.commitTransaction;
                             fprintf(fid,'Animal insert successful\n');
                             matchingAnimals = sl.Animal & (sl.AnimalEventReservedForSession & q);
-                            animalData = matchingAnimals.fetch('animal_id','genotype_name','tag_id');
+                            animalData = matchingAnimals.fetch('animal_id','genotype_name');
                         catch
                             C.cancelTransaction;
                             fprintf(fid,'Animal insert failed\n');
