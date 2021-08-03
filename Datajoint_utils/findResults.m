@@ -1,7 +1,7 @@
 function missingEntries = findResults(pipeline, funcType, funcName, workingQuery)
 %this will only look in your own db;
 C = dj.conn;
-if strcmp(C.User,'OfficeDesktop')
+if strcmp(C.user,'OfficeDesktop')
     user_db = 'sl_shared';
 else
     user_db = sprintf('sl_%s', lower(C.user));
