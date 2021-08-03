@@ -143,7 +143,7 @@ if fname
                             
                         end
                     elseif L == 1 %found single matching animal, assume that eyes and events are added correctly
-                        animalData = matchingAnimals.fetch('animal_id','genotype_name','tag_id');
+                        animalData = matchingAnimals.fetch('animal_id','genotype_name');
                         fprintf(fid,'Found single matching animal for %s: DJ_ID: %d \n', cell_id, animalData.animal_id);
                         fprintf('Found single matching animal for %s: DJ_ID: %d \n', cell_id, animalData.animal_id);
                     else %found multiple matching animals - so error
