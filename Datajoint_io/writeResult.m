@@ -4,11 +4,11 @@ if nargin < 8
     fid = 0;
 end
 if nargin < 7 || isempty(user)
-    if strcmp(C.user,'OfficeDesktop')
+    %if strcmp(C.user,'OfficeDesktop')
         user_db = 'sl_shared';
-    else
-        user_db = sprintf('sl_%s', lower(C.user));
-    end
+    %else
+    %    user_db = sprintf('sl_%s', lower(C.user));
+    %end
 else
      if strcmp(C.user,'OfficeDesktop')
         user_db = 'sl_shared';
