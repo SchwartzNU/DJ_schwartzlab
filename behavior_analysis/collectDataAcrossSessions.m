@@ -23,9 +23,7 @@ for i=1:L
         end
     end
     
-    if ~skipAnimal
-        R.animal_id(s) = animal_id;
-        
+    if ~skipAnimal        
         if isfield(P, 'window_order')
             window_order = P.window_order;
         else
@@ -86,6 +84,8 @@ for i=1:L
         
         trackingData = sl_behavior.BehaviorSessionTrackingData & session_ids(i);
         if trackingData.exists && doAnalysis
+            R.animal_id(s) = animal_id;
+
             sessionData = behaviorSessionAnalysis(trackingData, 'test', curP);
             R.session_id(s) = session_ids(i).event_id;
             fnames = fieldnames(sessionData);
