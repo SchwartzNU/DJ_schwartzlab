@@ -254,7 +254,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
 
             end
 
-            maxRows = dj.set('maxPreviewRows');
+            maxRows = dj.config('displayLimit');
             preview = self.fetch(attrList{:}, sprintf('LIMIT %d', maxRows + 1));
 
             if ~isempty(preview)
