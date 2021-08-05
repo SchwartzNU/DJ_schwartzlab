@@ -13,7 +13,7 @@ S.mean_R1 = mean(S.R1_data);
 S.sem_R1 = std(S.R1_data) ./ sqrt(length(S.R1_data)-1);
 
 S.mean_R2 = mean(S.R2_data);
-S.sem_R1 = std(S.R2_data) ./ sqrt(length(S.R2_data)-1);
+S.sem_R2 = std(S.R2_data) ./ sqrt(length(S.R2_data)-1);
 
 if isequal(R1_animals_sorted, R2_animals_sorted)
     S.p = signrank(S.R1_data, S.R2_data);
