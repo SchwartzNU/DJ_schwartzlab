@@ -20,7 +20,9 @@ squeak_times : longblob         # vector of identifies squeak times (in seconds)
 window_crossings_in_frame : longblob     # vector of frame times that begin window crossings
 window_crossings_out_frame  : longblob   # vector of frame times that end window crossings
 window_crossings_win  : longblob         # which window was crossed for each event
-window_crossings_type : longblob         # double back or straight through for each crossing 
+window_crossings_type : longblob         # double back or straight through for each crossing
+snout_x                : longblob         # snout position, top camera X, interpolated where we are missing data
+snout_y                : longblob         # snout position, top camera Y, interpolated where we are missing data
 %}
 
 classdef BehaviorSessionTrackingData < dj.Imported
@@ -42,6 +44,7 @@ classdef BehaviorSessionTrackingData < dj.Imported
             load([folder_name filesep 'full_data.mat']);
             Nframes = length(bino_gaze.gaze.outer_wall.left);
             frameRate = 15; %Hz, TODO, read this in from calibration;
+            scoreThreshold = 0.85; %for DLC tracking from top camera, TODO, read this in from calibration;
             
             key.time_axis = linspace(0,Nframes/frameRate,Nframes);            
             key.dlc_raw = DLC_tracking;
@@ -58,6 +61,14 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,1) = bino_gaze.nose_window_distance.window_A';
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
+            snoutX = DLC_tracking.camera_1.snout_x;
+            snoutY = DLC_tracking.camera_1.snout_y;
+            snout_likelihood = DLC_tracking.camera_1.snout_likelihood;            
+            
+            snoutX(snout_likelihood < scoreThreshold) = nan;
+            snoutY(snout_likelihood < scoreThreshold) = nan;
+            key.snout_x = inpaint_nans(snoutX);
+            key.snout_y = inpaint_nans(snoutY);
             
             if isfield(bino_gaze,'window_crossings')
                 Ncrossings = length(bino_gaze.window_crossings.in_frame);
