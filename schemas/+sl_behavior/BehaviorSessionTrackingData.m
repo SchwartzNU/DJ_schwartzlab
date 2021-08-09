@@ -45,6 +45,12 @@ classdef BehaviorSessionTrackingData < dj.Imported
             Nframes = length(bino_gaze.gaze.outer_wall.left);
             frameRate = 15; %Hz, TODO, read this in from calibration;
             scoreThreshold = 0.85; %for DLC tracking from top camera, TODO, read this in from calibration;
+            %todo: find the right camera correctly!
+            if isfield(DLC_tracking, 'camera_3')
+                camField = 'camera_1';
+            else
+                camField = 'camera_0';
+            end
             
             key.time_axis = linspace(0,Nframes/frameRate,Nframes);            
             key.dlc_raw = DLC_tracking;
@@ -61,19 +67,19 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,1) = bino_gaze.nose_window_distance.window_A';
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
-            snoutX = DLC_tracking.camera_1.snout_x;
-            snoutY = DLC_tracking.camera_1.snout_y;
-            snout_likelihood = DLC_tracking.camera_1.snout_likelihood;            
+            snoutX = DLC_tracking.(camField).snout_x;
+            snoutY = DLC_tracking.(camField).snout_y;
+            snout_likelihood = DLC_tracking.(camField).snout_likelihood;            
             
             snoutX(snout_likelihood < scoreThreshold) = nan;
             nanx = isnan(snoutX);
             t = 1:numel(snoutX);
-            snoutX(nanx) = interp1(t(~nanx), snoutX(~nanx), t(nanx));
+            snoutX(nanx) = interp1(t(~nanx), snoutX(~nanx), t(nanx),'linear','extrap');
                         
             snoutY(snout_likelihood < scoreThreshold) = nan;
             nany = isnan(snoutY);
             t = 1:numel(snoutY);
-            snoutY(nany) = interp1(t(~nany), snoutX(~nany), t(nany));
+            snoutY(nany) = interp1(t(~nany), snoutX(~nany), t(nany),'linear','extrap');
 
             key.snout_x = snoutX';
             key.snout_y = snoutY';
