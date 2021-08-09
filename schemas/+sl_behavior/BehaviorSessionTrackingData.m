@@ -66,9 +66,17 @@ classdef BehaviorSessionTrackingData < dj.Imported
             snout_likelihood = DLC_tracking.camera_1.snout_likelihood;            
             
             snoutX(snout_likelihood < scoreThreshold) = nan;
+            nanx = isnan(snoutX);
+            t = 1:numel(snoutX);
+            snoutX(nanx) = interp1(t(~nanx), snoutX(~nanx), t(nanx));
+                        
             snoutY(snout_likelihood < scoreThreshold) = nan;
-            key.snout_x = inpaint_nans(snoutX);
-            key.snout_y = inpaint_nans(snoutY);
+            nany = isnan(snoutY);
+            t = 1:numel(snoutY);
+            snoutY(nany) = interp1(t(~nany), snoutX(~nany), t(nany));
+
+            key.snout_x = snoutX';
+            key.snout_y = snoutY';
             
             if isfield(bino_gaze,'window_crossings')
                 Ncrossings = length(bino_gaze.window_crossings.in_frame);
