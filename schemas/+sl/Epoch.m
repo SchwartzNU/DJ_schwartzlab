@@ -26,7 +26,7 @@ data_link2=NULL             : varchar(512)                  # hdf5 location of r
 classdef Epoch < dj.Manual   
     methods
 
-        function [data, xvals, units] = getData(self, channel)
+        function [data, xvals, units, protocol_params] = getData(self, channel)
             if nargin < 2
                 channel = 1;
             end
@@ -91,7 +91,7 @@ classdef Epoch < dj.Manual
                 end
             end
             stimStart = cellfun(@(x) x.preTime * 1e-3, protocol_params);
-            stimStart(cellfun(@(x) ~isfield(x,'stimStart'), protocol_params)) = 0;
+%             stimStart(cellfun(@(x) ~isfield(x,'stimStart'), protocol_params)) = 0;
 %             xvals = (1:length(data)) / sampleRate - stimStart;
             xvals = arrayfun( @(x,y,z) (1:length(x{1}))/y - z, data, sample_rate, stimStart,'uniformOutput',false);
             

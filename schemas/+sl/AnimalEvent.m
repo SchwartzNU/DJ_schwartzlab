@@ -487,6 +487,11 @@ function [limit, per, args, outer] = makeLimitClause(names, varargin)
     end
 
     lastArg = args{end};
+    
+    
+    if isstring(lastArg)
+        lastArg = char(lastArg);
+    end
 
     %check if there is a limit operation at the end
     if strcmp(lastArg, '*')
@@ -502,9 +507,10 @@ function [limit, per, args, outer] = makeLimitClause(names, varargin)
         args = args(1:end - 1);
         lastArg = args{end};
     end
+    
 
     if ischar(lastArg) && contains(lastArg, 'PER')
-        per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
+        per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s`?(?<selector>\w+)`?\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
         %     if isempty(per.selector)
         %         per.selector = 'animal_id';
         %     end
