@@ -79,7 +79,6 @@ if fname
                         %make insert key with default values
                         key = struct;
                         key.genotype_name = 'WT';
-                        key.is_tagged = 'F'; %TODO - remove this
                         %no DOB added so null
                         if isempty(whichEye) || all(isnan(whichEye))
                             eyeUnknown = true;
@@ -136,7 +135,8 @@ if fname
                             fprintf(fid,'Animal insert successful\n');
                             matchingAnimals = sl.Animal & (sl.AnimalEventReservedForSession & q);
                             animalData = matchingAnimals.fetch('animal_id','genotype_name');
-                        catch
+                        catch ME
+                            %rethrow(ME)
                             C.cancelTransaction;
                             fprintf(fid,'Animal insert failed\n');
                             error = true;
