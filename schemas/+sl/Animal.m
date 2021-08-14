@@ -215,6 +215,27 @@ classdef Animal < dj.Manual
             end
         end
         
+        function animals = tagEar(animal_ids, liveOnly)
+
+            q = sl.AnimalEventTag.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','tag_ear');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
         function animals = earPunch(animal_ids, liveOnly)
 
             q = sl.AnimalEventTag.current();
