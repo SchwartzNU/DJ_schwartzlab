@@ -88,3 +88,4 @@ if baseline_subtract
     baseline = mean(psth_y(psth_x < 0));
     psth_y = psth_y - baseline;
 end
+psth_x = psth_x(1:length(psth_y)); % sometimes not the same length, and I don't know why
