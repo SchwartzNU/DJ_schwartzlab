@@ -4,7 +4,7 @@
 ---
 %}
 
-classdef Epoch < dj.Computed
+classdef Ep < dj.Computed
 
     methods(Access=protected)
         function makeTuples(self, key)

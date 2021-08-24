@@ -3,11 +3,12 @@
 -> sl_results.Epoch     # epoch this entry is for
 epoch_func_name: varchar(64) #epoch function used to generate result
 ---
+git_version : varchar(128)     # hash number from "git desccribe --always"
 -> sl.Pipeline = NULL          # analysis pipeline to which this result belongs
 entry_time = CURRENT_TIMESTAMP : timestamp   # when this result was entered into db
 %}
 
-classdef Epoch_spikesInPreStimPost < dj.Part
+classdef Ep_spikesInPreStimPost < dj.Part
     properties (SetAccess = protected)
         master = sl_results.Epoch
     end
