@@ -18,7 +18,7 @@ classdef ComputedResult %handle?
            
              %Returns a dj table T. If there were multiple tables matching the search, this is a joined table?
              %Thus, user can restrict the result with something like & 'cell_id="this_cell_number"'
-             %optinally returns the list of table names involved in this query. This is important because they need to go into 
+             %optionally returns the list of table names involved in this query. This is important because they need to go into 
              %the new table header in the setResult call
         end
         
