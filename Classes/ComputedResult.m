@@ -17,7 +17,7 @@ classdef ComputedResult %handle?
                 % 'withParams', param_struct (will test using DataHash)
            
              %Returns a dj table T. If there were multiple tables matching the search, this is a joined table?
-             %Thus, user can result the result with something like & 'cell_id="this_cell_number"'
+             %Thus, user can restrict the result with something like & 'cell_id="this_cell_number"'
              %optinally returns the list of table names involved in this query. This is important because they need to go into 
              %the new table header in the setResult call
         end
@@ -46,7 +46,7 @@ classdef ComputedResult %handle?
         function status = purgeResult(funcName, varargin)
             %delete results, for example when there was a bug in the code
             %This should work similarly to getResults with some of the same input parsing.
-            %Critical here is the gitHash. Perhaps we shuold require that it be specified?
+            %Critical here is the gitHash. Perhaps we should require that it be specified?
             
         end
         
