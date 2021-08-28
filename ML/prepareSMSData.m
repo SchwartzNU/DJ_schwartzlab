@@ -3,14 +3,14 @@ function [D, labels, x_test, x_train] = prepareSMSData(q)
 
 testFrac = .15;
 
-[tq,sq] = meshgrid(-.5:.01:2.05,logspace(log10(30),log10(1200),16));
+[tq,sq] = meshgrid(-1:.01:2.5,logspace(log10(30),log10(1200),32));
 [r, c] = size(tq);
 
 q_struct = fetch(q, 'result');
 
 L = q.count;
 D = zeros(L,c,r);
-labels = fetchn(sl_mutable.CurrentCellType & q_struct, 'cell_type');
+labels = fetchn(q, 'cell_type');
 
 testN = round(testFrac*L);
 
