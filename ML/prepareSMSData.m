@@ -1,10 +1,17 @@
-function [D, labels] = prepareSMSData(q)
+function [D, labels] = prepareSMSData(q, splitTrainTest)
+if nargin<2
+    splitTrainTest = true;
+end
 %q is the querey with the SMS datasets
 rng(1);
 
 maxVal = 400;
 
-N_of_each_in_test = 3;
+if splitTrainTest
+    N_of_each_in_test = 3;
+else
+    N_of_each_in_test = 0;
+end
 
 [tq,sq] = meshgrid(-.49:.01:2.5,logspace(log10(30),log10(1200),32));
 [r, c] = size(tq);
@@ -51,20 +58,33 @@ for i=1:length(labelsU)
     if exist(['test' filesep curLabel],'dir')
         system(sprintf('rm -rf "%s"', ['test' filesep curLabel]));
     end
-    mkdir(['train' filesep curLabel]);
+    if splitTrainTest
+        mkdir(['train' filesep curLabel]);
+    end
     L = length(ind);
     if L > N_of_each_in_test
-        mkdir(['test' filesep curLabel]);
+        if splitTrainTest
+            mkdir(['test' filesep curLabel]);
+        else
+             mkdir(curLabel);
+        end
         R = randperm(L);
         test_ind = R(1:N_of_each_in_test);
         train_ind = R(N_of_each_in_test+1:end);
-        for j=1:length(test_ind)
-            imwrite(squeeze(D(ind(test_ind(j)),:,:))', ...
-                sprintf('test%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
-        end
-        for j=1:length(train_ind)
-            imwrite(squeeze(D(ind(train_ind(j)),:,:))', ...
-                sprintf('train%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
+        if splitTrainTest
+            for j=1:length(test_ind)
+                imwrite(squeeze(D(ind(test_ind(j)),:,:))', ...
+                    sprintf('test%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
+            end
+            for j=1:length(train_ind)
+                imwrite(squeeze(D(ind(train_ind(j)),:,:))', ...
+                    sprintf('train%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
+            end
+        else
+            for j=1:length(train_ind)
+                imwrite(squeeze(D(ind(train_ind(j)),:,:))', ...
+                    sprintf('%s%s%s%4.0d.jpg',curLabel,filesep,curLabel,j));
+            end
         end
     else        
         for j=1:L
