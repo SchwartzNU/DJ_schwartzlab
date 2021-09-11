@@ -1,10 +1,10 @@
 %{
 # A symphony epoch
-epoch_uuid: uuid
----
 -> sln_symphony.SymphonyEpochBlock
-start_time: int unsigned #number of milliseconds since midnight on the day the session started
-duration: int unsigned #duration of the epoch in milliseconds
+epoch_id : smallint unsigned
+---
+epoch_start_time: int unsigned #number of milliseconds since midnight on the day the session started
+epoch_duration: int unsigned #duration of the epoch in milliseconds
 
 %}
 classdef SymphonyEpoch < dj.Part

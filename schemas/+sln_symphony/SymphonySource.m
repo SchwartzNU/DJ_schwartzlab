@@ -1,8 +1,9 @@
 %{
 # A source object in a symphony hdf5 file
-source_uuid : uuid
----
 -> sln_symphony.Symphony
+source_id : tinyint unsigned
+---
+
 %}
 classdef SymphonySource < dj.Part
 properties(SetAccess=protected)

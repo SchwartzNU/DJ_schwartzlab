@@ -3,7 +3,7 @@
 -> sln_symphony.SymphonyEpoch
 -> sln_symphony.SymphonyChannel
 ---
-raw_data : blob@raw_data_master #the actual raw data for this epoch
+raw_data : blob@raw #the actual raw data for this epoch
 
 %}
 classdef SymphonyEpochChannel < dj.Part
