@@ -21,7 +21,7 @@ classdef Symphony < dj.Manual
         function insert(self, key)
             if isa(key,'char')
                 filename = {key};
-%                 key = struct('filename', filename);
+                %                 key = struct('filename', filename);
             elseif isa(key,'struct') && isfield(key,'filename')
                 filename = unique({key(:).filename});
             else
@@ -62,7 +62,7 @@ classdef Symphony < dj.Manual
                 sln_symphony.SymphonyChannel().insert(rmfield(key.channels,'units'));
                 sln_symphony.SymphonyEpochChannel().insert(key.epoch_channels);
                 
-
+                
                 if ~isempty(key.notes)
                     sln_symphony.SymphonyNote().insert(key.notes);
                 end
@@ -81,7 +81,7 @@ classdef Symphony < dj.Manual
                 if ~isempty(key.epoch_notes)
                     sln_symphony.SymphonyEpochNote().insert(key.epoch_notes);
                 end
-
+                
             catch ME
                 if ~transacted
                     self.schema.conn.cancelTransaction;
@@ -137,7 +137,7 @@ classdef Symphony < dj.Manual
             key.epoch_group_notes = [key.epoch_groups(:).notes];
             key.epoch_block_notes = [key.epoch_blocks(:).notes];
             key.epoch_notes = [key.epochs(:).notes];
-
+            
             key.retinas = rmfield(key.retinas,'notes');
             key.cells = rmfield(key.cells,'notes');
             key.epoch_groups = rmfield(key.epoch_groups,'notes');
@@ -174,7 +174,7 @@ classdef Symphony < dj.Manual
             if ~isempty(key.epoch_notes)
                 [key.epoch_notes(:).filename] = deal(key.filename);
             end
-
+            
             %sort the ids so that they increment naturally
             sort_keys_by_start_time();
             
@@ -245,7 +245,7 @@ classdef Symphony < dj.Manual
                     'raw_data',emp,...
                     'epoch_id',emp,'epoch_block_id',emp,'epoch_group_id',emp,...
                     'source_id',emp);
-
+                
                 sources = containers.Map();
                 
                 for n = 1:nEpochGroups
@@ -270,8 +270,13 @@ classdef Symphony < dj.Manual
                     if numel(hinfo.Groups(1).Groups(2).Groups(n).Groups) < 4
                         %this source has already been populated
                         source_cell = strsplit(cell2mat(hinfo.Groups(1).Groups(2).Groups(n).Links(2).Value),'/source-');
-                        source_id = sources(source_cell{end});
-                        key.epoch_groups(n).source_id = source_id;
+                        if numel(source_cell)<2
+                            %source uuid is not in the Name
+                            source_id = sources(h5readatt(fpath,source_cell{1},'uuid'));
+                        else
+                            source_id = sources(source_cell{end});
+                            key.epoch_groups(n).source_id = source_id;
+                        end
                     else % a new source
                         source_id = sources.length + 1;
                         sources(parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Attributes,'uuid')) = source_id;
@@ -282,7 +287,8 @@ classdef Symphony < dj.Manual
                         
                         %symphony doesn't save the source type... so we'll
                         %extract it
-                        sub_key = parseAttrs(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(3).Attributes);
+                        props = contains({hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(:).Name},'properties');
+                        sub_key = parseAttrs(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(props).Attributes);
                         if isfield(sub_key,'type') %this is a cell
                             key.cells(end+1).source_id = source_id;
                             key.cells(end) = parseCell(key.cells(end), sub_key);
@@ -359,7 +365,63 @@ classdef Symphony < dj.Manual
                                 key.cells(end).retina_id = retina_id;
                             end
                         else %this is a retina... maybe an imaging exp?
-                            error('attempted to add an epoch group to a retina! should be allowed, but need to parse this');
+                            %                             error('attempted to add an epoch group to a retina! should be allowed, but need to parse this');
+                            %                             sub_key = parseAttrs(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(props).Attributes);
+                            key.retinas(end+1).source_id = source_id;
+                            
+                            if isempty(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Datasets) || ~any(strcmp({hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Datasets(:).Name},'notes'))
+                                key.retinas(end).notes = [];
+                            else
+                                note = h5read(fpath,[hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Name '/notes']);
+                                key.retinas(end).notes = struct(...
+                                    'source_id',source_id,...
+                                    'entry_time',parseNoteTime(note.time),'text',note.text,...
+                                    'note_index',num2cell(1:numel(note)));
+                            end
+                            
+                            key.retinas(end).side = sub_key.eye;
+                            key.retinas(end).orientation = sub_key.orientation;
+                            if isfield(sub_key,'djid')
+                                key.retinas(end).animal_id = sub_key.djid;
+                            elseif isfield(sub_key,'DataJointIdentifier') %TODO: TEMPORARY!
+                                key.retinas(end).animal_id = sub_key.DataJointIdentifier;
+                            else
+                                key.retinas(end).animal_id = sub_key.genotype; %the best we can do...
+                            end
+                            if isfield(sub_key,'experimenter')
+                                key.retinas(end).experimenter = sub_key.experimenter;
+                            elseif isfield(sub_key,'recordingBy') && ~isempty(sub_key.recordingBy) %TODO: does this belong elsewhere too?
+                                key.retinas(end).experimenter = experimenter; %might be null
+                            end
+                            
+                            %now check the retina's children
+                            
+                            nCells = numel(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups);
+                            for m=1:nCells
+                                error('epoch group on a retina, but also epoch group on cells')
+%                                 cell_id = sources.length + 1;
+%                                 sources(parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(2).Groups(4).Groups(m).Attributes,'uuid')) = cell_id;
+%                                 % key.sources(end+1).source_id = cell_id;
+%                                 key.cells(end+1).source_id = cell_id;
+%                                 
+%                                 if isempty(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(2).Groups(4).Groups(m).Datasets) || ~any(strcmp({hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(2).Groups(4).Groups(m).Datasets(:).Name},'notes'))
+%                                     key.cells(end).notes = [];
+%                                 else
+%                                     note = h5read(fpath,[hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(2).Groups(4).Groups(m).Name '/notes']);
+%                                     key.cells(end).notes = struct(...
+%                                         'source_id',cell_id,...
+%                                         'entry_time',parseNoteTime(note.time),'text',note.text,...
+%                                         'note_index',num2cell(1:numel(note)));
+%                                 end
+%                                 
+%                                 sub_key = parseAttrs(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(2).Groups(4).Groups(m).Groups(2).Attributes);
+%                                 key.cells(end) = parseCell(key.cells(end), sub_key);
+%                                 key.cells(end).cell_name = str2double(...
+%                                     parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(4).Groups(2).Groups(4).Groups(m).Attributes,'label')...
+%                                     );
+%                                 
+%                                 key.cells(end).retina_id = retina_id;
+                            end
                         end
                     end
                     nBlocks = numel(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups);
@@ -390,7 +452,7 @@ classdef Symphony < dj.Manual
                         end
                         
                         % epoch_blocks(m).epoch_block_uuid = parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Attributes,'uuid');
-                        epoch_blocks(m).epoch_block_id = mm+m; 
+                        epoch_blocks(m).epoch_block_id = mm+m;
                         [epoch_blocks(m).epoch_block_start_time,epoch_blocks(m).epoch_block_end_time] = parseDOTNETts(...
                             hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Attributes);
                         protocol_str = strsplit(parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Attributes,'protocolID'),'.');
@@ -415,7 +477,7 @@ classdef Symphony < dj.Manual
                         [channels(:).epoch_block_id] = deal(mm+m);
                         [channels(:).epoch_group_id] = deal(n);
                         [channels(:).source_id] = deal(source_id);
-
+                        
                         emp = cell(nEpochs,nChans);
                         epoch_channels = struct('channel_name',emp,...
                             'sample_rate',emp,'sample_rate_units',emp,...
@@ -434,27 +496,27 @@ classdef Symphony < dj.Manual
                             else
                                 note = h5read(fpath,[hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Name '/notes']);
                                 epochs(el).notes = struct(...
-                                'epoch_group_id',n,'epoch_block_id',mm+m,'epoch_id',ell+el,...
-                                'entry_time',parseNoteTime(note.time),'text',note.text,...
+                                    'epoch_group_id',n,'epoch_block_id',mm+m,'epoch_id',ell+el,...
+                                    'entry_time',parseNoteTime(note.time),'text',note.text,...
                                     'note_index',num2cell(1:numel(note)));
                             end
                             
                             epochs(el).epoch_id = ell+el;
                             [epochs(el).epoch_start_time, epochs(el).epoch_duration] = parseDOTNETms(...
-                            hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Attributes,...
-                            experiment_start_day);
+                                hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Attributes,...
+                                experiment_start_day);
                             epochs(el).epoch_params = parseAttrs(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(2).Attributes);
                             
                             for k=1:nChans
-                                epoch_channels(el,k).sample_rate = parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(1).Attributes,'sampleRate');
-                                epoch_channels(el,k).sample_rate_units = parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(1).Attributes,'sampleRateUnits');
-                                channel_str = strsplit(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(1).Name,'/');
+                                epoch_channels(el,k).sample_rate = parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(k).Attributes,'sampleRate');
+                                epoch_channels(el,k).sample_rate_units = parseAttr(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(k).Attributes,'sampleRateUnits');
+                                channel_str = strsplit(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(k).Name,'/');
                                 channel_str = strsplit(channel_str{end},'-');
                                 epoch_channels(el,k).channel_name = channel_str{1};
                                 epoch_channels(el,k).epoch_id = ell+el;
                                 
                                 raw_data = h5read(fpath,...
-                                    horzcat(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(1).Name,'/data')...
+                                    horzcat(hinfo.Groups(1).Groups(2).Groups(n).Groups(1).Groups(m).Groups(1).Groups(el).Groups(3).Groups(k).Name,'/data')...
                                     );
                                 epoch_channels(el,k).raw_data = raw_data.quantity;
                                 if isfield(raw_data,'units')
@@ -472,7 +534,7 @@ classdef Symphony < dj.Manual
                             assert(all(strcmp({epoch_channels(:,k).sample_rate_units}, 'Hz')),'Sample rate not in Hz!');
                             assert(all(strcmp({epoch_channels(:,k).units}, epoch_blocks(m).protocol_params.(chan_name))),'Multiple channel units in epoch block!');
                             assert(all([epoch_channels(:,k).sample_rate] == channels(k).sample_rate),'Multiple sample rates in epoch block!');
-                        
+                            
                         end
                         
                         key.epochs = cat(2,key.epochs, epochs);
@@ -481,7 +543,7 @@ classdef Symphony < dj.Manual
                     end
                     key.epoch_blocks = cat(2,key.epoch_blocks, epoch_blocks);
                 end
-
+                
             end
             
             
@@ -498,6 +560,7 @@ classdef Symphony < dj.Manual
             end
             
             function attrs_clean = parseAttrs(attrs)
+                % t = [arrayfun(@(a) strrep(a.Name,' ',''),attrs,'uni',0)';{attrs(:).Value}];
                 t = {attrs(:).Name;attrs(:).Value};
                 attrs_clean = struct(t{:});
             end
@@ -524,8 +587,8 @@ classdef Symphony < dj.Manual
                 
                 start_str = datestr(start_dt,'YYYY-mm-DD HH:MM:SS');
                 end_str = datestr(end_dt,'YYYY-mm-DD HH:MM:SS');
-%                 date = datestr(dt,'YYYY-mm-DD');
-%                 time = datestr(dt,'HH:MM:SS');
+                %                 date = datestr(dt,'YYYY-mm-DD');
+                %                 time = datestr(dt,'HH:MM:SS');
             end
             
             function [start_time_ms,duration] = parseDOTNETms(attrs, experiment_start_day)
@@ -579,7 +642,7 @@ classdef Symphony < dj.Manual
                 
                 %note epoch times are numeric, for precision reasons
                 %thus the start times are grouped using [] instead of {}
-                [~,i] = sort([key.epochs(:).epoch_start_time]); 
+                [~,i] = sort([key.epochs(:).epoch_start_time]);
                 [~,iA] = sort(i);
                 
                 f = fieldnames(key);
@@ -618,12 +681,12 @@ classdef Symphony < dj.Manual
             is_pa = arrayfun(@(p) strcmp(p.protocol_params.channel_2_units,'pA'), block_params(has_units));
             [key.epoch_block_electrode_settings(2,has_units(is_pa)).recording_mode] = deal('Voltage clamp');
             [key.epoch_block_electrode_settings(2,has_units(~is_pa)).recording_mode] = deal('Current clamp');
-          
+            
             hold = arrayfun(@(p) p.protocol_params.chan2Hold,block_params,'uni',0);
             [key.epoch_block_electrode_settings(2,:).hold] = hold{:};
             amp_mode = arrayfun(@(p) p.protocol_params.chan2Mode,block_params,'uni',0);
             [key.epoch_block_electrode_settings(2,:).amp_mode] = amp_mode{:};
-           
+            
             key.epoch_block_electrode_settings(strcmp({key.epoch_block_electrode_settings(:).amp_mode},'Off')) = [];
             
             %% parse a couple params that belong on the experiment
