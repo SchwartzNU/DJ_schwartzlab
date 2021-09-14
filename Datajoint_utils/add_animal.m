@@ -15,6 +15,13 @@ try
     %there is no way around this being 2 transactions unfortunately
     %because the event has a foreign key to the animal
     
+    %check for birthdate in the future and throw error
+    if isfield(key,'dob') && ~isempty(key.dob) && ...
+            datetime(key.dob) > datetime('today')
+        disp('Birth date cannot be in the future')
+        error('Birth date cannot be in the future');        
+    end
+    
     %add tag assignment event
     tag_key.animal_id = id;
     text = add_animalEvent(tag_key, 'Tag',C);
