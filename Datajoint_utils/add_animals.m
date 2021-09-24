@@ -7,11 +7,17 @@ N_animals = length(keyVec);
 try
     %prev_id = max(fetchn(sl.Animal, 'animal_id')); %last animal added
     for i=1:N_animals
-        i
-        key = keyVec(i)
+        key = keyVec(i);
         tag_key = tag_keyVec(i);
-        cage_key = cage_keyVec(i)
-        protocol_key = protocol_keyVec(i)
+        cage_key = cage_keyVec(i);
+        protocol_key = protocol_keyVec(i);
+        
+        if isfield(key,'dob') && ~isempty(key.dob) && ...
+                datetime(key.dob) > datetime('today')
+            disp('Birth date cannot be in the future')
+            error('Birth date cannot be in the future');
+        end
+        
         insert(sl.Animal, key);
         
         %id = prev_id + i
