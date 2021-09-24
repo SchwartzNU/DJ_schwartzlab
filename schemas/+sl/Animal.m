@@ -5,7 +5,6 @@ animal_id                   : int unsigned AUTO_INCREMENT   # unique animal id
 -> sl.Genotype
 source                      : enum('vendor','breeding','other lab','other','unknown') # where the animal is from
 source_id=null              : varchar(64)                   # if breeding, this is the
-is_tagged="F"               : enum('T','F')                 # true or false
 species="Lab mouse"         : varchar(64)                   # species
 dob=null                    : date                          # mouse date of birth
 sex="Unknown"               : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
@@ -210,6 +209,27 @@ classdef Animal < dj.Manual
             end
 
             animals = q.fetch('animal_id','tag_id');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+        function animals = tagEar(animal_ids, liveOnly)
+
+            q = sl.AnimalEventTag.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sl.AnimalEventDeceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','tag_ear');
             animals = rmfield(animals, 'event_id');
             if isempty(animals)
                animals = reshape(animals,0,1); 
