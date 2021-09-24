@@ -1,9 +1,9 @@
 %{
 # A recording of a cell in a user-defined dataset
--> sln_symphony.DatasetCell
--> sln_symphony.SymphonyEpochChannel
+-> sln_symphony.Dataset
+-> sln_symphony.SymphonyEpoch
 %}
-classdef DatasetCellEpochChannel < dj.Part
+classdef DatasetEpoch < dj.Part
     properties(SetAccess=protected)
         master = sln_symphony.Dataset;
     end
