@@ -11,7 +11,7 @@ classdef Spikes < aka.Alias
             else
                 args = {};
             end
-            self@aka.Alias(args{:});
+            self@aka.Alias('*',args{:});
         end
     end
 end
