@@ -90,7 +90,9 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
             if ~isempty(outer)
                 sql = enclose(hdr, sql_, inf, per); %need to pass limit, per, args...
-                hdr.attributes = hdr.attributes(ismember(hdr.names, outer));
+                if numel(outer)~=1 || numel(outer{1})~=1 || outer{1}~='*'
+                    hdr.attributes = hdr.attributes(ismember(hdr.names, outer));
+                end
                 sql = enclose(hdr, sql, limit);
             else
                 sql = enclose(hdr, sql_, limit, per);

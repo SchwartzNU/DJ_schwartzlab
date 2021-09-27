@@ -6,6 +6,14 @@ end
 inserted = false;
 text = sprintf('');
 try
+    if isfield(key, 'animal_id')
+        %event must not occur before birth date
+        dob = fetch1(sl.Animal & sprintf('animal_id=%d', key.animal_id), 'dob');
+        if ~isempty(dob) && datetime(key.date) < datetime(dob)
+            error('AnimalEvent cannot occur before the animal dob');
+        end
+    end
+    
     if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
         thisEye = sl.Eye & sprintf('animal_id = %d', key.animal_id) & sprintf('side = "%s"', key.whichEye);
         if ~thisEye.exists

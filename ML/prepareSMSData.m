@@ -74,22 +74,22 @@ for i=1:length(labelsU)
         if splitTrainTest
             for j=1:length(test_ind)
                 imwrite(squeeze(D(ind(test_ind(j)),:,:))', ...
-                    sprintf('test%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
+                    sprintf('test%s%s%s%s%4.0d.png',filesep,curLabel,filesep,curLabel,j));
             end
             for j=1:length(train_ind)
                 imwrite(squeeze(D(ind(train_ind(j)),:,:))', ...
-                    sprintf('train%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
+                    sprintf('train%s%s%s%s%4.0d.png',filesep,curLabel,filesep,curLabel,j));
             end
         else
             for j=1:length(train_ind)
                 imwrite(squeeze(D(ind(train_ind(j)),:,:))', ...
-                    sprintf('%s%s%s%4.0d.jpg',curLabel,filesep,curLabel,j));
+                    sprintf('%s%s%s%4.0d.png',curLabel,filesep,curLabel,j));
             end
         end
     else        
         for j=1:L
             imwrite(squeeze(D(ind(j),:,:))', ...
-                sprintf('train%s%s%s%s%4.0d.jpg',filesep,curLabel,filesep,curLabel,j));
+                sprintf('train%s%s%s%s%4.0d.png',filesep,curLabel,filesep,curLabel,j));
         end
     end
 end

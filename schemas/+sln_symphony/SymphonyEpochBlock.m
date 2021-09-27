@@ -1,11 +1,11 @@
 %{
 # A block of epochs in a symphony file
-epoch_block_uuid: uuid
+-> sln_symphony.SymphonyEpochGroup
+epoch_block_id: tinyint unsigned
 ---
 -> sln_symphony.Protocol
--> sln_symphony.SymphonyEpochGroup
-start_time: datetime
-end_time: datetime
+epoch_block_start_time: datetime
+epoch_block_end_time: datetime
 
 %}
 classdef SymphonyEpochBlock < dj.Part
