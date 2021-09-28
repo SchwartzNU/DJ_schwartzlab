@@ -441,7 +441,7 @@ classdef Symphony < dj.Manual
                     epoch_blocks = struct('epoch_block_id',emp,...
                         'protocol_name',emp,'protocol_params',emp,...
                         'epoch_block_start_time',emp,'epoch_block_end_time',emp,...
-                        'epoch_group_id',emp);
+                        'epoch_group_id',emp,'notes',emp);
                     [epoch_blocks(:).epoch_group_id] = deal(n);
                     [epoch_blocks(:).source_id] = deal(source_id);
                     
@@ -477,7 +477,7 @@ classdef Symphony < dj.Manual
                         emp = cell(1,nEpochs);
                         epochs = struct('epoch_id', emp,...
                             'epoch_start_time',emp,'epoch_duration', emp,...
-                            'epoch_params',emp);
+                            'epoch_params',emp,'notes', emp);
                         [epochs(:).epoch_block_id] = deal(mm+m);
                         [epochs(:).epoch_group_id] = deal(n);
                         [epochs(:).source_id] = deal(source_id);
@@ -579,6 +579,10 @@ classdef Symphony < dj.Manual
             end
             
             function s = parseCell(s,t)
+                if ~isfield(t,'number')
+%                     s = struct('cell_number', {}, 'online_label', {}, 'x', {}, 'y', {});
+                    return
+                end
                 s.cell_number = t.number;
                 if isempty(t.confirmedType)
                     s.online_label = t.type;
@@ -621,8 +625,8 @@ classdef Symphony < dj.Manual
                 note_times = mat2cell(datestr(...
                     datetime(uint64([time_struct.ticks]),...
                     'convertfrom','.net',...
-                    'timezone',num2str(time_struct(1).offsetHours)),...
-                    'YYYY-mm-DD HH:MM:SS'),ones(numel(time_struct),1));
+                    'timezone',num2str(time_struct.offsetHours(1))),...
+                    'YYYY-mm-DD HH:MM:SS'),ones(numel(time_struct.offsetHours),1));
                 %assumes that all the entries have the same timezone :)
             end
             
