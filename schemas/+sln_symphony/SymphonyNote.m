@@ -1,9 +1,8 @@
 %{
 #Experiment notes
 -> sln_symphony.Symphony
-note_index : tinyint unsigned
----
 entry_time: datetime
+---
 text : blob@raw
 %}
 classdef SymphonyNote < dj.Part

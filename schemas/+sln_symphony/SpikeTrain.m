@@ -2,7 +2,7 @@
 # User-labelled spike trains 
 ->sln_symphony.SymphonyEpochChannel
 ---
-spike_indices = NULL: blob@raw
+spike_indices = NULL: blob
 spike_count : int unsigned
 %}
 classdef SpikeTrain < dj.Manual

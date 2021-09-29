@@ -3,7 +3,7 @@
 -> sln_symphony.Symphony
 source_id : tinyint unsigned
 ---
-
+source_label : varchar(32)
 %}
 classdef SymphonySource < dj.Part
 properties(SetAccess=protected)

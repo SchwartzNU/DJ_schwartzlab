@@ -3,9 +3,8 @@
 -> sln_symphony.SymphonySource
 ---
 (retina_id) -> sln_symphony.SymphonyRetina(source_id)
-cell_name = NULL : tinyint unsigned
-cell_number = NULL : tinyint unsigned #sometimes different from above
-online_label = NULL: varchar(32)
+cell_number = NULL : tinyint unsigned #sometimes different from source label
+online_type = NULL: varchar(32)
 x = NULL: smallint #microns from optic nerve, x direction
 y = NULL: smallint
 

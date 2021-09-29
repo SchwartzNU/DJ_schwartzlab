@@ -3,7 +3,7 @@
 -> sln_symphony.SymphonyEpochBlock
 epoch_id : smallint unsigned
 ---
-epoch_start_time: int unsigned #number of milliseconds since midnight on the day the session started
+epoch_start_time: int unsigned #number of milliseconds since the session started
 epoch_duration: int unsigned #duration of the epoch in milliseconds
 
 %}
