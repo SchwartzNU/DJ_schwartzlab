@@ -15,10 +15,13 @@ angle_offset = NULL : float
 classdef Experiment < dj.Manual    
     methods
         
-        function key = insert(self, key)
+        function [success,key] = insert(self, key)
             if self.schema.conn.inTransaction
                 error('Cannot insert Symphony data while in transaction. Please commit or cancel transaction and try again.');
+                %the issue is that we may need to create new tables
+                %but creating new tables breaks transactions (a dj bug?)
             end
+            success = false;
             %make sure all the tables are already in the db, otherwise transaction will break
             all_parts = dir(fileparts(which(class(self))));
             all_parts = {all_parts(startsWith({all_parts(:).name},'Experiment')).name};
@@ -75,6 +78,7 @@ classdef Experiment < dj.Manual
                 return;
             end
             self.schema.conn.commitTransaction;
+            success = true;
         end
     end
 end
