@@ -1,6 +1,6 @@
 %{
 #Block parameters for MovingBar (1) 
--> sln_symphony.SymphonyEpochBlock
+-> sln_symphony.ExperimentEpochBlock
 ---
 angle_offset : float
 bar_length : float
@@ -17,7 +17,7 @@ single_edge_mode : float
 stim_time : float
 tail_time : float
 %}
-classdef SymphonyProtocolMovingBarV1BlockParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolMovingBarV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

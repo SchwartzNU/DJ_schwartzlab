@@ -1,8 +1,8 @@
 %{ NOT a datajoint table
 %}
-classdef SymphonyProtocol < dj.Part
+classdef ExperimentProtocol < dj.Part
   properties(SetAccess=protected)
-    master = sln_symphony.Symphony;
+    master = sln_symphony.Experiment;
   end
   properties(Abstract)
     renamed_attributes

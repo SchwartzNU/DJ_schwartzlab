@@ -1,6 +1,6 @@
 %{
 #Block parameters for MovingObject (1) 
--> sln_symphony.SymphonyEpochBlock
+-> sln_symphony.ExperimentEpochBlock
 ---
 center_time_shift : float
 intensity : float
@@ -22,7 +22,7 @@ min_diameter : float
 max_diameter : float
 number_of_diameters : tinyint unsigned
 %}
-classdef SymphonyProtocolMovingObjectV1BlockParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolMovingObjectV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

@@ -1,6 +1,6 @@
 %{
 #Block parameters for MultiPulse (1) 
--> sln_symphony.SymphonyEpochBlock
+-> sln_symphony.ExperimentEpochBlock
 ---
 inter_time : float
 inter_time_amplitude : float
@@ -22,7 +22,7 @@ stim_1_time : float
 stim_2_time : float
 tail_time : float
 %}
-classdef SymphonyProtocolMultiPulseV1BlockParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolMultiPulseV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

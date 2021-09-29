@@ -1,14 +1,14 @@
 %{
 # A retina object (primary 'source') in a symphony hdf5 file
--> sln_symphony.SymphonySource
+-> sln_symphony.ExperimentSource
 ---
 -> sln_animal.Eye
 (experimenter) -> [nullable] sl.User
 orientation: enum('ventral down', 'ventral up', 'unknown')
 %}
-classdef SymphonyRetina < dj.Part
+classdef ExperimentRetina < dj.Part
 properties(SetAccess=protected)
-  master = sln_symphony.Symphony;
+  master = sln_symphony.Experiment;
 end
 end
 

@@ -1,11 +1,14 @@
 %{
-#Epoch parameters for MovingBar (1) 
--> sln_symphony.SymphonyEpoch
+#Epoch parameters for MovingObject (1) 
+-> sln_symphony.ExperimentEpoch
 ---
-bar_angle : float
+diameter : float
+direction : float
+offset : float
 protocol_version : float
+speed : float
 %}
-classdef SymphonyProtocolMovingBarV1EpochParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolMovingObjectV1EpochParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

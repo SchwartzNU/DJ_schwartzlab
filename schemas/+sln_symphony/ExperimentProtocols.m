@@ -2,7 +2,7 @@
 
 
 %}
-classdef SymphonyProtocols < handle
+classdef ExperimentProtocols < handle
 
     properties
         key
@@ -29,10 +29,10 @@ classdef SymphonyProtocols < handle
                 schema.conn.startTransaction;
             end
             try
-                sln_symphony.SymphonyEpochBlock().insert(self.key.epoch_blocks);
-                sln_symphony.SymphonyProjectorSettings().insert(self.key.projector);
-                sln_symphony.SymphonyLEDSettings().insert(self.key.LEDs);
-                sln_symphony.SymphonyEpoch().insert(self.key.epochs);
+                sln_symphony.ExperimentEpochBlock().insert(self.key.epoch_blocks);
+                sln_symphony.ExperimentProjectorSettings().insert(self.key.projector);
+                sln_symphony.ExperimentLEDSettings().insert(self.key.LEDs);
+                sln_symphony.ExperimentEpoch().insert(self.key.epochs);
 
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
 
@@ -64,7 +64,7 @@ classdef SymphonyProtocols < handle
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
           %1: get existing tables under the protocol name
           tables = sln_symphony.getSchema().classNames;
-          matching = startsWith(tables, ['sln_symphony.SymphonyProtocol', protocol_name])...
+          matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
               & endsWith(tables, 'BlockParameters');
           success = false;
           emptyMatches = {};
@@ -93,7 +93,7 @@ classdef SymphonyProtocols < handle
               return
           end
           loc = fileparts(which(class(self)));
-          k = dir(fullfile(loc, ['SymphonyProtocol', protocol_name ,'*BlockParameters.m']));
+          k = dir(fullfile(loc, ['ExperimentProtocol', protocol_name ,'*BlockParameters.m']));
           if ~isempty(k)
               matches = arrayfun(@(x) ['sln_symphony.', x.name(1:end-2)],k,'uni',0);
               matches = setdiff(matches, tables(matching));
@@ -128,12 +128,12 @@ classdef SymphonyProtocols < handle
             for n=1:2
                 file_name = fullfile(...
                     fileparts(which(class(self))),...
-                    ['SymphonyProtocol',protocol_name,'V',version,w{n},'Parameters.m']...
+                    ['ExperimentProtocol',protocol_name,'V',version,w{n},'Parameters.m']...
                     );
                 f = fopen(file_name,'w');
                 fprintf(f,'%%{\n');
                 fprintf(f,'#%s parameters for %s (%s) \n',w{n}, protocol_name, version);
-                fprintf(f,'-> sln_symphony.Symphony%s\n', h{n});
+                fprintf(f,'-> sln_symphony.Experiment%s\n', h{n});
                 fprintf(f,'---\n');
 
                 % fn = fieldnames(rmfield(p{n}, {'file_name','source_id','epoch_group_id','epoch_block_id'}));
@@ -156,7 +156,7 @@ classdef SymphonyProtocols < handle
                     end
                 end
                 fprintf(f,'%%}\n');
-                fprintf(f,'classdef SymphonyProtocol%sV%s%sParameters < sln_symphony.SymphonyProtocol\n',protocol_name, version, w{n});
+                fprintf(f,'classdef ExperimentProtocol%sV%s%sParameters < sln_symphony.ExperimentProtocol\n',protocol_name, version, w{n});
                 fprintf(f,'\tproperties\n');
                 fprintf(f,'\n\t\t%%attributes to be renamed\n');
                 fprintf(f,'\t\trenamed_attributes = struct();\n');

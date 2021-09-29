@@ -1,15 +1,15 @@
 %{
 # A symphony epoch
--> sln_symphony.SymphonyEpochBlock
+-> sln_symphony.ExperimentEpochBlock
 epoch_id : smallint unsigned
 ---
 epoch_start_time: int unsigned #number of milliseconds since the session started
 epoch_duration: int unsigned #duration of the epoch in milliseconds
 
 %}
-classdef SymphonyEpoch < dj.Part
+classdef ExperimentEpoch < dj.Part
     properties(SetAccess=protected)
-        master = sln_symphony.Symphony;
+        master = sln_symphony.Experiment;
     end
 end
 

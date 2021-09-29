@@ -1,12 +1,12 @@
 %{
 #Experiment notes
--> sln_symphony.Symphony
+-> sln_symphony.Experiment
 entry_time: datetime
 ---
 text : blob@raw
 %}
-classdef SymphonyNote < dj.Part
+classdef ExperimentNote < dj.Part
 properties(SetAccess=protected)
-    master = sln_symphony.Symphony;
+    master = sln_symphony.Experiment;
 end
 end

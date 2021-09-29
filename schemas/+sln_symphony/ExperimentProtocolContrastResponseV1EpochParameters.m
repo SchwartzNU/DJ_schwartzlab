@@ -1,14 +1,11 @@
 %{
-#Epoch parameters for MovingObject (1) 
--> sln_symphony.SymphonyEpoch
+#Epoch parameters for ContrastResponse (1) 
+-> sln_symphony.ExperimentEpoch
 ---
-diameter : float
-direction : float
-offset : float
-protocol_version : float
-speed : float
+contrast : float
+intensity : float
 %}
-classdef SymphonyProtocolMovingObjectV1EpochParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolContrastResponseV1EpochParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

@@ -1,6 +1,6 @@
 %{
 #Block parameters for ContrastResponse (1) 
--> sln_symphony.SymphonyEpochBlock
+-> sln_symphony.ExperimentEpochBlock
 ---
 contrast_direction : varchar(64)
 max_contrast : float
@@ -15,7 +15,7 @@ spot_diameter : float
 stim_time : float
 tail_time : float
 %}
-classdef SymphonyProtocolContrastResponseV1BlockParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolContrastResponseV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

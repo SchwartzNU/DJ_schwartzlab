@@ -1,19 +1,18 @@
 %{
-#Epoch parameters for MultiPulse (1) 
--> sln_symphony.SymphonyEpoch
+#Epoch parameters for MovingBar (1) 
+-> sln_symphony.ExperimentEpoch
 ---
-curr_inter_time : float
-pulse_1_curr : float
-pulse_2_curr : float
+bar_angle : float
+protocol_version : float
 %}
-classdef SymphonyProtocolMultiPulseV1EpochParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolMovingBarV1EpochParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'pulse_vector'};
+		dropped_attributes = {};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>

@@ -1,11 +1,11 @@
 %{
-#Epoch parameters for ContrastResponse (1) 
--> sln_symphony.SymphonyEpoch
+#Epoch parameters for FlashedBar (1) 
+-> sln_symphony.ExperimentEpoch
 ---
-contrast : float
-intensity : float
+bar_angle : float
+protocol_version : float
 %}
-classdef SymphonyProtocolContrastResponseV1EpochParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolFlashedBarV1EpochParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

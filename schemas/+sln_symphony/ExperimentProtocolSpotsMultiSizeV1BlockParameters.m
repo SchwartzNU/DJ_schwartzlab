@@ -1,6 +1,6 @@
 %{
 #Block parameters for SpotsMultiSize (1) 
--> sln_symphony.SymphonyEpochBlock
+-> sln_symphony.ExperimentEpochBlock
 ---
 intensity : float
 log_scaling : enum('F','T') #bool
@@ -15,7 +15,7 @@ rstar_mean : float
 stim_time : float
 tail_time : float
 %}
-classdef SymphonyProtocolSpotsMultiSizeV1BlockParameters < sln_symphony.SymphonyProtocol
+classdef ExperimentProtocolSpotsMultiSizeV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

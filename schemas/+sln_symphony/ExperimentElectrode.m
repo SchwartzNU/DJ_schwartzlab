@@ -1,14 +1,14 @@
 %{
 # A symphony electrode channel
--> sln_symphony.SymphonyChannel
+-> sln_symphony.ExperimentChannel
 ---
-(cell_id) -> sln_symphony.SymphonyCell(source_id)
+(cell_id) -> sln_symphony.ExperimentCell(source_id)
 recording_mode : enum('Voltage clamp','Current clamp') # units for this recording
 hold : float  # the hold signal in pA or mV
 amp_mode : enum('Cell attached','Whole cell')
 %}
-classdef SymphonyElectrode < dj.Part
+classdef ExperimentElectrode < dj.Part
     properties(SetAccess=protected)
-        master = sln_symphony.Symphony;
+        master = sln_symphony.Experiment;
     end
 end

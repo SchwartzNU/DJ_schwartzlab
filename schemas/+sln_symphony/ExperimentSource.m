@@ -1,13 +1,13 @@
 %{
 # A source object in a symphony hdf5 file
--> sln_symphony.Symphony
+-> sln_symphony.Experiment
 source_id : tinyint unsigned
 ---
 source_label : varchar(32)
 %}
-classdef SymphonySource < dj.Part
+classdef ExperimentSource < dj.Part
 properties(SetAccess=protected)
-  master = sln_symphony.Symphony;
+  master = sln_symphony.Experiment;
 end
 end
 

@@ -1,5 +1,5 @@
 %{
-#A handle to a Symphony raw data file
+#An experiment using Symphony DAS
 file_name: varchar(64)
 ---
 -> sl.Rig
@@ -12,7 +12,7 @@ symphony_revision_version: tinyint unsigned
 microns_per_pixel = NULL : float
 angle_offset = NULL : float
 %}
-classdef Symphony < dj.Manual    
+classdef Experiment < dj.Manual    
     methods
         
         function key = insert(self, key)
@@ -21,11 +21,11 @@ classdef Symphony < dj.Manual
             end
             %make sure all the tables are already in the db, otherwise transaction will break
             all_parts = dir(fileparts(which(class(self))));
-            all_parts = {all_parts(startsWith({all_parts(:).name},'Symphony')).name};
+            all_parts = {all_parts(startsWith({all_parts(:).name},'Experiment')).name};
             all_parts = cellfun(@(x) strsplit(x,'.'), all_parts, 'uni', 0);
             all_parts = vertcat(all_parts{:});
             all_parts = all_parts(:,1);
-            all_parts = setdiff(all_parts, {'SymphonyProtocol','SymphonyProtocols'});
+            all_parts = setdiff(all_parts, {'ExperimentProtocol','ExperimentProtocols'});
 
             all_loaded = self.schema.classNames;
             all_loaded = cellfun(@(x) strsplit(x,'.'), all_loaded, 'uni', 0);
@@ -46,26 +46,26 @@ classdef Symphony < dj.Manual
             self.schema.conn.startTransaction;
             try
                 insert@dj.Manual(self, key.experiment);
-                insertIfNotEmpty(sln_symphony.SymphonySource(),key.sources);
-                insertIfNotEmpty(sln_symphony.SymphonyRetina(),key.retinas);
-                insertIfNotEmpty(sln_symphony.SymphonyCell(),key.cells);
-                insertIfNotEmpty(sln_symphony.SymphonyCellPair(),key.cell_pairs);
-                insertIfNotEmpty(sln_symphony.SymphonyEpochGroup(),key.epoch_groups);
+                insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
+                insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
+                insertIfNotEmpty(sln_symphony.ExperimentCell(),key.cells);
+                insertIfNotEmpty(sln_symphony.ExperimentCellPair(),key.cell_pairs);
+                insertIfNotEmpty(sln_symphony.ExperimentEpochGroup(),key.epoch_groups);
                 
                 %these have to occur together?
-                insertIfNotEmpty(sln_symphony.SymphonyProtocols(),key.epoch_blocks, key.epochs);
-%                 sln_symphony.SymphonyEpochBlock().insert(key.epoch_blocks);
-%                 sln_symphony.SymphonyEpoch().insert(key.epochs);
+                insertIfNotEmpty(sln_symphony.ExperimentProtocols(),key.epoch_blocks, key.epochs);
+%                 sln_symphony.ExperimentEpochBlock().insert(key.epoch_blocks);
+%                 sln_symphony.ExperimentEpoch().insert(key.epochs);
                 
-                insertIfNotEmpty(sln_symphony.SymphonyChannel(),key.channels);
-                insertIfNotEmpty(sln_symphony.SymphonyEpochChannel(),key.epoch_channels);
-                insertIfNotEmpty(sln_symphony.SymphonyElectrode(),key.electrodes);
+                insertIfNotEmpty(sln_symphony.ExperimentChannel(),key.channels);
+                insertIfNotEmpty(sln_symphony.ExperimentEpochChannel(),key.epoch_channels);
+                insertIfNotEmpty(sln_symphony.ExperimentElectrode(),key.electrodes);
                 
-                insertIfNotEmpty(sln_symphony.SymphonyNote(),key.experiment_notes);
-                insertIfNotEmpty(sln_symphony.SymphonySourceNote(),key.source_notes);
-                insertIfNotEmpty(sln_symphony.SymphonyEpochGroupNote(),key.epoch_group_notes);
-                insertIfNotEmpty(sln_symphony.SymphonyEpochBlockNote(),key.epoch_block_notes);
-                insertIfNotEmpty(sln_symphony.SymphonyEpochNote(),key.epoch_notes);
+                insertIfNotEmpty(sln_symphony.ExperimentNote(),key.experiment_notes);
+                insertIfNotEmpty(sln_symphony.ExperimentSourceNote(),key.source_notes);
+                insertIfNotEmpty(sln_symphony.ExperimentEpochGroupNote(),key.epoch_group_notes);
+                insertIfNotEmpty(sln_symphony.ExperimentEpochBlockNote(),key.epoch_block_notes);
+                insertIfNotEmpty(sln_symphony.ExperimentEpochNote(),key.epoch_notes);
                 
             catch ME
                 self.schema.conn.cancelTransaction;
