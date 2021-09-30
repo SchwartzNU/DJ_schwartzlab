@@ -58,6 +58,12 @@ classdef HeaderAnimalEvent < handle
                 if length(sql_)>2
                    sql = string(join(sql,sql_(3:end),' '));
                 end
+            elseif isa(h,'cell') %we have a pre-compiled union?
+                %strip the aliases
+                h = cellfun(@(x) regexp(x,'`(\w+)`','match'), strsplit(h{1}, ','), 'UniformOutput', false);
+                h = join(horzcat(h{:}), ',');
+                h = h{:};
+                sql = sprintf('SELECT %s FROM %s', h, sql_);
             else
                 sql = sprintf('SELECT %s FROM %s', h, sql_);
             end

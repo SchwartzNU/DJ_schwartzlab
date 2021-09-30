@@ -6,12 +6,12 @@ classdef Spikes < aka.Alias
     methods
         function self = Spikes(amp_mode)
             if nargin
-                args = {sln_symphony.SymphonyElectrode...
+                args = {sln_symphony.ExperimentElectrode...
                     & sprintf('amp_mode="%s"',amp_mode)};
             else
                 args = {};
             end
-            self@aka.Alias(args{:});
+            self@aka.Alias('*',args{:});
         end
     end
 end

@@ -1,7 +1,7 @@
 %{
 # A recording of a cell in a user-defined dataset
 -> sln_symphony.Dataset
--> sln_symphony.SymphonyEpoch
+-> sln_symphony.ExperimentEpoch
 %}
 classdef DatasetEpoch < dj.Part
     properties(SetAccess=protected)

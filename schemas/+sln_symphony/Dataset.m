@@ -1,6 +1,6 @@
 %{
 # A user-defined group of epochs for analysis
--> sln_symphony.SymphonySource
+-> sln_symphony.ExperimentSource
 dataset_name: varchar(64)
 %}
 classdef Dataset < dj.Manual
@@ -29,13 +29,13 @@ classdef Dataset < dj.Manual
                 c = load(sprintf('%s%s',...
                 getenv('CELL_DATA_FOLDER'),celldata{i})).cellData;
                 fname = c.attributes('fname');
-                q = sln_symphony.SymphonyCell...
+                q = sln_symphony.ExperimentCell...
                     & sprintf('filename="%s"',fname)...
                     & sprintf('cell_number = %d',c.attributes('number'));
                 assert(count(q) == 1, 'More than one matching cell!!');
 
                 q_id = fetch1(q,'source_id');
-                q_e = fetch(q * sln_symphony.SymphonyEpoch);
+                q_e = fetch(q * sln_symphony.ExperimentEpoch);
 
                 N = c.savedDataSets.length;
                 emp = cell(N,1);
