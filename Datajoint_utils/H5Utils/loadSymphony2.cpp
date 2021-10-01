@@ -8,6 +8,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <numeric>
 
 //H5::H5std_string <- for future reference
 
@@ -130,6 +131,8 @@ class Parser {
             recurse(file);
             file.close();
             
+            sortEpochs();
+
             output[0] = std::move(key);
         }
 
@@ -951,6 +954,75 @@ class Parser {
 
         duration = factory.createScalar(ticks2 - ticks1);
 
+    }
+
+    void sortEpochs() {
+        //get the sort order for the epochs
+        auto epoch_i = getOrder<long long>("epochs", "epoch_start_time");
+        reorder("epochs", "epoch_id", epoch_i);
+        reorder("epoch_channels", "epoch_id", epoch_i);
+        reorder("epoch_notes", "epoch_id", epoch_i);
+
+        //then do the same for epoch blocks and epoch groups
+        auto eb_i = getOrder<char16_t>("epoch_blocks", "epoch_block_start_time");
+        reorder("epochs","epoch_block_id", eb_i);
+        reorder("epoch_blocks","epoch_block_id", eb_i);
+        reorder("channels","epoch_block_id", eb_i);
+        reorder("electrodes","epoch_block_id", eb_i);
+        reorder("epoch_channels","epoch_block_id", eb_i);
+        reorder("epoch_notes","epoch_block_id", eb_i);
+        reorder("epoch_block_notes","epoch_block_id", eb_i);
+
+
+        auto eg_i = getOrder<char16_t>("epoch_groups", "epoch_group_start_time");
+        reorder("epochs","epoch_group_id", eg_i);
+        reorder("epoch_blocks","epoch_group_id", eg_i);
+        reorder("epoch_groups","epoch_group_id", eg_i);
+        reorder("channels","epoch_group_id", eg_i);
+        reorder("electrodes","epoch_group_id", eg_i);
+        reorder("epoch_channels","epoch_group_id", eg_i);
+        reorder("epoch_notes","epoch_group_id", eg_i);
+        reorder("epoch_block_notes","epoch_group_id", eg_i);
+        reorder("epoch_group_notes","epoch_group_id", eg_i);
+
+    }
+
+    template<typename T>
+    std::vector<size_t> getOrder(std::string structname, std::string field) {
+        //https://stackoverflow.com/questions/17074324
+
+        //gets the sort order of the structure by a specified field
+        StructArray s = std::move(key[0][structname]);
+        std::vector<size_t> i(s.getNumberOfElements());
+        std::iota(i.begin(),i.end(), 0);
+        std::sort(i.begin(), i.end(), [&](std::size_t j, std::size_t k) {
+            TypedArray<T> d1 = s[j][field];
+            TypedArray<T> d2 = s[k][field];
+            for (auto i=0; i < d1.getNumberOfElements(); i++) {
+                if (d1[i] < d2[i]) return true;
+                else if (d1[i] > d2[i]) return false;
+            }
+            return false;
+        });
+        key[0][structname] = std::move(s);
+        
+        std::vector<size_t> ii(i.size());
+        for (auto j=0; j<ii.size(); j++) {
+            ii[i[j]] = j;
+        }
+        return ii;
+        
+    }
+
+    void reorder(std::string structname, std::string field, std::vector<size_t> ind) {
+        // std::cout << "Changing " << structname << "[" << field << "]" << std::endl; 
+        if (key[0][structname].isEmpty()) return;
+        StructArray s = std::move(key[0][structname]);
+        for (auto i=0; i < s.getNumberOfElements(); i++) {
+            TypedArray<size_t> old_ind = s[i][field];
+            s[i][field] = factory.createScalar(ind[old_ind[0] - 1] + 1);
+        }
+        key[0][structname] = std::move(s);
     }
 
     void throwError(std::string message) {
