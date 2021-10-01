@@ -16,7 +16,16 @@ classdef SpikeTrain < dj.Manual
        & rmfield(key, {'spike_indices','spike_count'}))...
        == numel(key),...
        'Channel must be an electrode!');
-      
+
+      % reduce the space requirement
+      last = max(key.spike_indices);
+      if last < intmax('uint8')
+        key.spike_indices = uint8(key.spike_indices);
+      elseif last < intmax('uint16')
+        key.spike_indices = uint16(key.spike_indices);
+      else %we will never ever exceed uint32
+        key.spike_indices = uint32(key.spike_indices);
+      end
       insert@dj.Manual(self, key);
     end
   end
