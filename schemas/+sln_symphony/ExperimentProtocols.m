@@ -6,7 +6,7 @@ classdef ExperimentProtocols < handle
 
     properties
         key
-        bool_types = {'logScaling', 'randomOrdering'};
+        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns'};
     end
     
     methods
