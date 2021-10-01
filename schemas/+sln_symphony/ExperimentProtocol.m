@@ -23,6 +23,10 @@ classdef ExperimentProtocol < dj.Part
           key = block_key;
         end
       end
+      if isempty(key)
+          return
+      end
+      
       fields = fieldnames(key);
       key = struct2cell(key);
       to_drop = ismember(fields, self.dropped_attributes);
@@ -61,6 +65,12 @@ classdef ExperimentProtocol < dj.Part
         else
           key = block_key;
         end
+      end
+      if isempty(key)
+            success = true;
+            extra = [];
+            missing = [];
+            return
       end
       fields = fieldnames(key);
       fields = setdiff(fields, self.dropped_attributes);
