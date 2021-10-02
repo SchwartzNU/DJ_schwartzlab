@@ -30,9 +30,35 @@ classdef ExperimentProtocols < handle
             end
             try
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
+                existing_protocols = fetch(sln_symphony.Protocol & struct('protocol_name',protocols));
+                missing_protocols = setdiff(protocols, {existing_protocols(:).protocol_name});
+                if ~isempty(missing_protocols)
+                    missing_text = sprintf('\n\t> %s',missing_protocols{:});
+                    names_text = sprintf('''%s'',',missing_protocols{:});
+                    missing_text = sprintf(...
+                        '%s\nTo insert all, use:\n\tsln_symphony.Protocol().insert({%s}'');',...
+                        missing_text,names_text(1:end-1));
+                    warning(['Protocols were missing from the database. '...
+                        'You must manually insert these in '...
+                        'the Protocol table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
+                end
                 
-                %TODO: epoch_block.protocol_name should be snake case
-                %TODO: gracefully handle missing db.protocol, db.led
+                leds = unique({self.key.LEDs(:).color});
+                existing_leds = fetch(sln_symphony.LED & struct('color',leds));
+                missing_leds = setdiff(leds, {existing_leds(:).color});
+                if ~isempty(missing_leds)
+                    missing_text = sprintf('\n\t> %s',missing_leds{:});
+                    names_text = sprintf('''%s'',',missing_leds{:});
+                    missing_text = sprintf(...
+                        '%s\nTo insert all, use:\n\tsln_symphony.LED().insert({%s})'';',...
+                        missing_text,names_text(1:end-1));
+                    warning(['LEDs were missing from the database. '...
+                        'You must manually insert these in '...
+                        'the LED table or rename them in the key:%s'], missing_text);
+                end
+                if ~isempty(missing_leds) || ~isempty(missing_protocols) 
+                    error('Missing table dependencies. See above warnings.');
+                end
                 sln_symphony.ExperimentEpochBlock().insert(self.key.epoch_blocks);
                 sln_symphony.ExperimentProjectorSettings().insert(self.key.projector);
                 sln_symphony.ExperimentLEDSettings().insert(self.key.LEDs);
@@ -47,7 +73,7 @@ classdef ExperimentProtocols < handle
 
                   e = self.key.epoch_params(arrayfun(@(x) ismember(x.epoch_block_id, bi), self.key.epochs));
 
-                  success = self.insertProtocol(protocols{i}, vertcat(b{:}), vertcat(e{:})) && success;
+                  success = self.insertProtocol(changeCase(protocols{i},'upperCamel'), vertcat(b{:}), vertcat(e{:})) && success;
                 end
                 if ~success
                   error('One or more protocols were not compatible with any existing tables in the database. Please confirm the new table definition and try again.');
@@ -66,7 +92,7 @@ classdef ExperimentProtocols < handle
         end
 
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
-          %1: get existing tables under the protocol name
+          %get existing tables under the protocol name
           tables = sln_symphony.getSchema().classNames;
           matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
               & endsWith(tables, 'BlockParameters');

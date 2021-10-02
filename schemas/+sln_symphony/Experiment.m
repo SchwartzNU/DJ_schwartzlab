@@ -48,8 +48,26 @@ classdef Experiment < dj.Manual
                 error('Key must be the name of a file or a struct derived from a Symphony file.');
             end
             
+            %TODO: do this elsewhere?
+            t = cellfun(@(x) changeCase(x,'snake'),{key.epoch_blocks(:).protocol_name},'uni',0);
+            [key.epoch_blocks(:).protocol_name] = t{:};
+            
             self.schema.conn.startTransaction;
             try
+                channels = unique({key.channels(:).channel_name});
+                existing_channels = fetch(sln_symphony.Channel & struct('channel_name',channels));
+                missing_channels = setdiff(channels, {existing_channels(:).channel_name});
+                if ~isempty(missing_channels)
+                    missing_text = sprintf('\n\t> %s',missing_channels{:});
+                    names_text = sprintf('''%s'',',missing_channels{:});
+                    missing_text = sprintf(...
+                        '%s\nTo insert all, use:\n\tsln_symphony.Channel().insert({%s}'');',...
+                        missing_text,names_text(1:end-1));
+                    error(['Channels were missing from the database. '...
+                        'You must manually insert these in '...
+                        'the Channel table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
+                end
+
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
@@ -73,8 +91,8 @@ classdef Experiment < dj.Manual
             catch ME
                 self.schema.conn.cancelTransaction;
 
+                warning(getReport(ME, 'extended', 'hyperlinks', 'on'));
                 warning('Table creation failed. Key is available as output.');
-                disp(getReport(ME, 'extended', 'hyperlinks', 'on'));
                 return;
             end
             self.schema.conn.commitTransaction;
