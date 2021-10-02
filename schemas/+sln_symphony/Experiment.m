@@ -75,7 +75,6 @@ classdef Experiment < dj.Manual
                 insertIfNotEmpty(sln_symphony.ExperimentCellPair(),key.cell_pairs);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochGroup(),key.epoch_groups);
                 
-                %TODO: gracefully handle missing channel; do it before ExperimentProtocols since some protocols refer to channel (e.g. pulse)
                 insertIfNotEmpty(sln_symphony.ExperimentProtocols(),key.epoch_blocks, key.epochs);
                 
                 insertIfNotEmpty(sln_symphony.ExperimentChannel(),key.channels);

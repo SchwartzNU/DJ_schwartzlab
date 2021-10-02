@@ -56,6 +56,10 @@ classdef Dataset < dj.Manual
                 st = st(~j);
                 sc = cellfun(@numel, st,'uni', 0);
 
+                %TODO: do we want to check whether the trials are whole cell voltage clamp??
+                %this could indicate an error with the raw data file,or just user error
+                %maybe handle with an input flag... 
+
                 spikes_i = q_e(~j);
                 [spikes_i(:).spike_indices] = deal(st{:});
                 [spikes_i(:).spike_count] = deal(sc{:});
