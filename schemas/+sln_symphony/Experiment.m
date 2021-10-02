@@ -79,6 +79,9 @@ classdef Experiment < dj.Manual
                 insertIfNotEmpty(sln_symphony.ExperimentProtocols(),key.epoch_blocks, key.epochs);
                 
                 insertIfNotEmpty(sln_symphony.ExperimentChannel(),key.channels);
+                
+                c = onCleanup(@() warning('on','MATLAB:MKDIR:DirectoryExists'));                
+                warning('off','MATLAB:MKDIR:DirectoryExists');
                 insertIfNotEmpty(sln_symphony.ExperimentEpochChannel(),key.epoch_channels);
                 insertIfNotEmpty(sln_symphony.ExperimentElectrode(),key.electrodes);
                 
@@ -104,6 +107,9 @@ end
 
 function insertIfNotEmpty(table, varargin)
     if ~isempty(varargin{1})
+        fprintf('Populating %s...', class(table));
+        tic;
         table.insert(varargin{:});
+        fprintf(' done (took %.02f seconds).\n',toc);
     end
 end
