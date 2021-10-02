@@ -29,13 +29,17 @@ classdef ExperimentProtocols < handle
                 schema.conn.startTransaction;
             end
             try
+                [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
+                
+                %TODO: epoch_block.protocol_name should be snake case
+                %TODO: gracefully handle missing db.protocol, db.led
                 sln_symphony.ExperimentEpochBlock().insert(self.key.epoch_blocks);
                 sln_symphony.ExperimentProjectorSettings().insert(self.key.projector);
                 sln_symphony.ExperimentLEDSettings().insert(self.key.LEDs);
                 sln_symphony.ExperimentEpoch().insert(self.key.epochs);
 
-                [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
-
+                
+                
                 success = true;
                 for i=1:numel(protocols)
                   b = self.key.block_params(ind==i);
