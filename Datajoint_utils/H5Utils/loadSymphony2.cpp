@@ -126,6 +126,8 @@ class Parser {
             fname = fpath.substr(start, end - start);
             s[0]["file_name"] = factory.createCharArray(fname);
             s[0]["rig_name"] = factory.createCharArray(fpath.substr(end-1, 1));
+
+            //TODO: get the branch and commit from newer files
             
             key[0]["experiment"] = std::move(s);    
             recurse(file);
@@ -143,7 +145,6 @@ class Parser {
                 auto name = parent.getObjnameByIdx(i);
                 
                 if (parent.childObjType(name) == H5O_TYPE_DATASET) {
-                    // std::cout << "Dataset: " << name << std::endl;
                 } else if (parent.childObjType(name) == H5O_TYPE_GROUP) {
                     auto group = parent.openGroup(name);
                     H5O_info1_t info;
@@ -151,12 +152,10 @@ class Parser {
                     if (!addrs.count(info.addr)) {
                         addrs.insert(info.addr);
                         bool do_recurse = true;
-                        // bool recurse_children=false;
                         auto group_type = name.substr(0,name.find("-")); //note the uuid...
-                        // std::cout << group_type << std::endl;
                         switch (str2int(group_type.c_str())) {
-                            // case str2int("protocolParameters"):
-                            //     break;
+                            //TODO: backgrounds, when we get those sorted for the projector...
+                            //TODO: device resources, configuration settings...
                             case str2int("responses"):
                                 parseResponses(group);
                                 break;
@@ -182,12 +181,6 @@ class Parser {
                                 parseExperiment(group);
                                 break;
                             default:
-                                // if (group_type.find(".protocols.") == group_type.npos) {
-                                //     do_recurse = false;
-                                // } else {
-                                //     parseEpochBlock(group);
-                                // }
-                                // break;
                                 switch(str2int(parent_type)) {
                                     case str2int("epochBlocks"):
                                         parseEpochBlock(group);
@@ -197,8 +190,6 @@ class Parser {
                                         break;
                                     default:
                                         break;
-                                        // group.close();
-                                        // continue;
                                 }
                                 break;
                         }
