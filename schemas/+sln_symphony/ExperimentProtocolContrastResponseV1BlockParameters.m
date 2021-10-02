@@ -2,7 +2,7 @@
 #Block parameters for ContrastResponse (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-contrast_direction : varchar(64)
+contrast_direction : enum('negative','positive','both')
 max_contrast : float
 mean_level : float
 min_contrast : float
