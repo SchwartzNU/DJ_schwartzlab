@@ -33,7 +33,9 @@ classdef Experiment < dj.Manual
             all_loaded = self.schema.classNames;
             all_loaded = cellfun(@(x) strsplit(x,'.'), all_loaded, 'uni', 0);
             all_loaded = vertcat(all_loaded{:});
-            all_loaded = all_loaded(:,2);
+            if ~isempty(all_loaded)
+                all_loaded = all_loaded(:,2);
+            end
             
             %getting the plain table name forces insertion into the
             %database
@@ -55,10 +57,8 @@ classdef Experiment < dj.Manual
                 insertIfNotEmpty(sln_symphony.ExperimentCellPair(),key.cell_pairs);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochGroup(),key.epoch_groups);
                 
-                %these have to occur together?
+                %TODO: gracefully handle missing channel; do it before ExperimentProtocols since some protocols refer to channel (e.g. pulse)
                 insertIfNotEmpty(sln_symphony.ExperimentProtocols(),key.epoch_blocks, key.epochs);
-%                 sln_symphony.ExperimentEpochBlock().insert(key.epoch_blocks);
-%                 sln_symphony.ExperimentEpoch().insert(key.epochs);
                 
                 insertIfNotEmpty(sln_symphony.ExperimentChannel(),key.channels);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochChannel(),key.epoch_channels);
