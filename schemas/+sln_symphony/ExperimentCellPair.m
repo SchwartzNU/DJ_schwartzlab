@@ -6,7 +6,7 @@
 (cell_2_id) -> sln_symphony.ExperimentCell(source_id) #cell in amp channel 2
 
 %}
-classdef ExperimentCellPair < dj.Part
+classdef ExperimentCellPair < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
   master = sln_symphony.Experiment;
 end

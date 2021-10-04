@@ -5,7 +5,7 @@ entry_time: datetime
 ---
 text : blob@raw
 %}
-classdef ExperimentNote < dj.Part
+classdef ExperimentNote < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
     master = sln_symphony.Experiment;
 end

@@ -14,6 +14,8 @@
 
 using namespace matlab::data;
 using matlab::mex::ArgumentList;
+// using matrix::detail::noninlined::mx_array_api::mxDeserialize; // seems this has been dropped
+
 
 //stackoverflow ->
 constexpr unsigned int str2int(const char* str, int h = 0) {
@@ -35,6 +37,11 @@ struct pair_hash {
     }
 };
 //end stackoverflow <-
+typedef struct symphony_resource {
+    std::string name;
+    // buffer_ptr_t<char unsigned> ptr;
+    hsize_t size;
+} symphony_resource;
 
 struct channel {
     size_t channel_ind;
@@ -57,7 +64,7 @@ class Parser {
         std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr;
         std::unordered_set<haddr_t> addrs;
         StructArray key = factory.createStructArray({1,1},
-        {"experiment","epoch_groups","epoch_blocks","epochs",
+        {"experiment","calibration","epoch_groups","epoch_blocks","epochs",
         "channels","electrodes","epoch_channels",
         "sources","retinas","cells","cell_pairs",
         "experiment_notes","source_notes",
@@ -65,7 +72,9 @@ class Parser {
         );
         // CharArray fname;
         std::string fname;
+        std::string lastDevice;
 
+        std::unordered_map<std::string, std::pair<symphony_resource,buffer_ptr_t<char unsigned>>> resources;
         std::unordered_map<std::string, size_t> sources;
         std::unordered_map<std::string, size_t> groups;
         std::unordered_map<std::string, size_t> blocks;
@@ -99,7 +108,7 @@ class Parser {
                 {"experiment_start_time", "experiment_end_time",
                 "file_name","rig_name",
                 "symphony_major_version","symphony_minor_version",
-                "symphony_patch_version","symphony_revision_version","microns_per_pixel","angle_offset"});
+                "symphony_patch_version","symphony_revision_version"});
 
             std::string version;
             auto attr = file.openAttribute("symphonyVersion");
@@ -134,6 +143,7 @@ class Parser {
             file.close();
             
             sortEpochs();
+            mapResources();
 
             output[0] = std::move(key);
         }
@@ -182,11 +192,17 @@ class Parser {
                                 break;
                             default:
                                 switch(str2int(parent_type)) {
+                                    case str2int("responses"):
+                                        parseResponse(group);
+                                        break;
                                     case str2int("epochBlocks"):
                                         parseEpochBlock(group);
                                         break;
-                                    case str2int("responses"):
-                                        parseResponse(group);
+                                    case str2int("resources"):
+                                        parseResource(group);
+                                        break;
+                                    case str2int("devices"):
+                                        lastDevice = parseStrAttr(group, "name").toAscii();
                                         break;
                                     default:
                                         break;
@@ -234,6 +250,51 @@ class Parser {
             space.close();
             notes.close();
         }
+    }
+
+    void parseResource(H5::Group resource) {
+        std::string resource_uuid = parseStrAttr(resource, "uuid").toAscii();
+        std::string name = parseStrAttr(resource, "name").toAscii();
+        if ((name == "descriptionType") | (name=="propertyDescriptors")) return;
+        if (name == "configurationSettingDescriptors") name = lastDevice;
+        if (resources.count(resource_uuid)) return;
+        auto ds = resource.openDataSet("data");
+        auto space = ds.getSpace();
+        hsize_t n_samples;
+        space.getSimpleExtentDims( &n_samples, NULL);
+        
+        buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
+        ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
+        
+        // symphony_resource data = {parseStrAttr(resource, "name").toAscii(), n_samples};
+        symphony_resource data;
+        data.name = name;
+        // data.ptr = std::move(buffer);
+        data.size = n_samples;
+        resources.insert({
+            resource_uuid,
+            std::pair<symphony_resource,buffer_ptr_t<char unsigned>>({
+                data,
+                std::move(buffer)
+                })
+            });
+
+    }
+
+    void mapResources() {
+        auto n_elements = resources.size();
+        CellArray cKeys = factory.createCellArray({n_elements, 1});
+        CellArray cVals = factory.createCellArray({n_elements, 1});
+        size_t i = 0;
+        for (auto iter = resources.begin(); iter != resources.end(); iter++) {
+            // c[i][0] = factory.createCharArray(iter->first); //uuid
+            cKeys[i] = factory.createCharArray(iter->second.first.name); //name
+            auto temp = factory.createArrayFromBuffer({iter->second.first.size},std::move(iter->second.second)); //buffer data
+            cVals[i] = matlabPtr->feval(u"getArrayFromByteStream", {temp});
+            i++;
+        }
+
+        key[0]["calibration"] = std::move(matlabPtr->feval(u"containers.Map", {cKeys, cVals}));
     }
 
     void parseEpochGroups(H5::Group epochGroups) {
@@ -442,20 +503,20 @@ class Parser {
         s[ind]["parameters"] = parseParams(params);
         
         StructArray experiment = std::move(key[0]["experiment"]);
-        if (params.attrExists("micronsPerPixel")) {
-            TypedArray<double> mpp = parseNumericAttr(params, "micronsPerPixel");
-            TypedArray<double> mpp_e = experiment[0]["microns_per_pixel"];
-            if (mpp_e.isEmpty()) {
-                experiment[0]["microns_per_pixel"] = mpp;
-            } else if (mpp_e[0] != mpp[0]) throwError("File has differing microns per pixel values!");
-        }
-        if (params.attrExists("angleOffsetFromRig")) {
-            TypedArray<double> ao = parseNumericAttr(params, "angleOffsetFromRig");
-            TypedArray<double> ao_e = experiment[0]["angle_offset"];
-            if (ao_e.isEmpty()) {
-                experiment[0]["angle_offset"] = ao;
-            } else if (ao_e[0] != ao[0]) throwError("File has differing angle offset values!");
-        }
+        // if (params.attrExists("micronsPerPixel")) {
+        //     TypedArray<double> mpp = parseNumericAttr(params, "micronsPerPixel");
+        //     TypedArray<double> mpp_e = experiment[0]["microns_per_pixel"];
+        //     if (mpp_e.isEmpty()) {
+        //         experiment[0]["microns_per_pixel"] = mpp;
+        //     } else if (mpp_e[0] != mpp[0]) throwError("File has differing microns per pixel values!");
+        // }
+        // if (params.attrExists("angleOffsetFromRig")) {
+        //     TypedArray<double> ao = parseNumericAttr(params, "angleOffsetFromRig");
+        //     TypedArray<double> ao_e = experiment[0]["angle_offset"];
+        //     if (ao_e.isEmpty()) {
+        //         experiment[0]["angle_offset"] = ao;
+        //     } else if (ao_e[0] != ao[0]) throwError("File has differing angle offset values!");
+        // }
         key[0]["experiment"] = std::move(experiment);
 
         params.close();

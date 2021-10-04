@@ -2,7 +2,7 @@
 ## Symphony file parsing
 - [ ] get branch and commit from experiment
 - [ ] add background for projector and parse
-- [ ] parse device resources and configuration settings
+- [x] parse device resources and configuration settings
   - ideally a `Calibration` table with an `ExperimentCalibration` part
 - [ ] add a source note whenever there's an `Other` object
 - [ ] convenience script for missing `animal_id`

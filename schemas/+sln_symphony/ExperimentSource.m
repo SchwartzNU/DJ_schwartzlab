@@ -5,7 +5,7 @@ source_id : tinyint unsigned
 ---
 source_label : varchar(32)
 %}
-classdef ExperimentSource < dj.Part
+classdef ExperimentSource < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
   master = sln_symphony.Experiment;
 end

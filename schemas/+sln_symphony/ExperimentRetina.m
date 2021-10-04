@@ -6,7 +6,7 @@
 (experimenter) -> [nullable] sl.User
 orientation: enum('ventral down', 'ventral up', 'unknown')
 %}
-classdef ExperimentRetina < dj.Part
+classdef ExperimentRetina < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
   master = sln_symphony.Experiment;
 end

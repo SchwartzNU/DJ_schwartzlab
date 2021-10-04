@@ -3,14 +3,13 @@
 file_name: varchar(64)
 ---
 -> sl.Rig
+-> sln_symphony.Calibration
 experiment_start_time: datetime
 experiment_end_time: datetime
 symphony_major_version: tinyint unsigned
 symphony_minor_version: tinyint unsigned
 symphony_patch_version: tinyint unsigned
 symphony_revision_version: tinyint unsigned
-microns_per_pixel = NULL : float
-angle_offset = NULL : float
 %}
 classdef Experiment < dj.Manual    
     methods
@@ -21,14 +20,20 @@ classdef Experiment < dj.Manual
                 %the issue is that we may need to create new tables
                 %but creating new tables breaks transactions (a dj bug?)
             end
+            if isempty(which('symphonyui.core.PropertyDescriptor'))
+                error('Cannot access Symphony property descriptors. Is Symphony on the path?');
+            end
             success = false;
             %make sure all the tables are already in the db, otherwise transaction will break
             all_parts = dir(fileparts(which(class(self))));
-            all_parts = {all_parts(startsWith({all_parts(:).name},'Experiment')).name};
+            all_parts = {all_parts(...
+                startsWith({all_parts(:).name},'Experiment') | ...
+                startsWith({all_parts(:).name},'Calibration')...
+                ).name};
             all_parts = cellfun(@(x) strsplit(x,'.'), all_parts, 'uni', 0);
             all_parts = vertcat(all_parts{:});
             all_parts = all_parts(:,1);
-            all_parts = setdiff(all_parts, {'ExperimentProtocol','ExperimentProtocols'});
+            all_parts = setdiff(all_parts, {'ExperimentProtocol','ExperimentProtocols','ExperimentPart'});
 
             all_loaded = self.schema.classNames;
             all_loaded = cellfun(@(x) strsplit(x,'.'), all_loaded, 'uni', 0);
@@ -52,6 +57,7 @@ classdef Experiment < dj.Manual
             t = cellfun(@(x) changeCase(x,'snake'),{key.epoch_blocks(:).protocol_name},'uni',0);
             [key.epoch_blocks(:).protocol_name] = t{:};
             
+            
             self.schema.conn.startTransaction;
             try
                 channels = unique({key.channels(:).channel_name});
@@ -67,7 +73,7 @@ classdef Experiment < dj.Manual
                         'You must manually insert these in '...
                         'the Channel table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
                 end
-
+                key.experiment.calibration_id = insertIfNotEmpty(sln_symphony.Calibration(), key.calibration);
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
@@ -104,11 +110,13 @@ classdef Experiment < dj.Manual
 end
 
 
-function insertIfNotEmpty(table, varargin)
+function ret = insertIfNotEmpty(table, varargin)
     if ~isempty(varargin{1})
+        table.canInsert = true;
         fprintf('Populating %s...', class(table));
+        
         tic;
-        table.insert(varargin{:});
+        ret = table.insert(varargin{:});
         fprintf(' done (took %.02f seconds).\n',toc);
     end
 end

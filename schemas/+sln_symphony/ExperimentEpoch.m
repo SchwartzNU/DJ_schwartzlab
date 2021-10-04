@@ -7,7 +7,7 @@ epoch_start_time: int unsigned #number of milliseconds since the session started
 epoch_duration: int unsigned #duration of the epoch in milliseconds
 
 %}
-classdef ExperimentEpoch < dj.Part
+classdef ExperimentEpoch < sln_symphony.ExperimentPart
     properties(SetAccess=protected)
         master = sln_symphony.Experiment;
     end

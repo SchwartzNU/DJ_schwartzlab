@@ -5,7 +5,7 @@
 ---
 sample_rate : float # the sample rate for this channel in Hz
 %}
-classdef ExperimentChannel < dj.Part
+classdef ExperimentChannel < sln_symphony.ExperimentPart
     properties(SetAccess=protected)
         master = sln_symphony.Experiment;
     end

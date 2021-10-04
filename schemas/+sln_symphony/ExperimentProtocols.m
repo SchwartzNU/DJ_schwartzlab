@@ -7,10 +7,11 @@ classdef ExperimentProtocols < handle
     properties
         key
         bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns'};
+        canInsert = false;
     end
     
-    methods
-        function insert(self,epoch_blocks,epochs)
+    methods (Access = ?sln_symphony.Experiment)
+        function ret = insert(self,epoch_blocks,epochs)
             %setup 
             self.key = struct('epoch_blocks',epoch_blocks,'epochs',epochs);
             self.parseProjectorSettings();
@@ -38,33 +39,26 @@ classdef ExperimentProtocols < handle
                     missing_text = sprintf(...
                         '%s\nTo insert all, use:\n\tsln_symphony.Protocol().insert({%s}'');',...
                         missing_text,names_text(1:end-1));
-                    warning(['Protocols were missing from the database. '...
+                    error(['Protocols were missing from the database. '...
                         'You must manually insert these in '...
-                        'the Protocol table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
+                        'the Protocol table or rename them in the key:%s'], missing_text); %#ok<SPERR>
                 end
                 
-                leds = unique({self.key.LEDs(:).color});
-                existing_leds = fetch(sln_symphony.LED & struct('color',leds));
-                missing_leds = setdiff(leds, {existing_leds(:).color});
-                if ~isempty(missing_leds)
-                    missing_text = sprintf('\n\t> %s',missing_leds{:});
-                    names_text = sprintf('''%s'',',missing_leds{:});
-                    missing_text = sprintf(...
-                        '%s\nTo insert all, use:\n\tsln_symphony.LED().insert({%s})'';',...
-                        missing_text,names_text(1:end-1));
-                    warning(['LEDs were missing from the database. '...
-                        'You must manually insert these in '...
-                        'the LED table or rename them in the key:%s'], missing_text);
-                end
-                if ~isempty(missing_leds) || ~isempty(missing_protocols) 
-                    error('Missing table dependencies. See above warnings.');
-                end
-                sln_symphony.ExperimentEpochBlock().insert(self.key.epoch_blocks);
-                sln_symphony.ExperimentProjectorSettings().insert(self.key.projector);
-                sln_symphony.ExperimentLEDSettings().insert(self.key.LEDs);
-                sln_symphony.ExperimentEpoch().insert(self.key.epochs);
+                table = sln_symphony.ExperimentEpochBlock();
+                table.canInsert = true;
+                table.insert(self.key.epoch_blocks);
 
+                table = sln_symphony.ExperimentProjectorSettings();
+                table.canInsert = true;
+                table.insert(self.key.projector);
+
+                table = sln_symphony.ExperimentLEDSettings();
+                table.canInsert = true;
+                table.insert(self.key.LEDs);
                 
+                table = sln_symphony.ExperimentEpoch();
+                table.canInsert = true;
+                table.insert(self.key.epochs);                
                 
                 success = true;
                 for i=1:numel(protocols)
@@ -88,7 +82,7 @@ classdef ExperimentProtocols < handle
             if ~transacted
                 schema.conn.commitTransaction;
             end
-            
+            ret = true;
         end
 
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
@@ -102,8 +96,11 @@ classdef ExperimentProtocols < handle
 
               b = feval(char(match));% <- gets an object of the class
               e = feval([match{1}(1:end-15), 'EpochParameters']);
-              if b.canInsert(block_params, epoch_params) && e.canInsert(block_params, epoch_params)
+              if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
+                b.canInsert = true;
                 b.insert(block_params, epoch_params);
+
+                e.canInsert = true;
                 e.insert(block_params, epoch_params);
                 success = true;
                 return
