@@ -4,7 +4,8 @@
 classdef ExperimentPart < dj.Part
 properties(Access={?sln_symphony.Experiment,...
   ?sln_symphony.ExperimentProtocols,...
-  ?sln_symphony.Calibration})
+  ?sln_symphony.Calibration,...
+  ?sln_symphony.Dataset})
   canInsert = false;
 end
 methods
@@ -13,7 +14,7 @@ methods
       insert@dj.Part(self,key);
       ret = true;
     else
-      error('You cannot insert into this table directly. Insert an Experiment instead.');
+      error('You cannot insert into this table directly.');
     end
   end
 end

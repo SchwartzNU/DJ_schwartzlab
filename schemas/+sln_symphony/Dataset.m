@@ -76,7 +76,9 @@ classdef Dataset < dj.Manual
             end
             try
                 insert@dj.Manual(self, rmfield(key, {'epochs'}));
-                sln_symphony.DatasetEpoch().insert(...
+                table = sln_symphony.DatasetEpoch();
+                table.canInsert = true;
+                table.insert(...
                 vertcat(key(:).epochs));  
                 sln_symphony.SpikeTrain().insert(spikes);              
             catch ME
