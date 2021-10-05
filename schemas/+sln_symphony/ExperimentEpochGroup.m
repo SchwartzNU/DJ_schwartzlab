@@ -7,7 +7,7 @@ epoch_group_start_time: datetime
 epoch_group_end_time: datetime
 epoch_group_label : varchar(32) #e.g., control, drug...
 %}
-classdef ExperimentEpochGroup < dj.Part
+classdef ExperimentEpochGroup < sln_symphony.ExperimentPart
     properties(SetAccess=protected)
         master = sln_symphony.Experiment;
     end

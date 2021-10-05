@@ -1,6 +1,6 @@
 %{ NOT a datajoint table
 %}
-classdef ExperimentProtocol < dj.Part
+classdef ExperimentProtocol < sln_symphony.ExperimentPart
   properties(SetAccess=protected)
     master = sln_symphony.Experiment;
   end
@@ -23,6 +23,10 @@ classdef ExperimentProtocol < dj.Part
           key = block_key;
         end
       end
+      if isempty(key)
+          return
+      end
+      
       fields = fieldnames(key);
       key = struct2cell(key);
       to_drop = ismember(fields, self.dropped_attributes);
@@ -48,10 +52,10 @@ classdef ExperimentProtocol < dj.Part
       end
 
       key = cell2struct(key, fields, 1);
-      insert@dj.Part(self, key);
+      insert@sln_symphony.ExperimentPart(self, key);
     end
     
-    function [success,extra,missing] = canInsert(self, block_key, epoch_key)
+    function [success,extra,missing] = allows(self, block_key, epoch_key)
       is_epoch = contains(class(self), 'Epoch');
       
       key = self.add_attributes(block_key, epoch_key);
@@ -61,6 +65,12 @@ classdef ExperimentProtocol < dj.Part
         else
           key = block_key;
         end
+      end
+      if isempty(key)
+            success = true;
+            extra = [];
+            missing = [];
+            return
       end
       fields = fieldnames(key);
       fields = setdiff(fields, self.dropped_attributes);

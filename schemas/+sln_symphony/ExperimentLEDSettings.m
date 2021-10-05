@@ -5,7 +5,7 @@
 ---
 value : tinyint unsigned
 %}
-classdef ExperimentLEDSettings < dj.Part
+classdef ExperimentLEDSettings < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
   master = sln_symphony.Experiment;
 end

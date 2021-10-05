@@ -1,21 +1,18 @@
 %{
-#Block parameters for ContrastResponse (1) 
+#Block parameters for LightStep (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-contrast_direction : enum('negative','positive','both')
-max_contrast : float
+alternate_patterns : enum('F','T') #bool
+intensity : float
 mean_level : float
-min_contrast : float
-number_of_contrast_steps : smallint unsigned
-number_of_cycles : smallint unsigned
+number_of_epochs : smallint unsigned
 pre_time : float
-real_number_of_contrast_steps : smallint unsigned
 rstar_mean : float
-spot_diameter : float
+spot_size : float
 stim_time : float
 tail_time : float
 %}
-classdef ExperimentProtocolContrastResponseV1BlockParameters < sln_symphony.ExperimentProtocol
+classdef ExperimentProtocolLightStepV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
