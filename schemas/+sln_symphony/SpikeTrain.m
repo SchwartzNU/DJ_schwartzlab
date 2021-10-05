@@ -1,7 +1,7 @@
 %{
 # User-labelled spike trains 
 ->sln_symphony.ExperimentEpochChannel
-->sln_symphony.Electrode
+->sln_symphony.ExperimentElectrode
 ---
 spike_indices = NULL: blob
 spike_count : int unsigned
