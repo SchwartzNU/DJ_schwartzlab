@@ -1,5 +1,5 @@
 %{
-# A symphony epoch
+# A symphony recording epoch
 -> sln_symphony.ExperimentEpochBlock
 epoch_id : smallint unsigned
 ---

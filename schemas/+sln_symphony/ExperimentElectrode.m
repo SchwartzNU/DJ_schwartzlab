@@ -1,5 +1,5 @@
 %{
-# A symphony electrode channel
+# A symphony electrode channel for a block of epochs
 -> sln_symphony.ExperimentChannel
 ---
 (cell_id) -> sln_symphony.ExperimentCell(source_id)

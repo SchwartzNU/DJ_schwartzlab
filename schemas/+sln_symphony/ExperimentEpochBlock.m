@@ -1,5 +1,5 @@
 %{
-# A block of epochs in a symphony file
+# A block of recording epochs in a symphony file
 -> sln_symphony.ExperimentEpochGroup
 epoch_block_id: tinyint unsigned
 ---

@@ -1,5 +1,5 @@
 %{
-#Epoch block
+#An epoch block note
 -> sln_symphony.ExperimentEpochBlock
 entry_time: datetime
 ---

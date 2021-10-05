@@ -1,5 +1,5 @@
 %{
-#Epoch Group notes
+#An epoch group note
 -> sln_symphony.ExperimentEpochGroup
 entry_time: datetime
 ---

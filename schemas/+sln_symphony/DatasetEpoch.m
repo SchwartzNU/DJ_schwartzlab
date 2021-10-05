@@ -1,5 +1,5 @@
 %{
-# A recording of a cell in a user-defined dataset
+# A recording epoch in a user-defined dataset
 -> sln_symphony.Dataset
 -> sln_symphony.ExperimentEpoch
 %}

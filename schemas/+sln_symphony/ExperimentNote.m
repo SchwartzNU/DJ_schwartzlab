@@ -1,5 +1,5 @@
 %{
-#Experiment notes
+#An experiment note
 -> sln_symphony.Experiment
 entry_time: datetime
 ---

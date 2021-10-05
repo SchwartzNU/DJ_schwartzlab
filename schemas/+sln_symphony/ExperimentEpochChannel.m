@@ -1,5 +1,5 @@
 %{
-# A symphony recording channel for a single epoch
+# A symphony recording channel for a single epoch, and the attachment point for raw data
 -> sln_symphony.ExperimentEpoch
 -> sln_symphony.ExperimentChannel
 ---

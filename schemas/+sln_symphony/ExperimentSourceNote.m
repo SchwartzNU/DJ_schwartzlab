@@ -1,6 +1,6 @@
 %{
 #Source notes
--> sln_symphony.ExperimentRetina
+-> sln_symphony.ExperimentSource
 entry_time: datetime
 ---
 text : blob@raw
