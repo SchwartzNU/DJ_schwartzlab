@@ -8,11 +8,14 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <numeric>
 
 //H5::H5std_string <- for future reference
 
 using namespace matlab::data;
 using matlab::mex::ArgumentList;
+// using matrix::detail::noninlined::mx_array_api::mxDeserialize; // seems this has been dropped
+
 
 //stackoverflow ->
 constexpr unsigned int str2int(const char* str, int h = 0) {
@@ -34,6 +37,11 @@ struct pair_hash {
     }
 };
 //end stackoverflow <-
+typedef struct symphony_resource {
+    std::string name;
+    // buffer_ptr_t<char unsigned> ptr;
+    hsize_t size;
+} symphony_resource;
 
 struct channel {
     size_t channel_ind;
@@ -56,7 +64,7 @@ class Parser {
         std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr;
         std::unordered_set<haddr_t> addrs;
         StructArray key = factory.createStructArray({1,1},
-        {"experiment","epoch_groups","epoch_blocks","epochs",
+        {"experiment","calibration","epoch_groups","epoch_blocks","epochs",
         "channels","electrodes","epoch_channels",
         "sources","retinas","cells","cell_pairs",
         "experiment_notes","source_notes",
@@ -64,7 +72,9 @@ class Parser {
         );
         // CharArray fname;
         std::string fname;
+        std::string lastDevice;
 
+        std::unordered_map<std::string, std::pair<symphony_resource,buffer_ptr_t<char unsigned>>> resources;
         std::unordered_map<std::string, size_t> sources;
         std::unordered_map<std::string, size_t> groups;
         std::unordered_map<std::string, size_t> blocks;
@@ -98,7 +108,7 @@ class Parser {
                 {"experiment_start_time", "experiment_end_time",
                 "file_name","rig_name",
                 "symphony_major_version","symphony_minor_version",
-                "symphony_patch_version","symphony_revision_version","microns_per_pixel","angle_offset"});
+                "symphony_patch_version","symphony_revision_version"});
 
             std::string version;
             auto attr = file.openAttribute("symphonyVersion");
@@ -125,11 +135,16 @@ class Parser {
             fname = fpath.substr(start, end - start);
             s[0]["file_name"] = factory.createCharArray(fname);
             s[0]["rig_name"] = factory.createCharArray(fpath.substr(end-1, 1));
+
+            //TODO: get the branch and commit from newer files
             
             key[0]["experiment"] = std::move(s);    
             recurse(file);
             file.close();
             
+            sortEpochs();
+            mapResources();
+
             output[0] = std::move(key);
         }
 
@@ -140,7 +155,6 @@ class Parser {
                 auto name = parent.getObjnameByIdx(i);
                 
                 if (parent.childObjType(name) == H5O_TYPE_DATASET) {
-                    // std::cout << "Dataset: " << name << std::endl;
                 } else if (parent.childObjType(name) == H5O_TYPE_GROUP) {
                     auto group = parent.openGroup(name);
                     H5O_info1_t info;
@@ -148,12 +162,10 @@ class Parser {
                     if (!addrs.count(info.addr)) {
                         addrs.insert(info.addr);
                         bool do_recurse = true;
-                        // bool recurse_children=false;
                         auto group_type = name.substr(0,name.find("-")); //note the uuid...
-                        // std::cout << group_type << std::endl;
                         switch (str2int(group_type.c_str())) {
-                            // case str2int("protocolParameters"):
-                            //     break;
+                            //TODO: backgrounds, when we get those sorted for the projector...
+                            //TODO: device resources, configuration settings...
                             case str2int("responses"):
                                 parseResponses(group);
                                 break;
@@ -179,23 +191,21 @@ class Parser {
                                 parseExperiment(group);
                                 break;
                             default:
-                                // if (group_type.find(".protocols.") == group_type.npos) {
-                                //     do_recurse = false;
-                                // } else {
-                                //     parseEpochBlock(group);
-                                // }
-                                // break;
                                 switch(str2int(parent_type)) {
-                                    case str2int("epochBlocks"):
-                                        parseEpochBlock(group);
-                                        break;
                                     case str2int("responses"):
                                         parseResponse(group);
                                         break;
+                                    case str2int("epochBlocks"):
+                                        parseEpochBlock(group);
+                                        break;
+                                    case str2int("resources"):
+                                        parseResource(group);
+                                        break;
+                                    case str2int("devices"):
+                                        lastDevice = parseStrAttr(group, "name").toAscii();
+                                        break;
                                     default:
                                         break;
-                                        // group.close();
-                                        // continue;
                                 }
                                 break;
                         }
@@ -240,6 +250,51 @@ class Parser {
             space.close();
             notes.close();
         }
+    }
+
+    void parseResource(H5::Group resource) {
+        std::string resource_uuid = parseStrAttr(resource, "uuid").toAscii();
+        std::string name = parseStrAttr(resource, "name").toAscii();
+        if ((name == "descriptionType") | (name=="propertyDescriptors")) return;
+        if (name == "configurationSettingDescriptors") name = lastDevice;
+        if (resources.count(resource_uuid)) return;
+        auto ds = resource.openDataSet("data");
+        auto space = ds.getSpace();
+        hsize_t n_samples;
+        space.getSimpleExtentDims( &n_samples, NULL);
+        
+        buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
+        ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
+        
+        // symphony_resource data = {parseStrAttr(resource, "name").toAscii(), n_samples};
+        symphony_resource data;
+        data.name = name;
+        // data.ptr = std::move(buffer);
+        data.size = n_samples;
+        resources.insert({
+            resource_uuid,
+            std::pair<symphony_resource,buffer_ptr_t<char unsigned>>({
+                data,
+                std::move(buffer)
+                })
+            });
+
+    }
+
+    void mapResources() {
+        auto n_elements = resources.size();
+        CellArray cKeys = factory.createCellArray({n_elements, 1});
+        CellArray cVals = factory.createCellArray({n_elements, 1});
+        size_t i = 0;
+        for (auto iter = resources.begin(); iter != resources.end(); iter++) {
+            // c[i][0] = factory.createCharArray(iter->first); //uuid
+            cKeys[i] = factory.createCharArray(iter->second.first.name); //name
+            auto temp = factory.createArrayFromBuffer({iter->second.first.size},std::move(iter->second.second)); //buffer data
+            cVals[i] = matlabPtr->feval(u"getArrayFromByteStream", {temp});
+            i++;
+        }
+
+        key[0]["calibration"] = std::move(matlabPtr->feval(u"containers.Map", {cKeys, cVals}));
     }
 
     void parseEpochGroups(H5::Group epochGroups) {
@@ -448,20 +503,20 @@ class Parser {
         s[ind]["parameters"] = parseParams(params);
         
         StructArray experiment = std::move(key[0]["experiment"]);
-        if (params.attrExists("micronsPerPixel")) {
-            TypedArray<double> mpp = parseNumericAttr(params, "micronsPerPixel");
-            TypedArray<double> mpp_e = experiment[0]["microns_per_pixel"];
-            if (mpp_e.isEmpty()) {
-                experiment[0]["microns_per_pixel"] = mpp;
-            } else if (mpp_e[0] != mpp[0]) throwError("File has differing microns per pixel values!");
-        }
-        if (params.attrExists("angleOffsetFromRig")) {
-            TypedArray<double> ao = parseNumericAttr(params, "angleOffsetFromRig");
-            TypedArray<double> ao_e = experiment[0]["angle_offset"];
-            if (ao_e.isEmpty()) {
-                experiment[0]["angle_offset"] = ao;
-            } else if (ao_e[0] != ao[0]) throwError("File has differing angle offset values!");
-        }
+        // if (params.attrExists("micronsPerPixel")) {
+        //     TypedArray<double> mpp = parseNumericAttr(params, "micronsPerPixel");
+        //     TypedArray<double> mpp_e = experiment[0]["microns_per_pixel"];
+        //     if (mpp_e.isEmpty()) {
+        //         experiment[0]["microns_per_pixel"] = mpp;
+        //     } else if (mpp_e[0] != mpp[0]) throwError("File has differing microns per pixel values!");
+        // }
+        // if (params.attrExists("angleOffsetFromRig")) {
+        //     TypedArray<double> ao = parseNumericAttr(params, "angleOffsetFromRig");
+        //     TypedArray<double> ao_e = experiment[0]["angle_offset"];
+        //     if (ao_e.isEmpty()) {
+        //         experiment[0]["angle_offset"] = ao;
+        //     } else if (ao_e[0] != ao[0]) throwError("File has differing angle offset values!");
+        // }
         key[0]["experiment"] = std::move(experiment);
 
         params.close();
@@ -951,6 +1006,75 @@ class Parser {
 
         duration = factory.createScalar(ticks2 - ticks1);
 
+    }
+
+    void sortEpochs() {
+        //get the sort order for the epochs
+        auto epoch_i = getOrder<long long>("epochs", "epoch_start_time");
+        reorder("epochs", "epoch_id", epoch_i);
+        reorder("epoch_channels", "epoch_id", epoch_i);
+        reorder("epoch_notes", "epoch_id", epoch_i);
+
+        //then do the same for epoch blocks and epoch groups
+        auto eb_i = getOrder<char16_t>("epoch_blocks", "epoch_block_start_time");
+        reorder("epochs","epoch_block_id", eb_i);
+        reorder("epoch_blocks","epoch_block_id", eb_i);
+        reorder("channels","epoch_block_id", eb_i);
+        reorder("electrodes","epoch_block_id", eb_i);
+        reorder("epoch_channels","epoch_block_id", eb_i);
+        reorder("epoch_notes","epoch_block_id", eb_i);
+        reorder("epoch_block_notes","epoch_block_id", eb_i);
+
+
+        auto eg_i = getOrder<char16_t>("epoch_groups", "epoch_group_start_time");
+        reorder("epochs","epoch_group_id", eg_i);
+        reorder("epoch_blocks","epoch_group_id", eg_i);
+        reorder("epoch_groups","epoch_group_id", eg_i);
+        reorder("channels","epoch_group_id", eg_i);
+        reorder("electrodes","epoch_group_id", eg_i);
+        reorder("epoch_channels","epoch_group_id", eg_i);
+        reorder("epoch_notes","epoch_group_id", eg_i);
+        reorder("epoch_block_notes","epoch_group_id", eg_i);
+        reorder("epoch_group_notes","epoch_group_id", eg_i);
+
+    }
+
+    template<typename T>
+    std::vector<size_t> getOrder(std::string structname, std::string field) {
+        //https://stackoverflow.com/questions/17074324
+
+        //gets the sort order of the structure by a specified field
+        StructArray s = std::move(key[0][structname]);
+        std::vector<size_t> i(s.getNumberOfElements());
+        std::iota(i.begin(),i.end(), 0);
+        std::sort(i.begin(), i.end(), [&](std::size_t j, std::size_t k) {
+            TypedArray<T> d1 = s[j][field];
+            TypedArray<T> d2 = s[k][field];
+            for (auto i=0; i < d1.getNumberOfElements(); i++) {
+                if (d1[i] < d2[i]) return true;
+                else if (d1[i] > d2[i]) return false;
+            }
+            return false;
+        });
+        key[0][structname] = std::move(s);
+        
+        std::vector<size_t> ii(i.size());
+        for (auto j=0; j<ii.size(); j++) {
+            ii[i[j]] = j;
+        }
+        return ii;
+        
+    }
+
+    void reorder(std::string structname, std::string field, std::vector<size_t> ind) {
+        // std::cout << "Changing " << structname << "[" << field << "]" << std::endl; 
+        if (key[0][structname].isEmpty()) return;
+        StructArray s = std::move(key[0][structname]);
+        for (auto i=0; i < s.getNumberOfElements(); i++) {
+            TypedArray<size_t> old_ind = s[i][field];
+            s[i][field] = factory.createScalar(ind[old_ind[0] - 1] + 1);
+        }
+        key[0][structname] = std::move(s);
     }
 
     void throwError(std::string message) {

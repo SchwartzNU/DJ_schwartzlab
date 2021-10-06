@@ -4,7 +4,7 @@
 ---
 angle_offset : float
 bar_length : float
-bar_speed : float
+bar_speed : float # (um/s)
 bar_width : float
 distance : float
 intensity : float

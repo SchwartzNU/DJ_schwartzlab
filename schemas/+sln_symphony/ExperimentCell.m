@@ -9,7 +9,7 @@ x = NULL: smallint #microns from optic nerve, x direction
 y = NULL: smallint
 
 %}
-classdef ExperimentCell < dj.Part
+classdef ExperimentCell < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
   master = sln_symphony.Experiment;
 end

@@ -1,5 +1,5 @@
 %{
-# A block of epochs in a symphony file
+# A block of recording epochs in a symphony file
 -> sln_symphony.ExperimentEpochGroup
 epoch_block_id: tinyint unsigned
 ---
@@ -8,7 +8,7 @@ epoch_block_start_time: datetime
 epoch_block_end_time: datetime
 
 %}
-classdef ExperimentEpochBlock < dj.Part
+classdef ExperimentEpochBlock < sln_symphony.ExperimentPart
     properties(SetAccess=protected)
         master = sln_symphony.Experiment;
     end

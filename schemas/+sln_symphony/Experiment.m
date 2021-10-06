@@ -3,14 +3,13 @@
 file_name: varchar(64)
 ---
 -> sl.Rig
+-> sln_symphony.Calibration
 experiment_start_time: datetime
 experiment_end_time: datetime
 symphony_major_version: tinyint unsigned
 symphony_minor_version: tinyint unsigned
 symphony_patch_version: tinyint unsigned
 symphony_revision_version: tinyint unsigned
-microns_per_pixel = NULL : float
-angle_offset = NULL : float
 %}
 classdef Experiment < dj.Manual    
     methods
@@ -21,19 +20,27 @@ classdef Experiment < dj.Manual
                 %the issue is that we may need to create new tables
                 %but creating new tables breaks transactions (a dj bug?)
             end
+            if isempty(which('symphonyui.core.PropertyDescriptor'))
+                error('Cannot access Symphony property descriptors. Is Symphony on the path?');
+            end
             success = false;
             %make sure all the tables are already in the db, otherwise transaction will break
             all_parts = dir(fileparts(which(class(self))));
-            all_parts = {all_parts(startsWith({all_parts(:).name},'Experiment')).name};
+            all_parts = {all_parts(...
+                startsWith({all_parts(:).name},'Experiment') | ...
+                startsWith({all_parts(:).name},'Calibration')...
+                ).name};
             all_parts = cellfun(@(x) strsplit(x,'.'), all_parts, 'uni', 0);
             all_parts = vertcat(all_parts{:});
             all_parts = all_parts(:,1);
-            all_parts = setdiff(all_parts, {'ExperimentProtocol','ExperimentProtocols'});
+            all_parts = setdiff(all_parts, {'ExperimentProtocol','ExperimentProtocols','ExperimentPart'});
 
             all_loaded = self.schema.classNames;
             all_loaded = cellfun(@(x) strsplit(x,'.'), all_loaded, 'uni', 0);
             all_loaded = vertcat(all_loaded{:});
-            all_loaded = all_loaded(:,2);
+            if ~isempty(all_loaded)
+                all_loaded = all_loaded(:,2);
+            end
             
             %getting the plain table name forces insertion into the
             %database
@@ -46,8 +53,27 @@ classdef Experiment < dj.Manual
                 error('Key must be the name of a file or a struct derived from a Symphony file.');
             end
             
+            %TODO: do this elsewhere?
+            t = cellfun(@(x) changeCase(x,'snake'),{key.epoch_blocks(:).protocol_name},'uni',0);
+            [key.epoch_blocks(:).protocol_name] = t{:};
+            
+            
             self.schema.conn.startTransaction;
             try
+                channels = unique({key.channels(:).channel_name});
+                existing_channels = fetch(sln_symphony.Channel & struct('channel_name',channels));
+                missing_channels = setdiff(channels, {existing_channels(:).channel_name});
+                if ~isempty(missing_channels)
+                    missing_text = sprintf('\n\t> %s',missing_channels{:});
+                    names_text = sprintf('''%s'',',missing_channels{:});
+                    missing_text = sprintf(...
+                        '%s\nTo insert all, use:\n\tsln_symphony.Channel().insert({%s}'');',...
+                        missing_text,names_text(1:end-1));
+                    error(['Channels were missing from the database. '...
+                        'You must manually insert these in '...
+                        'the Channel table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
+                end
+                key.experiment.calibration_id = insertIfNotEmpty(sln_symphony.Calibration(), key.calibration);
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
@@ -55,12 +81,12 @@ classdef Experiment < dj.Manual
                 insertIfNotEmpty(sln_symphony.ExperimentCellPair(),key.cell_pairs);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochGroup(),key.epoch_groups);
                 
-                %these have to occur together?
                 insertIfNotEmpty(sln_symphony.ExperimentProtocols(),key.epoch_blocks, key.epochs);
-%                 sln_symphony.ExperimentEpochBlock().insert(key.epoch_blocks);
-%                 sln_symphony.ExperimentEpoch().insert(key.epochs);
                 
                 insertIfNotEmpty(sln_symphony.ExperimentChannel(),key.channels);
+                
+                c = onCleanup(@() warning('on','MATLAB:MKDIR:DirectoryExists'));                
+                warning('off','MATLAB:MKDIR:DirectoryExists');
                 insertIfNotEmpty(sln_symphony.ExperimentEpochChannel(),key.epoch_channels);
                 insertIfNotEmpty(sln_symphony.ExperimentElectrode(),key.electrodes);
                 
@@ -73,8 +99,8 @@ classdef Experiment < dj.Manual
             catch ME
                 self.schema.conn.cancelTransaction;
 
+                warning(getReport(ME, 'extended', 'hyperlinks', 'on'));
                 warning('Table creation failed. Key is available as output.');
-                disp(getReport(ME, 'extended', 'hyperlinks', 'on'));
                 return;
             end
             self.schema.conn.commitTransaction;
@@ -84,8 +110,13 @@ classdef Experiment < dj.Manual
 end
 
 
-function insertIfNotEmpty(table, varargin)
+function ret = insertIfNotEmpty(table, varargin)
     if ~isempty(varargin{1})
-        table.insert(varargin{:});
+        table.canInsert = true;
+        fprintf('Populating %s...', class(table));
+        
+        tic;
+        ret = table.insert(varargin{:});
+        fprintf(' done (took %.02f seconds).\n',toc);
     end
 end

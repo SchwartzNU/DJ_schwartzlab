@@ -8,7 +8,7 @@ frame_rate : tinyint unsigned
 offset_x : decimal(4,0)
 offset_y : decimal(4,0)
 %}
-classdef ExperimentProjectorSettings < dj.Part
+classdef ExperimentProjectorSettings < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
   master = sln_symphony.Experiment;
 end

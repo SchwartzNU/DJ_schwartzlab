@@ -6,11 +6,12 @@ classdef ExperimentProtocols < handle
 
     properties
         key
-        bool_types = {'logScaling', 'randomOrdering'};
+        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns'};
+        canInsert = false;
     end
     
-    methods
-        function insert(self,epoch_blocks,epochs)
+    methods (Access = ?sln_symphony.Experiment)
+        function ret = insert(self,epoch_blocks,epochs)
             %setup 
             self.key = struct('epoch_blocks',epoch_blocks,'epochs',epochs);
             self.parseProjectorSettings();
@@ -29,13 +30,36 @@ classdef ExperimentProtocols < handle
                 schema.conn.startTransaction;
             end
             try
-                sln_symphony.ExperimentEpochBlock().insert(self.key.epoch_blocks);
-                sln_symphony.ExperimentProjectorSettings().insert(self.key.projector);
-                sln_symphony.ExperimentLEDSettings().insert(self.key.LEDs);
-                sln_symphony.ExperimentEpoch().insert(self.key.epochs);
-
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
+                existing_protocols = fetch(sln_symphony.Protocol & struct('protocol_name',protocols));
+                missing_protocols = setdiff(protocols, {existing_protocols(:).protocol_name});
+                if ~isempty(missing_protocols)
+                    missing_text = sprintf('\n\t> %s',missing_protocols{:});
+                    names_text = sprintf('''%s'',',missing_protocols{:});
+                    missing_text = sprintf(...
+                        '%s\nTo insert all, use:\n\tsln_symphony.Protocol().insert({%s}'');',...
+                        missing_text,names_text(1:end-1));
+                    error(['Protocols were missing from the database. '...
+                        'You must manually insert these in '...
+                        'the Protocol table or rename them in the key:%s'], missing_text); %#ok<SPERR>
+                end
+                
+                table = sln_symphony.ExperimentEpochBlock();
+                table.canInsert = true;
+                table.insert(self.key.epoch_blocks);
 
+                table = sln_symphony.ExperimentProjectorSettings();
+                table.canInsert = true;
+                table.insert(self.key.projector);
+
+                table = sln_symphony.ExperimentLEDSettings();
+                table.canInsert = true;
+                table.insert(self.key.LEDs);
+                
+                table = sln_symphony.ExperimentEpoch();
+                table.canInsert = true;
+                table.insert(self.key.epochs);                
+                
                 success = true;
                 for i=1:numel(protocols)
                   b = self.key.block_params(ind==i);
@@ -43,7 +67,7 @@ classdef ExperimentProtocols < handle
 
                   e = self.key.epoch_params(arrayfun(@(x) ismember(x.epoch_block_id, bi), self.key.epochs));
 
-                  success = self.insertProtocol(protocols{i}, vertcat(b{:}), vertcat(e{:})) && success;
+                  success = self.insertProtocol(changeCase(protocols{i},'upperCamel'), vertcat(b{:}), vertcat(e{:})) && success;
                 end
                 if ~success
                   error('One or more protocols were not compatible with any existing tables in the database. Please confirm the new table definition and try again.');
@@ -58,11 +82,11 @@ classdef ExperimentProtocols < handle
             if ~transacted
                 schema.conn.commitTransaction;
             end
-            
+            ret = true;
         end
 
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
-          %1: get existing tables under the protocol name
+          %get existing tables under the protocol name
           tables = sln_symphony.getSchema().classNames;
           matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
               & endsWith(tables, 'BlockParameters');
@@ -72,8 +96,11 @@ classdef ExperimentProtocols < handle
 
               b = feval(char(match));% <- gets an object of the class
               e = feval([match{1}(1:end-15), 'EpochParameters']);
-              if b.canInsert(block_params, epoch_params) && e.canInsert(block_params, epoch_params)
+              if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
+                b.canInsert = true;
                 b.insert(block_params, epoch_params);
+
+                e.canInsert = true;
                 e.insert(block_params, epoch_params);
                 success = true;
                 return
