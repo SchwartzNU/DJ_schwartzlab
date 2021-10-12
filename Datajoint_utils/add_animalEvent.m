@@ -69,14 +69,21 @@ try
         end
             
         %then do cage assignment for both animals
-        key_male_move = struct;
-        key_male_move.animal_id = key.male_id;
-        key_male_move.cage_number = key.new_cage_male;
-        key_male_move.room_number = key.new_room_male;
-        key_male_move.cause = 'separated breeder';
-        key_male_move.date = key.date;
-        key_male_move.user_name = key.user_name;        
-        insert(sl.AnimalEventAssignCage, key_male_move);
+
+        %special case if male is absent don't move
+        if key.male_id == 0
+            %do nothing
+            disp('absent male breeder not moved');
+        else  %else do move
+            key_male_move = struct;
+            key_male_move.animal_id = key.male_id;
+            key_male_move.cage_number = key.new_cage_male;
+            key_male_move.room_number = key.new_room_male;
+            key_male_move.cause = 'separated breeder';
+            key_male_move.date = key.date;
+            key_male_move.user_name = key.user_name;
+            insert(sl.AnimalEventAssignCage, key_male_move);
+        end
         
         if strcmp(key.cage_number, key.new_cage_female)
             %do nothing
