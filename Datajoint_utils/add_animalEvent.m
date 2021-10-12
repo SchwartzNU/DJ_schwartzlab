@@ -53,14 +53,21 @@ try
         insert(sl.AnimalEventActivateBreedingCage, key_activate);
     end
     
-    if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals
-        %deactivate breeding cage
-        key_deactivate = struct;
-        key_deactivate.cage_number = key.cage_number;
-        key_deactivate.date = key.date;
-        key_deactivate.user_name = key.user_name;
-        insert(sl.AnimalEventDeactivateBreedingCage, key_deactivate);
-        
+    if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals\
+        %special case if female has the same cage as the current cage
+        %don't deactivate
+        if strcmp(key.cage_number, key.new_cage_female)
+            %do nothing
+            disp('breeding cage not deactivated');
+        else
+            %deactivate breeding cage
+            key_deactivate = struct;
+            key_deactivate.cage_number = key.cage_number;
+            key_deactivate.date = key.date;
+            key_deactivate.user_name = key.user_name;
+            insert(sl.AnimalEventDeactivateBreedingCage, key_deactivate);
+        end
+            
         %then do cage assignment for both animals
         key_male_move = struct;
         key_male_move.animal_id = key.male_id;
@@ -71,11 +78,16 @@ try
         key_male_move.user_name = key.user_name;        
         insert(sl.AnimalEventAssignCage, key_male_move);
         
-        key_female_move = key_male_move;
-        key_female_move.animal_id = key.female_id;
-        key_female_move.cage_number = key.new_cage_female;
-        key_female_move.room_number = key.new_room_female;
-        insert(sl.AnimalEventAssignCage, key_female_move);
+        if strcmp(key.cage_number, key.new_cage_female)
+            %do nothing
+            disp('female not moved');
+        else
+            key_female_move = key_male_move;
+            key_female_move.animal_id = key.female_id;
+            key_female_move.cage_number = key.new_cage_female;
+            key_female_move.room_number = key.new_room_female;
+            insert(sl.AnimalEventAssignCage, key_female_move);
+        end
         
 %         %then retire each as breeders
 %         key_retire_male = struct;
