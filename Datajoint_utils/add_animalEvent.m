@@ -89,8 +89,11 @@ try
             %do nothing
             disp('female not moved');
         else
-            key_female_move = key_male_move;
+            key_female_move = struct;
+            key_female_move.date = key.date;
+            key_female_move.user_name = key.user_name;
             key_female_move.animal_id = key.female_id;
+            key_female_move.cause = 'separated breeder';
             key_female_move.cage_number = key.new_cage_female;
             key_female_move.room_number = key.new_room_female;
             insert(sl.AnimalEventAssignCage, key_female_move);
