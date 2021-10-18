@@ -14,7 +14,9 @@ classdef SpikeTrain < dj.Manual
       key = arrayfun(@convertToUint, key);
       insert@dj.Manual(self, key);
     end
+    end
 
+end
     function key = convertToUint(key)
       last = max(key.spike_indices);
       if last < intmax('uint8')
@@ -24,9 +26,6 @@ classdef SpikeTrain < dj.Manual
       else %we will never ever exceed uint32
         key.spike_indices = uint32(key.spike_indices);
       end
-    end
-  end
-
 end
 
 %TODO: in the future, maybe we can automatically compute these?
