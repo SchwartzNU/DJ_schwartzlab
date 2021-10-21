@@ -53,29 +53,74 @@ try
         insert(sl.AnimalEventActivateBreedingCage, key_activate);
     end
     
-    if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals
-        %deactivate breeding cage
-        key_deactivate = struct;
-        key_deactivate.cage_number = key.cage_number;
-        key_deactivate.date = key.date;
-        key_deactivate.user_name = key.user_name;
-        insert(sl.AnimalEventDeactivateBreedingCage, key_deactivate);
-        
+    if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals\
+        %special case if female has the same cage as the current cage
+        %don't deactivate
+        if strcmp(key.cage_number, key.new_cage_female)
+            %do nothing
+            disp('breeding cage not deactivated');
+        else
+            %deactivate breeding cage
+            key_deactivate = struct;
+            key_deactivate.cage_number = key.cage_number;
+            key_deactivate.date = key.date;
+            key_deactivate.user_name = key.user_name;
+            insert(sl.AnimalEventDeactivateBreedingCage, key_deactivate);
+        end
+            
         %then do cage assignment for both animals
-        key_male_move = struct;
-        key_male_move.animal_id = key.male_id;
-        key_male_move.cage_number = key.new_cage_male;
-        key_male_move.room_number = key.new_room_male;
-        key_male_move.cause = 'separated breeder';
-        key_male_move.date = key.date;
-        key_male_move.user_name = key.user_name;        
-        insert(sl.AnimalEventAssignCage, key_male_move);
+
+        %special case if male is absent don't move
+        if key.male_id == 0
+            %do nothing
+            disp('absent male breeder not moved');
+        else  %else do move
+            key_male_move = struct;
+            key_male_move.animal_id = key.male_id;
+            key_male_move.cage_number = key.new_cage_male;
+            key_male_move.room_number = key.new_room_male;
+            key_male_move.cause = 'separated breeder';
+            key_male_move.date = key.date;
+            key_male_move.user_name = key.user_name;
+            insert(sl.AnimalEventAssignCage, key_male_move);
+        end
         
-        key_female_move = key_male_move;
-        key_female_move.animal_id = key.female_id;
-        key_female_move.cage_number = key.new_cage_female;
-        key_female_move.room_number = key.new_room_female;
-        insert(sl.AnimalEventAssignCage, key_female_move);
+        if strcmp(key.cage_number, key.new_cage_female)
+            %do nothing
+            disp('female not moved');
+        else
+            key_female_move = struct;
+            key_female_move.date = key.date;
+            key_female_move.user_name = key.user_name;
+            key_female_move.animal_id = key.female_id;
+            key_female_move.cause = 'separated breeder';
+            key_female_move.cage_number = key.new_cage_female;
+            key_female_move.room_number = key.new_room_female;
+            insert(sl.AnimalEventAssignCage, key_female_move);
+        end
+        
+        if strcmp(key.cage_number, key.new_cage_female)
+            %do nothing
+            disp('female not retired');
+        else %retire female
+            key_retire_female = struct;
+            key_retire_female.animal_id = key.female_id;
+            key_retire_female.date = key.date;
+            key_retire_female.user_name = key.user_name;
+            insert(sl.AnimalEventRetireAsBreeder, key_retire_female);
+        end
+        
+        if key.male_id == 0
+            %do nothing
+            disp('absent male not retired');
+        else  %else retire male
+            key_retire_male = struct;
+            key_retire_male.animal_id = key.male_id;
+            key_retire_male.date = key.date;
+            key_retire_male.user_name = key.user_name;
+            insert(sl.AnimalEventRetireAsBreeder, key_retire_male);
+        end
+        
         
 %         %then retire each as breeders
 %         key_retire_male = struct;
@@ -99,10 +144,14 @@ try
                 stimAnimalKeys(i).stimulus_animal_id = nan;
             end
         end
-        key = rmfield(key,{'stimTypes','stimArms','stimIDs'});
+        key = rmfield(key,{'stimTypes','stimArms','stimIDs'});    
     end
-
-    insert(feval(sprintf('sl.AnimalEvent%s',event_type)), key);
+    
+    if strcmp(event_type, 'SeparateBreeders') && key.male_id == 0
+        %special case, no SeparateBreeders event insert for male==0
+    else
+        insert(feval(sprintf('sl.AnimalEvent%s',event_type)), key);
+    end
     
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
         this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));

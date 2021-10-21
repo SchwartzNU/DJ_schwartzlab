@@ -29,11 +29,17 @@ classdef Dataset < dj.Manual
                 c = load(sprintf('%s%s',...
                 getenv('CELL_DATA_FOLDER'),celldata{i})).cellData;
                 fname = c.attributes('fname');
+                n = c.attributes('number');
                 q = sln_symphony.ExperimentCell...
                     & sprintf('file_name="%s"',fname)...
-                    & sprintf('cell_number = %d',c.attributes('number'));
-                assert(count(q) == 1, 'More than one matching cell!!');
-
+                    & sprintf('cell_number = %d',n(1));
+                cnt = count(q);
+                if cnt < 1
+                    error('Cell not found in database!');
+                elseif cnt > 1
+                    error('More than one matching cell!!');
+                end
+                
                 q_id = fetch1(q,'source_id');
                 q_e = fetch(q * sln_symphony.ExperimentEpoch);
 
