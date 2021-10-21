@@ -115,8 +115,7 @@ class Parser {
             auto strtype = attr.getStrType();
             attr.read(strtype, version);
             attr.close();
-            // std::cout << "Symphony version " << version << std::endl;
-
+            
             auto it0 = version.find(".");
             s[0]["symphony_major_version"] = factory.createScalar(std::stoi(version.substr(0, it0)));
             
@@ -141,7 +140,7 @@ class Parser {
             key[0]["experiment"] = std::move(s);    
             recurse(file);
             file.close();
-            
+
             sortEpochs();
             mapResources();
 
@@ -330,7 +329,6 @@ class Parser {
 
         StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["epoch_groups"]), std::move(s)});
         key[0]["epoch_groups"] = std::move(result);
-        
     }
 
     void parseEpochGroup(H5::Group epochGroup) {
@@ -343,13 +341,15 @@ class Parser {
         auto ind = groups[group_uuid];
 
         StructArray s = std::move(key[0]["epoch_groups"]);
-
+        
+        
         s[ind]["epoch_group_id"] = factory.createScalar(ind + 1);
         parseDateTime(epochGroup, s[ind]["epoch_group_start_time"], s[ind]["epoch_group_end_time"]);
         
 
         s[ind]["epoch_group_label"] = parseStrAttr(epochGroup, "label");
-
+        
+       
         auto source = epochGroup.openGroup("source");
         auto s_id = factory.createScalar(parseSource(source));
         s[ind]["source_id"] = s_id;//factory.createScalar(s_id);
@@ -357,12 +357,13 @@ class Parser {
 
         key[0]["epoch_groups"] = std::move(s);
 
-        
         if (epochGroup.exists("notes")) {
+
             auto notes = epochGroup.openDataSet("notes");
             auto space = notes.getSpace();
             hsize_t n_samples;
             space.getSimpleExtentDims(&n_samples, NULL);
+
 
             StructArray s = factory.createStructArray({n_samples},
             {"file_name", "source_id","epoch_group_id",
@@ -370,10 +371,12 @@ class Parser {
             for (auto i=0; i<n_samples; i++) {
                 s[i]["file_name"] = factory.createCharArray(fname);
                 s[i]["source_id"] = s_id;
-                s[ind]["epoch_group_id"] = factory.createScalar(ind + 1);
+                s[i]["epoch_group_id"] = factory.createScalar(ind + 1);
             }
             s = parseNotes(notes, n_samples, std::move(s));
+            
             key[0]["epoch_group_notes"] = matlabPtr->feval(u"vertcat", {std::move(key[0]["epoch_group_notes"]), std::move(s)});
+            
             space.close();
             notes.close();
         }
@@ -445,7 +448,7 @@ class Parser {
                 s[i]["file_name"] = factory.createCharArray(fname);
                 s[i]["source_id"] = s_id;
                 s[i]["epoch_block_id"] = factory.createScalar(ind);
-                s[ind]["epoch_group_id"] = factory.createScalar(group_ind + 1);
+                s[i]["epoch_group_id"] = factory.createScalar(group_ind + 1);
             }
             s = parseNotes(notes, n_samples, std::move(s));
             key[0]["epoch_block_notes"] = matlabPtr->feval(u"vertcat", {std::move(key[0]["epoch_block_notes"]), std::move(s)});
@@ -539,7 +542,7 @@ class Parser {
                 s[i]["source_id"] = s_id;
                 s[i]["epoch_id"] = factory.createScalar(ind + 1);
                 s[i]["epoch_block_id"] = factory.createScalar(block_ind + 1);
-                s[ind]["epoch_group_id"] = g_id;
+                s[i]["epoch_group_id"] = g_id;
             }
             s = parseNotes(notes, n_samples, std::move(s));
             key[0]["epoch_notes"] = matlabPtr->feval(u"vertcat", {std::move(key[0]["epoch_notes"]), std::move(s)});
