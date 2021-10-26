@@ -14,7 +14,7 @@ symphony_revision_version: tinyint unsigned
 classdef Experiment < dj.Manual    
     methods
         
-        function [success,key] = insert(self, key)
+        function [key,success] = insert(self, key)
             if self.schema.conn.inTransaction
                 error('Cannot insert Symphony data while in transaction. Please commit or cancel transaction and try again.');
                 %the issue is that we may need to create new tables
@@ -100,7 +100,7 @@ classdef Experiment < dj.Manual
                 self.schema.conn.cancelTransaction;
 
                 warning(getReport(ME, 'extended', 'hyperlinks', 'on'));
-                warning('Table creation failed. Key is available as output.');
+                warning('Table insertion failed. Key is available as output.');
                 return;
             end
             self.schema.conn.commitTransaction;

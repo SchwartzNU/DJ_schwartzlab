@@ -10,6 +10,9 @@
 - [ ] parse `Symphony1` files
   - main issue is nested epoch groups, with the source as an epoch group
   - will have to make decision about how to handle missing mouse info
+- [ ] hold needs to be an epoch-level parameter
+- [ ] NDF in projector settings should share reference with calibration
+- [ ] what to do about r-star, etc.
 
 ## Misc
 - [ ] automatic loading of `eye` objects
