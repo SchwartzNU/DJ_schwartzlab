@@ -1,5 +1,5 @@
 function imageTable = imagesByRGCType(q)
-allTypes = fetchn(q * sl_mutable.CurrentCellType,'cell_type');
+allTypes = fetchn(q,'cell_type');
 N = length(allTypes);
 
 typesU = unique(allTypes);
