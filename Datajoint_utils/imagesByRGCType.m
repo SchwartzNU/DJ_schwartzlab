@@ -9,7 +9,6 @@ imageTable = table('Size',[Ntypes, 7], ...
     'VariableTypes',{'string', 'uint16', 'uint16', 'uint16', 'uint16', 'cellstr', 'cellstr'}, ...
     'VariableNames', {'RGC_type', 'N_phys', 'N_validated', 'N_confocal', 'N_2P', 'Confocal_images', '2P_images'});
 
-
 q_struct = fetch(q);
 
 for i=1:Ntypes
