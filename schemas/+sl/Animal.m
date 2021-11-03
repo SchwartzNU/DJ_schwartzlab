@@ -140,7 +140,17 @@ classdef Animal < dj.Manual
             end
         end
         
-        
+        function animals = assignedProtocol(animal_ids)
+            %get the protocol number           
+            
+            q = sl.AnimalEventAssignProtocol() * sl.AnimalProtocol();
+            if nargin && ~isempty(animal_ids)
+                q = restrict_by_animal_ids(q, animal_ids);
+            end
+            animals = q.fetch('animal_id','protocol_number', 'LIMIT 1 PER animal_id');
+            
+        end
+                
         function [result, animals] = isGenotyped(animal_ids)
            animals = sl.Animal.genotypeStatus(animal_ids);
            result = ismember(animal_ids, [animals.animal_id]);

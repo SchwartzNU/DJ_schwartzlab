@@ -33,9 +33,11 @@ try
     %disp('Cage assigment successful');
     
     %add protocol assignment event
-    protocol_key.animal_id = id;
-    add_animalEvent(protocol_key, 'AssignProtocol',C);
-    %disp('Protocol assigment successful');
+    if ~isempty(protocol_key)
+        protocol_key.animal_id = id;
+        add_animalEvent(protocol_key, 'AssignProtocol',C);
+        %disp('Protocol assigment successful');
+    end
     
     fprintf('Animal insert successful.\n%s', text);
     C.commitTransaction;
