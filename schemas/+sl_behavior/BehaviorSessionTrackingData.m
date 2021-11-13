@@ -52,8 +52,35 @@ classdef BehaviorSessionTrackingData < dj.Imported
                 camField = 'camera_0';
             end
             
+            camera_serial_number = '17391304';
+            dlc_files = dir([folder_name filesep 'DLC']);
+            dlc_filenames = {dlc_files.name};
+            
+            ind = find(startsWith(dlc_filenames, ['camera_' camera_serial_number]) ...
+                & endsWith(dlc_filenames, '.csv'));
+            
+            csv_fname = dlc_filenames{ind};            
+            header = readlines([folder_name filesep 'DLC' filesep csv_fname]);
+            parts = strsplit(header{3},',');
+            coords = strsplit(header{4},',');
+            Nvars = length(parts)-1;
+            varNames = cell(Nvars,1);
+            for i=2:length(parts)
+                varNames{i-1} = [parts{i} '_' coords{i}];
+            end
+            
+            M = readmatrix([folder_name filesep 'DLC' filesep csv_fname]);
+                        
+            DLC_raw_table = table('Size',[Nframes, Nvars], ...
+                'VariableNames', varNames, ...
+                'VariableTypes', string(repmat('double',24, 1)));
+            
+            DLC_raw_table{:,:} = M(:,2:end);
+            
             key.time_axis = linspace(0,Nframes/frameRate,Nframes);            
-            key.dlc_raw = DLC_tracking;
+            %key.dlc_raw = DLC_tracking;            
+            key.dlc_raw = DLC_raw_table;
+            
             key.head_position_arc = bino_gaze.body_position_arc';
             key.body_speed = bino_gaze.speed';
             key.window_visibility = bino_gaze.window_visibility;
@@ -67,9 +94,13 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.nose_window_dist(:,1) = bino_gaze.nose_window_distance.window_A';
             key.nose_window_dist(:,2) = bino_gaze.nose_window_distance.window_B';
             key.nose_window_dist(:,3) = bino_gaze.nose_window_distance.window_C';
-            snoutX = DLC_tracking.(camField).snout_x;
-            snoutY = DLC_tracking.(camField).snout_y;
-            snout_likelihood = DLC_tracking.(camField).snout_likelihood;            
+            %snoutX = DLC_tracking.(camField).snout_x;
+            %snoutY = DLC_tracking.(camField).snout_y;
+            %snout_likelihood = DLC_tracking.(camField).snout_likelihood;            
+            
+            snoutX = DLC_raw_table.nose_x;
+            snoutY = DLC_raw_table.nose_y;
+            snout_likelihood = DLC_raw_table.nose_likelihood;
             
             snoutX(snout_likelihood < scoreThreshold) = nan;
             nanx = isnan(snoutX);
