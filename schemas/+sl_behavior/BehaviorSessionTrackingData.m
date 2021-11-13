@@ -60,8 +60,14 @@ classdef BehaviorSessionTrackingData < dj.Imported
                 & endsWith(dlc_filenames, '.csv'));
             
             csv_fname = dlc_filenames{ind};            
-            [folder_name filesep 'DLC' filesep csv_fname];
-            header = readlines([folder_name filesep 'DLC' filesep csv_fname]);
+            fname = [folder_name filesep 'DLC' filesep csv_fname];
+            fid = fopen(fname,'r');
+            for i=1:4
+                header{i} = fgetl(fid);
+            end
+            fclose(fid);
+            
+            %header = readlines([folder_name filesep 'DLC' filesep csv_fname]);
             parts = strsplit(header{3},',');
             coords = strsplit(header{4},',');
             Nvars = length(parts)-1;
