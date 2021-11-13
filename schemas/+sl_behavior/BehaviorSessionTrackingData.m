@@ -80,7 +80,7 @@ classdef BehaviorSessionTrackingData < dj.Imported
             
             key.time_axis = linspace(0,Nframes/frameRate,Nframes);            
             %key.dlc_raw = DLC_tracking;            
-            key.dlc_raw = DLC_raw_table;
+            key.dlc_raw = M(:,2:end);
             
             key.head_position_arc = bino_gaze.body_position_arc';
             key.body_speed = bino_gaze.speed';
