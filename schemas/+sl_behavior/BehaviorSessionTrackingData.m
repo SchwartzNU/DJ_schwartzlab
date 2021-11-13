@@ -59,7 +59,8 @@ classdef BehaviorSessionTrackingData < dj.Imported
             ind = find(startsWith(dlc_filenames, ['camera_' camera_serial_number]) ...
                 & endsWith(dlc_filenames, '.csv'));
             
-            csv_fname = dlc_filenames{ind};            
+            csv_fname = dlc_filenames{ind}            
+            [folder_name filesep 'DLC' filesep csv_fname]
             header = readlines([folder_name filesep 'DLC' filesep csv_fname]);
             parts = strsplit(header{3},',');
             coords = strsplit(header{4},',');
@@ -143,11 +144,14 @@ classdef BehaviorSessionTrackingData < dj.Imported
                 key.window_crossings_type = {'missing'};
             end
             
-            if exist('squeaks_time','var')
-                key.squeak_times = squeaks_time.('B&K_audio_squeaks');           
-            else
-                key.squeak_times = 'missing';
-            end        
+            %TEMP HACK: no squeaks for now
+            key.squeak_times = 'missing';
+
+            %if exist('squeaks_time','var')
+            %    key.squeak_times = squeaks_time.('B&K_audio_squeaks');           
+            %else
+            %    key.squeak_times = 'missing';
+            %end        
                 
             self.insert(key, 'REPLACE');
         end
