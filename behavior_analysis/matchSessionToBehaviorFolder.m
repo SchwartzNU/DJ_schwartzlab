@@ -7,6 +7,13 @@ session_date = thisSession.fetchn('date');
 temp = dir([rootFolder filesep num2str(animal_id)]);
 session_folders = {temp.name};
 
+%new naming convention puts session ID first
+ind = find(startsWith(session_folders, sprintf('%d_',session_id)));
+if length(ind)==1
+    folder_name = [rootFolder filesep num2str(animal_id) filesep session_folders{ind}];
+    return;
+end
+
 ind = find(startsWith(session_folders, session_date));
 
 if isempty(ind)
@@ -32,7 +39,7 @@ elseif length(ind)>1
     if strcmp(stim_str, '(A)empty_(B)empty_(C)empty')
         stim_str = 'habituation'; %HACK for inconsistent naming
     end
-    
+        
     for i=1:length(ind)
         curFolder = session_folders{ind(i)};
         if endsWith(curFolder, stim_str)
