@@ -59,8 +59,8 @@ classdef BehaviorSessionTrackingData < dj.Imported
             ind = find(startsWith(dlc_filenames, ['camera_' camera_serial_number]) ...
                 & endsWith(dlc_filenames, '.csv'));
             
-            csv_fname = dlc_filenames{ind}            
-            [folder_name filesep 'DLC' filesep csv_fname]
+            csv_fname = dlc_filenames{ind};            
+            [folder_name filesep 'DLC' filesep csv_fname];
             header = readlines([folder_name filesep 'DLC' filesep csv_fname]);
             parts = strsplit(header{3},',');
             coords = strsplit(header{4},',');
