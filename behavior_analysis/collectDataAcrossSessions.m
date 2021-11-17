@@ -32,7 +32,7 @@ for i=1:L
             stims = fetch(sl.AnimalEventSocialBehaviorSessionStimulus & session_ids(i), '*');
             %need to check sex for these ones
             purpose = fetch1(sl.AnimalEventSocialBehaviorSession & session_ids(i), 'purpose');
-            if strcmp(purpose, 'female_2_males')
+            if strcmp(purpose, 'female_2_males') || strcmp(purpose, 'male_2_females')
                 for j=1:3
                     stims(j).sex = fetch1(sl.Animal & sprintf('animal_id=%d',stims(j).stimulus_animal_id), 'sex');
                 end
@@ -46,7 +46,7 @@ for i=1:L
                 for z=1:3
                     %need to check sex for these ones
                     purpose = fetch1(sl.AnimalEventSocialBehaviorSession & session_ids(i), 'purpose');
-                    if strcmp(purpose, 'female_2_males')
+                    if strcmp(purpose, 'female_2_males') || strcmp(purpose, 'male_2_females')
                         ind = find(strcmp({stims.sex}, stim_order{z}));
                     else
                         ind = find(strcmp({stims.stim_type}, stim_order{z}));
