@@ -39,7 +39,7 @@ classdef SymphonyRecordedCell < dj.Imported
                     channel = str2double(ch(4));
                 end
                 C = dj.conn;
-                if strcmp(C.host, '127.0.0.1:3306') 
+                if strcmp(C.host, '127.0.0.1:3306')    
                     load(['/mnt/fsmresfiles/CellDataMaster/' curName '.mat']);
                 else
                     cellData = loadAndSyncCellData(curName);
