@@ -142,3 +142,6 @@ image : @attachment
 - Any time a parent's alleles are added/deleted, candidates should cascade to descendents
 - We can also cascade candidates from the child to the parents. This ideally would never happen, since we should be genotyping the parents for all the genes we genotype the children for, but this might be a good way to implement that check. Instead of forcing you to genotype the parents first, they would just appear as candidates, reminding you to genotype them.
 - Genotyping the animal for the allele should override the candidate in the GUI, without having to delete the candidacy
+
+## Still tbd:
+ - should births and weans be animal events or associated with breeding cage directly?
