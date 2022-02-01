@@ -13,7 +13,7 @@
 #ifdef MATLAB_DEBUGGING
 #define DEBUGPRINT(x) std::cout << x << std::endl
 #else
-#define DEBUGPRINT(x) ()
+#define DEBUGPRINT(x)
 #endif
 
 //H5::H5std_string <- for future reference
@@ -234,6 +234,7 @@ class Parser {
         H5::Attribute attr;
 
         attr = experiment.openAttribute("startTimeDotNetDateTimeOffsetTicks");
+        DEBUGPRINT("Reading attribute start time");
         attr.read(H5::PredType::NATIVE_LLONG, &experiment_date);
         experiment_date = (experiment_date - 621357696000000000) / 10000; //milliseconds
         attr.close();
@@ -270,6 +271,8 @@ class Parser {
         space.getSimpleExtentDims( &n_samples, NULL);
         
         buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
+        
+        DEBUGPRINT("Reading symphony resource");
         ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
         
         // symphony_resource data = {parseStrAttr(resource, "name").toAscii(), n_samples};
@@ -579,6 +582,8 @@ class Parser {
         // check the units <- 
         hsize_t offset = 0;
         space.selectElements(H5S_SELECT_SET, 1, &offset);
+        
+        DEBUGPRINT("Reading response data");
         ds.read(unit_i, units, H5::DataSpace::ALL, space);
 
         
@@ -871,6 +876,7 @@ class Parser {
             auto attr = parameters.openAttribute(i);
             fieldNames[i] = factory.createCharArray(attr.getName());
             auto h5type = attr.getTypeClass();
+            DEBUGPRINT("Reading experiment parameters attribute.");
             if ((h5type == H5T_INTEGER) | (h5type == H5T_FLOAT)) {
                 size_t size = attr.getInMemDataSize() / sizeof(double);
                 if (size > 1) {
@@ -937,6 +943,8 @@ class Parser {
     Array parseNumericAttr(H5::Group group, std::string attr_name) {
         auto attr = group.openAttribute(attr_name);
         double result;
+        
+        DEBUGPRINT("Reading numeric attribute");
         attr.read(H5::PredType::NATIVE_DOUBLE, &result);
         return factory.createScalar(result);
     }
@@ -944,7 +952,8 @@ class Parser {
     void parseLocAttr(H5::Group group, Reference<Array> x, Reference<Array> y) {
         auto attr = group.openAttribute("location");
         double xy[2];
-
+        
+        DEBUGPRINT("Reading location attribute");
         attr.read(H5::PredType::NATIVE_DOUBLE, &xy[0]);
         x = factory.createScalar(xy[0]);
         y = factory.createScalar(xy[1]);
@@ -956,6 +965,8 @@ class Parser {
         auto strtype = attr.getStrType();
         std::string attr_value;
 
+        
+        DEBUGPRINT("Reading protocolID attribute");
         attr.read(strtype, attr_value);
         attr.close();
         return factory.createCharArray(attr_value.substr(attr_value.find_last_of(".")+1));
@@ -969,10 +980,12 @@ class Parser {
         long long ticks;
 
         attr = group.openAttribute("startTimeDotNetDateTimeOffsetTicks");
+        DEBUGPRINT("Reading start time attribute");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks);
         parseDateTime(ticks, start);
         
         attr = group.openAttribute("endTimeDotNetDateTimeOffsetTicks");
+        DEBUGPRINT("Reading end timeattribute");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks);
         parseDateTime(ticks, end);
         
@@ -990,6 +1003,8 @@ class Parser {
     StructArray parseNotes(H5::DataSet notes, hsize_t n_samples, StructArray note_field) {
         note_data* note = new note_data[n_samples];
 
+        
+        DEBUGPRINT("Reading note data");
         notes.read(note, note_type);//, H5::DataSpace::ALL, space);
         
         for (auto i=0; i<n_samples; i++) {
@@ -1007,6 +1022,7 @@ class Parser {
         long long ticks1, ticks2;
 
         attr = epoch.openAttribute("startTimeDotNetDateTimeOffsetTicks");
+        DEBUGPRINT("Reading start time attribute");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks1);
         ticks1 = (ticks1 - 621357696000000000) / 10000; //milliseconds
 
@@ -1014,6 +1030,7 @@ class Parser {
 
         
         attr = epoch.openAttribute("endTimeDotNetDateTimeOffsetTicks");
+        DEBUGPRINT("Reading end time attribute");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks2);
         ticks2 = (ticks2 - 621357696000000000) / 10000; //milliseconds
 
