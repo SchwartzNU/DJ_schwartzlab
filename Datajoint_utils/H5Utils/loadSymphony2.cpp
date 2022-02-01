@@ -668,7 +668,7 @@ class Parser {
                     char index[10];
                     sprintf(index,"cell_%d_id", electrode_number);
                     StructArray pairs = std::move(key[0]["cell_pairs"]);
-                    for (auto& elem : pairs) {
+                    for (auto elem : pairs) {
                         TypedArray<size_t> cell_i = elem["source_id"];
                         if (cell_i[0] == source_id[0]) {
                             auto s_id = elem[index];
