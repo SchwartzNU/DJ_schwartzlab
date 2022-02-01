@@ -11,8 +11,8 @@ canvas_height : smallint unsigned
 
 frame_tracker_width: smallint unsigned
 frame_tracker_height: smallint unsigned
-frame_tracker_x: smallint unsigned
-frame_tracker_y: smallint unsigned
+frame_tracker_x: smallint
+frame_tracker_y: smallint
 frame_tracker_duration: float
 
 microns_per_pixel: float

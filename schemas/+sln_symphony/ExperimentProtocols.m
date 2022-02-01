@@ -67,7 +67,7 @@ classdef ExperimentProtocols < handle
 
                   e = self.key.epoch_params(arrayfun(@(x) ismember(x.epoch_block_id, bi), self.key.epochs));
 
-                  success = self.insertProtocol(changeCase(protocols{i},'upperCamel'), vertcat(b{:}), vertcat(e{:})) && success;
+                  success = self.insertProtocol(changeCase(protocols{i},'upperCamel'), joinKeys(b), joinKeys(e)) && success;
                 end
                 if ~success
                   error('One or more protocols were not compatible with any existing tables in the database. Please confirm the new table definition and try again.');
@@ -87,6 +87,11 @@ classdef ExperimentProtocols < handle
 
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
           %get existing tables under the protocol name
+          if contains(protocol_name,'AutoCenter')
+            success=true;
+            return %TODO: do we want to include autocenter??? the parameters are ridiculous
+            %perhaps instead we should create separate tables for each auto center subcaategory?
+          end
           tables = sln_symphony.getSchema().classNames;
           matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
               & endsWith(tables, 'BlockParameters');
@@ -350,4 +355,19 @@ function key = toBool(key,shouldBeBool)
     end
 
 
+end
+
+function key = joinKeys(keys)
+% input is a cell array of structs
+% output is a struct array
+% missing fields in any struct are replaced with NaN
+fields = cellfun(@fieldnames, keys, 'uni', 0);
+uniqueFields = unique(vertcat(fields{:}));
+emp = num2cell(nan(numel(uniqueFields), numel(keys)));
+key = cell2struct(emp, uniqueFields, 1);
+for n=1:numel(keys)
+    for m=1:numel(fields{n})
+        key(n).(fields{n}{m}) = keys{n}.(fields{n}{m});
+    end
+end
 end
