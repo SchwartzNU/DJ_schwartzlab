@@ -10,6 +10,12 @@
 #include <sstream>
 #include <numeric>
 
+#ifdef MATLAB_DEBUGGING
+#define DEBUGPRINT(x) std::cout << x << std::endl
+#else
+#define DEBUGPRINT(x) ()
+#endif
+
 //H5::H5std_string <- for future reference
 
 using namespace matlab::data;
@@ -94,6 +100,7 @@ class Parser {
         
     public:
         Parser(std::string fpath, ArgumentList output, std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr): matlabPtr(matlabPtr) {
+            DEBUGPRINT("Debug printing enabled.");
             data.insertMember("quantity", 0, H5::PredType::NATIVE_DOUBLE);
             units.insertMember("units", 0, H5::DataType(H5T_STRING, 10));
             
