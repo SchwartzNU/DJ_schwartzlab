@@ -669,7 +669,9 @@ class Parser {
                     sprintf(index,"cell_%d_id", electrode_number);
                     StructArray pairs = std::move(key[0]["cell_pairs"]);
                     for (auto elem : pairs) {
-                        TypedArray<uint64_t> cell_i = elem["source_id"];
+                        // TypedArray<uint64_t> cell_i = elem["source_id"];
+                        matlab::data::Array temp = elem["source_id"];
+                        TypedArray<uint64_t> cell_i = temp;
                         if (cell_i[0] == source_id[0]) {
                             auto s_id = elem[index];
                             electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(s_id[0]);
