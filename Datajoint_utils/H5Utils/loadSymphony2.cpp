@@ -23,7 +23,7 @@ constexpr unsigned int str2int(const char* str, int h = 0) {
 }
 
 struct pair {
-    size_t first;
+    uint64_t first;
     std::string second;
 
     bool operator==(const pair &other) const {
@@ -31,8 +31,8 @@ struct pair {
     }
 };
 struct pair_hash {
-    std::size_t operator() (const pair &p) const {
-        return std::hash<size_t>()(p.first) ^ std::hash<std::string>()(p.second);
+    std::uint64_t operator() (const pair &p) const {
+        return std::hash<uint64_t>()(p.first) ^ std::hash<std::string>()(p.second);
         //just xors the hash of the individual elements
     }
 };
@@ -44,7 +44,7 @@ typedef struct symphony_resource {
 } symphony_resource;
 
 struct channel {
-    size_t channel_ind;
+    uint64_t channel_ind;
     char units[10];
 };
 
@@ -75,11 +75,11 @@ class Parser {
         std::string lastDevice;
 
         std::unordered_map<std::string, std::pair<symphony_resource,buffer_ptr_t<char unsigned>>> resources;
-        std::unordered_map<std::string, size_t> sources;
-        std::unordered_map<std::string, size_t> groups;
-        std::unordered_map<std::string, size_t> blocks;
-        std::unordered_map<std::string, size_t> epochs;
-        std::unordered_map<std::string, size_t> responses;
+        std::unordered_map<std::string, uint64_t> sources;
+        std::unordered_map<std::string, uint64_t> groups;
+        std::unordered_map<std::string, uint64_t> blocks;
+        std::unordered_map<std::string, uint64_t> epochs;
+        std::unordered_map<std::string, uint64_t> responses;
         
         std::unordered_map<pair, channel, pair_hash> channels;
         
@@ -422,7 +422,7 @@ class Parser {
         
 
         StructArray group_s = key[0]["epoch_groups"];
-        TypedArray<size_t> s_id = group_s[group_ind]["source_id"];
+        TypedArray<uint64_t> s_id = group_s[group_ind]["source_id"];
         s[ind]["source_id"] = s_id;
 
         s[ind]["protocol_name"] = parseProtocolName(epochBlock);
@@ -494,10 +494,10 @@ class Parser {
         parseEpochMilliseconds(epoch, s[ind]["epoch_start_time"], s[ind]["epoch_duration"]);
         
         StructArray block_s = key[0]["epoch_blocks"];
-        TypedArray<size_t> s_id = block_s[block_ind]["source_id"];
+        TypedArray<uint64_t> s_id = block_s[block_ind]["source_id"];
         s[ind]["source_id"] = s_id;
         
-        TypedArray<size_t> g_id = block_s[block_ind]["epoch_group_id"];
+        TypedArray<uint64_t> g_id = block_s[block_ind]["epoch_group_id"];
         s[ind]["epoch_group_id"] = g_id;
 
         
@@ -584,9 +584,9 @@ class Parser {
         epochs.close();
 
         StructArray epoch_s = std::move(key[0]["epochs"]);
-        TypedArray<size_t> block_id = epoch_s[epoch_id]["epoch_block_id"];
-        TypedArray<size_t> group_id = epoch_s[epoch_id]["epoch_group_id"];
-        TypedArray<size_t> source_id = epoch_s[epoch_id]["source_id"];
+        TypedArray<uint64_t> block_id = epoch_s[epoch_id]["epoch_block_id"];
+        TypedArray<uint64_t> group_id = epoch_s[epoch_id]["epoch_group_id"];
+        TypedArray<uint64_t> source_id = epoch_s[epoch_id]["source_id"];
         
         
         auto device = response.openGroup("device");
@@ -669,10 +669,10 @@ class Parser {
                     sprintf(index,"cell_%d_id", electrode_number);
                     StructArray pairs = std::move(key[0]["cell_pairs"]);
                     for (auto elem : pairs) {
-                        TypedArray<size_t> cell_i = elem["source_id"];
+                        TypedArray<uint64_t> cell_i = elem["source_id"];
                         if (cell_i[0] == source_id[0]) {
                             auto s_id = elem[index];
-                            electrode_s[0]["cell_id"] = factory.createScalar<size_t>(s_id[0]);
+                            electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(s_id[0]);
                         }
                     }
                     key[0]["cell_pairs"] = std::move(pairs);
@@ -722,7 +722,7 @@ class Parser {
       
     }
     
-    size_t parseSource(H5::Group source) {
+    uint64_t parseSource(H5::Group source) {
         auto source_uuid = parseStrAttr(source, "uuid").toAscii();
 
         if (sources.count(source_uuid)) {
@@ -730,7 +730,7 @@ class Parser {
         }
         
         bool has_parent = source.exists("parent");
-        size_t parent_ind;
+        uint64_t parent_ind;
         if (has_parent) {
             auto parent = source.openGroup("parent");
             parent_ind = parseSource(parent);
@@ -813,11 +813,11 @@ class Parser {
                 TypedArray<double> cell_i = elem["cell_number"];
                 if (cell_i[0] == cell_1[0]) {
                     auto s_id = elem["source_id"];
-                    s[0]["cell_1_id"] = factory.createScalar<size_t>(s_id[0]);
+                    s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
                 }
                 if (cell_i[0] == cell_2[0]) {
                     auto s_id = elem["source_id"];
-                    s[0]["cell_2_id"] = factory.createScalar<size_t>(s_id[0]);
+                    s[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
                 }
             }
             key[0]["cells"] = std::move(cells);
@@ -1074,7 +1074,7 @@ class Parser {
         if (key[0][structname].isEmpty()) return;
         StructArray s = std::move(key[0][structname]);
         for (auto i=0; i < s.getNumberOfElements(); i++) {
-            TypedArray<size_t> old_ind = s[i][field];
+            TypedArray<uint64_t> old_ind = s[i][field];
             s[i][field] = factory.createScalar(ind[old_ind[0] - 1] + 1);
         }
         key[0][structname] = std::move(s);
