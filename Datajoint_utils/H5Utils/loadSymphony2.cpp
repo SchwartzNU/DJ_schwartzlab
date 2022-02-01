@@ -811,8 +811,9 @@ class Parser {
             
             StructArray cells = std::move(key[0]["cells"]);
 
-            for (auto& elem : cells) {
-                TypedArray<double> cell_i = elem["cell_number"];
+            for (auto elem : cells) {
+                matlab::data::Array temp = elem["cell_number"];
+                TypedArray<double> cell_i = temp;
                 if (cell_i[0] == cell_1[0]) {
                     auto s_id = elem["source_id"];
                     s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
@@ -971,7 +972,7 @@ class Parser {
         attr.close();
     }
 
-    void parseDateTime(long long ticks, Reference<Array> time_str) {
+    void parseDateTime(time_t ticks, Reference<Array> time_str) {
         //shared timestamp code
         std::stringstream buffer;
         ticks = (ticks - 621357696000000000) / 10000000;
