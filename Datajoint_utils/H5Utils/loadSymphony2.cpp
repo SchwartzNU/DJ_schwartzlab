@@ -144,8 +144,18 @@ class Parser {
 
             //TODO: get the branch and commit from newer files
             
-            key[0]["experiment"] = std::move(s);    
-            recurse(file);
+            key[0]["experiment"] = std::move(s);
+            try {
+                recurse(file);
+            } catch ( const H5::Exception e ) {
+                // print out internally generated error message, controlled by H5CPP_ERROR_MSG macro
+                std::cerr << "Error in H5 library function "<< e.getFuncName() << std::endl;
+                std::cerr << e.getDetailMsg() << std::endl;
+
+                throw e;
+            } catch (...) {
+                throw;
+            }
             file.close();
 
             sortEpochs();
