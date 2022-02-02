@@ -149,14 +149,14 @@ class Parser {
             try {
                 recurse(file);
             } catch( const H5::DataSetIException e) {
-                std::cerr << "Error reading H5 DataSet" << std::endl;
-                std::cerr << "Error in H5 library function "<< e.getFuncName() << std::endl;
-                std::cerr << e.getDetailMsg() << std::endl;
+                std::cout << "Error reading H5 DataSet" << std::endl;
+                std::cout << "Error in H5 library function "<< e.getFuncName() << std::endl;
+                std::cout << e.getDetailMsg() << std::endl;
                 throw e;
             } catch ( const H5::Exception e ) {
                 // print out internally generated error message, controlled by H5CPP_ERROR_MSG macro
-                std::cerr << "Error in H5 library function "<< e.getFuncName() << std::endl;
-                std::cerr << e.getDetailMsg() << std::endl;
+                std::cout << "Error in H5 library function "<< e.getFuncName() << std::endl;
+                std::cout << e.getDetailMsg() << std::endl;
 
                 throw e;
             } catch (...) {
