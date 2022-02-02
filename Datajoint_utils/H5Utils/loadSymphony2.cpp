@@ -17,6 +17,8 @@
 #define DEBUGPRINT(x)
 #endif
 
+#define EPOCH_OFFSET 621355968000000000
+
 //H5::H5std_string <- for future reference
 
 using namespace matlab::data;
@@ -160,6 +162,7 @@ class Parser {
         try {
             for (auto i=0; i<parent.getNumObjs(); i++) {
                 auto name = parent.getObjnameByIdx(i);
+                DEBUGPRINT("Opening object " << name);
                 
                 if (parent.childObjType(name) == H5O_TYPE_DATASET) {
                 } else if (parent.childObjType(name) == H5O_TYPE_GROUP) {
@@ -249,7 +252,7 @@ class Parser {
         attr = experiment.openAttribute("startTimeDotNetDateTimeOffsetTicks");
         DEBUGPRINT("Reading attribute start time");
         attr.read(H5::PredType::NATIVE_LLONG, &experiment_date);
-        experiment_date = (experiment_date - 621357696000000000) / 10000; //milliseconds
+        experiment_date = (experiment_date - EPOCH_OFFSET) / 10000; //milliseconds
         attr.close();
 
         key[0]["experiment"] = std::move(s);
@@ -285,7 +288,8 @@ class Parser {
         
         buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
         
-        DEBUGPRINT("Reading symphony resource");
+        DEBUGPRINT("Reading symphony resource with " << n_samples << " bytes");
+        DEBUGPRINT("Actual size: " << space.getSimpleExtentNpoints() << " points, (is simple? " << space.isSimple() << " ), " << space.getSimpleExtentNdims() << " dims");
         ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
         DEBUGPRINT("Done reading symphony resource");
         
@@ -995,14 +999,16 @@ class Parser {
         long long ticks;
 
         attr = group.openAttribute("startTimeDotNetDateTimeOffsetTicks");
-        DEBUGPRINT("Reading start time attribute");
+        DEBUGPRINT("Reading start time attribute (parseDateTime)");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks);
         parseDateTime(ticks, start);
-        
-        attr = group.openAttribute("endTimeDotNetDateTimeOffsetTicks");
-        DEBUGPRINT("Reading end timeattribute");
-        attr.read(H5::PredType::NATIVE_LLONG, &ticks);
-        parseDateTime(ticks, end);
+
+        if(group.attrExists("endTimeDotNetDateTimeOffsetTicks")) {
+            attr = group.openAttribute("endTimeDotNetDateTimeOffsetTicks");
+            DEBUGPRINT("Reading end timeattribute");
+            attr.read(H5::PredType::NATIVE_LLONG, &ticks);
+            parseDateTime(ticks, end);
+        }        
         
         attr.close();
     }
@@ -1010,9 +1016,11 @@ class Parser {
     void parseDateTime(time_t ticks, Reference<Array> time_str) {
         //shared timestamp code
         std::stringstream buffer;
-        ticks = (ticks - 621357696000000000) / 10000000;
+        ticks = (ticks - EPOCH_OFFSET) / 10000000;
         buffer << std::put_time(std::gmtime(&ticks), "%Y-%m-%d %H:%M:%S");
+        DEBUGPRINT("time string: " << buffer.str());
         time_str = factory.createCharArray(buffer.str());
+        DEBUGPRINT("successfully made time string");
     }
 
     StructArray parseNotes(H5::DataSet notes, hsize_t n_samples, StructArray note_field) {
@@ -1037,9 +1045,10 @@ class Parser {
         long long ticks1, ticks2;
 
         attr = epoch.openAttribute("startTimeDotNetDateTimeOffsetTicks");
-        DEBUGPRINT("Reading start time attribute");
+        DEBUGPRINT("Reading start time attribute (parseEpochMilliseconds)");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks1);
-        ticks1 = (ticks1 - 621357696000000000) / 10000; //milliseconds
+        //TODO: is something wrong here??
+        ticks1 = (ticks1 - EPOCH_OFFSET) / 10000; //milliseconds
 
         start = factory.createScalar(ticks1 - experiment_date);
 
@@ -1047,7 +1056,7 @@ class Parser {
         attr = epoch.openAttribute("endTimeDotNetDateTimeOffsetTicks");
         DEBUGPRINT("Reading end time attribute");
         attr.read(H5::PredType::NATIVE_LLONG, &ticks2);
-        ticks2 = (ticks2 - 621357696000000000) / 10000; //milliseconds
+        ticks2 = (ticks2 - EPOCH_OFFSET) / 10000; //milliseconds
 
         duration = factory.createScalar(ticks2 - ticks1);
 
