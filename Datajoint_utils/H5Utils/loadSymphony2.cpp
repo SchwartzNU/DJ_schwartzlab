@@ -289,8 +289,9 @@ class Parser {
         buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
         
         DEBUGPRINT("Reading symphony resource");
-
         ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
+        DEBUGPRINT("Done reading symphony resource");
+        
         
         // symphony_resource data = {parseStrAttr(resource, "name").toAscii(), n_samples};
         symphony_resource data;
