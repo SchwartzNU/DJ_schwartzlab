@@ -1032,8 +1032,10 @@ class Parser {
         note_data* note = new note_data[n_samples];
 
         
-        DEBUGPRINT("Reading note data");
+        DEBUGPRINT("Passing on reading note data. Buffer contains uninitialized memory.");
+        #ifndef MATLAB_DEBUGGING
         notes.read(note, note_type);//, H5::DataSpace::ALL, space);
+        #endif
         
         for (auto i=0; i<n_samples; i++) {
             parseDateTime(note[i].entry_time.ticks, note_field[i]["entry_time"]);
