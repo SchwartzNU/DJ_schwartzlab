@@ -224,8 +224,10 @@ class Parser {
             std::string msg;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg << "Error reading H5 DataSet\nError in H5 library function "<< e.getFuncName() << ":\n\t" << e.getDetailMsg())}));
         } catch ( const H5::Exception e ) {
+            std::string msg;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg << "Error in H5 library function " << e.getFuncName() << ":\n\t" << e.getDetailMsg())}));
         } catch (...) {
+            std::string msg;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg << "Unknown error when parsing H5 file.")}));
         }
     }
