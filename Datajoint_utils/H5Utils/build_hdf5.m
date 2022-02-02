@@ -1,6 +1,6 @@
 function build_hdf5(debug)
 if nargin && debug
-    debug_string = '-DMATLAB-DEBUGGING';
+    debug_string = '-DMATLAB_DEBUGGING';
 else
     debug_string = '';
 end
