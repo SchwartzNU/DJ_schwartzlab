@@ -291,7 +291,7 @@ class Parser {
         
         DEBUGPRINT("Reading symphony resource into " << n_samples << " bytes");
         DEBUGPRINT("Actual size: " << space.getSimpleExtentNpoints() << " points, (is simple? " << space.isSimple() << " ), " << space.getSimpleExtentNdims() << " dims");
-        DEBUGPRINT("Reading as '" << H5::PredType::STD_U8LE << "' (std_u8le)");
+        // DEBUGPRINT("Reading as '" << H5::PredType::STD_U8LE << "' (std_u8le)");
         ds.read(buffer.get(), H5::PredType::STD_U8LE);
         DEBUGPRINT("Done reading symphony resource");
         
