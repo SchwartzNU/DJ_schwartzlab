@@ -145,8 +145,14 @@ class Parser {
             //TODO: get the branch and commit from newer files
             
             key[0]["experiment"] = std::move(s);
+            //TODO: this try block doesn't seem to work?
             try {
                 recurse(file);
+            } catch( const H5::DataSetIException e) {
+                std::cerr << "Error reading H5 DataSet" << std::endl;
+                std::cerr << "Error in H5 library function "<< e.getFuncName() << std::endl;
+                std::cerr << e.getDetailMsg() << std::endl;
+                throw e;
             } catch ( const H5::Exception e ) {
                 // print out internally generated error message, controlled by H5CPP_ERROR_MSG macro
                 std::cerr << "Error in H5 library function "<< e.getFuncName() << std::endl;
@@ -283,6 +289,7 @@ class Parser {
         buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
         
         DEBUGPRINT("Reading symphony resource");
+
         ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
         
         // symphony_resource data = {parseStrAttr(resource, "name").toAscii(), n_samples};
