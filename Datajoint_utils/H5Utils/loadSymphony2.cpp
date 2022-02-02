@@ -145,23 +145,7 @@ class Parser {
             //TODO: get the branch and commit from newer files
             
             key[0]["experiment"] = std::move(s);
-            //TODO: this try block doesn't seem to work?
-            try {
-                recurse(file);
-            } catch( const H5::DataSetIException e) {
-                std::cout << "Error reading H5 DataSet" << std::endl;
-                std::cout << "Error in H5 library function "<< e.getFuncName() << std::endl;
-                std::cout << e.getDetailMsg() << std::endl;
-                throw e;
-            } catch ( const H5::Exception e ) {
-                // print out internally generated error message, controlled by H5CPP_ERROR_MSG macro
-                std::cout << "Error in H5 library function "<< e.getFuncName() << std::endl;
-                std::cout << e.getDetailMsg() << std::endl;
-
-                throw e;
-            } catch (...) {
-                throw;
-            }
+            recurse(file);
             file.close();
 
             sortEpochs();
@@ -236,8 +220,12 @@ class Parser {
                     group.close();
                 }
             }
-        } catch (H5::Exception e) {
-            matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(e.getDetailMsg())}));
+        } catch( const H5::DataSetIException e) {
+            matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar("Error reading H5 DataSet\nError in H5 library function "<< e.getFuncName() << ":\n\t" << e.getDetailMsg())}));
+        } catch ( const H5::Exception e ) {
+            matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar("Error in H5 library function " << e.getFuncName() << ":\n\t" << e.getDetailMsg())}));
+        } catch (...) {
+            matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar("Unknown error when parsing H5 file.")}));
         }
     }
 
