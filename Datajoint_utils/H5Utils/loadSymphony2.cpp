@@ -48,7 +48,7 @@ struct pair_hash {
 //end stackoverflow <-
 typedef struct symphony_resource {
     std::string name;
-    // buffer_ptr_t<char unsigned> ptr;
+    // buffer_ptr_t<uint8_t> ptr;
     hsize_t size;
 } symphony_resource;
 
@@ -83,7 +83,7 @@ class Parser {
         std::string fname;
         std::string lastDevice;
 
-        std::unordered_map<std::string, std::pair<symphony_resource,buffer_ptr_t<char unsigned>>> resources;
+        std::unordered_map<std::string, std::pair<symphony_resource,buffer_ptr_t<uint8_t>>> resources;
         std::unordered_map<std::string, uint64_t> sources;
         std::unordered_map<std::string, uint64_t> groups;
         std::unordered_map<std::string, uint64_t> blocks;
@@ -234,6 +234,7 @@ class Parser {
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg + "Error in H5 library function " + e.getFuncName() + ":\n\t" + e.getDetailMsg())}));
         } catch( const std::exception e) {
             std::string msg;
+            std::cerr << e.what() << std::endl;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg + "Unknown error when parsing H5 file: " + e.what())}));
         } catch (...) {
             std::string msg;
@@ -286,11 +287,12 @@ class Parser {
         hsize_t n_samples;
         space.getSimpleExtentDims( &n_samples, NULL);
         
-        buffer_ptr_t<char unsigned> buffer = factory.createBuffer<char unsigned>(n_samples);
+        buffer_ptr_t<uint8_t> buffer = factory.createBuffer<uint8_t>(n_samples);
         
-        DEBUGPRINT("Reading symphony resource with " << n_samples << " bytes");
+        DEBUGPRINT("Reading symphony resource into " << n_samples << " bytes");
         DEBUGPRINT("Actual size: " << space.getSimpleExtentNpoints() << " points, (is simple? " << space.isSimple() << " ), " << space.getSimpleExtentNdims() << " dims");
-        ds.read(buffer.get(), H5::PredType::NATIVE_UCHAR);
+        DEBUGPRINT("Reading as '" << H5::PredType::STD_U8LE << "' (std_u8le)");
+        ds.read(buffer.get(), H5::PredType::STD_U8LE);
         DEBUGPRINT("Done reading symphony resource");
         
         
@@ -301,7 +303,7 @@ class Parser {
         data.size = n_samples;
         resources.insert({
             resource_uuid,
-            std::pair<symphony_resource,buffer_ptr_t<char unsigned>>({
+            std::pair<symphony_resource,buffer_ptr_t<uint8_t>>({
                 data,
                 std::move(buffer)
                 })
