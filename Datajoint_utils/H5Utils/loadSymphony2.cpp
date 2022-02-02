@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <sstream>
 #include <numeric>
+#include <exception>
 
 #ifdef MATLAB_DEBUGGING
 #define DEBUGPRINT(x) std::cout << x << std::endl
@@ -221,14 +222,15 @@ class Parser {
                 }
             }
         } catch( const H5::DataSetIException e) {
-            e.printError();
+            H5::Exception::printErrorStack();
             std::string msg;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg + "Error reading H5 DataSet\nError in H5 library function " + e.getFuncName() + ":\n\t" + e.getDetailMsg())}));
         } catch ( const H5::Exception e ) {
-            e.printError();
+            H5::Exception::printErrorStack();
             std::string msg;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg + "Error in H5 library function " + e.getFuncName() + ":\n\t" + e.getDetailMsg())}));
-        } catch( const std::Exception e) {
+        } catch( const std::exception e) {
+            std::string msg;
             matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar(msg + "Unknown error when parsing H5 file: " + e.what())}));
         } catch (...) {
             std::string msg;
