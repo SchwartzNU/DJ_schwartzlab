@@ -11,7 +11,7 @@
 #include <numeric>
 #include <exception>
 
-#ifdef MATLAB_DEBUGGING
+#ifdef VERBOSE
 #define DEBUGPRINT(x) std::cout << x << std::endl
 #else
 #define DEBUGPRINT(x)
@@ -323,7 +323,9 @@ class Parser {
             // c[i][0] = factory.createCharArray(iter->first); //uuid
             cKeys[i] = factory.createCharArray(iter->second.first.name); //name
             auto temp = factory.createArrayFromBuffer({iter->second.first.size},std::move(iter->second.second)); //buffer data
+            #ifndef MATLAB_DEBUGGING
             cVals[i] = matlabPtr->feval(u"getArrayFromByteStream", {temp});
+            #endif
             i++;
         }
 
@@ -597,19 +599,24 @@ class Parser {
 
         //read the data
         auto ds = response.openDataSet("data");
+
         auto space = ds.getSpace();
         hsize_t n_samples;
         space.getSimpleExtentDims( &n_samples, NULL);
         auto buffer = factory.createBuffer<double>(n_samples);
+        
+        DEBUGPRINT("Passing on read response data. Buffer contains uninitialized data!");
+        #ifndef MATLAB_DEBUGGING
         ds.read(buffer.get(), data);
 
         // check the units <- 
         hsize_t offset = 0;
         space.selectElements(H5S_SELECT_SET, 1, &offset);
         
-        DEBUGPRINT("Reading response data");
         ds.read(unit_i, units, H5::DataSpace::ALL, space);
-
+        #else
+        *unit_i = '\0';
+        #endif
         
         auto epoch = response.openGroup("epoch");
         auto epoch_id = epochs[parseStrAttr(epoch, "uuid").toAscii()]; 
@@ -689,9 +696,12 @@ class Parser {
                     electrode_s[0]["recording_mode"] = factory.createCharArray("Voltage Clamp");
                 } else if (std::strcmp(unit_i, "mV")) {
                     electrode_s[0]["recording_mode"] = factory.createCharArray("Current Clamp");
+                #ifdef MATLAB_DEBUGGING
+                } else electrode_s[0]["recording_mode"] = factory.createCharArray("Unknown");
+                #else
                 } else throwError("Unknown eletrode unit type!");
+                #endif                
                 electrode_s[0]["hold"] = parseNumericAttr(protocol_params, chan_hold); //need to parse the channel name...
-                
                 auto epochGroup = epochBlock.openGroup("epochGroup");
                 auto source = epochGroup.openGroup("source");
                 auto props = source.openGroup("properties");
@@ -741,8 +751,9 @@ class Parser {
         StructArray channel_s = std::move(key[0]["channels"]);
         TypedArray<double> channel_sr = channel_s[channel_i.channel_ind]["sample_rate"];
         if (channel_sr[0] != sample_rate[0]) throwError("Unequal sample rates!");
+        #ifndef MATLAB_DEBUGGING
         if (std::strcmp(unit_i, channel_i.units)) throwError("Channel units do not match!");
-
+        #endif
         
         key[0]["epochs"] = std::move(epoch_s);
         key[0]["channels"] = std::move(channel_s);
@@ -1029,13 +1040,12 @@ class Parser {
     }
 
     StructArray parseNotes(H5::DataSet notes, hsize_t n_samples, StructArray note_field) {
-        note_data* note = new note_data[n_samples];
-
         
         DEBUGPRINT("Passing on reading note data. Buffer contains uninitialized memory.");
         #ifndef MATLAB_DEBUGGING
+        note_data* note = new note_data[n_samples];
         notes.read(note, note_type);//, H5::DataSpace::ALL, space);
-        #endif
+        
         
         for (auto i=0; i<n_samples; i++) {
             parseDateTime(note[i].entry_time.ticks, note_field[i]["entry_time"]);
@@ -1043,6 +1053,7 @@ class Parser {
         }
 
         delete[] note;
+        #endif
         return std::move(note_field);
     }
 
