@@ -149,9 +149,14 @@ class Parser {
             
             key[0]["experiment"] = std::move(s);
             recurse(file);
+
+            DEBUGPRINT("Closing file");
             file.close();
 
+            DEBUGPRINT("Sorting epochs");
             sortEpochs();
+
+            DEBUGPRINT("Mapping resources");
             mapResources();
 
             output[0] = std::move(key);
@@ -161,12 +166,12 @@ class Parser {
     void recurse(T parent, const char* parent_type = "") {
         try {
             for (auto i=0; i<parent.getNumObjs(); i++) {
+                DEBUGPRINT("Getting object #" << i);
                 auto name = parent.getObjnameByIdx(i);
-                DEBUGPRINT("Opening object " << name);
-                
                 if (parent.childObjType(name) == H5O_TYPE_DATASET) {
                 } else if (parent.childObjType(name) == H5O_TYPE_GROUP) {
                     auto group = parent.openGroup(name);
+                    DEBUGPRINT("Opened object " << name);
                     H5O_info1_t info;
                     H5Oget_info2(group.getLocId(), &info, H5O_INFO_BASIC);
                     if (!addrs.count(info.addr)) {
@@ -222,6 +227,7 @@ class Parser {
                         recurse(group, group_type.c_str());
                     }
                     group.close();
+                    DEBUGPRINT("Done with group " << name);
                 }
             }
         } catch( const H5::DataSetIException e) {
@@ -292,11 +298,10 @@ class Parser {
         DEBUGPRINT("Reading symphony resource into " << n_samples << " bytes");
         DEBUGPRINT("Actual size: " << space.getSimpleExtentNpoints() << " points, (is simple? " << space.isSimple() << " ), " << space.getSimpleExtentNdims() << " dims");
         DEBUGPRINT("Required bytes for dataset: " << ds.getInMemDataSize());
-        // DEBUGPRINT("Reading as '" << H5::PredType::STD_U8LE << "' (std_u8le)");
         #ifndef MATLAB_DEBUGGING
+            DEBUGPRINT("Reading as std_u8le");
             ds.read(buffer.get(), H5::PredType::STD_U8LE);
         #endif
-        DEBUGPRINT("Passed on reading symphony resource. Buffer contains uninitialized data.");
         
         
         // symphony_resource data = {parseStrAttr(resource, "name").toAscii(), n_samples};
@@ -319,15 +324,26 @@ class Parser {
         CellArray cKeys = factory.createCellArray({n_elements, 1});
         CellArray cVals = factory.createCellArray({n_elements, 1});
         size_t i = 0;
+        DEBUGPRINT("Converting resources to matlab objects");
+        DEBUGPRINT("Errors can occur if path is not configured properly");
+        DEBUGPRINT("Consider the following:");
+        DEBUGPRINT("\t> cd(userpath)");
+        DEBUGPRINT("\t> system('git clone --recurse-submodules https://github.com/Schwartz-AlaLaurila-Labs/sa-labs-extension')");
+        DEBUGPRINT("\t> system('git clone --recurse-submodules https://github.com/symphony-das/symphony-matlab')");
+        DEBUGPRINT("... and add the resulting directories (with subfolders) to path.");        
+        
         for (auto iter = resources.begin(); iter != resources.end(); iter++) {
             // c[i][0] = factory.createCharArray(iter->first); //uuid
             cKeys[i] = factory.createCharArray(iter->second.first.name); //name
             auto temp = factory.createArrayFromBuffer({iter->second.first.size},std::move(iter->second.second)); //buffer data
+            
             #ifndef MATLAB_DEBUGGING
+            DEBUGPRINT("Converting resource '" << iter->second.first.name << "'");
             cVals[i] = matlabPtr->feval(u"getArrayFromByteStream", {temp});
             #endif
             i++;
         }
+        DEBUGPRINT("Done converting resources");   
 
         key[0]["calibration"] = std::move(matlabPtr->feval(u"containers.Map", {cKeys, cVals}));
     }
@@ -605,8 +621,8 @@ class Parser {
         space.getSimpleExtentDims( &n_samples, NULL);
         auto buffer = factory.createBuffer<double>(n_samples);
         
-        DEBUGPRINT("Passing on read response data. Buffer contains uninitialized data!");
         #ifndef MATLAB_DEBUGGING
+        DEBUGPRINT("Reading response data");
         ds.read(buffer.get(), data);
 
         // check the units <- 
@@ -699,7 +715,7 @@ class Parser {
                 #ifdef MATLAB_DEBUGGING
                 } else electrode_s[0]["recording_mode"] = factory.createCharArray("Unknown");
                 #else
-                } else throwError("Unknown eletrode unit type!");
+                } else throwError("Unknown electrode unit type!");
                 #endif                
                 electrode_s[0]["hold"] = parseNumericAttr(protocol_params, chan_hold); //need to parse the channel name...
                 auto epochGroup = epochBlock.openGroup("epochGroup");
@@ -773,7 +789,6 @@ class Parser {
     
     uint64_t parseSource(H5::Group source) {
         auto source_uuid = parseStrAttr(source, "uuid").toAscii();
-
         if (sources.count(source_uuid)) {
             return sources[source_uuid];
         }
@@ -1041,8 +1056,9 @@ class Parser {
 
     StructArray parseNotes(H5::DataSet notes, hsize_t n_samples, StructArray note_field) {
         
-        DEBUGPRINT("Passing on reading note data. Buffer contains uninitialized memory.");
         #ifndef MATLAB_DEBUGGING
+        DEBUGPRINT("Reading note data");
+        
         note_data* note = new note_data[n_samples];
         notes.read(note, note_type);//, H5::DataSpace::ALL, space);
         
