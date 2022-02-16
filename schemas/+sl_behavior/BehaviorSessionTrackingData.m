@@ -41,7 +41,12 @@ classdef BehaviorSessionTrackingData < dj.Imported
             if isempty(folder_name) %no folder for this one, so don't add anything
                return; 
             end
-            load([folder_name filesep 'full_data.mat']);
+            try
+                load([folder_name filesep 'full_data.mat']);
+            catch
+                disp('Aborting BehaviorSessionTrackingData import: fullData.nmat not found in behavior folder');
+                return;
+            end
             Nframes = length(bino_gaze.gaze.outer_wall.left);
             frameRate = 15; %Hz, TODO, read this in from calibration;
             scoreThreshold = 0.85; %for DLC tracking from top camera, TODO, read this in from calibration;
@@ -78,15 +83,16 @@ classdef BehaviorSessionTrackingData < dj.Imported
             
             M = readmatrix([folder_name filesep 'DLC' filesep csv_fname]);
                         
-            DLC_raw_table = table('Size',[Nframes, Nvars], ...
+            DLC_raw_table_top = table('Size',[Nframes, Nvars], ...
                 'VariableNames', varNames, ...
                 'VariableTypes', string(repmat('double',24, 1)));
             
-            DLC_raw_table{:,:} = M(:,2:end);
+            DLC_raw_table_top{:,:} = M(:,2:end);
             
             key.time_axis = linspace(0,Nframes/frameRate,Nframes);            
             %key.dlc_raw = DLC_tracking;            
-            key.dlc_raw = M(:,2:end);
+            key.dlc_raw.top = M(:,2:end);
+            key.dlc_raw.top_parts = varNames;            
             
             key.head_position_arc = bino_gaze.body_position_arc';
             key.body_speed = bino_gaze.speed';
@@ -105,9 +111,9 @@ classdef BehaviorSessionTrackingData < dj.Imported
             %snoutY = DLC_tracking.(camField).snout_y;
             %snout_likelihood = DLC_tracking.(camField).snout_likelihood;            
             
-            snoutX = DLC_raw_table.nose_x;
-            snoutY = DLC_raw_table.nose_y;
-            snout_likelihood = DLC_raw_table.nose_likelihood;
+            snoutX = DLC_raw_table_top.nose_x;
+            snoutY = DLC_raw_table_top.nose_y;
+            snout_likelihood = DLC_raw_table_top.nose_likelihood;
             
             snoutX(snout_likelihood < scoreThreshold) = nan;
             nanx = isnan(snoutX);
@@ -122,6 +128,37 @@ classdef BehaviorSessionTrackingData < dj.Imported
             key.snout_x = snoutX';
             key.snout_y = snoutY';
             
+            %now look for 3D table and read that in
+            csv_fname = 'output_3d_data_kalman.csv';
+            try
+                fname = [folder_name filesep 'DLC' filesep csv_fname];
+                fid = fopen(fname,'r');
+                for i=1:2
+                    header{i} = fgetl(fid);
+                end
+                fclose(fid);
+
+                %header = readlines([folder_name filesep 'DLC' filesep csv_fname]);
+                parts = strsplit(header{1},',');
+                coords = strsplit(header{2},',');
+                Nvars = length(parts);
+                varNames = cell(Nvars,1);
+                for i=1:length(parts)
+                    varNames{i} = [parts{i} '_' coords{i}];
+                end
+                key.dlc_raw.threeD = readmatrix([folder_name filesep 'DLC' filesep csv_fname]);
+                key.dlc_raw.threeD_parts = varNames;
+
+                %truncate 2D to match the number of frames in the 3D
+                Nframes = size(key.dlc_raw.threeD, 1);
+                key.dlc_raw.top = key.dlc_raw.top(1:Nframes,:);
+                key.snout_x = key.snout_x(1:Nframes);
+                key.snout_y = key.snout_y(1:Nframes);
+                key.time_axis = key.time_axis(1:Nframes);
+            catch
+                disp('3D output not found, skipping')
+            end
+
             if isfield(bino_gaze,'window_crossings')
                 Ncrossings = length(bino_gaze.window_crossings.in_frame);
                 if Ncrossings
