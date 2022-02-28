@@ -27,13 +27,16 @@ try
     text = add_animalEvent(tag_key, 'Tag',C);
     
     %add cage assignment event
+    if isempty(cage_key.cage_number)
+        error('Animals inserted using GUI must be assigned a cage number for QA purposes.');
+    end
     cage_key.animal_id = id;
     cage_key.cause = 'assigned at database insert';
     add_animalEvent(cage_key, 'AssignCage',C);
     %disp('Cage assigment successful');
     
     %add protocol assignment event
-    if ~isempty(protocol_key)
+    if ~isempty(protocol_key) && ~strcmp(protocol_key.protocol_name,'Unknown')
         protocol_key.animal_id = id;
         add_animalEvent(protocol_key, 'AssignProtocol',C);
         %disp('Protocol assigment successful');
@@ -48,8 +51,8 @@ catch ME
         disp('Animal with that tag ID already exists in database!');
         txt = 'Animal with that tag ID already exists in database!';
     else
-        disp('Unknown error occurred while inserting animal.');
-        txt = 'Unknown error occurred while inserting animal.';
+        disp(ME.message);
+        txt = ME.message;
     end
     disp('Animal insert failed');
     C.cancelTransaction;

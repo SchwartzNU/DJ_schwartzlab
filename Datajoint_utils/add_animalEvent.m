@@ -26,7 +26,10 @@ try
         key = rmfield(key,'whichEye');     
     end
     
-    if strcmp(event_type, 'PairBreeders') %need to make breeding cage first 
+    if strcmp(event_type, 'PairBreeders') %need to make breeding cage first
+        if isempty(key.cage_number)
+            error('Must enter a cage number.'); 
+        end
         key_breedingCage = struct;
         key_breedingCage.cage_number = key.cage_number;
         insert(sl.BreedingCage, key_breedingCage);        
@@ -56,6 +59,10 @@ try
     if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals\
         %special case if female has the same cage as the current cage
         %don't deactivate
+        if isempty(key.new_cage_male) || isempty(key.new_cage_female)
+            disp('Must include cage numbers');
+            error('Missing cage number for either male or female mouse');
+        end
         if strcmp(key.cage_number, key.new_cage_female)
             %do nothing
             disp('breeding cage not deactivated');
@@ -145,6 +152,35 @@ try
             end
         end
         key = rmfield(key,{'stimTypes','stimArms','stimIDs'});    
+    end
+    
+    if strcmp(event_type, 'Tag')
+        if isfield(key,'do_tag') && ~key.do_tag
+            if ~strcmp(key.tag_ear,'None') || ~strcmp(key.punch,'None') || ~isnan(key.tag_id)
+                disp('Must mark animal as tagged if inserting tag or punch information');
+                error('Animal not marked as tagged');
+            else
+                inserted = false;                
+                if nargin<3
+                    C.cancelTransaction;
+                end
+                return
+            end
+        end
+        if strcmp(key.tag_ear,'None') && strcmp(key.punch,'None')
+            disp('Animal must be either tagged or punched to enter a tag event');
+            error('Missing tag and punch info');
+        elseif (strcmp(key.tag_ear,'None') && ~isnan(key.tag_id)) || (~strcmp(key.tag_ear,'None') && isnan(key.tag_id))
+            disp('Animal must either have both a tag ear and tag # or have neither');
+            error('Missing tag info');
+        end
+    end
+    
+    if strcmp(event_type, 'AssignCage')
+        if isempty(key.cage_number)
+            disp('Must assign a cage number when moving an animal');
+            error('Missing cage number');
+        end
     end
     
     if strcmp(event_type, 'SeparateBreeders') && key.male_id == 0

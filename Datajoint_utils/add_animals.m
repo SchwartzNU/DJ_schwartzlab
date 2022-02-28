@@ -39,9 +39,11 @@ try
         text = add_animalEvent(tag_key, 'Tag',C);
         
         %add protocol assignment event
-        protocol_key.animal_id = id;
-        add_animalEvent(protocol_key, 'AssignProtocol',C);
-        disp('Protocol assigment successful');
+        if ~strcmp(protocol_key.protocol_name,'Unknown')
+            protocol_key.animal_id = id;
+            add_animalEvent(protocol_key, 'AssignProtocol',C);
+            disp('Protocol assigment successful');
+        end
         
         fprintf('Animal insert successful.\n%s', text);
     end
