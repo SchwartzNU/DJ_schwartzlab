@@ -13,7 +13,7 @@ classdef Deceased < dj.Manual
     methods (Static)
 
         function animals = living()
-            animals = sln_animal.Animal() - sln_animal.Deceased();
+            animals = sln_animal.Animal() - (sln_animal.AnimalEvent() * sln_animal.Deceased());
         end
 
     end
