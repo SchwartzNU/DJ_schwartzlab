@@ -10,6 +10,19 @@ sex="Unknown"            : enum('Male','Female','Unknown') # sex of mouse - Male
 %}
 
 classdef Animal < dj.Manual
+ methods(Static)
+    
+     function animals = living()
+            q = sln_animal.Deceased.living();
+
+            animals = q.fetch('animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+ end
+
 end
 
 %TODO add back methods from sl.Animal
