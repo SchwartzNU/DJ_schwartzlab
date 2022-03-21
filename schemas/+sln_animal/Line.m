@@ -1,7 +1,7 @@
 %{
 # Catalog info for animals 
 -> sln_animal.Vendor
--> catalog_id       : int unsigned
+catalog_id       : int unsigned
 ---
 description         : varchar(128)    
 %}
