@@ -1,5 +1,5 @@
 %{
-event_id : unsigned int autoincrement
+event_id : int unsigned AUTO_INCREMENT     # unique event id
 ---
 -> sln_animal.Animal
 -> sl.User
