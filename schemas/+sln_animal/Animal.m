@@ -12,5 +12,5 @@ sex="Unknown"            : enum('Male','Female','Unknown') # sex of mouse - Male
 classdef Animal < dj.Manual
 end
 
-%TODO: need to add back in methods from sl.Animal
+%TODO add back methods from sl.Animal
 
