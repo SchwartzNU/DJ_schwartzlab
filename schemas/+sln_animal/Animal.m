@@ -20,10 +20,240 @@ classdef Animal < dj.Manual
             if isempty(animals)
                animals = reshape(animals,0,1); 
             end
+     end
+
+     function animals = tagNumber(animal_ids, liveOnly)
+
+            q = sl.AnimalEventTag.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sln_animal.Deceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','tag_id');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+     end
+    
+    function animals = assignedProtocol(animal_ids)
+            %get the protocol number           
+            
+            q = sln_animal.AssignProtocol() * sln_animal.AnimalProtocol();
+            if nargin && ~isempty(animal_ids)
+                q = restrict_by_animal_ids(q, animal_ids);
+            end
+            animals = q.fetch('animal_id','protocol_number', 'LIMIT 1 PER animal_id');
+            
         end
+%                 
+%         function [result, animals] = isGenotyped(animal_ids)
+%            animals = sl.Animal.genotypeStatus(animal_ids);
+%            result = ismember(animal_ids, [animals.animal_id]);
+%         end
+        
+        function animals = withEvent(eventType, animal_ids, liveOnly)
+            %has this event
+
+            if nargin>2 && liveOnly 
+                q = sl.AnimalEventDeceased.living();
+            else
+                q = sln_animal.Animal();
+            end
+            q = q & feval(sprintf('sln_animal.%s', eventType));
+
+            if nargin>1 && ~isempty(animal_ids)
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id');
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+
+        end
+        
+        function [result, animals] = hasEvent(eventType, animal_ids)
+            animals = sln_animal.Animal.withEvent(eventType, animal_ids);
+            result = ismember(animal_ids, [animals.animal_id]);
+        end
+        
+        function animals = cageNumber(animal_ids, liveOnly)
+
+            q = sln_animal.AssignCage.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sln_animal.Deceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','cage_number');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+        function animals = tagEar(animal_ids, liveOnly)
+
+            q = sln_animal.Tag.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sln_animal.Deceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','tag_ear');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+        function animals = earPunch(animal_ids, liveOnly)
+
+            q = sln_animal.Tag.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sln_animal.Deceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','punch');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+        function animals = roomNumber(animal_ids, liveOnly)
+
+            q = sln_animal.AssignCage.current();
+
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = q & sln_animal.Deceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id','room_number');
+            animals = rmfield(animals, 'event_id');
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+        
+%         function animals = deceasedDate(animal_ids)
+% 
+%             %restrict by deceased mice
+%             q = sl.AnimalEventDeceased();
+% 
+%             if nargin && ~isempty(animal_ids)
+%                 %restrict by animal_id
+%                 q = restrict_by_animal_ids(q,animal_ids);
+%             end
+% 
+%             animals = q.fetch('animal_id','date');
+%             animals = rmfield(animals, 'event_id');
+%             if isempty(animals)
+%                animals = reshape(animals,0,1); 
+%             end
+%         end
+        
+        function [result, animals] = isCaged(animal_ids)
+            animals = sln_animal.Animal.cageNumber(animal_ids);
+            result = ismember(animal_ids, [animals.animal_id]);
+        end
+        
+        function animals = age(animal_ids, liveOnly)
+            %returns age as a calendarDuration object
+            
+            if nargin>1 && liveOnly
+                %restrict by living mice
+                q = sln_animal.Deceased.living();
+            else 
+                q = sln_animal.Animal();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+            
+            animals = q.fetch('animal_id','dob');
+
+            ages = num2cell(between(datetime({animals.dob}), date(),'weeks'));
+            [animals(:).age] = ages{:};
+            
+            % one-liner:
+            % [animals(:).ages] = subsref( num2cell(between(datetime({animals.dob}), date())), struct('type','{}', 'subs',':'))
+            
+            if isempty(animals)
+               animals = reshape(animals,0,1); 
+            end
+        end
+
+        function animals = genotypeStatus(animal_ids, liveOnly)
+            %get latest genotype status
+
+            q = sl.AnimalEventGenotyped();
+
+            if nargin>1 && liveOnly
+                q = q & sln_animal.Deceased.living();
+            end
+
+            if nargin && ~isempty(animal_ids)
+                %restrict by animal_id
+                q = restrict_by_animal_ids(q,animal_ids);
+            end
+
+            animals = q.fetch('animal_id', 'genotype_status', 'LIMIT 1 PER animal_id');
+
+            if isempty(animals)
+                animals = reshape(animals,0,1);
+            end
+        end
+
+
  end
 
 end
+
+
+function q = restrict_by_animal_ids(q, animal_ids)
+    if ~isa(animal_ids,'cell')
+        animal_ids = num2cell(animal_ids);
+    end
+    q = q & struct('animal_id', animal_ids);
+end
+
 
 %TODO add back methods from sl.Animal
 

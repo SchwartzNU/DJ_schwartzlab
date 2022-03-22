@@ -2,7 +2,7 @@
 event_id : int unsigned AUTO_INCREMENT     # unique event id
 ---
 -> sln_animal.Animal
--> sl.User
+-> sln_lab.User
 date                           : date
 time = NULL                    : time
 entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
