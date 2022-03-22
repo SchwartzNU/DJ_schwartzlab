@@ -1,8 +1,7 @@
 %{
 # 
--> sln_animal.Genotype
----
 -> sln_animal.AnimalEvent
+---
 -> sln_animal.GenotypeSource
 %}
 classdef GenotypeResult < dj.Part

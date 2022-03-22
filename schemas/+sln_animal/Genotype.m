@@ -4,6 +4,7 @@
 -> sln_animal.GeneLocus
 allele_id               : tinyint unsigned            # up to ploidy number
 ---
+-> sln_animal.GenotypeResult
 -> sln_animal.Allele
 inheritance = NULL      : enum('maternal','paternal') # source, if known
 %}
