@@ -183,6 +183,10 @@ try
         end
     end
     
+    %MAIN INSERT of this event type
+    key = insert(sln_animal.AnimalEvent, key);
+    insert(feval(sprintf('sln_animal.%s',event_type)), key);
+
 %     if strcmp(event_type, 'SeparateBreeders') && key.male_id == 0
 %         %special case, no SeparateBreeders event insert for male==0
 %     else
@@ -190,9 +194,9 @@ try
 %     end
 %     
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
-        this_event_id = max(fetchn(sl.AnimalEventSocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
+        this_event_id = max(fetchn(sln_animal.SocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
         [stimAnimalKeys.event_id] = deal(this_event_id);
-        insert(sl.AnimalEventSocialBehaviorSessionStimulus, stimAnimalKeys);
+        insert(sln_animal.SocialBehaviorSessionStimulus, stimAnimalKeys);
         text = sprintf('Stimulus insert successful.\n%s', text);
     end
         
