@@ -9,3 +9,4 @@ website                     : varchar(128)
 classdef Vendor < dj.Manual
 end
 
+%catalog ID of the strain might go here

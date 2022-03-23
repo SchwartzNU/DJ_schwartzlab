@@ -7,6 +7,7 @@ sex="Unknown"            : enum('Male','Female','Unknown') # sex of mouse - Male
 -> sln_animal.Species
 -> [nullable] sln_animal.Background
 -> [nullable] sln_animal.Source
+-> [nullable] sln_animal.Identifier
 %}
 
 classdef Animal < dj.Manual
@@ -240,6 +241,52 @@ classdef Animal < dj.Manual
                 animals = reshape(animals,0,1);
             end
         end
+
+        function str = genotype_string_for_id(id)
+            genotype_entries = sln_animal.Genotype & sprintf('animal_id = %d',id);
+            if ~genotype_entries.exists
+                str = '?';
+            else
+                str = '';
+                loci = unique(fetchn(genotype_entries, 'locus_name'));
+                loci_count = length(loci);
+                for i=1:loci_count
+                    cur_alleles = fetch(genotype_entries & sprintf('locus_name = "%s"', loci{i}), '*');
+                    if length(cur_alleles) == 1
+                        str = [str, sprintf('%s: %s/?', cur_alleles(1).locus_name, cur_alleles(1).allele_name)];
+                    else %2 alleles at this locus
+                        str = [str, sprintf('%s: %s/%s', cur_alleles(1).locus_name, cur_alleles(1).allele_name, cur_alleles(2).allele_name)];
+                    end
+                    str = strrep(str,'WT', '-');
+                    if i<loci_count
+                        str = [str, ', '];
+                    end
+                end
+            end
+        end
+
+
+%         function animals = genotype_string(animal_ids, liveOnly)
+% 
+%             q = sln_animal.Genotype();
+% 
+%             if nargin>1 && liveOnly
+%                 %restrict by living mice
+%                 q = q & sln_animal.Deceased.living();
+%             end
+% 
+%             if nargin && ~isempty(animal_ids)
+%                 %restrict by animal_id
+%                 q = restrict_by_animal_ids(q,animal_ids);
+%             end
+% 
+%             animals = q.fetch('animal_id','cage_number');            
+%             animals = rmfield(animals, 'event_id');
+% 
+%             if isempty(animals)
+%                animals = reshape(animals,0,1); 
+%             end
+%         end
 
 
  end
