@@ -28,9 +28,6 @@ for i=1:length(other_lab_ind)
 
     id = input('Choose source ID: ');
     new_animals(curInd).source_id = id;
-
-    extern = input('External ID: ', 's');
-    new_animals(curInd).external_id = sprintf('OLD_DJID:%d, %s', old_animals(curInd).animal_id, extern);
 end
 
 %% vendor sources
@@ -55,35 +52,35 @@ end
 %% breeder cage sources
 breeding_ind = find(strcmp({old_animals.source}, 'breeding'));
 all_breeding_cages = fetchn(sl.BreedingCage,'cage_number');
+breeding_cage_member_err_ind = [];
 not_breeding_cage_ind = [];
 inactive_breeding_cage_ind = [];
 active_breeding_cage_ind = [];
 
 for i=1:length(breeding_ind)
+    i
     curInd = breeding_ind(i);
     curSourceID = old_animals(curInd).source_id;
     
     if ismember(curSourceID, all_breeding_cages)
-        if sl.BreedingCage.isActive(curSourceID)
-            b = sl.BreedingCage & sprintf('cage_number="%s"', curSourceID);
-            key.male_id = fetch1(b.getMember('Male'), 'animal_id');
-            key.female_id = fetch1(b.getMember('Female'), 'animal_id');
-            id = sln_animal.add_source(key,'BreedingPair');
-            active_breeding_cage_ind = [active_breeding_cage_ind, curInd];        
-            new_animals(curInd).external_id = sprintf('OLD_DJID:%d', old_animals(curInd).animal_id);
+        b = sl.BreedingCage & sprintf('cage_number="%s"', curSourceID)
+        b.getMember('Male')        
+        pause;
+        try
 
-        else
-            key.cage_number = curSourceID;
-            id = sln_animal.add_source(key,'OldBreedingCage');
-            inactive_breeding_cage_ind = [inactive_breeding_cage_ind, curInd];             
-            new_animals(curInd).external_id = sprintf('OLD_DJID:%d, OLD_genotype_name: ', ...
-                old_animals(curInd).animal_id, old_animals(curInd).genotype_name);
+            key.male_id = fetch1(b.getMember('Male'), 'animal_id')
+            key.female_id = fetch1(b.getMember('Female'), 'animal_id')
+            id = sln_animal.add_source(key,'BreedingPair');
+            active_breeding_cage_ind = [active_breeding_cage_ind, curInd];
+            new_animals(curInd).source_id = id;
+        catch
+            disp('error finding breeding cage member');
+            breeding_cage_member_err_ind = [breeding_cage_member_err_ind, curInd];
+            new_animals(curInd).external_id = sprintf('OLD_genotype_name: %s', old_animals(curInd).genotype_name);
         end
-        new_animals(curInd).source_id = id;                
     else
         not_breeding_cage_ind = [not_breeding_cage_ind, curInd];
-        new_animals(curInd).external_id = sprintf('OLD_DJID:%d, OLD_genotype_name: ', ...
-                old_animals(curInd).animal_id, old_animals(curInd).genotype_name);
+        new_animals(curInd).external_id = sprintf('OLD_genotype_name: %s', old_animals(curInd).genotype_name);
     end
 end
 

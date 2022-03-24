@@ -7,5 +7,6 @@
 %}
 
 classdef BreedingPair < dj.Manual
+
 end
 

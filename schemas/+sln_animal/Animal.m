@@ -4,7 +4,7 @@ animal_id                : int unsigned AUTO_INCREMENT     # unique animal id
 ---
 dob=null                 : date                            # mouse date of birth
 sex="Unknown"            : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
-external_id = NULL       : varchar(128sln)                     # id number from external source, like tag id from another lab
+external_id = NULL       : varchar(128)                    # id number from external source like tag id from another lab
 -> sln_animal.Species
 -> [nullable] sln_animal.Background
 -> [nullable] sln_animal.Source
