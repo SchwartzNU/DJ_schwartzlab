@@ -20,6 +20,12 @@ loci(end).description = 'Locus for constitutive, ubiquitous expression';
 loci(end).chromosome = 6;
 loci(end).position = 52.73;
 
+%% TIGRE
+loci(end+1).locus_name = 'TIGRE';
+loci(end).description = 'Locus for constitutive, ubiquitous expression, syntetic';
+loci(end).chromosome = 9;
+loci(end).position = nan;
+
 %% CCK
 loci(end+1).locus_name = 'Cck';
 loci(end).description = 'Neuropeptide and gastrointestinal hormone';
@@ -50,6 +56,39 @@ loci(end).description = 'Platelet-derived growth factor receptor beta, critical 
 loci(end).chromosome = 18;
 loci(end).position = 34.41;
 
+%% Prss56
+loci(end+1).locus_name = 'Prss56';
+loci(end).description = 'Serine protease 56';
+loci(end).chromosome = 1;
+loci(end).position = 44.07;
 
+%% Grm6
+loci(end+1).locus_name = 'Grm6';
+loci(end).description = 'glutamate receptor, metabotropic 6';
+loci(end).chromosome = 11;
+loci(end).position = 30.93;
 
+%% Gad2
+loci(end+1).locus_name = 'Gad2';
+loci(end).description = 'glutamic acid decarboxylase 2';
+loci(end).chromosome = 2;
+loci(end).position = 15.15;
+
+%% Camk2a
+loci(end+1).locus_name = 'Camk2a';
+loci(end).description = 'calcium-calmodulin-dependent kinase II alpha';
+loci(end).chromosome = 18;
+loci(end).position = 34.41;
+
+%% Tusc5
+loci(end+1).locus_name = 'Trarg1';
+loci(end).description = 'trafficking regulator of GLUT4 (SLC2A4) ';
+loci(end).chromosome = 11;
+loci(end).position = 45.98;
+
+%% unknown
+loci(end+1).locus_name = 'unknown';
+loci(end).description = 'unknown locus';
+loci(end).chromosome = nan;
+loci(end).position = nan;
 

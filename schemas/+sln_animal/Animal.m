@@ -4,10 +4,10 @@ animal_id                : int unsigned AUTO_INCREMENT     # unique animal id
 ---
 dob=null                 : date                            # mouse date of birth
 sex="Unknown"            : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
+external_id = NULL       : varchar(128sln)                     # id number from external source, like tag id from another lab
 -> sln_animal.Species
 -> [nullable] sln_animal.Background
 -> [nullable] sln_animal.Source
--> [nullable] sln_animal.Identifier
 %}
 
 classdef Animal < dj.Manual
@@ -263,6 +263,35 @@ classdef Animal < dj.Manual
                     end
                 end
             end
+        end
+
+        function str = source_string_for_id(id)
+            source_id = fetch1(sln_animal.Animal & sprintf('animal_id = %d',id), 'source_id'); 
+            str = 'unknown';
+ 
+            q_breeder = sln_animal.BreedingPair & sprintf('source_id = %d',source_id);
+            if q_breeder.exists
+                source_struct = fetch(q_breeder,'*');
+                male_genotype_str = sln_animal.Animal().genotype_string_for_id(source_struct.male_id);
+                female_genotype_str = sln_animal.Animal().genotype_string_for_id(source_struct.female_id);
+                str = sprintf('%s ; %s', male_genotype_str, female_genotype_str);
+                return;
+            end
+
+            q_vendor = sln_animal.VendorStrain & sprintf('source_id = %d',source_id);
+            if q_vendor.exists
+                source_struct = fetch(q_vendor,'*');
+                str = sprintf('%s:%s', source_struct.vendor_name, source_struct.strain_name);
+                return;
+            end
+            
+            q_collab = sln_animal.VendorStrain & sprintf('source_id = %d',source_id);
+            if q_collab.exists
+                source_struct = fetch(q_collab,'*');
+                str = sprintf('%s:%s', source_struct.lab_name, source_struct.strain_name);
+                return;
+            end
+            
         end
 
 
