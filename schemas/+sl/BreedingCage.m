@@ -43,7 +43,7 @@ classdef BreedingCage < dj.Manual
         
         function animal = getMember(obj, sex)
             %get only breeders
-            allAnimals = fetch(sl.AnimalEventDeceased.living(),'*');
+            allAnimals = fetch(sl.Animal(),'*');
             animal_ids = [allAnimals.animal_id]';
             isBreeder = sl.Animal.isBreeder(animal_ids);
             animal_ids = animal_ids(isBreeder);            
