@@ -63,13 +63,10 @@ for i=1:length(breeding_ind)
     curSourceID = old_animals(curInd).source_id;
     
     if ismember(curSourceID, all_breeding_cages)
-        b = sl.BreedingCage & sprintf('cage_number="%s"', curSourceID)
-        b.getMember('Male')        
-        pause;
+        b = sl.BreedingCage & sprintf('cage_number="%s"', curSourceID);
         try
-
-            key.male_id = fetch1(b.getMember('Male'), 'animal_id')
-            key.female_id = fetch1(b.getMember('Female'), 'animal_id')
+            key.male_id = fetch1(b.getMember('Male'), 'animal_id');
+            key.female_id = fetch1(b.getMember('Female'), 'animal_id');
             id = sln_animal.add_source(key,'BreedingPair');
             active_breeding_cage_ind = [active_breeding_cage_ind, curInd];
             new_animals(curInd).source_id = id;

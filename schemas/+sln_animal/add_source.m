@@ -18,12 +18,13 @@ for i=1:length(keys)
         try
             %source_id = add_source_if_missing(...)
             insert(sln_animal.Source,key_s);
-            source_id(i) = fetch1(sln_animal.Source, 'source_id', 'LIMIT 1 DESC');
+            source_id(i) = fetch1(sln_animal.Source, 'source_id', 'ORDER BY source_id DESC LIMIT 1');
             key.source_id = source_id(i);
             insert(feval(sprintf('sln_animal.%s',source_type)), key);
             C.commitTransaction;
-        catch
+        catch ME            
             C.cancelTransaction;
+            rethrow(ME)
         end
     end
 end
