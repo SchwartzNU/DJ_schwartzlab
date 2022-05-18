@@ -24,7 +24,7 @@ for i=1:length(RGC_types)
         
     end
     toc;
-    save(sprintf('%raw_spike_data_%s.mat', save_dir, RGC_types{i}), 'epochData');
+    save(sprintf('%sraw_spike_data_%s.mat', save_dir, RGC_types{i}), 'epochData');
     %data_by_rgc_type{i} = epochData;
 end
 
