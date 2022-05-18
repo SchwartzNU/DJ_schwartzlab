@@ -1,9 +1,9 @@
 RGC_types = fetchn(sl.CellType & 'cell_class = "RGC"','name_full');
 data_by_rgc_type = {};
 
-for i=1:length(RGC_tyes)
+for i=1:length(RGC_types)
     i
-    RGC_tyes{i}
+    RGC_types{i}
     tic;
     q = sl.Epoch * sl_mutable.CurrentCellType ...
         & sprintf('cell_type = "%s"', RGC_types{i}) ...
