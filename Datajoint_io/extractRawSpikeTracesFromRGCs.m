@@ -1,5 +1,6 @@
 RGC_types = fetchn(sl.CellType & 'cell_class = "RGC"','name_full');
-data_by_rgc_type = {};
+%data_by_rgc_type = {};
+save_dir = '/mnt/fsmresfiles/AnimalLogs/exportedData/';
 
 for i=1:length(RGC_types)
     i
@@ -12,7 +13,7 @@ for i=1:length(RGC_types)
     
     epochData = fetch(q);
 
-    N = q.count;
+    N = q.count
     allParams = fetchn(q, 'protocol_params');
     spotSizes = zeros(N,1);
 
@@ -23,7 +24,8 @@ for i=1:length(RGC_types)
         
     end
     toc;
-    data_by_rgc_type{i} = epochData;
+    save(sprintf('%raw_spike_data_%s.mat', save_dir, RGC_types{i}, epochData));
+    %data_by_rgc_type{i} = epochData;
 end
 
 
