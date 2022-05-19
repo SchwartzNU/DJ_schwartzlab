@@ -18,11 +18,9 @@ for i=1:length(RGC_types)
     saveN = min(N,N_epochs);
     epochDataOut = epochData(1:saveN);
     allParams = fetchn(q, 'protocol_params');
-    spotSizes = zeros(N,1);
 
     for n=1:saveN
-        spotSizes(n) = allParams{n}.curSpotSize;
-        epochDataOut(n).spotSize = spotSizes;
+        epochDataOut(n).spotSize = allParams{n}.curSpotSize;
         try
             [epochDataOut(n).timeAxis, epochDataOut(n).data] = epochRawData(epochData(n).cell_id, epochData(n).epoch_number, 1);
         catch
