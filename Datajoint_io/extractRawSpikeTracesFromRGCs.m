@@ -14,7 +14,7 @@ for i=3:length(RGC_types)
     epochData = fetch(q);
 
     N = q.count
-    allParams = fhn(q, 'protocol_params');
+    allParams = fetchn(q, 'protocol_params');
     spotSizes = zeros(N,1);
 
     for n=1:N
