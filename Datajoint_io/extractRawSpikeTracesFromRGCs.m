@@ -20,8 +20,11 @@ for i=1:length(RGC_types)
     for n=1:N
         spotSizes(n) = allParams{n}.curSpotSize;
         epochData(n).spotSize = spotSizes;
-        [epochData(n).timeAxis, epochData(n).data] = epochRawData(epochData(n).cell_id, epochData(n).epoch_number, 1);
-        
+        try
+            [epochData(n).timeAxis, epochData(n).data] = epochRawData(epochData(n).cell_id, epochData(n).epoch_number, 1);
+        catch
+            disp('Skipping epoch');
+        end
     end
     toc;
     save(sprintf('%sraw_spike_data_%s.mat', save_dir, RGC_types{i}), 'epochData');
