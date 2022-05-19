@@ -1,8 +1,9 @@
+N_epochs = 300;
 RGC_types = fetchn(sl.CellType & 'cell_class = "RGC"','name_full');
 %data_by_rgc_type = {};
 save_dir = '/mnt/fsmresfiles/AnimalLogs/exportedData/';
 
-for i=3:length(RGC_types)
+for i=1:length(RGC_types)
     i
     RGC_types{i}
     tic;
@@ -17,17 +18,18 @@ for i=3:length(RGC_types)
     allParams = fetchn(q, 'protocol_params');
     spotSizes = zeros(N,1);
 
-    for n=1:N
+    for n=1:min(N,N_epochs)
         spotSizes(n) = allParams{n}.curSpotSize;
-        epochData(n).spotSize = spotSizes;
+        epochDataOut(n) = epochData(n);
+        epochDataOut(n).spotSize = spotSizes;
         try
-            [epochData(n).timeAxis, epochData(n).data] = epochRawData(epochData(n).cell_id, epochData(n).epoch_number, 1);
+            [epochDataOut(n).timeAxis, epochDataOut(n).data] = epochRawData(epochData(n).cell_id, epochData(n).epoch_number, 1);
         catch
             disp('Skipping epoch');
         end
     end
     toc;
-    save(sprintf('%sraw_spike_data_%s.mat', save_dir, RGC_types{i}), 'epochData');
+    save(sprintf('%sraw_spike_data_%s.mat', save_dir, RGC_types{i}), 'epochDataOut');
     %data_by_rgc_type{i} = epochData;
 end
 
