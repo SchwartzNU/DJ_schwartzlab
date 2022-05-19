@@ -16,7 +16,7 @@ for i=1:length(RGC_types)
 
     N = q.count
     saveN = min(N,N_epochs);
-    epochDataOut = epochData(1:save);
+    epochDataOut = epochData(1:saveN);
     allParams = fetchn(q, 'protocol_params');
     spotSizes = zeros(N,1);
 
