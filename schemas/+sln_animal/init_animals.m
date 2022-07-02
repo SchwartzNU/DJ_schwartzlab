@@ -178,7 +178,7 @@ for i=1:N
 end
 
 %% Social Behavior session
-soc_beh_session_events_struct = rmfield(fetch(sl.AnimalEventSocialBehaviorSession  ,'*'), 'event_id');
+soc_beh_session_events_struct = fetch(sl.AnimalEventSocialBehaviorSession  ,'*');
 N = length(soc_beh_session_events_struct)
 for i=1:N
     i
@@ -207,6 +207,18 @@ N = length(res_project_events_struct)
 for i=1:N
     i
     sln_animal.add_event(res_project_events_struct(i), 'ReservedForProject', 'REPLACE');
+end
+
+%% Assign cage
+assign_cage_events_struct = rmfield(fetch(sl.AnimalEventAssignCage  ,'*'), 'event_id');
+N = length(assign_cage_events_struct)
+for i=1:N
+    i
+    cage_int = str2double(assign_cage_events_struct(i).cage_number);
+    if ~isnan(cage_int) %can't add the non-numeric cage numbers
+        assign_cage_events_struct(i).cage_number = cage_int;
+        sln_animal.add_event(assign_cage_events_struct(i), 'AssignCage', 'REPLACE');
+    end
 end
 
 %% now genotypes

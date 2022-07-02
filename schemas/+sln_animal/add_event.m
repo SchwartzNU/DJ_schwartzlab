@@ -22,8 +22,6 @@ try
             insert(sln_animal.Eye,key_eye);
             text = sprintf('Eye insert successful.\n%s',text);
         end
-        %animal_id is with the eye not the event
-        key = rmfield(key,"animal_id");
     end
     
 %     if strcmp(event_type, 'PairBreeders') %need to make breeding cage first
@@ -142,18 +140,6 @@ try
 %         
 %     end
     
-    if strcmp(event_type, 'SocialBehaviorSession') %need to add stim mice
-        stimAnimalKeys = struct('stim_type',key.stimTypes,'arm',key.stimArms);
-        for i=1:length(stimAnimalKeys)
-            if key.stimIDs(i)
-                stimAnimalKeys(i).stimulus_animal_id = key.stimIDs(i);
-            else
-                stimAnimalKeys(i).stimulus_animal_id = nan;
-            end
-        end
-        key = rmfield(key,{'stimTypes','stimArms','stimIDs'});    
-    end
-    
     if strcmp(event_type, 'Tag')
         if isfield(key,'do_tag') && ~key.do_tag
             if ~strcmp(key.tag_ear,'None') || ~strcmp(key.punch,'None') || ~isnan(key.tag_id)
@@ -181,13 +167,30 @@ try
             disp('Must assign a cage number when moving an animal');
             error('Missing cage number');
         end
+        thisCage = sln_animal.Cage & sprintf('cage_number=%d', key.cage_number);
+        if ~thisCage.exists %need to make the cage
+            if strcmp(key.cause,'set as breeder')
+                key_cage.is_breeding = 'T';
+            else
+                key_cage.is_breeding = 'F';
+            end
+            key_cage.cage_number = key.cage_number;
+            key_cage.room_number = key.room_number;
+            insert(sln_animal.Cage,key_cage);
+        end       
+        key = rmfield(key,'room_number'); %inside Cage table instead now
     end
     
     %MAIN INSERT of this event type    
-    %key
-    key = insert(sln_animal.AnimalEvent, key)
-    insert(feval(sprintf('sln_animal.%s',event_type)), key);
+    if strcmp(event_type, 'SocialBehaviorSession')
+        old_event_id = key.event_id;
+        key = rmfield(key,'event_id');
+    end
 
+    %key
+    key = insert(sln_animal.AnimalEvent, key);
+    insert(feval(sprintf('sln_animal.%s',event_type)), key);
+    %disp('did main insert')
 %     if strcmp(event_type, 'SeparateBreeders') && key.male_id == 0
 %         %special case, no SeparateBreeders event insert for male==0
 %     else
@@ -195,10 +198,14 @@ try
 %     end
 %     
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
-        this_event_id = max(fetchn(sln_animal.SocialBehaviorSession & ['animal_id=' num2str(key.animal_id)], 'event_id'));
-        [stimAnimalKeys.event_id] = deal(this_event_id);
-        insert(sln_animal.SocialBehaviorSessionStimulus, stimAnimalKeys);
+        this_event_id = key.event_id;
+
+        stims = fetch(sl.AnimalEventSocialBehaviorSessionStimulus & sprintf('event_id=%d',old_event_id), '*');
+        stims = rmfield(stims,'event_id');
+        [stims.event_id] = deal(this_event_id);
+        insert(sln_animal.SocialBehaviorSessionStimulus, stims);
         text = sprintf('Stimulus insert successful.\n%s', text);
+        key = rmfield(key,'event_id');        
     end
         
     text = sprintf('%s insert successful.\n%s', event_type, text);

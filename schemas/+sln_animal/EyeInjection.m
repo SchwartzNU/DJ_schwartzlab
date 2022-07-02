@@ -3,7 +3,7 @@
 -> sln_animal.AnimalEvent
 ---
 -> sln_animal.InjectionSubstance
--> sln_animal.Eye
+side: enum('Left', 'Right')          # left, right
 dilution: float                      # dilution of substance
 %}
 
