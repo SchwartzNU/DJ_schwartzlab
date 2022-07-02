@@ -4,7 +4,6 @@
 ---
 -> sln_animal.InjectionSubstance
 -> sln_animal.Eye
-
 dilution: float                      # dilution of substance
 %}
 

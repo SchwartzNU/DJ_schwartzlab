@@ -49,6 +49,19 @@ for i=1:length(vendor_ind)
     end
 end
 
+%% fix NaN dob to [] and source_id to nan
+for i=1:length(new_animals)
+    if isnan(new_animals(i).dob)
+        new_animals(i).dob = [];
+    end
+    if isempty(new_animals(i).source_id)
+        new_animals(i).source_id = nan;
+    end
+end
+
+%% insert, temporarily to get them in - needed for breeder sources
+insert(sln_animal.Animal, new_animals);
+
 %% breeder cage sources
 breeding_ind = find(strcmp({old_animals.source}, 'breeding'));
 all_breeding_cages = fetchn(sl.BreedingCage,'cage_number');
@@ -56,6 +69,7 @@ breeding_cage_member_err_ind = [];
 not_breeding_cage_ind = [];
 inactive_breeding_cage_ind = [];
 active_breeding_cage_ind = [];
+error_list = [];
 
 for i=1:length(breeding_ind)
     i
@@ -65,14 +79,34 @@ for i=1:length(breeding_ind)
     if ismember(curSourceID, all_breeding_cages)
         b = sl.BreedingCage & sprintf('cage_number="%s"', curSourceID);
         try
-            key.male_id = fetch1(b.getMember('Male'), 'animal_id');
-            key.female_id = fetch1(b.getMember('Female'), 'animal_id');
+            key.male_id = fetchn(b.getHistoricalMember('Male'), 'animal_id');
+            if isempty(key.male_id) 
+                error('breeding cage has no male id');
+            elseif length(key.male_id) > 1
+                %who's the daddy
+                disp('whos the daddy');
+                baby_dob = old_animals(curInd).dob;
+                for d=1:length(key.male_id)
+                    ev_date = fetch1(sl.AnimalEventAssignCage & ...
+                        sprintf('cage_number="%s"', thisCage) & ...
+                        sprintf('animal_id=%d', key.male_id(i)),'date');
+                    if ev_date > baby_dob
+                        not_dad = key.male_id(i);
+                    end
+                end
+                key.male_id = setdiff(key.male_id,not_dad);
+                if length(key.male_id) > 1
+                    error('multiple possible dads');
+                end
+            end
+            key.female_id = fetch1(b.getHistoricalMember('Female'), 'animal_id');
             id = sln_animal.add_source(key,'BreedingPair');
             active_breeding_cage_ind = [active_breeding_cage_ind, curInd];
             new_animals(curInd).source_id = id;
-        catch
+        catch ME
             disp('error finding breeding cage member');
             breeding_cage_member_err_ind = [breeding_cage_member_err_ind, curInd];
+            error_list{i} = ME;
             new_animals(curInd).external_id = sprintf('OLD_genotype_name: %s', old_animals(curInd).genotype_name);
         end
     else
@@ -81,8 +115,99 @@ for i=1:length(breeding_ind)
     end
 end
 
+%% fix NaN dob to [] and source_id to nan
+for i=1:length(new_animals)
+    if isnan(new_animals(i).dob)
+        new_animals(i).dob = [];
+    end
+    if isempty(new_animals(i).source_id)
+        new_animals(i).source_id = nan;
+    end
+end
+
 %% insert
-sln_animal.Animal().insert(new_animals);
+%insert(sln_animal.Animal, new_animals, 'REPLACE');
+%sln_animal.Animal().insert(new_animals);
+
+for i=1:length(new_animals)
+    i
+    breeding_pair_struct = [];
+    if strcmp(new_animals(i).sex,'Female')       
+        breeding_pair = sln_animal.BreedingPair & sprintf('female_id=%d',new_animals(i).animal_id);
+    elseif strcmp(new_animals(i).sex,'Male')
+        breeding_pair = sln_animal.BreedingPair & sprintf('male_id=%d',new_animals(i).animal_id);
+    end
+    if ~strcmp(new_animals(i).sex,'Unknown')       
+        breeding_pair_struct = fetch(breeding_pair, '*');
+    end
+    if ~isempty(breeding_pair_struct)
+        delQuick(breeding_pair);
+        insert(sln_animal.Animal, new_animals(i), 'REPLACE');
+        sln_animal.add_source(breeding_pair_struct,'BreedingPair');
+    end
+end
+
+%% add old animal events to new database
+%% Deceased
+deceased_events_struct = rmfield(fetch(sl.AnimalEventDeceased,'*'), 'event_id');
+for i=1:length(deceased_events_struct)
+    sln_animal.add_event(deceased_events_struct(i), 'Deceased', 'REPLACE');
+end
+
+%% Assign protocol
+assign_protocol_events_struct = rmfield(fetch(sl.AnimalEventAssignProtocol  ,'*'), 'event_id');
+for i=1:length(assign_protocol_events_struct)
+    i
+    sln_animal.add_event(assign_protocol_events_struct(i), 'AssignProtocol', 'REPLACE');
+end
+
+%% Brain injection
+brain_inj_events_struct = rmfield(fetch(sl.AnimalEventBrainInjection  ,'*'), 'event_id');
+N = length(brain_inj_events_struct)
+for i=1:length(brain_inj_events_struct)
+    i
+    sln_animal.add_event(brain_inj_events_struct(i), 'BrainInjection', 'REPLACE');
+end
+
+%% Eye injection
+eye_inj_events_struct = rmfield(fetch(sl.AnimalEventEyeInjection  ,'*'), 'event_id');
+N = length(eye_inj_events_struct)
+for i=1:N
+    i
+    sln_animal.add_event(eye_inj_events_struct(i), 'EyeInjection', 'REPLACE');
+end
+
+%% Social Behavior session
+soc_beh_session_events_struct = rmfield(fetch(sl.AnimalEventSocialBehaviorSession  ,'*'), 'event_id');
+N = length(soc_beh_session_events_struct)
+for i=1:N
+    i
+    sln_animal.add_event(soc_beh_session_events_struct(i), 'SocialBehaviorSession', 'REPLACE');
+end
+
+%% Reserved for session
+res_session_events_struct = rmfield(fetch(sl.AnimalEventReservedForSession  ,'*'), 'event_id');
+N = length(res_session_events_struct)
+for i=1:N
+    i
+    sln_animal.add_event(res_session_events_struct(i), 'ReservedForSession', 'REPLACE');
+end
+
+%% Tag
+tag_events_struct = rmfield(fetch(sl.AnimalEventTag  ,'*'), 'event_id');
+N = length(tag_events_struct)
+for i=1:N
+    i
+    sln_animal.add_event(tag_events_struct(i), 'Tag', 'REPLACE');
+end
+
+%% Reserved for Project
+res_project_events_struct = rmfield(fetch(sl.AnimalEventReservedForProject  ,'*'), 'event_id');
+N = length(res_project_events_struct)
+for i=1:N
+    i
+    sln_animal.add_event(res_project_events_struct(i), 'ReservedForProject', 'REPLACE');
+end
 
 %% now genotypes
 non_wt_ind = find(~strcmp({old_animals.genotype_name}, 'WT'));

@@ -56,4 +56,7 @@ collaborator_strains(end+1).lab_name = 'Tiffany Schmidt';
 collaborator_strains(end).organization = 'NU';
 collaborator_strains(end).strain_name = 'Opn4-eGFP';
 
-
+%% Trpv4-cKO
+collaborator_strains(end+1).lab_name = 'David Krizaj';
+collaborator_strains(end).organization = 'U. Utah';
+collaborator_strains(end).strain_name = 'Trpv4-cKO';

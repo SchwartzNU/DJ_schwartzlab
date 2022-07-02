@@ -15,15 +15,15 @@ try
     end
     
     if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
-        thisEye = sln_animal.Eye & sprintf('animal_id = %d', key.animal_id) & sprintf('side = "%s"', key.whichEye);
+        thisEye = sln_animal.Eye & sprintf('animal_id = %d', key.animal_id) & sprintf('side = "%s"', key.side);
         if ~thisEye.exists
             key_eye.animal_id = key.animal_id;
-            key_eye.side = key.whichEye;
+            key_eye.side = key.side;
             insert(sln_animal.Eye,key_eye);
             text = sprintf('Eye insert successful.\n%s',text);
         end
-        key.side = key.whichEye;
-        key = rmfield(key,'whichEye');     
+        %animal_id is with the eye not the event
+        key = rmfield(key,"animal_id");
     end
     
 %     if strcmp(event_type, 'PairBreeders') %need to make breeding cage first
@@ -183,8 +183,9 @@ try
         end
     end
     
-    %MAIN INSERT of this event type
-    key = insert(sln_animal.AnimalEvent, key);
+    %MAIN INSERT of this event type    
+    %key
+    key = insert(sln_animal.AnimalEvent, key)
     insert(feval(sprintf('sln_animal.%s',event_type)), key);
 
 %     if strcmp(event_type, 'SeparateBreeders') && key.male_id == 0
@@ -212,5 +213,6 @@ catch ME
         C.cancelTransaction;
     end
     inserted = false;
-    rethrow(ME)
+    text = ME.message;
+    disp(text);
 end
