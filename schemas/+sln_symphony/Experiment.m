@@ -41,7 +41,7 @@ classdef Experiment < dj.Manual
             if ~isempty(all_loaded)
                 all_loaded = all_loaded(:,2);
             end
-            
+
             %getting the plain table name forces insertion into the
             %database
             cellfun(@(x) feval(['sln_symphony.',x]).plainTableName, setdiff(all_parts, all_loaded),'uni',0);
