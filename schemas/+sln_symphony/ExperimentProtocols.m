@@ -116,11 +116,12 @@ classdef ExperimentProtocols < handle
           %%we failed to insert
           if ~isempty(emptyMatches)
               %we probably mean to edit one of these
-              if numel(emptyMatches) > 1
+              if isa(emptyMatches, 'cell') && numel(emptyMatches) > 1
                   warning('Possible table match: %s',emptyMatches{:});
               else
-                  edit(char(emptyMatches));
-                  edit(sprintf('%sEpochParameters',emptyMatches{1}(1:end-15)));
+                  c = char(emptyMatches);
+                  edit(c);
+                  edit(sprintf('%sEpochParameters',c(1:end-15)));
               end
               return
           end
@@ -362,6 +363,10 @@ function key = joinKeys(keys)
 % output is a struct array
 % missing fields in any struct are replaced with NaN
 fields = cellfun(@fieldnames, keys, 'uni', 0);
+if isempty(fields)
+    key = struct();
+    return;
+end
 uniqueFields = unique(vertcat(fields{:}));
 emp = num2cell(nan(numel(uniqueFields), numel(keys)));
 key = cell2struct(emp, uniqueFields, 1);
