@@ -1,7 +1,6 @@
 %{
 # A version of a gene
 
--> sln_animal.GeneLocus
 allele_name                     : varchar(16)
 ---
 description                     : varchar(128)

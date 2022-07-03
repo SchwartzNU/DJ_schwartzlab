@@ -122,6 +122,7 @@ classdef Animal < dj.Manual
                 q = restrict_by_animal_ids(q,animal_ids);
             end
 
+            q
             animals = q.fetch('animal_id','tag_ear');
             animals = rmfield(animals, 'event_id');
             if isempty(animals)
