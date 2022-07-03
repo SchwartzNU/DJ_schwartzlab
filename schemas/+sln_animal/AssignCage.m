@@ -14,11 +14,11 @@ classdef AssignCage < dj.Manual
 
     methods(Static)
         function cage = current()
-            cage = sln_animal.AssignCage * sln_animal.Animal & 'LIMIT 1 PER animal_id DESC';
+            cage = sln_animal.AssignCage * sln_animal.AnimalEvent & 'LIMIT 1 PER animal_id DESC';
         end
 
         function cage = initial()
-            cage = sln_animal.AssignCage() & 'LIMIT 1 PER animal_id ASC';
+            cage = sln_animal.AssignCage & 'LIMIT 1 PER animal_id ASC';
         end
     end
 end
