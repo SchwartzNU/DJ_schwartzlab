@@ -88,6 +88,7 @@ classdef ExperimentProtocols < handle
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
           %get existing tables under the protocol name
           if contains(protocol_name,'AutoCenter')
+            warning('Skipping AutoCenter');
             success=true;
             return %TODO: do we want to include autocenter??? the parameters are ridiculous
             %perhaps instead we should create separate tables for each auto center subcaategory?
@@ -113,7 +114,34 @@ classdef ExperimentProtocols < handle
                  emptyMatches = vertcat(emptyMatches{:}, char(match));
               end
           end
-          %%we failed to insert
+          %%we failed to insert. explain why:
+          bt = warning('query','backtrace');
+          warning('off','backtrace');
+          warnStr = sprintf('Failed to match protocol %s', protocol_name);
+          for match = tables(matching)
+              b = feval(char(match));% <- gets an object of the class
+              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
+              [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
+              
+              warnStr = sprintf('%s\n\tFor table %s:', warnStr, char(match));
+              if ~isempty(e_b)
+                  warnStr = sprintf('%s\n\t\tExtra block parameter(s): %s', warnStr, strjoin(e_b, ', '));
+              end
+              if ~isempty(m_b)
+                  warnStr = sprintf('%s\n\t\tMissing block parameter(s): %s', warnStr, strjoin(m_b, ', '));
+              end
+              if ~isempty(e_e)
+                  warnStr = sprintf('%s\n\t\tExtra epoch parameter(s): %s', warnStr, strjoin(e_e, ', '));
+              end
+              if ~isempty(m_e)
+                  warnStr = sprintf('%s\n\t\tMissing epoch parameter(s): %s', warnStr, strjoin(m_e, ', '));
+              end
+          end
+          fprintf('\n');
+          warning(warnStr);
+                   
+          
           if ~isempty(emptyMatches)
               %we probably mean to edit one of these
               if isa(emptyMatches, 'cell') && numel(emptyMatches) > 1
@@ -151,7 +179,7 @@ classdef ExperimentProtocols < handle
           end
           self.createTables(protocol_name, num2str(version), block_params, epoch_params);
           % and we will return false
-
+        warning(bt.state,'backtrace');
         end
 
         function createTables(self,protocol_name, version, block_params, epoch_params)
@@ -290,6 +318,7 @@ end
 function outKey = removeRedundantStageBlockFields(inKey)
 outKey = rmfield(inKey, {...
     'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...
+    'MstarMean','SstarMean',... %TODO: Rstar also?
     'blueLED','greenLED','uvLED'...
     'colorPattern1','colorPattern2','colorPattern3','numberOfPatterns',...
     'forcePrerender','prerender',...
@@ -305,6 +334,7 @@ outKey = rmfield(inKey, {...
     'sampleRate',...
     'scanHeadTrigger','stimTimeRecord'...
     'spikeDetectorMode','spikeThreshold'...
+    'doPWM','imaging',...
     });
 end
 
