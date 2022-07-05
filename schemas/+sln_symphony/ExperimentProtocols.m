@@ -88,6 +88,7 @@ classdef ExperimentProtocols < handle
         function success = insertProtocol(self, protocol_name, block_params, epoch_params)
           %get existing tables under the protocol name
           if contains(protocol_name,'AutoCenter')
+            warning('Skipping AutoCenter');
             success=true;
             return %TODO: do we want to include autocenter??? the parameters are ridiculous
             %perhaps instead we should create separate tables for each auto center subcaategory?
@@ -113,14 +114,42 @@ classdef ExperimentProtocols < handle
                  emptyMatches = vertcat(emptyMatches{:}, char(match));
               end
           end
-          %%we failed to insert
+          %%we failed to insert. explain why:
+          bt = warning('query','backtrace');
+          warning('off','backtrace');
+          warnStr = sprintf('Failed to match protocol %s', protocol_name);
+          for match = tables(matching)
+              b = feval(char(match));% <- gets an object of the class
+              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
+              [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
+              
+              warnStr = sprintf('%s\n\tFor table %s:', warnStr, char(match));
+              if ~isempty(e_b)
+                  warnStr = sprintf('%s\n\t\tExtra block parameter(s): %s', warnStr, strjoin(e_b, ', '));
+              end
+              if ~isempty(m_b)
+                  warnStr = sprintf('%s\n\t\tMissing block parameter(s): %s', warnStr, strjoin(m_b, ', '));
+              end
+              if ~isempty(e_e)
+                  warnStr = sprintf('%s\n\t\tExtra epoch parameter(s): %s', warnStr, strjoin(e_e, ', '));
+              end
+              if ~isempty(m_e)
+                  warnStr = sprintf('%s\n\t\tMissing epoch parameter(s): %s', warnStr, strjoin(m_e, ', '));
+              end
+          end
+          fprintf('\n');
+          warning(warnStr);
+                   
+          
           if ~isempty(emptyMatches)
               %we probably mean to edit one of these
-              if numel(emptyMatches) > 1
+              if isa(emptyMatches, 'cell') && numel(emptyMatches) > 1
                   warning('Possible table match: %s',emptyMatches{:});
               else
-                  edit(char(emptyMatches));
-                  edit(sprintf('%sEpochParameters',emptyMatches{1}(1:end-15)));
+                  c = char(emptyMatches);
+                  edit(c);
+                  edit(sprintf('%sEpochParameters',c(1:end-15)));
               end
               return
           end
@@ -150,7 +179,7 @@ classdef ExperimentProtocols < handle
           end
           self.createTables(protocol_name, num2str(version), block_params, epoch_params);
           % and we will return false
-
+        warning(bt.state,'backtrace');
         end
 
         function createTables(self,protocol_name, version, block_params, epoch_params)
@@ -287,8 +316,9 @@ end
 end
 
 function outKey = removeRedundantStageBlockFields(inKey)
-outKey = rmfield(inKey, {...
+outKey = rmFieldIfPresent(inKey, {...
     'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...
+    'MstarMean','SstarMean',... %TODO: Rstar also?
     'blueLED','greenLED','uvLED'...
     'colorPattern1','colorPattern2','colorPattern3','numberOfPatterns',...
     'forcePrerender','prerender',...
@@ -298,23 +328,24 @@ outKey = rmfield(inKey, {...
 end
 
 function outKey = removeRedundantBlockFields(inKey)
-outKey = rmfield(inKey, {...
+outKey = rmFieldIfPresent(inKey, {...
     'chan1','chan1Hold','chan1Mode',...
     'chan2','chan2Hold','chan2Mode',...
     'sampleRate',...
     'scanHeadTrigger','stimTimeRecord'...
     'spikeDetectorMode','spikeThreshold'...
+    'doPWM','imaging',...
     });
 end
 
 function outKey = removeRedundantEpochFields(inKey)
-outKey = rmfield(inKey, {...
+outKey = rmFieldIfPresent(inKey, {...
     'symphonyVersion'
     });
 end
 
 function outKey = removeRedundantStageEpochFields(inKey)
-outKey = rmfield(inKey, {...
+outKey = rmFieldIfPresent(inKey, {...
     'micronsPerPixel','angleOffsetFromRig'...
     });
 end
@@ -362,6 +393,10 @@ function key = joinKeys(keys)
 % output is a struct array
 % missing fields in any struct are replaced with NaN
 fields = cellfun(@fieldnames, keys, 'uni', 0);
+if isempty(fields)
+    key = struct();
+    return;
+end
 uniqueFields = unique(vertcat(fields{:}));
 emp = num2cell(nan(numel(uniqueFields), numel(keys)));
 key = cell2struct(emp, uniqueFields, 1);
@@ -370,4 +405,9 @@ for n=1:numel(keys)
         key(n).(fields{n}{m}) = keys{n}.(fields{n}{m});
     end
 end
+end
+
+function key = rmFieldIfPresent(key, fields)
+rm = union(fieldnames(key), fields);
+key = rmfield(key, rm);
 end

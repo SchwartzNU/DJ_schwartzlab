@@ -34,7 +34,7 @@ classdef ExperimentProtocolSpotsMultiSizeV1BlockParameters < sln_symphony.Experi
 		[block_key(log_scaled).scaling] = deal('log');
 		if isfield(block_key,'pick_specific_sizes')
 
-			pick_sizes = [block_key(:).pick_specific_sizes];
+			pick_sizes = logical([block_key(:).pick_specific_sizes]);
 
 			[block_key(pick_sizes).scaling] = deal('custom');
 		end
