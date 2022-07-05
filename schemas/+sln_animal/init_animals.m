@@ -221,6 +221,54 @@ for i=1:N
     end
 end
 
+%% Start by setting active breeding cages by establishing if the mice are alive
+% breeding_pairs_struct = fetch(sln_animal.BreedingPair, '*');
+% N = length(breeding_pairs_struct)
+% for i=1:N
+%     curPair = breeding_pairs_struct(i);
+%     if ismember(curPair.male_id,[sln_animal.Animal.living.animal_id]) && ...
+%             ismember(curPair.female_id,[sln_animal.Animal.living.animal_id])
+%         
+%     end
+% end
+
+%% Pair breeders -> activate breeding pair
+pair_breeders_events_struct = rmfield(fetch(sl.AnimalEventPairBreeders  ,'*'), ...
+    {'event_id', 'cage_number', 'room_number', 'time'});
+N = length(pair_breeders_events_struct)
+for i=1:N
+    i
+    curEvent = pair_breeders_events_struct(i);
+    thisPair = sln_animal.BreedingPair & sprintf('male_id=%d',curEvent.male_id) ...
+        & sprintf('female_id=%d',curEvent.female_id);
+    
+    if thisPair.exists
+        curEvent = rmfield(curEvent,{'male_id','female_id'});
+        curEvent.source_id = fetch1(thisPair,'source_id');
+        curEvent
+        insert(sln_animal.ActivateBreedingPair,curEvent);
+    end
+end
+
+%% Separate breeders -> deactivate breeding pair
+separate_breeders_events_struct = rmfield(fetch(sl.AnimalEventSeparateBreeders  ,'*'), ...
+    {'event_id', 'cage_number','new_cage_male','new_room_male', 'new_cage_female','new_room_female', 'time'});
+N = length(separate_breeders_events_struct)
+for i=1:N
+    i
+    curEvent = separate_breeders_events_struct(i);
+    thisPair = sln_animal.BreedingPair & sprintf('male_id=%d',curEvent.male_id) ...
+        & sprintf('female_id=%d',curEvent.female_id);
+    
+    if thisPair.exists
+        curEvent = rmfield(curEvent,{'male_id','female_id'});
+        curEvent.source_id = fetch1(thisPair,'source_id');
+        curEvent
+        insert(sln_animal.DeactivateBreedingPair,curEvent);
+    end
+end
+
+
 %% Log births
 birth_events_struct = rmfield(fetch(sl.AnimalEventGaveBirth  ,'*'), {'event_id','number_of_pups'});
 N = length(birth_events_struct)

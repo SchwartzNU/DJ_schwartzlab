@@ -15,11 +15,11 @@ classdef AssignProtocol < dj.Manual
 
     methods(Static)
         function protocol_number = current()
-            protocol_number = sl.AnimalEventAssignProtocol() & 'LIMIT 1 PER animal_id DESC';
+            protocol_number = sln_animal.AnimalEvent * sln_animal.AssignProtocol & 'LIMIT 1 PER animal_id ORDER BY date DESC';
         end
 
         function protocol_number = initial()
-            protocol_number = sl.AnimalEventAssignProtocol() & 'LIMIT 1 PER animal_id ASC';
+            protocol_number = sln_animal.AnimalEvent * sln_animal.AssignProtocol & 'LIMIT 1 PER animal_id ORDER BY date ASC';
         end
     end
     
