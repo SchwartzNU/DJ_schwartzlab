@@ -86,7 +86,9 @@ classdef Dataset < dj.Manual
                 table.canInsert = true;
                 table.insert(...
                 vertcat(key(:).epochs));  
-                sln_symphony.SpikeTrain().insert(spikes);              
+                if ~isempty(spikes)
+                    sln_symphony.SpikeTrain().insert(spikes);     
+                end
             catch ME
                 if ~transacted
                     self.schema.conn.cancelTransaction;
