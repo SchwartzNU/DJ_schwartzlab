@@ -144,9 +144,7 @@ if toString %just return the string
     q = Qstr_human;
 else %evaluate the string
     try
-        Qstr
-        Qstr
-        q = eval(Qstr)
+        q = eval(Qstr);
         C.close();
     catch ME
         C.close();
