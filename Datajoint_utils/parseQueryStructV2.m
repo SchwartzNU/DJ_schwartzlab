@@ -64,8 +64,8 @@ for i=rowInd
         case 'is like'
             op = 'LIKE';
         case 'is NULL'
-            op = '=';
-            val = NaN;
+            op = ' IS ';
+            val = NaN; 
         otherwise
             op = curOp;
     end
@@ -138,7 +138,7 @@ for i=1:length(entry)
 end
 
 %NOT restriciton currently broken (returns empty): DJ issue?
-%Qstr
+%Qstr_human
 
 if toString %just return the string
     q = Qstr_human;
