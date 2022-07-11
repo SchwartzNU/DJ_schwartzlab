@@ -34,7 +34,8 @@ end
 %                 * sln_symphony.DatasetEpoch;
 
 if length(queryState.operatorColumn) < 1 %empty so return
-    return
+    q = eval('searchTable');
+    return;
 end
 
 if isempty(queryState.operatorColumn(1).value)
