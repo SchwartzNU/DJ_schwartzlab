@@ -1,6 +1,6 @@
 %{
 # Cell type
-name_full : varchar(64)                  # full cell type name
+cell_type : varchar(64)                  # full cell type name
 cell_class : enum('RGC','bipolar','amacrine','horizontal','photoreceptor','other neuron','glia','pericyte','RPE cell','unknown','other')
 ---
 name_short : varchar(32)                 # short name
