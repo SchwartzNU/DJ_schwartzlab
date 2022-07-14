@@ -1,6 +1,6 @@
-function S = getGenotypeString(animal_ids)
+function [] = updateGenotypeString(animal_ids)
 Nids = length(animal_ids);
-S = repmat(struct('animal_id', 'genotype_str'),Nids,1);
+S = repmat(struct('animal_id', 'genotype'),Nids,1);
 
 for n=1:Nids
     animal_id = animal_ids(n);
@@ -36,5 +36,7 @@ for n=1:Nids
         end
     end
 
-    S(n).genotype_str = str;
+    S(n).genotype = str;
 end
+
+insert(sln_animal.GenotypeString, S, 'REPLACE');

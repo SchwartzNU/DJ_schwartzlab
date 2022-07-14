@@ -321,28 +321,24 @@ classdef Animal < dj.Manual
 %             end
 %         end
 
-        function str = genotype_string_for_id(id)
-            genotype_entries = sln_animal.Genotype & sprintf('animal_id = %d',id);
-            if ~genotype_entries.exists
-                str = '?';
-            else
-                str = '';
-                loci = unique(fetchn(genotype_entries, 'locus_name'));
-                loci_count = length(loci);
-                for i=1:loci_count
-                    cur_alleles = fetch(genotype_entries & sprintf('locus_name = "%s"', loci{i}), '*');
-                    if length(cur_alleles) == 1
-                        str = [str, sprintf('%s: %s/?', cur_alleles(1).locus_name, cur_alleles(1).allele_name)];
-                    else %2 alleles at this locus
-                        str = [str, sprintf('%s: %s/%s', cur_alleles(1).locus_name, cur_alleles(1).allele_name, cur_alleles(2).allele_name)];
-                    end
-                    str = strrep(str,'WT', '-');
-                    if i<loci_count
-                        str = [str, ', '];
-                    end
-                end
-            end
-        end
+%         function str = genotype_string_for_id(id)
+%             genotype_entries = sln_animal.AnimalEvent * sln_animal.GenotypeResult & sprintf('animal_id = %d',id);
+%             if ~genotype_entries.exists
+%                 str = '?';
+%             else
+%                 str = '';
+%                 loci = unique(fetchn(genotype_entries, 'locus_name'));
+%                 loci_count = length(loci);
+%                 for i=1:loci_count
+%                     cur_alleles = fetch(genotype_entries & sprintf('locus_name = "%s"', loci{i}), '*');
+%                     str = [str, sprintf('%s: %s/%s', cur_alleles(i).locus_name, cur_alleles(i).allele1, cur_alleles(i).allele2)];
+%                     str = strrep(str,'WT', '-');
+%                     if i<loci_count
+%                         str = [str, ', '];
+%                     end
+%                 end
+%             end
+%         end
 
         function str = source_string_for_id(id)
             source_id = fetch1(sln_animal.Animal & sprintf('animal_id = %d',id), 'source_id'); 

@@ -453,7 +453,7 @@ for i=1:length(non_wt_ind)
                             cur_genotype = strtrim(genotype_parts{n});
                             key = rmfield(fetch(genotype_events,'*'), {'event_id', 'genotype_status'});
                             key.source_name = 'unknown';
-                            switch cur_genotype
+                            switch cur_genotype %TODO: add chat
                                 case 'Ai14'
                                     key.locus_name = 'ROSA';
                                     trans.allele_name = 'Ai14';
