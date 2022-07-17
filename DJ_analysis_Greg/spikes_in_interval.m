@@ -14,7 +14,13 @@ if nargin<4
 end
 
 sample_rate = fetch1(sln_symphony.ExperimentChannel & epoch, 'sample_rate'); %Hz
-spike_times = fetch1(aka.SpikeTrain & epoch,'spike_indices'); %grab spike times
+spikes_query = aka.SpikeTrain & epoch;
+if spikes_query.exists
+    spike_times = fetch1(spikes_query,'spike_indices'); %grab spike times
+else %assume no spieks
+    spike_times = [];
+end
+
 duration = fetch1(aka.Epoch & epoch,'epoch_duration'); %total duration of epoch in ms
 
 spike_times = 1E3 * double(spike_times) / sample_rate; %convert from samples to ms
