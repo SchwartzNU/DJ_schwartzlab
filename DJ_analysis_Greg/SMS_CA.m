@@ -67,7 +67,7 @@ for d=1:N_datasets
     N_epochs = length(epochs_in_dataset);
 
     if N_epochs == 0
-        error(sprintf('No epochs in dataset: %s', datasets_struct(d).dataset_name));
+        error('No epochs in dataset: %s', datasets_struct(d).dataset_name);
     end
 
     %parameters to save for the whole dataset
