@@ -16,7 +16,7 @@ try
     end
     tag_name = sprintf('%s: %s', cur_user, datestr(datetime('now')));
     sprintf('git tag %s', tag_name)
-    system(sprintf('git tag %s', tag_name));
+    system(sprintf('git tag "%s"', tag_name));
     return;
 catch ME
     cd(cur_dir);
