@@ -38,7 +38,7 @@ switch resultLevel
     case 'Cell'
     case 'Cell pair'
     case 'Dataset'
-        primary_vars = {'file_name', 'dataset_name'};
+        primary_vars = {'file_name', 'dataset_name', 'source_id'};
         if ~all(ismember(primary_vars,var_names))
             error('Dataset results must contain file_name and dataset_name columns');
         end
