@@ -3,18 +3,30 @@ if nargin < 3
     replace = false;
 end
 
+C = dj.conn;
+cur_user = C.user;
+
 %check git status
 cur_dir = pwd;
 cd(getenv('DJ_ROOT'));
-
+try
+    [~, msg] = system('git status --porcelain');
+    if ~isempty(msg)
+        error('You have locally modified files in %s. Please commit them first.', getenv('DJ_ROOT'));
+    end
+    tag_name = sprintf('%s: %s', cur_user, datestr(datetime('now')));
+    system(sprintf('git tag %s', tag_name));
+    return;
+catch ME
+    cd(cur_dir);
+    rethrow(ME);
+end
 
 cd(cur_dir);
 
 table_name = sprintf('%s%s',resultLevel,strrep(R.Properties.UserData,'_',''));
 tableStruct = table2struct(R);
 N = length(tableStruct);
-C = dj.conn;
-cur_user = C.user;
 for i=1:N
     tableStruct(i).user_name = cur_user;
 end
