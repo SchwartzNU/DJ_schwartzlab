@@ -1,7 +1,13 @@
 function [] = createTable(R,resultLevel)
-var_names_to_append = {'user_name','entry_time','git_version'};
+var_names_to_append = {'-> sln_lab.User','entry_time = CURRENT_TIMESTAMP','git_tag'};
+var_desc_to_append = {...
+    'user who entered this result', ...
+    'time the result was entered', ...
+    'git tag of current version of DJ_ROOT folder' ...
+    };
 
 var_names = R.Properties.VariableNames;
+var_desc = [R.Properties.VariableDescriptions, var_desc_to_append];
 
 N_vars = length(var_names);
 var_types = cell(N_vars,1);
@@ -21,6 +27,9 @@ for i=1:N_vars
             error('No case for type %s\n', class(R.(var_names{i})(1)));
     end
 end
+
+var_names = [var_names, var_names_to_append];
+var_types = [var_types; {'key'; 'timestamp'; 'varchar(128)'}];
 
 switch resultLevel
     case 'Experiment'
@@ -46,14 +55,18 @@ table_header_str{2} = ['# ' table_name];
 z = 3;
 for i=1:length(primary_vars)
     ind = find(strcmp(var_names,primary_vars{i}));
-    table_header_str{z} = sprintf('%s : %s # %s', primary_vars{i}, var_types{ind}, R.Properties.VariableDescriptions{ind});
+    table_header_str{z} = sprintf('%s : %s # %s', primary_vars{i}, var_types{ind}, var_desc{ind});
     z=z+1;
 end
 table_header_str{z} = '---';
 z=z+1;
 for i=1:length(secondary_vars)
     ind = find(strcmp(var_names,secondary_vars{i}));
-    table_header_str{z} = sprintf('%s : %s # %s', secondary_vars{i}, var_types{ind}, R.Properties.VariableDescriptions{ind});
+    if strcmp(var_types{ind},'key')
+        table_header_str{z} = sprintf('%s # %s', secondary_vars{i}, var_desc{ind});
+    else
+        table_header_str{z} = sprintf('%s : %s # %s', secondary_vars{i}, var_types{ind}, var_desc{ind});
+    end
     z=z+1;
 end
 table_header_str{z} = '%}';
