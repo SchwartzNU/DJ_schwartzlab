@@ -40,7 +40,7 @@ if missing_results.exists
     fprintf('Running %s for %d remaining items of type %s\n', func_name, missing_results.count, result_level);
     Rnew = eval(sprintf('%s(missing_results);', func_name));
     if do_insert
-        sln_results.insert(table,Rnew,result_level);
+        sln_results.insert(Rnew,result_level);
         R = eval(sprintf('sln_results.%s & items_struct', table_name));
     else
         R = [R; Rnew];
