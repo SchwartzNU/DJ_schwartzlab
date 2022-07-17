@@ -30,9 +30,6 @@ existing_results = eval(sprintf('sln_results.%s & items_struct', table_name));
 fprintf('%d results found in %s\n', existing_results.count, table_name);
 if existing_results.exists
     R = sln_results.toMatlabTable(existing_results);
-    if ~do_insert
-        R = removevars(R,{'user_name','git_tag','entry_time'});
-    end
 end
 
 missing_results = items - existing_results;
@@ -43,6 +40,17 @@ if missing_results.exists
         sln_results.insert(Rnew,result_level);
         R = eval(sprintf('sln_results.%s & items_struct', table_name));
     else
+        N_rows = height(Rnew);
+        C = dj.conn; 
+        for i=1:N_rows
+            R_extra = table('Size',[N_rows, 3],'VariableTypes',...
+                {'string','string','string'},...
+                'VariableNames',{'user_name','entry_time', 'git_tag'});                       
+            R_extra.user_name(i) = C.user;
+            R_extra.entry_time(i) = 'not inserted';
+            R_extra.git_tag(i) = 'none';
+        end
+        Rnew = [Rnew, R_extra];
         R = [R; Rnew];
     end
 end
