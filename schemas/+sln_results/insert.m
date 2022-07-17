@@ -26,7 +26,7 @@ cd(cur_dir);
 
 table_name = sprintf('%s%s',resultLevel,strrep(R.Properties.UserData,'_',''));
 tableStruct = table2struct(R);
-N = length(tableStruct);
+N = length(tableStruct)
 for i=1:N
     tableStruct(i).user_name = cur_user;
     tableStruct(i).git_tag = tag_name;
