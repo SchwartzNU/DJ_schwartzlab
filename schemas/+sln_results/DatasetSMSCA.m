@@ -2,6 +2,7 @@
 # DatasetSMSCA
 file_name : varchar(128) # file name from symphony
 dataset_name : varchar(128) # dataset name
+source_id : int unsigned # source id used to identify the cell to which the dataset belongs
 ---
 -> sln_lab.User # user who entered this result
 baseline_rate_hz : float # baseline firing rate (in pre time) averaged across spot sizes (Hz)
