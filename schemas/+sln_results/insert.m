@@ -17,7 +17,6 @@ try
     tag_name = sprintf('%s_%s', cur_user, datestr(datetime('now'), 'yyyy-mmmm-dd-HH-MM-SS'));
     sprintf('git tag %s', tag_name)
     system(sprintf('git tag %s', tag_name));
-    return;
 catch ME
     cd(cur_dir);
     rethrow(ME);
@@ -30,6 +29,7 @@ tableStruct = table2struct(R);
 N = length(tableStruct);
 for i=1:N
     tableStruct(i).user_name = cur_user;
+    tableStruct(i).git_tag = tag_name;
 end
 
 if replace
