@@ -14,7 +14,7 @@ try
     if ~isempty(msg)
         error('You have locally modified files in %s. Please commit them first.', getenv('DJ_ROOT'));
     end
-    tag_name = sprintf('%s_ %s', cur_user, datestr(datetime('now'), 'yyyy-mmmm-dd-HH-MM-SS'));
+    tag_name = sprintf('%s_%s', cur_user, datestr(datetime('now'), 'yyyy-mmmm-dd-HH-MM-SS'));
     sprintf('git tag %s', tag_name)
     system(sprintf('git tag %s', tag_name));
     return;
