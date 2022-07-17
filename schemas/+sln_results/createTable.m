@@ -1,4 +1,6 @@
 function [] = createTable(R,resultLevel)
+var_names_to_append = {'user_name','entry_time','git_version'};
+
 var_names = R.Properties.VariableNames;
 
 N_vars = length(var_names);
