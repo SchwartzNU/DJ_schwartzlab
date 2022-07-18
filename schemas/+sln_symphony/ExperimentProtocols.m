@@ -408,6 +408,6 @@ end
 end
 
 function key = rmFieldIfPresent(key, fields)
-rm = union(fieldnames(key), fields);
+rm = intersect(fieldnames(key), fields);
 key = rmfield(key, rm);
 end
