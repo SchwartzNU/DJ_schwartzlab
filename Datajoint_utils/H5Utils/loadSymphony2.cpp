@@ -104,6 +104,9 @@ class Parser {
     public:
         Parser(std::string fpath, ArgumentList output, std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr): matlabPtr(matlabPtr) {
             DEBUGPRINT("Debug printing enabled.");
+            #ifdef MATLAB_DEBUGGING
+                std::cout << "Running in debug mode. Some features are disabled." << std::endl;
+            #endif
             data.insertMember("quantity", 0, H5::PredType::NATIVE_DOUBLE);
             units.insertMember("units", 0, H5::DataType(H5T_STRING, 10));
             
