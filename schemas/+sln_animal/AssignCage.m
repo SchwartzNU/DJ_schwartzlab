@@ -8,17 +8,17 @@ cause = "unknown" : enum('assigned at database insert','weaning','set as breeder
 %}
 classdef AssignCage < dj.Manual
     properties
-        printStr = '%s: Animal %d moved to cage %s in room %s. Cause: %s. User: %s. (%s)\n';
+        printStr = '%s: Animal %d moved to cage %d in room %s. Cause: %s. User: %s. (%s)\n';
         printFields = {'date','animal_id','cage_number','room_number','cause','user_name','notes'};
     end
 
     methods(Static)
         function cage = current()
-            cage = sln_animal.AssignCage * sln_animal.AnimalEvent & 'LIMIT 1 PER animal_id DESC';
+            cage = sln_animal.AssignCage * sln_animal.AnimalEvent & 'LIMIT 1 PER animal_id ORDER BY date DESC';
         end
 
         function cage = initial()
-            cage = sln_animal.AssignCage & 'LIMIT 1 PER animal_id ASC';
+            cage = sln_animal.AssignCage * sln_animal.AnimalEvent & 'LIMIT 1 PER animal_id ORDER BY date ASC';
         end
     end
 end

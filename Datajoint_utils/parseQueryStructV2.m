@@ -1,5 +1,5 @@
-function q = parseQueryStructV2(queryState, toString)
-if nargin<2
+function q = parseQueryStructV2(queryState, searchTable, toString)
+if nargin<3
     toString = false;
 end
 
@@ -10,22 +10,33 @@ if ~C.isConnected
     return
 end
 
-%make searchTable
-currentTables = queryState.currentTables;
-commandStr = 'searchTable=';
-N = length(currentTables);
-for i=1:N
-    commandStr = [commandStr, currentTables{i} '*'];
-end
-
-%remove trailing *
-commandStr = [commandStr(1:end-1) ,';'];
-eval(commandStr);
+% %make searchTable
+% % currentTables = queryState.currentTables;
+% % commandStr = 'searchTable = sln_symphony.Experiment * proj(sln_symphony.ExperimentRetina,''''*'''',''''source_id->source_id_retina'''') * sln_symphony.Dataset * aka.Cell * sln_symphony.DatasetEpoch';
+% % % N = length(currentTables);
+% % % for i=1:N
+% % %     if contains(show(eval(currentTables{i})), 'source_id ') %need to project these to different names
+% % %         [~,tableName] = strtok(currentTables{i},'.');
+% % %         tableName = tableName(2:end);
+% % %         commandStr = [commandStr, sprintf('proj(%s,''*'',''source_id->source_id_%s'')',currentTables{i},tableName), '*'];
+% % %     else
+% % %         commandStr = [commandStr, currentTables{i}, '*'];
+% % %     end
+% % % end
+% % % 
+% % % %remove trailing *
+% % % commandStr = [commandStr(1:end-1) ,';'];
+% % eval(commandStr);
+% searchTable = sln_symphony.Experiment ...
+%                 * proj(sln_symphony.ExperimentRetina,'*','source_id->source_id_retina') ...
+%                 * sln_symphony.Dataset ...
+%                 * aka.Cell ...
+%                 * sln_symphony.DatasetEpoch;
 
 if length(queryState.operatorColumn) < 1 %empty so return
-    return
+    q = eval('searchTable');
+    return;
 end
-
 
 if isempty(queryState.operatorColumn(1).value)
     %special case where logical comes first
@@ -54,8 +65,8 @@ for i=rowInd
         case 'is like'
             op = 'LIKE';
         case 'is NULL'
-            op = '=';
-            val = NaN;
+            op = ' IS ';
+            val = NaN; 
         otherwise
             op = curOp;
     end
@@ -128,7 +139,7 @@ for i=1:length(entry)
 end
 
 %NOT restriciton currently broken (returns empty): DJ issue?
-%Qstr
+%Qstr_human
 
 if toString %just return the string
     q = Qstr_human;

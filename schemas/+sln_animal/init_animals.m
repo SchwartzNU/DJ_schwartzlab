@@ -60,7 +60,7 @@ for i=1:length(new_animals)
 end
 
 %% insert, temporarily to get them in - needed for breeder sources
-insert(sln_animal.Animal, new_animals);
+insert(sln_animal.Animal, new_animals, 'REPLACE');
 
 %% breeder cage sources
 breeding_ind = find(strcmp({old_animals.source}, 'breeding'));
@@ -221,6 +221,54 @@ for i=1:N
     end
 end
 
+%% Start by setting active breeding cages by establishing if the mice are alive
+% breeding_pairs_struct = fetch(sln_animal.BreedingPair, '*');
+% N = length(breeding_pairs_struct)
+% for i=1:N
+%     curPair = breeding_pairs_struct(i);
+%     if ismember(curPair.male_id,[sln_animal.Animal.living.animal_id]) && ...
+%             ismember(curPair.female_id,[sln_animal.Animal.living.animal_id])
+%         
+%     end
+% end
+
+%% Pair breeders -> activate breeding pair
+pair_breeders_events_struct = rmfield(fetch(sl.AnimalEventPairBreeders  ,'*'), ...
+    {'event_id', 'cage_number', 'room_number', 'time'});
+N = length(pair_breeders_events_struct)
+for i=1:N
+    i
+    curEvent = pair_breeders_events_struct(i);
+    thisPair = sln_animal.BreedingPair & sprintf('male_id=%d',curEvent.male_id) ...
+        & sprintf('female_id=%d',curEvent.female_id);
+    
+    if thisPair.exists
+        curEvent = rmfield(curEvent,{'male_id','female_id'});
+        curEvent.source_id = fetch1(thisPair,'source_id');
+        curEvent
+        insert(sln_animal.ActivateBreedingPair,curEvent);
+    end
+end
+
+%% Separate breeders -> deactivate breeding pair
+separate_breeders_events_struct = rmfield(fetch(sl.AnimalEventSeparateBreeders  ,'*'), ...
+    {'event_id', 'cage_number','new_cage_male','new_room_male', 'new_cage_female','new_room_female', 'time'});
+N = length(separate_breeders_events_struct)
+for i=1:N
+    i
+    curEvent = separate_breeders_events_struct(i);
+    thisPair = sln_animal.BreedingPair & sprintf('male_id=%d',curEvent.male_id) ...
+        & sprintf('female_id=%d',curEvent.female_id);
+    
+    if thisPair.exists
+        curEvent = rmfield(curEvent,{'male_id','female_id'});
+        curEvent.source_id = fetch1(thisPair,'source_id');
+        curEvent
+        insert(sln_animal.DeactivateBreedingPair,curEvent);
+    end
+end
+
+
 %% Log births
 birth_events_struct = rmfield(fetch(sl.AnimalEventGaveBirth  ,'*'), {'event_id','number_of_pups'});
 N = length(birth_events_struct)
@@ -309,8 +357,8 @@ for i=1:length(non_wt_ind)
     curInd = non_wt_ind(i)
     animal_id = old_animals(curInd).animal_id;
     %skip the done ones
-    new_genotype_result_event = sln_animal.AnimalEvent * sln_animal.GenotypeResult & sprintf('animal_id=%d', animal_id);
-    if ~new_genotype_result_event.exists
+    %new_genotype_result_event = sln_animal.AnimalEvent * sln_animal.GenotypeResult & sprintf('animal_id=%d', animal_id);
+   % if ~new_genotype_result_event.exists
         genotype_events = sl.AnimalEventGenotyped & sprintf('animal_id=%d', animal_id);
         key = struct;
         if ~genotype_events.exists %first genotypes with no associated AnimalEventGenotyped events
@@ -324,6 +372,9 @@ for i=1:length(non_wt_ind)
             key.notes = 'inferred genotype from sl database - no genotyped event';
             key.locus_name = 'unknown';
             switch curGenotype
+                case 'ChAT'
+                    key.locus_name = 'Chat';
+                    key.allele1 = 'ChAT-Cre';
                 case 'Ai14'
                     key.locus_name = 'ROSA';
                     key.allele1 = 'Ai14';
@@ -388,12 +439,13 @@ for i=1:length(non_wt_ind)
             end
         else
             genotype_results_ind = [genotype_results_ind, curInd];
-            N_genotype_events = genotype_events.count;
+            N_genotype_events = genotype_events.count
             curGenotype = old_animals(curInd).genotype_name;
             if N_genotype_events==1
                 genotype_status = fetch1(genotype_events,'genotype_status')
-                genotype_status = genotype_status{1};
+                genotype_status = genotype_status{1}
                 if contains(genotype_status, '/')
+                    disp('multi_allele');
                     multi_allele_cases = [multi_allele_cases, curInd];
                     genotype_status_parts = split(genotype_status, {'/', 'x'});
                     genotype_parts = split(curGenotype, {'/', 'x'});
@@ -405,7 +457,10 @@ for i=1:length(non_wt_ind)
                             cur_genotype = strtrim(genotype_parts{n});
                             key = rmfield(fetch(genotype_events,'*'), {'event_id', 'genotype_status'});
                             key.source_name = 'unknown';
-                            switch cur_genotype
+                            switch cur_genotype %TODO: add chat
+                                case 'ChAT'
+                                    key.locus_name = 'Chat';
+                                    trans.allele_name = 'ChAT-Cre';
                                 case 'Ai14'
                                     key.locus_name = 'ROSA';
                                     trans.allele_name = 'Ai14';
@@ -423,7 +478,7 @@ for i=1:length(non_wt_ind)
                                     trans.allele_name = 'GCaMP6f';
                                 case {'Salsa6f', 'Salsa'}
                                     key.locus_name = 'ROSA';
-                                    key.allele1 = 'Salsa6f';
+                                    key.allele_name = 'Salsa6f';
                                 case 'CCK'
                                     key.locus_name = 'Cck';
                                     trans.allele_name = 'CCK-Cre';
@@ -495,7 +550,11 @@ for i=1:length(non_wt_ind)
                     key = rmfield(fetch(genotype_events,'*'), {'event_id', 'genotype_status'});
                     key.source_name = 'unknown';
                     single_allele_cases = [single_allele_cases, curInd];
+                    curGenotype
                     switch curGenotype
+                        case 'ChAT'
+                            key.locus_name = 'Chat';
+                            trans.allele_name = 'ChAT-Cre';
                         case 'Ai14'
                             key.locus_name = 'ROSA';
                             trans.allele_name = 'Ai14';
@@ -513,7 +572,7 @@ for i=1:length(non_wt_ind)
                             trans.allele_name = 'GCaMP6f';
                         case {'Salsa6f', 'Salsa'}
                             key.locus_name = 'ROSA';
-                            key.allele1 = 'Salsa6f';
+                            trans.allele_name = 'Salsa6f';
                         case 'CCK'
                             key.locus_name = 'Cck';
                             trans.allele_name = 'CCK-Cre';
@@ -547,6 +606,9 @@ for i=1:length(non_wt_ind)
                         case 'Grm6'
                             key.locus_name = 'Grm6';
                             trans.allele_name = 'Grm6-Cre';
+                        otherwise
+                            key.locus_name = 'unknown';
+                            trans.allele_name = 'Ambiguous';
                     end
                     switch genotype_status
                         case 'non-carrier'
@@ -594,6 +656,9 @@ for i=1:length(non_wt_ind)
                             key = rmfield(genotype_ev, {'event_id', 'genotype_status'});
                             key.source_name = 'unknown';
                             switch cur_genotype
+                                case 'ChAT'
+                                    key.locus_name = 'Chat';
+                                    trans.allele_name = 'ChAT-Cre';
                                 case 'Ai14'
                                     key.locus_name = 'ROSA';
                                     trans.allele_name = 'Ai14';
@@ -678,7 +743,7 @@ for i=1:length(non_wt_ind)
                 end
             end
         end
-    end
+   % end
 end
 
 

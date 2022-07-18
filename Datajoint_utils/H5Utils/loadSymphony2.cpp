@@ -115,7 +115,13 @@ class Parser {
             note_type.insertMember("time", HOFFSET(note_data, entry_time), time_type);
             note_type.insertMember("text", HOFFSET(note_data, text), H5::StrType(0,H5T_VARIABLE));
             
-            H5::H5File file = H5::H5File(fpath.c_str(), H5F_ACC_RDONLY);
+            H5::H5File file;
+            try {
+                file = H5::H5File(fpath.c_str(), H5F_ACC_RDONLY);
+            } catch ( const H5::Exception e) {
+                matlabPtr->feval(u"error", 0, std::vector<Array>({factory.createScalar("Error loading symphony .h5 file. Ensure the file name ends in '.h5' and is located in your RAW_DATA folder.")}));
+            }
+            DEBUGPRINT("Opened file");            
             
             auto s = factory.createStructArray({1,1},
                 {"experiment_start_time", "experiment_end_time",
@@ -151,6 +157,7 @@ class Parser {
             //TODO: get the branch and commit from newer files
             
             key[0]["experiment"] = std::move(s);
+            DEBUGPRINT("Recursing through file");            
             recurse(file);
 
             DEBUGPRINT("Closing file");

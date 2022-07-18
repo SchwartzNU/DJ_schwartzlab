@@ -16,11 +16,11 @@ classdef Tag < dj.Manual
     
      methods(Static)
         function tag = current()
-            tag = sln_animal.AnimalEvent * sln_animal.Tag & 'LIMIT 1 PER animal_id DESC';
+            tag = sln_animal.AnimalEvent * sln_animal.Tag & 'LIMIT 1 PER animal_id ORDER BY date DESC';
         end
 
         function tag = initial()
-            tag = sln_animal.Tag & 'LIMIT 1 PER animal_id ASC';
+            tag = sln_animal.AnimalEvent * sln_animal.Tag & 'LIMIT 1 PER animal_id ORDER BY date ASC';
         end
     end
 

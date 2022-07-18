@@ -24,35 +24,32 @@ try
         end
     end
     
-%     if strcmp(event_type, 'PairBreeders') %need to make breeding cage first
-%         if isempty(key.cage_number)
-%             error('Must enter a cage number.'); 
-%         end
-%         key_breedingCage = struct;
-%         key_breedingCage.cage_number = key.cage_number;
-%         insert(sl.BreedingCage, key_breedingCage);        
-%         
-%         %then do cage assignment for both animals
-%         key_male_move = struct;
-%         key_male_move.animal_id = key.male_id;
-%         key_male_move.cage_number = key.cage_number;
-%         key_male_move.room_number = key.room_number;
-%         key_male_move.cause = 'set as breeder';
-%         key_male_move.date = key.date;
-%         key_male_move.user_name = key.user_name;        
-%         insert(sl.AnimalEventAssignCage, key_male_move);
-%         
-%         key_female_move = key_male_move;
-%         key_female_move.animal_id = key.female_id;
-%         insert(sl.AnimalEventAssignCage, key_female_move);
-%         
-%         %activate breeding cage
-%         key_activate = struct;
-%         key_activate.cage_number = key.cage_number;
-%         key_activate.date = key.date;
-%         key_activate.user_name = key.user_name;
-%         insert(sl.AnimalEventActivateBreedingCage, key_activate);
-%     end
+    if strcmp(event_type, 'PairBreeders') %need to make breeding cage first            
+        %make breeding pair if it does not exist
+        key_breeding_pair.male_id = key.male_id;
+        key_breeding_pair.female_id = key.female_id;
+        thisPair = sln_animal.BreedingPair & key_breeding_pair;
+        if ~thisPair.exists
+            sln_animal.add_source(key_breeding_pair, 'BreedingPair');
+        end
+
+        if C.inTransaction %transaction stuff does not work because of the call to add_event inside here
+            C.commitTransaction;
+        end
+
+        %then do cage assignment for both animals
+        key_assign_male = rmfield(key,{'male_id','female_id'});
+        key_assign_male.animal_id = key.male_id;
+        key_assign_male.cause = 'set as breeder';
+        sln_animal.add_event(key_assign_male, 'AssignCage');
+
+        key_assign_female = rmfield(key,{'male_id','female_id'});
+        key_assign_female.animal_id = key.female_id;
+        key_assign_female.cause = 'set as breeder';
+        sln_animal.add_event(key_assign_female, 'AssignCage');
+
+        key = rmfield(key,'room_number');
+    end
     
 %     if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals\
 %         %special case if female has the same cage as the current cage
@@ -187,8 +184,8 @@ try
         key = rmfield(key,'event_id');
     end
 
-    %key
-    key = insert(sln_animal.AnimalEvent, key);
+    key
+    key = insert(sln_animal.AnimalEvent, key)
     insert(feval(sprintf('sln_animal.%s',event_type)), key);
     %disp('did main insert')
 %     if strcmp(event_type, 'SeparateBreeders') && key.male_id == 0
@@ -210,7 +207,9 @@ try
         
     text = sprintf('%s insert successful.\n%s', event_type, text);
     if nargin<3
-        C.commitTransaction;   
+        if C.inTransaction
+            C.commitTransaction;
+        end
         fprintf(text);
         inserted = true;
     end 
