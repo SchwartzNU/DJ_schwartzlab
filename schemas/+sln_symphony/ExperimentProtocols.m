@@ -124,7 +124,7 @@ classdef ExperimentProtocols < handle
               [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
               [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
               
-              warnStr = sprintf('%s\n\tFor table %s:', warnStr, char(match));
+              warnStr = sprintf('%s\n\tFor table %s:', warnStr, match{1}(1:end-15));
               if ~isempty(e_b)
                   warnStr = sprintf('%s\n\t\tExtra block parameter(s): %s', warnStr, strjoin(e_b, ', '));
               end

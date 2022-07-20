@@ -79,8 +79,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             %                 self = self.proj(args{:});
             %                 [hdr, sql_] = self.compile;
             %             end
-
-            [limit, per, args, outer] = makeLimitClause(compile(self).names, varargin{:});
+            t = compile(self);
+            [limit, per, args, outer] = makeLimitClause(t.names, varargin{:});
 
             if ~isempty(args)
                 self = self.proj(args{:});
@@ -112,8 +112,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
         end
 
         function varargout = fetchn(self, varargin)
-
-            [limit, per, args] = makeLimitClause(compile(self).names, varargin{:});
+            t = compile(self);
+            [limit, per, args] = makeLimitClause(t.names, varargin{:});
             specs = args(cellfun(@(x) ischar(x) && ismember(x, varargin), args)); % attribute specifiers
             %             returnKey = nargout==length(specs)+1;
             returnKey = false;
@@ -290,7 +290,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
         function n = count(self, varargin)
             % COUNT - the number of tuples in the relation.
-            [limit, per, args] = makeLimitClause(compile(self).names, varargin{:});
+            t = compile(self);
+            [limit, per, args] = makeLimitClause(t.names, varargin{:});
 
             self = self.proj(args{:});
 
