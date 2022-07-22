@@ -35,5 +35,6 @@ end
 if replace
     insert(eval(sprintf('sln_results.%s',table_name)), tableStruct,'REPLACE');
 else
+    keyboard;
     insert(eval(sprintf('sln_results.%s',table_name)), tableStruct);
 end
