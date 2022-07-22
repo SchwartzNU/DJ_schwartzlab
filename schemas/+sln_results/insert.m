@@ -24,7 +24,7 @@ end
 
 cd(cur_dir);
 
-table_name = sprintf('%s%s',resultLevel,strrep(R.Properties.UserData,'_',''))
+table_name = sprintf('%s%s',resultLevel,strrep(R.Properties.UserData,'_',''));
 tableStruct = table2struct(R);
 N = length(tableStruct);
 for i=1:N
