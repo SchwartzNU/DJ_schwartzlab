@@ -8,3 +8,7 @@ datajoint-SchwartzLab/+sl_old/*
 *.bak
 datajoint-SchwartzLab/+sl_092920*
 test.sql
+ML/makePSTHfromDB.m
+ML/makePSTHfromPSTH.m
+ML/makePSTHfromTable.m
+ML/prepareSMSData.m
