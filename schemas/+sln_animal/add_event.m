@@ -24,32 +24,32 @@ try
         end
     end
     
-    if strcmp(event_type, 'PairBreeders') %need to make breeding cage first            
-        %make breeding pair if it does not exist
-        key_breeding_pair.male_id = key.male_id;
-        key_breeding_pair.female_id = key.female_id;
-        thisPair = sln_animal.BreedingPair & key_breeding_pair;
-        if ~thisPair.exists
-            sln_animal.add_source(key_breeding_pair, 'BreedingPair');
-        end
-
-        if C.inTransaction %transaction stuff does not work because of the call to add_event inside here
-            C.commitTransaction;
-        end
-
-        %then do cage assignment for both animals
-        key_assign_male = rmfield(key,{'male_id','female_id'});
-        key_assign_male.animal_id = key.male_id;
-        key_assign_male.cause = 'set as breeder';
-        sln_animal.add_event(key_assign_male, 'AssignCage');
-
-        key_assign_female = rmfield(key,{'male_id','female_id'});
-        key_assign_female.animal_id = key.female_id;
-        key_assign_female.cause = 'set as breeder';
-        sln_animal.add_event(key_assign_female, 'AssignCage');
-
-        key = rmfield(key,'room_number');
-    end
+%     if strcmp(event_type, 'PairBreeders') %need to make breeding cage first            
+%         %make breeding pair if it does not exist
+%         key_breeding_pair.male_id = key.male_id;
+%         key_breeding_pair.female_id = key.female_id;
+%         thisPair = sln_animal.BreedingPair & key_breeding_pair;
+%         if ~thisPair.exists
+%             sln_animal.add_source(key_breeding_pair, 'BreedingPair');
+%         end
+% 
+%         if C.inTransaction %transaction stuff does not work because of the call to add_event inside here
+%             C.commitTransaction;
+%         end
+% 
+%         %then do cage assignment for both animals
+%         key_assign_male = rmfield(key,{'male_id','female_id'});
+%         key_assign_male.animal_id = key.male_id;
+%         key_assign_male.cause = 'set as breeder';
+%         sln_animal.add_event(key_assign_male, 'AssignCage');
+% 
+%         key_assign_female = rmfield(key,{'male_id','female_id'});
+%         key_assign_female.animal_id = key.female_id;
+%         key_assign_female.cause = 'set as breeder';
+%         sln_animal.add_event(key_assign_female, 'AssignCage');
+% 
+%         key = rmfield(key,'room_number');
+%     end
     
 %     if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals\
 %         %special case if female has the same cage as the current cage
@@ -164,6 +164,7 @@ try
             disp('Must assign a cage number when moving an animal');
             error('Missing cage number');
         end
+        %make the new cage each time and replace the old one
         thisCage = sln_animal.Cage & sprintf('cage_number=%d', key.cage_number);
         if ~thisCage.exists %need to make the cage
             if strcmp(key.cause,'set as breeder')
@@ -174,7 +175,7 @@ try
             key_cage.cage_number = key.cage_number;
             key_cage.room_number = key.room_number;
             insert(sln_animal.Cage,key_cage);
-        end       
+        end
         key = rmfield(key,'room_number'); %inside Cage table instead now
     end
     
