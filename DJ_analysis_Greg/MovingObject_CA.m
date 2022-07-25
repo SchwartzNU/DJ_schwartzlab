@@ -126,7 +126,7 @@ for d=1:N_datasets
             peak_firing_rate(c) = peak_rate;
             peak_firing_time(c) = psth_x(ind);
 
-            psth_x_from_center = psth_x - center_time_ms(c);
+            psth_x_from_center = psth_x - (1E3 * center_time_ms(c));
             peak_firing_time_from_center(c) = psth_x_from_center(ind);
 
             psth_x_by_condition.(condition_name_x) = psth_x;
