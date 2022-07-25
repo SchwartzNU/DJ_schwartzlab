@@ -1,0 +1,181 @@
+<deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
+  <configuration file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
+    <param.appname>AnimalInterface_V2</param.appname>
+    <param.intermediate>${PROJECT_ROOT}/AnimalInterface_V2</param.intermediate>
+    <param.files.only>${PROJECT_ROOT}/AnimalInterface_V2</param.files.only>
+    <param.output />
+    <param.checkbox>false</param.checkbox>
+    <param.logdir>${PROJECT_ROOT}/AnimalInterface_V2</param.logdir>
+    <param.target.type>subtarget.web.app</param.target.type>
+    <param.user.defined.mcr.options />
+    <param.support.packages />
+    <unset>
+      <param.intermediate />
+      <param.files.only />
+      <param.output />
+      <param.checkbox />
+      <param.logdir />
+      <param.target.type />
+      <param.user.defined.mcr.options />
+      <param.support.packages />
+    </unset>
+    <fileset.web.main>
+      <file>${PROJECT_ROOT}/AnimalInterfaceV2.mlapp</file>
+    </fileset.web.main>
+    <fileset.resources />
+    <fileset.depfun>
+      <file>${MATLAB_ROOT}/toolbox/local/userpath.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Declare.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/ExternalMapping.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/ExternalTable.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/GeneralRelvar.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Header.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Master.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Settings.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Table.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/TableAccessor.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/UserRelation.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/ask.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/fromCamelCase.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/hash.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/shorthash.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/toCamelCase.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/DataHash.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/getpass.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/isString.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/saveJSONfile.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/startsWith.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Connection.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/ERD.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Hidden.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Lookup.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Manual.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Part.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Relvar.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Schema.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Shared.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Table.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/config.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/conn.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/setup.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/struct.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/initialize.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/install.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/require.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/uninstall.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/compareVersions/compareVersions.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.mexmaci64</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/escapeString.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/AnimalEvent.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSession.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/AnimalEventSocialBehaviorSessionStimulus.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/SocialBehaviorExperimentType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/TestAnimalType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/VisualStimulusType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/ActivateBreedingPair.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Allele.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AlleleActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AlleleLocusMap.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Animal.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AnimalEvent.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AnimalProtocol.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AssignCage.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AssignProtocol.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Background.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Birth.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/BrainArea.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/BreedingFemale.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/BreedingPair.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/BreedingStrain.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/BreedingStrainActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Cage.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageRoom.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CollaboratorStrain.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CollaboratorStrainActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/DeactivateBreedingPair.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Deceased.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Eye.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GeneLocus.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GenotypeResult.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GenotypeSource.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GenotypeString.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/InjectionSubstance.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/InjectionSubstanceActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/ReservedForProject.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/SocialBehaviorSession.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/SocialBehaviorSessionStimulus.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Source.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Tag.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/TodoQueries.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/VendorStrain.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/VendorStrainActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Weaned.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/add_event.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/add_source.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/printEvents.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/updateGenotypeString.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/ActiveUser.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/Project.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/ProjectActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/Rig.m</file>
+    </fileset.depfun>
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}/AnimalInterface_V2" name="AnimalInterface_V2.ctf" optional="false">/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2/AnimalInterface_V2.ctf</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/Applications/MATLAB_R2021b.app</root>
+      <toolboxes>
+        <toolbox name="matlabcoder" />
+        <toolbox name="embeddedcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabhdlcoder" />
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <matlabcoder>
+          <enabled>true</enabled>
+        </matlabcoder>
+      </toolbox>
+      <toolbox>
+        <embeddedcoder>
+          <enabled>true</enabled>
+        </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
+      </toolbox>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>true</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>12.3.1</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>maci64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
