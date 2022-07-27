@@ -99,7 +99,6 @@ classdef ExperimentProtocols < handle
           success = false;
           emptyMatches = {};
           for match = tables(matching)
-
               b = feval(char(match));% <- gets an object of the class
               e = feval([match{1}(1:end-15), 'EpochParameters']);
               if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
@@ -166,7 +165,7 @@ classdef ExperimentProtocols < handle
                 end
           end
           % there are no matches at all
-          if ~nnz(matching)
+          if nnz(matching)
             [~,versions,~] = regexp(tables(matching), 'V([0-9]+)Block','match','tokens');
             versions = cellfun(@(x) str2double(x{1}{1}), versions);
             if isempty(versions)
@@ -174,7 +173,7 @@ classdef ExperimentProtocols < handle
             else
                 version = max(versions) + 1; %get the max of all the versions, add 1
             end
-        else
+          else
             version = 1;
           end
           self.createTables(protocol_name, num2str(version), block_params, epoch_params);
@@ -242,7 +241,7 @@ classdef ExperimentProtocols < handle
             i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
             k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
             self.key.projector = [k(:).projector];
-            self.key.LEDs = vertcat(k(:).LEDs);
+            self.key.LEDs = horzcat(k(:).LEDs)';
         end
         
         function removeRedundantFields(self)
@@ -318,8 +317,9 @@ end
 function outKey = removeRedundantStageBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...
     'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...
+    'RstarIntensity2','MstarIntensity2','SstarIntensity2',...
     'MstarMean','SstarMean',... %TODO: Rstar also?
-    'blueLED','greenLED','uvLED'...
+    'blueLED','greenLED','uvLED','bluePWM','greenPWM','uvPWM'...
     'colorPattern1','colorPattern2','colorPattern3','numberOfPatterns',...
     'forcePrerender','prerender',...
     'frameRate','bitDepth',...
