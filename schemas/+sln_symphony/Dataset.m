@@ -81,13 +81,42 @@ classdef Dataset < dj.Manual
                 self.schema.conn.startTransaction;
             end
             try
-                insert@dj.Manual(self, rmfield(key, {'epochs'}));
+                replace_epochs = false;
+                replace_spikes = false;
+                thisKey = rmfield(key, {'epochs'});
+                thisDataset = self & thisKey;
                 table = sln_symphony.DatasetEpoch();
                 table.canInsert = true;
-                table.insert(...
-                vertcat(key(:).epochs));  
-                if ~isempty(spikes)
-                    sln_symphony.SpikeTrain().insert(spikes);     
+
+                if thisDataset.exists
+                    user_resp = input(sprintf('Dataset %s aleady in database. Overwrite epochs (e), spike trains only (s), or none (n)? \n', key.dataset_name), 's');
+                    switch user_resp
+                        case 'e'
+                            replace_epochs = true;
+                            replace_spikes = true;
+                        case 's'
+                            replace_spikes = true;
+                        case 'n'
+                            disp('aborting insert');
+                            return;
+                    end
+                    if replace_epochs
+                        table.insert(...
+                            vertcat(key(:).epochs),'REPLACE');
+                    end
+                    if ~isempty(spikes)
+                        if replace_spikes
+                            disp('replacing spikes');
+                            sln_symphony.SpikeTrain().insert(spikes,'REPLACE');
+                        end
+                    end
+                else %first insert
+                    insert@dj.Manual(self, thisKey);
+                    table.insert(...
+                        vertcat(key(:).epochs));
+                    if ~isempty(spikes)
+                        sln_symphony.SpikeTrain().insert(spikes);
+                    end
                 end
             catch ME
                 if ~transacted

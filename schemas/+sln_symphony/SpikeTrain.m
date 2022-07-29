@@ -8,11 +8,20 @@ spike_count : int unsigned
 %}
 classdef SpikeTrain < dj.Manual
   methods
-    function insert(self, key)
+    function insert(self, key, replace)
+        if nargin<3
+            replace = false;
+        else
+            replace = true;
+        end
 
       % reduce the space requirement
-      key = arrayfun(@convertToUint, key);
-      insert@dj.Manual(self, key);
+      key = arrayfun(@convertToUint, key);      
+      if replace
+          insert@dj.Manual(self, key, 'REPLACE');
+      else
+          insert@dj.Manual(self, key);
+      end
     end
     end
 
