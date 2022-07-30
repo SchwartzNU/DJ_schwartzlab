@@ -2,7 +2,7 @@ function source_id = add_source(keys, source_type) %assign_soucre
 source_id = zeros(length(keys),1);
 for i=1:length(keys)
     key = keys(i);
-    key_s = struct('source_info','');
+
     if isfield(key, 'source_info')
         key_s.source_info = key.source_info;
         key = rmfield(key, 'source_info');
