@@ -4,8 +4,9 @@ for i=1:length(keys)
     key = keys(i);    
     key_t.tissue_id = key.tissue_id;
     key_t.task_name = key.task_name;
+    key_t.task_type = task_type;
     
-    %key = rmfield(key, {'tissue_id', 'task_name'});
+    key = rmfield(key, 'task_type');
 
     %first check if this task already exists
     q = feval(sprintf('sln_tissue.%s',task_type)) & key;

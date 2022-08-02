@@ -7,7 +7,9 @@ for i=1:length(keys)
     if isfield(key, 'tissue_info')
         key_t.tissue_info = key.tissue_info;
         key = rmfield(key, 'tissue_info');
-    end
+    end    
+    key_t.owner = key.owner;
+    key = rmfield(key, 'owner');
 
     %first check if this tissue already exists
     q = feval(sprintf('sln_tissue.%s',tissue_type)) & key;
