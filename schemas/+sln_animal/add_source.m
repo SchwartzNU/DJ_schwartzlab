@@ -6,6 +6,8 @@ for i=1:length(keys)
     if isfield(key, 'source_info')
         key_s.source_info = key.source_info;
         key = rmfield(key, 'source_info');
+    else
+        key_s.source_info = '';
     end
     %first check if this source already exists
     q = feval(sprintf('sln_animal.%s',source_type)) & key;

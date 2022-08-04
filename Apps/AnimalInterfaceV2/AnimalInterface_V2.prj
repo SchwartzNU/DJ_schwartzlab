@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="2292416351" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3797483221" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_V2</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_V2</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_V2</param.files.only>
@@ -255,6 +255,7 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/BreedingCage.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageAssignRoom.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/Cell.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/CellEvent.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/CellType.m</file>
