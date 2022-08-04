@@ -7,6 +7,6 @@ task_type : varchar(64) # name of the referencing table
 task_entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 %}
 
-classdef Task < dj.Shared
+classdef Task < dj.Manual
     
 end
