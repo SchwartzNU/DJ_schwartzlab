@@ -24,119 +24,6 @@ try
         end
     end
     
-%     if strcmp(event_type, 'PairBreeders') %need to make breeding cage first            
-%         %make breeding pair if it does not exist
-%         key_breeding_pair.male_id = key.male_id;
-%         key_breeding_pair.female_id = key.female_id;
-%         thisPair = sln_animal.BreedingPair & key_breeding_pair;
-%         if ~thisPair.exists
-%             sln_animal.add_source(key_breeding_pair, 'BreedingPair');
-%         end
-% 
-%         if C.inTransaction %transaction stuff does not work because of the call to add_event inside here
-%             C.commitTransaction;
-%         end
-% 
-%         %then do cage assignment for both animals
-%         key_assign_male = rmfield(key,{'male_id','female_id'});
-%         key_assign_male.animal_id = key.male_id;
-%         key_assign_male.cause = 'set as breeder';
-%         sln_animal.add_event(key_assign_male, 'AssignCage');
-% 
-%         key_assign_female = rmfield(key,{'male_id','female_id'});
-%         key_assign_female.animal_id = key.female_id;
-%         key_assign_female.cause = 'set as breeder';
-%         sln_animal.add_event(key_assign_female, 'AssignCage');
-% 
-%         key = rmfield(key,'room_number');
-%     end
-    
-%     if strcmp(event_type, 'SeparateBreeders') %need to deactivate breeding cage then move animals\
-%         %special case if female has the same cage as the current cage
-%         %don't deactivate
-%         if isempty(key.new_cage_male) || isempty(key.new_cage_female)
-%             disp('Must include cage numbers');
-%             error('Missing cage number for either male or female mouse');
-%         end
-%         if strcmp(key.cage_number, key.new_cage_female)
-%             %do nothing
-%             disp('breeding cage not deactivated');
-%         else
-%             %deactivate breeding cage
-%             key_deactivate = struct;
-%             key_deactivate.cage_number = key.cage_number;
-%             key_deactivate.date = key.date;
-%             key_deactivate.user_name = key.user_name;
-%             insert(sl.AnimalEventDeactivateBreedingCage, key_deactivate);
-%         end
-%             
-%         %then do cage assignment for both animals
-% 
-%         %special case if male is absent don't move
-%         if key.male_id == 0
-%             %do nothing
-%             disp('absent male breeder not moved');
-%         else  %else do move
-%             key_male_move = struct;
-%             key_male_move.animal_id = key.male_id;
-%             key_male_move.cage_number = key.new_cage_male;
-%             key_male_move.room_number = key.new_room_male;
-%             key_male_move.cause = 'separated breeder';
-%             key_male_move.date = key.date;
-%             key_male_move.user_name = key.user_name;
-%             insert(sl.AnimalEventAssignCage, key_male_move);
-%         end
-%         
-%         if strcmp(key.cage_number, key.new_cage_female)
-%             %do nothing
-%             disp('female not moved');
-%         else
-%             key_female_move = struct;
-%             key_female_move.date = key.date;
-%             key_female_move.user_name = key.user_name;
-%             key_female_move.animal_id = key.female_id;
-%             key_female_move.cause = 'separated breeder';
-%             key_female_move.cage_number = key.new_cage_female;
-%             key_female_move.room_number = key.new_room_female;
-%             insert(sl.AnimalEventAssignCage, key_female_move);
-%         end
-%         
-%         if strcmp(key.cage_number, key.new_cage_female)
-%             %do nothing
-%             disp('female not retired');
-%         else %retire female
-%             key_retire_female = struct;
-%             key_retire_female.animal_id = key.female_id;
-%             key_retire_female.date = key.date;
-%             key_retire_female.user_name = key.user_name;
-%             insert(sl.AnimalEventRetireAsBreeder, key_retire_female);
-%         end
-%         
-%         if key.male_id == 0
-%             %do nothing
-%             disp('absent male not retired');
-%         else  %else retire male
-%             key_retire_male = struct;
-%             key_retire_male.animal_id = key.male_id;
-%             key_retire_male.date = key.date;
-%             key_retire_male.user_name = key.user_name;
-%             insert(sl.AnimalEventRetireAsBreeder, key_retire_male);
-%         end
-%         
-%         
-% %         %then retire each as breeders
-% %         key_retire_male = struct;
-% %         key_retire_male.animal_id = key.male_id;
-% %         key_retire_male.date = key.date;
-% %         key_retire_male.user_name = key.user_name;       
-% %         insert(sl.AnimalEventRetireAsBreeder, key_retire_male);
-% %         
-% %         key_retire_female = key_retire_male;
-% %         key_retire_female.animal_id = key.female_id;
-% %         insert(sl.AnimalEventRetireAsBreeder, key_retire_female);
-%         
-%     end
-    
     if strcmp(event_type, 'Tag')
         if isfield(key,'do_tag') && ~key.do_tag
             if ~strcmp(key.tag_ear,'None') || ~strcmp(key.punch,'None') || ~isnan(key.tag_id)
@@ -173,10 +60,8 @@ try
                 key_cage.is_breeding = 'F';
             end
             key_cage.cage_number = key.cage_number;
-            key_cage.room_number = key.room_number;
             insert(sln_animal.Cage,key_cage);
         end
-        key = rmfield(key,'room_number'); %inside Cage table instead now
     end
     
     %MAIN INSERT of this event type    

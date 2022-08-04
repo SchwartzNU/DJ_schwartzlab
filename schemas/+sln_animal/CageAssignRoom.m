@@ -4,9 +4,10 @@
 entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
 ---
 -> sln_animal.CageRoom
-date                           : date cave was moved
 -> sln_lab.User
+date                           : date # date cage was moved
 %}
+
 classdef CageAssignRoom < dj.Manual
     methods(Static)
         function cage = current()
