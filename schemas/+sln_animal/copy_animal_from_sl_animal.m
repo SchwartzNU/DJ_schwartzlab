@@ -5,12 +5,34 @@ if ~old_entry.exists
 end
 
 key = fetch(old_entry, '*');
-key.species_name = 'mouse'
-key.background_name = 'C57bl/6';
-sln_animal.Source
-sln_animal.Source * sln_animal.CollaboratorStrain
-key.source_id = 5;
-key.external_id = 'Fawzi tag: 1987';
-key = rmfield(key,{'source', 'genotype_name', 'species'})
-%keyboard;
-insert(sln_animal.Animal,key);
+key.species_name = 'mouse';
+key.background_name = 'C57bl/6'; %as far as we know... not sure how the agouti mice were marked
+
+do_entry = false;
+switch key.source
+    case 'vendor'
+    
+    case 'breeding'
+
+    case 'other lab'
+
+    otherwise %should be the easy cases
+        %source is unknown
+        key = rmfield(key,{'source_id'});
+        do_entry = true;
+end
+
+if do_entry    
+    fprintf('Inserting animal: %d\n', key.animal_id);
+    if isempty(key.dob)
+        key = rmfield(key,'dob');
+    end
+    key = rmfield(key,{'source', 'genotype_name', 'species'});
+    insert(sln_animal.Animal,key);
+    sln_animal.updateGenotypeString(key.animal_id);
+else
+    fprintf('Not inserting animal: %d', key.animal_id);
+end
+
+
+
