@@ -5,7 +5,7 @@ dataset_name: varchar(64)
 %}
 classdef Dataset < dj.Manual
     methods
-        
+
         function insert(self, celldata)
             if ~isa(celldata,'cell')
                 celldata = {celldata};
@@ -19,15 +19,15 @@ classdef Dataset < dj.Manual
                 'channel_name',{},...
                 'spike_indices',{},...
                 'spike_count',{}...
-            );
+                );
             key = struct(...
-            'file_name', {},...
-            'dataset_name',{},...
-            'source_id',{},...
-            'epochs',{});
+                'file_name', {},...
+                'dataset_name',{},...
+                'source_id',{},...
+                'epochs',{});
             for i=1:numel(celldata)
                 c = load(sprintf('%s%s',...
-                getenv('CELL_DATA_FOLDER'),celldata{i})).cellData;
+                    getenv('CELL_DATA_FOLDER'),celldata{i})).cellData;
                 fname = c.attributes('fname');
                 n = c.attributes('number');
                 q = sln_symphony.ExperimentCell...
@@ -39,7 +39,7 @@ classdef Dataset < dj.Manual
                 elseif cnt > 1
                     error('More than one matching cell!!');
                 end
-                
+
                 q_id = fetch1(q,'source_id');
                 q_e = fetch(q * sln_symphony.ExperimentEpoch);
 
@@ -64,7 +64,7 @@ classdef Dataset < dj.Manual
 
                 %TODO: do we want to check whether the trials are whole cell voltage clamp??
                 %this could indicate an error with the raw data file,or just user error
-                %maybe handle with an input flag... 
+                %maybe handle with an input flag...
 
                 spikes_i = q_e(~j);
                 [spikes_i(:).spike_indices] = deal(st{:});
@@ -86,13 +86,48 @@ classdef Dataset < dj.Manual
                 self.schema.conn.startTransaction;
             end
             try
-                insert@dj.Manual(self, rmfield(key, {'epochs'}));
+                replace_epochs = false;
+                replace_spikes = false;
+                thisKey = rmfield(key, {'epochs'});
+                thisDataset = self & thisKey;
                 table = sln_symphony.DatasetEpoch();
                 table.canInsert = true;
-                table.insert(...
-                vertcat(key(:).epochs));  
-                if ~isempty(spikes)
-                    sln_symphony.SpikeTrain().insert(spikes);     
+
+                if thisDataset.exists
+                    N_datasets = length(thisKey);
+                    for d=1:N_datasets
+                        cur_dataset = self & thisKey(d);
+                        if ~cur_dataset.exists
+                            fprintf('inserting new datset %s\n', thisKey(d).dataset_name);
+                            insert@dj.Manual(self, thisKey(d));
+                             table.insert(...
+                                 vertcat(key(d).epochs));
+                             if ~isempty(spikes(d))
+                                 sln_symphony.SpikeTrain().insert(spikes(d));
+                             end
+                        end
+                    end
+
+                    user_resp = input('Datasets for this cell aleady in database. Overwrite spike trains (y|n)? \n', 's');
+                    if strcmp(user_resp,'y')
+                        replace_spikes = true;
+                    else
+                        replace_spikes = false;
+                    end
+                    if ~isempty(spikes)
+                        if replace_spikes
+                            disp('replacing spikes');
+                            del(sln_symphony.SpikeTrain() & rmfield(spikes,{'spike_count','spike_indices'}), true);
+                            sln_symphony.SpikeTrain().insert(spikes);
+                        end
+                    end
+                else %first insert
+                    insert@dj.Manual(self, thisKey);
+                    table.insert(...
+                        vertcat(key(:).epochs));
+                    if ~isempty(spikes)
+                        sln_symphony.SpikeTrain().insert(spikes);
+                    end
                 end
             catch ME
                 if ~transacted

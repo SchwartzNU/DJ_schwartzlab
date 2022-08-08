@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="159617254" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3797483221" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_V2</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_V2</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_V2</param.files.only>
@@ -81,6 +81,17 @@
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/version.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/compareVersions/compareVersions.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/dialog.so</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/libmysqlclient.so</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/libmysqlclient.so.18</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/libz.so.1</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/libz.so.1.2.3</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/mym.mexa64</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/BehaviorSessionCalibration.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/BehaviorSessionTrackingData.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/SocialBehaviorExperimentType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/TestAnimalType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/VisualStimulusType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/getSchema.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/ActivateBreedingPair.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Allele.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AlleleActive.m</file>
@@ -153,6 +164,7 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/Project.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/ProjectActive.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/Rig.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/Scope.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/User.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/activate_user.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_lab/add_user.m</file>
@@ -208,15 +220,16 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/getSchema.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/insert_all_datasets_for_experiment.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/insert_experiment.m</file>
-      <file>/Users/gregschwartz/matlab/mymForWebApp/mym.m</file>
       <file>/Users/gregschwartz/matlab/mymForWebApp/mymSetup.m</file>
     </fileset.resources>
     <fileset.depfun>
       <file>${MATLAB_ROOT}/toolbox/local/userpath.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/mym.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/CellTypeNameMatches.mat</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/H5Utils/loadSymphony2.mexmaci64</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/changeCase.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/escapeString.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/behavior_analysis/matchSessionToBehaviorFolder.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/Animal.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/AnimalEvent.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/AnimalEventActivateBreedingCage.m</file>
@@ -242,10 +255,12 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/BreedingCage.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/SocialBehaviorExperimentType.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/TestAnimalType.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl_behavior/VisualStimulusType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageAssignRoom.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/Cell.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/CellEvent.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/CellType.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/add_cell_types_from_cellData.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/add_event.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/init_cells_from_ExperimentCells.m</file>
     </fileset.depfun>
     <fileset.package />

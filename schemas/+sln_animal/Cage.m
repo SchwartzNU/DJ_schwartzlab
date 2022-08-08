@@ -1,9 +1,11 @@
-%{
+%{ 
+# Cage for an animal
 cage_number : int unsigned       # the cage number/barcode on the cage card
 ---
--> sln_animal.CageRoom          # cages are not allowed to switch rooms unless replaced
+-> sln_animal.CageRoom
 is_breeding : enum('F','T')     # whether or not it is a breeding cage. switch by replacing
 %}
+
 classdef Cage < dj.Manual
     methods(Static)
         function animals = animalsInCage(cage_number, liveOnly)
@@ -21,5 +23,19 @@ classdef Cage < dj.Manual
                 animals = [];
             end
         end
-    end 
+    end
+   
+    methods
+        function room = currentRoom(self)
+            assign_event = sln_animal.CageAssignRoom & self & 'LIMIT 1 PER cage_number ORDER BY date DESC, entry_time DESC';
+            if assign_event.exists
+                room = fetch1(assign_event, 'room_number');
+            else
+                error('No CageAssignRoom event found for cage %d', cage_number);
+            end
+
+        end
+
+    end
+
 end

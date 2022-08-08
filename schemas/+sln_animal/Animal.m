@@ -272,7 +272,9 @@ classdef Animal < dj.Manual
 
         function animals = roomNumber(animal_ids, liveOnly)
 
-            q = sln_animal.AssignCage.current * sln_animal.Cage * sln_animal.CageRoom;
+            %q = sln_animal.AssignCage.current * sln_animal.Cage * sln_animal.CageRoom;
+            q = sln_animal.AssignCage.current * ...
+                proj(sln_animal.CageAssignRoom.current,'*','date->assign_room_date','entry_time->assign_room_entry_time','user_name->assign_room_user_name');
 
             if nargin>1 && liveOnly
                 %restrict by living mice

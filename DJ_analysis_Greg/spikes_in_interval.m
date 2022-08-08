@@ -17,7 +17,7 @@ sample_rate = fetch1(sln_symphony.ExperimentChannel & epoch, 'sample_rate'); %Hz
 spikes_query = aka.SpikeTrain & epoch;
 if spikes_query.exists
     spike_times = fetch1(spikes_query,'spike_indices'); %grab spike times
-else %assume no spieks
+else %assume no spikes
     spike_times = [];
 end
 
