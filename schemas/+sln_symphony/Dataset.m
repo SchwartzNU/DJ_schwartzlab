@@ -73,6 +73,11 @@ classdef Dataset < dj.Manual
 
                 spikes = vertcat(spikes, spikes_i);
             end
+            
+            if isempty(key)
+                warning('No datasets were found')
+                return
+            end
 
             transacted = false;
             if self.schema.conn.inTransaction
