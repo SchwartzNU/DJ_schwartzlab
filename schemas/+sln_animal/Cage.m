@@ -2,9 +2,9 @@
 # Cage for an animal
 cage_number : int unsigned       # the cage number/barcode on the cage card
 ---
--> sln_animal.CageRoom
-is_breeding : enum('F','T')     # whether or not it is a breeding cage. switch by replacing
+is_breeding : enum('F','T')     # whether or not it is a breeding cage.
 %}
+
 
 classdef Cage < dj.Manual
     methods(Static)
