@@ -12,8 +12,8 @@ vendor_ind = strcmp({old_animals.source}, 'vendor');
 unique({old_animals(vendor_ind).source_id})
 
 other_lab_ind = strcmp({old_animals.source}, 'other lab');
-unique({old_animals(other_lab_ind).source_id})
-unique({old_animals(other_lab_ind).genotype_name})
+% unique({old_animals(other_lab_ind).source_id})
+% unique({old_animals(other_lab_ind).genotype_name})
 
 %% collaborator sources
 all_collab_lines = fetchn(sln_animal.CollaboratorStrain, 'strain_name');
@@ -22,9 +22,9 @@ other_lab_ind = find(strcmp({old_animals.source}, 'other lab'));
 length(other_lab_ind)
 for i=1:length(other_lab_ind)
     curInd = other_lab_ind(i);
-    sln_animal.CollaboratorStrain
-    curSourceID = old_animals(curInd).source_id
-    curGenotype = old_animals(curInd).genotype_name
+%     sln_animal.CollaboratorStrain
+    curSourceID = old_animals(curInd).source_id;
+    curGenotype = old_animals(curInd).genotype_name;
 
     id = input('Choose source ID: ');
     new_animals(curInd).source_id = id;
