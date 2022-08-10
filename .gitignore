@@ -12,3 +12,12 @@ ML/makePSTHfromDB.m
 ML/makePSTHfromPSTH.m
 ML/makePSTHfromTable.m
 ML/prepareSMSData.m
+schemas/+sln_animal/Cage.m
+schemas/+sln_animal/init_animals.m
+schemas/+sln_animal/init_animals2.m
+schemas/+sln_symphony/insert_all_datasets_for_experiment.m
+schemas/+sln_animal/init_animals.m
+schemas/+sln_animal/Cage.m
+schemas/+sln_animal/init_animals.m
+schemas/+sln_symphony/insert_all_datasets_for_experiment.m
+schemas/+sln_animal/Cage.m
