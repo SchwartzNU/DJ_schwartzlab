@@ -1,9 +1,6 @@
 %{
 # Log the birth of a litter
 -> sln_animal.AnimalEvent
----
--> sln_animal.BreedingPair
--> sln_animal.Cage
 %}
 
 classdef Birth < dj.Manual

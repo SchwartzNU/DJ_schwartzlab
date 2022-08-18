@@ -2,12 +2,10 @@
 # A strain from an animal vendor
 -> sln_animal.Source
 ---
-strain_name                 : varchar(32)
 vendor_name                 : varchar(64)
-catalog_number              : varchar(32)
 %}
 
-classdef VendorStrain < dj.Manual
+classdef Vendor < dj.Manual
     methods(Static)
         function q = active()
             q = sln_animal.VendorStrain & sln_animal.VendorStrainActive;

@@ -90,6 +90,20 @@ try
         text = sprintf('Stimulus insert successful.\n%s', text);
         key = rmfield(key,'event_id');        
     end
+    
+    
+    if strcmp(event_type, 'GenotypeResult') %update the genotype of the animal
+        error('Need to do this!');
+        % key struct: 
+        %   animal_id <- from key
+        %   locus_name <- from key
+        %   event_id <- from key
+        %   allele_name <- from key, possibly 2
+        %   allele_id <- need to check if this animal already has inserted
+        %       alleles! throw an error if we're trying to add above ploidy
+        %       of species
+        %   inheritance <- check parents of this animal and try to infer 
+    end
         
     text = sprintf('%s insert successful.\n%s', event_type, text);
     if nargin<3

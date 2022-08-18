@@ -1,7 +1,7 @@
 %{
 # A location on the genome for alleles
 
-locus_name              : varchar(16)
+locus_name              : varchar(32)
 ---
 description             : varchar(128)
 

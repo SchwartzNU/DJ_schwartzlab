@@ -12,22 +12,28 @@ classdef AnimalEvent < dj.Shared
     methods
         function stripped_key = insert(self, key)
             %strip extra fields
-            stripped_key = key;
-            ae_key = key;
+            if nargout
+                stripped_key = key;
+            end
             ae_fields = sln_animal.AnimalEvent().header.names;
 
             f = fieldnames(key);
             for i=1:length(f)   
                 if ismember(f{i}, ae_fields)
-                    stripped_key = rmfield(stripped_key, f{i});
+                    if nargout && ~strcmp(f{i}, 'event_id')
+                        stripped_key = rmfield(stripped_key, f{i});
+                    end
                 else
-                    ae_key = rmfield(ae_key, f{i});
+                    key = rmfield(key, f{i});
                 end
             end
 
-            insert@dj.Shared(self, ae_key);
-            this_event_id = max(fetchn(sln_animal.AnimalEvent, 'event_id'));
-            stripped_key.event_id = this_event_id;
+            insert@dj.Shared(self, key);
+            
+            if nargout && ~ismember('event_id',f)
+                event_ids = num2cell(fetchn(sln_animal.AnimalEvent & key, 'event_id'));
+                [stripped_key(:).event_id] = event_ids{:};
+            end
         end
 
     end

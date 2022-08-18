@@ -4,7 +4,7 @@
 -> sln_animal.GeneLocus
 allele_id               : tinyint unsigned            # up to ploidy number
 ---
--> [nullable] sln_animal.GenotypeResult # can be nulled if inferred from parents
+-> [nullable] sln_animal.GenotypeResult #null if inferred or from jax, etc.
 -> sln_animal.Allele
 inheritance = NULL      : enum('maternal','paternal') # source, if known
 %}

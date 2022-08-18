@@ -2,7 +2,7 @@
 # A pair of animals for breeding
 -> sln_animal.Source
 ---
--> sln_animal.BreedingStrain
+-> sln_animal.Strain
 (male_id) -> sln_animal.Animal
 (female_id) -> sln_animal.Animal
 %}
