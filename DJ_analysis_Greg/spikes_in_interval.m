@@ -17,7 +17,7 @@ if nargin<4
     bounds = [0, 0];
 end
 
-epoch = epoch & sprintf('channel_name="%s"', channel_name);
+epoch.channel_name = channel_name;
 
 sample_rate = fetch1(sln_symphony.ExperimentChannel & epoch, 'sample_rate'); %Hz
 spikes_query = aka.SpikeTrain & epoch;
