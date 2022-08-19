@@ -1,4 +1,4 @@
-function sp_count = spikes_in_interval(epoch,pre_stim_tail,interval_name,bounds)
+function sp_count = spikes_in_interval(epoch,pre_stim_tail,interval_name,bounds,channel_name)
 %epoch: struct with the primary key of the epoch
 %pre_stim_tail: struct with pre_time, stim_time, and tail_time (in ms)
 %interval_name: 'pre', 'stim', or 'tail'
@@ -9,9 +9,15 @@ function sp_count = spikes_in_interval(epoch,pre_stim_tail,interval_name,bounds)
 %will count spike from 100 ms before the start of the stimulus interval to
 %200 ms after the end of the stimulus interval.
 
+if nargin<5
+    channel_name = 'Amp1';
+end
+
 if nargin<4
     bounds = [0, 0];
 end
+
+epoch = epoch & sprintf('channel_name="%s"', channel_name);
 
 sample_rate = fetch1(sln_symphony.ExperimentChannel & epoch, 'sample_rate'); %Hz
 spikes_query = aka.SpikeTrain & epoch;
