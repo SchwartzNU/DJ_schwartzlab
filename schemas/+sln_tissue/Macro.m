@@ -8,18 +8,14 @@ task_tree : blob #task tree serial(ized)
 classdef Macro < dj.Manual
     methods 
         function T = getTaskTree(self)
-            S = hlp_deserialize(fetch1(self,'task_tree'));  
-            S = S.Node{1};
-            T = tree(S.Node{1});
-            for i=2:length(S.Node)
-                T = T.addnode(S.Parent(i), S.Node{i});
-            end
+            T = getArrayFromByteStream(fetch1(self,'task_tree'));  
         end
 
         function printTaskTree(self)
              T = getTaskTree(self);
              disp(T.tostring);
         end
+
     end
 end
 

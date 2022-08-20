@@ -87,6 +87,7 @@ classdef tree
         
         % METHODS
         
+        
         function [obj, ID] = addnode(obj, parent, data)
             %% ADDNODE attach a new node to a parent node
             % 

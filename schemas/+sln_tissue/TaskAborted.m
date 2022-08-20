@@ -1,6 +1,7 @@
 %{
 #Task aborted
 -> sln_tissue.Task
+-> sln_tissue.Tissue
 ---
 -> sln_lab.User
 reason : varchar(512) #reason this task was not completed
