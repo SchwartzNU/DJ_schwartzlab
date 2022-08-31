@@ -1,6 +1,7 @@
 %{
 #Task completed
 -> sln_tissue.Task
+-> sln_tissue.Tissue
 ---
 -> sln_lab.User
 task_completion_notes = NULL : varchar(512) #notes about the task completion
