@@ -1,8 +1,8 @@
 %{
-# An active collaborator strain
--> sln_animal.CollaboratorStrain
+# An active  strain
+-> sln_animal.Strain
 ---
 %}
 
-classdef CollaboratorStrainActive < dj.Manual
+classdef StrainActive < dj.Manual
 end

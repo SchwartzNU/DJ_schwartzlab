@@ -101,7 +101,7 @@ alleles(end+1).allele_name = 'Prss56-OE';
 alleles(end).description = 'Prss56 overexpresser';
 
 %% Salsa6f
-alleles(end+1).allele_name =  'Salsa6f-Cre';
+alleles(end+1).allele_name =  'Salsa6f';
 alleles(end).description = 'Cre-mediated expression of tdTomato/GCaMP6f fusion protein, floxed STOP cassette';
 % alleles(end).source_id = 2;
 % alleles(end).allele_id = 031968;
@@ -145,7 +145,7 @@ amap('Gcamp') = 'GCaMP6f';
 amap('Gcamp6f') = 'GCaMP6f';
 amap('Grm6') = 'Grm6-Cre';
 amap('RIK') = 'RIK';
-amap('Salsa6f') = 'Salsa6f-Cre';
+amap('Salsa6f') = 'Salsa6f';
 amap('Scg2') = 'Scg2-tTA';
 amap('TITL iGluSnfr') = 'TITL iGluSnFR';
 amap('Tusc5') = 'Tusc5-eGFP';

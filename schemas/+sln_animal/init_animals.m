@@ -43,13 +43,15 @@ t = outerjoin(t,struct2table(rmfield(fathers,'event_id')),'mergekeys',true,'type
 t(t.animal_id==1054,'male_id') = {1064}; %not picked up because the male has a leading "MJ" in the cage number
 t(t.animal_id==1055,'male_id') = {1064}; %as above
 t(t.animal_id>867 & t.animal_id<872,'male_id') = {787,787,787,787}'; %as above
-t(t.animal_id>867 & t.animal_id<872,'female_id') = {788,788,788,788}'; %as above
+t(t.animal_id>867 & t.animal_id<872,'female_id') = {786,786,786,786}'; %as above
 %animal_id=790: source_id is the jax strain
 
 
 t = sortrows(t,'animal_id');
 
-breeding_pairs = table2struct(sortrows(unique(t(~isnan(t.male_id) & ~isnan(t.female_id),{'strain_name','background_name','male_id','female_id'})),'female_id'));
+% breeding_pairs = table2struct(sortrows(unique(t(~isnan(t.male_id) & ~isnan(t.female_id),{'strain_name','background_name','male_id','female_id'})),'female_id'));
+[~,i] = unique(t(~isnan(t.male_id) & ~isnan(t.female_id),{'male_id','female_id'}));
+breeding_pairs = table2struct(sortrows(t(i,{'strain_name','background_name','male_id','female_id'}),'female_id'));
 
 [breeding_pairs.source_id] = subsref(num2cell(1000+(1:numel(breeding_pairs))),substruct('{}',{1:numel(breeding_pairs)}));
 new_animals = rmfield(old_animals, {'source', 'source_id'});

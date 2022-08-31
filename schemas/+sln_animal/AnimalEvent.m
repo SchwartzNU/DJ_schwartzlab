@@ -10,7 +10,7 @@ notes = NULL : varchar(256)                # notes about the event
 %}
 classdef AnimalEvent < dj.Shared
     methods
-        function stripped_key = insert(self, key)
+        function [stripped_key,animal_ids] = insert(self, key)
             %strip extra fields
             if nargout
                 stripped_key = key;
@@ -27,13 +27,22 @@ classdef AnimalEvent < dj.Shared
                     key = rmfield(key, f{i});
                 end
             end
+            
+            if ~ismember('event_id', f)
+                next_id = self.schema.conn.query('select max(event_id)+1 as next from sln_animal.animal_event').next;
+                next_ids = num2cell(double(next_id) + (1:numel(key)));
+                [key(:).event_id] = next_ids{:};
+            end
 
             insert@dj.Shared(self, key);
             
             if nargout && ~ismember('event_id',f)
-                event_ids = num2cell(fetchn(sln_animal.AnimalEvent & key, 'event_id'));
-                [stripped_key(:).event_id] = event_ids{:};
+                [stripped_key(:).event_id] = next_ids{:};
             end
+            if nargout
+                animal_ids = [key.animal_id];
+            end
+            
         end
 
     end

@@ -25,6 +25,9 @@ t = fetch(sl.AnimalEventBrainInjection,'*');
 i = num2cell(numel(events)+(1:numel(t)));
 [t.event_id] = i{:};
 
+ii = cellfun(@(x) strcmp(x,'HLA'), {t(:).target});
+[t(ii).target] = deal('LHA');
+
 events = cat(1,events,rmfield(t,setdiff(fieldnames(t), event_fields)));
 brain_inj = rmfield(t, setdiff(event_fields,'event_id'));
 
@@ -106,6 +109,26 @@ events = cat(1,events,rmfield(t,setdiff(fieldnames(t), event_fields)));
 
 
 %% Start by setting active breeding cages by establishing if the mice are alive
+t = fetch(sl.AnimalEventSetAsBreeder, '*');
+[t(:).project_name] = deal('Breeding');
+i = num2cell(numel(events)+(1:numel(t)));
+[t.event_id] = i{:};
+
+
+events = cat(1,events,rmfield(t,setdiff(fieldnames(t), event_fields)));
+set_breeder = rmfield(t, setdiff(event_fields,'event_id'));
+
+
+t = fetch(sl.AnimalEventRetireAsBreeder, '*');
+[t(:).project_name] = deal('Former breeder');
+i = num2cell(numel(events)+(1:numel(t)));
+[t.event_id] = i{:};
+
+
+events = cat(1,events,rmfield(t,setdiff(fieldnames(t), event_fields)));
+retire_breeder = rmfield(t, setdiff(event_fields,'event_id'));
+
+
 % breeding_pairs_struct = fetch(sln_animal.BreedingPair, '*');
 % N = length(breeding_pairs_struct)
 % for i=1:N
@@ -115,6 +138,11 @@ events = cat(1,events,rmfield(t,setdiff(fieldnames(t), event_fields)));
 %         
 %     end
 % end
+
+% a = proj(sln_animal.Animal,'animal_id->female_id') * sln_animal.BreedingPair * proj(sln_animal.AnimalEvent * sln_animal.Deceased,'animal_id->female_id');
+% b = proj(sln_animal.Animal,'animal_id->male_id') * sln_animal.BreedingPair * proj(sln_animal.AnimalEvent * sln_animal.Deceased,'animal_id->male_id');
+% fetch( sln_animal.BreedingPair - proj(a) - proj(b) )
+
 
 % %% Pair breeders -> activate breeding pair
 % pair_breeders_events_struct = rmfield(fetch(sl.AnimalEventPairBreeders  ,'*'), ...
@@ -315,6 +343,14 @@ tii = arrayfun(@(x) ee(x), [res_proj.event_id],'uni',0);
 [res_proj(:).event_id] = tii{:};
 insert(sln_animal.ReservedForProject, res_proj);
 
+tii = arrayfun(@(x) ee(x), [set_breeder.event_id],'uni',0);
+[set_breeder(:).event_id] = tii{:};
+insert(sln_animal.ReservedForProject, set_breeder);
+
+tii = arrayfun(@(x) ee(x), [retire_breeder.event_id],'uni',0);
+[retire_breeder(:).event_id] = tii{:};
+insert(sln_animal.ReservedForProject, retire_breeder);
+
 tii = arrayfun(@(x) ee(x), [res_sess.event_id],'uni',0);
 [res_sess(:).event_id] = tii{:};
 insert(sln_animal.ReservedForSession, res_sess);
@@ -335,7 +371,6 @@ insert(sln_animal.GenotypeResult, genotyped);
 %     insert(sln_animal.GenotypeResult, genotyped((n-1)*10 +1 : n*10));
 % end
 % insert(sln_animal.GenotypeResult, genotyped(1501:end));
-
 end
 
 function s = asgn_alleles(result, s)

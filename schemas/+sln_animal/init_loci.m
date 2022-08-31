@@ -65,10 +65,10 @@ loci(end).chromosome = 1;
 loci(end).position = 44.07;
 
 %% Grm6
-loci(end+1).locus_name = 'Grm6';
-loci(end).description = 'glutamate receptor, metabotropic 6';
-loci(end).chromosome = 11;
-loci(end).position = 30.93;
+% loci(end+1).locus_name = 'Grm6';
+% loci(end).description = 'glutamate receptor, metabotropic 6';
+% loci(end).chromosome = 11;
+% loci(end).position = 30.93;
 
 %% Gad2
 loci(end+1).locus_name = 'Gad2';
@@ -100,10 +100,15 @@ loci(end).description = 'location of CaMK2a-tetO insert';
 loci(end).chromosome = 12;
 loci(end).position = 62.6;
 
+%% Scg-2
+loci(end+1).locus_name = 'Scg-2';
+loci(end).description = 'Secretogranin 2';
+loci(end).chromosome = 1;
+loci(end).position = 40.89;
 
 %% unknown
-loci(end+1).locus_name = 'unknown';
-loci(end).description = 'unknown locus';
+loci(end+1).locus_name = 'R.I. / H.C.N.';
+loci(end).description = 'Random insertion, high copy number: multiple unknown loci (e.g., Grm6 from Wong lab)';
 loci(end).chromosome = nan;
 loci(end).position = nan;
 
@@ -123,10 +128,10 @@ lmap('Cspg4') = 'Ifi208';
 lmap('Gad2cre') = 'Gad2';
 lmap('Gcamp') = 'Rosa26';
 lmap('Gcamp6f') = 'Rosa26';
-lmap('Grm6') = 'unknown';
+lmap('Grm6') = 'R.I. / H.C.N.';
 lmap('RIK') = 'Rosa26';
 lmap('Salsa6f') = 'Rosa26';
-lmap('Scg2') = 'unknown';
+lmap('Scg2') = 'Scg-2';
 lmap('TITL iGluSnfr') = 'Igs7';
 lmap('Tusc5') = 'Trarg1';
 lmap('Vglut C57') = 'Slc17a6';

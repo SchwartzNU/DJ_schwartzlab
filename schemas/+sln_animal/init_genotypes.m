@@ -1,16 +1,19 @@
 %% 2 random weird entries
-insert(sln_animal.Genotype, {...
-    1766, 'Rosa26', 1, 9731, 'Ai14','paternal';
-    1766, 'Rosa26', 2, 9731, 'WT','maternal';
-    1766, 'Slc17a6', 1, 9732,'VGluT2-Cre','paternal';
-    1766, 'Slc17a6', 2, 9732,'VGluT2-Cre','maternal';
-    1766, 'Chat', 1, 9733,'Chat-Cre','maternal';
-    1766, 'Chat', 2, 9733,'WT','paternal';
-    1767, 'Cck', 1, 8419, 'CCK-Cre','maternal';
-    1767, 'Cck', 2, 8419, 'CCK-Cre','paternal';
-    1767, 'Rosa26', 1, 8420, 'WT','maternal';
-    1767, 'Rosa26', 2, 8420, 'WT','paternal';
-    });
+key = {...
+    1766, 'Rosa26', 1, 10223, 'Ai14','paternal';
+    1766, 'Rosa26', 2, 10223, 'WT','maternal';
+    1766, 'Slc17a6', 1, 10224,'VGluT2-Cre','paternal';
+    1766, 'Slc17a6', 2, 10224,'VGluT2-Cre','maternal';
+    1766, 'Chat', 1, 10225,'Chat-Cre','maternal';
+    1766, 'Chat', 2, 10225,'WT','paternal';
+    1767, 'Cck', 1, 8891, 'CCK-Cre','maternal';
+    1767, 'Cck', 2, 8891, 'CCK-Cre','paternal';
+    1767, 'Rosa26', 1, 8892, 'WT','maternal';
+    1767, 'Rosa26', 2, 8892, 'WT','paternal';
+    };
+key(:,end) = []; %drop inheritance for now...
+
+insert(sln_animal.Genotype, key);
 
 %% find the animals with a single genotyping event and split by allele
 % aggr(proj(sln_animal.Animal) * proj(sln_animal.GeneLocus), sln_animal.AnimalEvent * sln_animal.GenotypeResult, 'count(*)->n')
@@ -254,6 +257,7 @@ mrg(:,{'inheritance_left','inheritance_right'}) = [];
 mrg = table2struct(unique(mrg));
 [mrg(strcmp({mrg(:).inheritance},'')).inheritance] = deal(nan);
 
+mrg = rmfield(mrg, 'inheritance');
 insert(sln_animal.Genotype,mrg);
 
 %% handle jax animals
@@ -285,23 +289,28 @@ t0 = struct2table(fetch(proj(Q1-proj(sln_animal.Genotype), '*', 'IF(homozygous_m
     'allele_id','allele_name','inheritance'));
 t00 = struct2table(fetch(proj(Q2-proj(sln_animal.Genotype), '*', 'IF(homozygous_mutant=1 OR homozygous_wt=1, "paternal", null) -> inheritance') & 'homozygous_mutant=1 OR homozygous_wt=1',...
     'allele_id','allele_name','inheritance'));
+
+t0.inheritance = [];
+t00.inheritance = [];
+
 insert(sln_animal.Genotype,table2struct([t0;t00]));
 
 %% animals with parents that were bred internally but never genotyped
 % if other parent is of wrong strain we will assume inheritance...
 t = proj((sln_animal.AnimalEvent * sln_animal.GenotypeResult & 'locus_name="ifi208"' & 'allele1!="ambiguous"') & proj(sln_animal.Animal & 'source_id=1009'), 'animal_id','locus_name','allele1->allele_name','if(true,1,1)->allele_id','if(true,"paternal","paternal")->inheritance');
-insert(sln_animal.Genotype, fetch(t,'*'));
+
+insert(sln_animal.Genotype, rmfield(fetch(t,'*'), 'inheritance'));
 
 %% misc
-insert(sln_animal.Genotype, {1779, 'Rosa26', 2, 8448, 'RIK', 'maternal'});
-update(sln_animal.Genotype & 'animal_id=1638', 'inheritance','maternal'); %concerning...
-insert(sln_animal.Genotype, {1638, 'Rosa26', 2, 7926, 'WT', 'paternal'});
-insert(sln_animal.Genotype, {1638, 'Slc17a6', 1, 7925, 'VGluT2-Cre', 'paternal'});
+insert(sln_animal.Genotype, {1779, 'Rosa26', 2, 8920, 'RIK'}); %maternal
+% update(sln_animal.Genotype & 'animal_id=1638', 'inheritance','maternal'); %concerning...
+insert(sln_animal.Genotype, {1638, 'Rosa26', 2, 8369, 'WT'}); %paternal
+insert(sln_animal.Genotype, {1638, 'Slc17a6', 1, 8368, 'VGluT2-Cre'}); %paternal
 
 
-update(sln_animal.Genotype & 'animal_id=1853', 'inheritance','maternal'); %concerning...
-insert(sln_animal.Genotype, {1853, 'Rosa26', 2, 9180, 'WT', 'paternal'});
-insert(sln_animal.Genotype, {1853, 'Slc17a6', 1, 9179, 'VGluT2-Cre', 'paternal'});
+% update(sln_animal.Genotype & 'animal_id=1853', 'inheritance','maternal'); %concerning...
+insert(sln_animal.Genotype, {1853, 'Rosa26', 2, 9671, 'WT'}); % paternal
+insert(sln_animal.Genotype, {1853, 'Slc17a6', 1, 9670, 'VGluT2-Cre'}); %paternal
 
 
 %% check parents that have been inserted above and enter children with inheritance
@@ -319,7 +328,7 @@ mom_zygosity = sln_animal.Genotype & proj(proj(sln_animal.Animal * sln_animal.St
 
 t00 = proj(missing,'animal_id','locus_name','if(true,"maternal","maternal")->inheritance', 'if(true,1,1)->allele_id') & (aggr(missing_mom, mom_zygosity,'count(allele_id)=2->parent_homozygous', 'count(allele_id)=1->parent_heterozygous', 'child_id->animal_id') & 'parent_homozygous=1');
 
-insert(sln_animal.Genotype, fetch(t0,'*'));
+insert(sln_animal.Genotype, rmfield(fetch(t0,'*'),'inheritance'));
 % insert(sln_animal.Genotype, fetch(t00,'*'));
 
 missing = (sln_animal.AnimalEvent * proj(sln_animal.GenotypeResult & 'allele2 is not null AND allele2!= "ambiguous"','allele1->allele_name', 'locus_name') * proj(sln_animal.Allele)) - (proj(sln_animal.Genotype,'*','event_id->xx') * proj(sln_animal.AnimalEvent));
