@@ -76,12 +76,15 @@ classdef Animal < dj.Manual
 
     function animals = reservedProject(animal_ids)
         %get the protocol number
-
-        q = sln_animal.ReservedForProject * sln_animal.AnimalEvent * sln_lab.Project;
+        q = sln_animal.Animal;
         if nargin && ~isempty(animal_ids)
             q = restrict_by_animal_ids(q, animal_ids);
         end
-        animals = q.fetch('animal_id','project_name', 'LIMIT 1 PER animal_id ORDER BY date DESC');
+
+        a = aggr(q, sln_animal.AnimalEvent * sln_animal.ReservedForProject, ...
+            'substring(max(concat(date,entry_time,project_name)), 30)->project_name');
+        %animals = q.fetch('animal_id','project_name', 'LIMIT 1 PER animal_id ORDER BY date DESC');
+        animals = a.fetch('animal_id','project_name');
         if isempty(animals)
             animals = reshape(animals,0,1);
         else
