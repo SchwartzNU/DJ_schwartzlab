@@ -143,8 +143,7 @@ classdef Animal < dj.Manual
                 q = restrict_by_animal_ids(q,animal_ids);
             end
 
-            animals = q.fetch('animal_id','cage_number');
-            animals = rmfield(animals, 'event_id');
+            animals = q.fetch('*');
             if isempty(animals)
                 animals = reshape(animals,0,1);
             else
@@ -251,7 +250,6 @@ classdef Animal < dj.Manual
             end
 
             animals = q.fetch('animal_id','room_number', 'LIMIT 1 PER animal_id');
-            animals = rmfield(animals, 'event_id');
             if isempty(animals)
                 animals = reshape(animals,0,1);
             else

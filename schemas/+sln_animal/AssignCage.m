@@ -14,7 +14,9 @@ classdef AssignCage < dj.Manual
 
     methods(Static)
         function cage = current()
-            cage = sln_animal.AssignCage * sln_animal.AnimalEvent & 'LIMIT 1 PER animal_id ORDER BY date DESC, entry_time DESC';
+            %cage = sln_animal.AssignCage * sln_animal.AnimalEvent & 'LIMIT 1 PER animal_id ORDER BY date DESC, entry_time DESC';
+            % slightly faster version: 
+            cage = aggr(sln_animal.Animal, sln_animal.AssignCage * sln_animal.AnimalEvent,'convert(substring(max(concat(date,entry_time,cage_number)), 30),unsigned)->cage_number');
         end
 
         function cage = initial()

@@ -54,13 +54,22 @@ try
         %make the new cage each time and replace the old one
         thisCage = sln_animal.Cage & sprintf('cage_number=%d', key.cage_number);
         if ~thisCage.exists %need to make the cage
-            if strcmp(key.cause,'set as breeder')
-                key_cage.is_breeding = 'T';
-            else
-                key_cage.is_breeding = 'F';
-            end
+%             if strcmp(key.cause,'set as breeder')
+%                 key_cage.is_breeding = 'T';
+%             else
+%                 key_cage.is_breeding = 'F';
+%             end
             key_cage.cage_number = key.cage_number;
             insert(sln_animal.Cage,key_cage);
+        end
+        
+        if isfield(key,'room_number')
+            curr_room = sln_animal.CageAssignRoom.current & struct('cage_number',key.cage_number);
+            if count(curr_room) == 0 || ~strcmp(fetch1(curr_room, 'room_number'), key.room_number)
+                key_room = rmfield(key,{'notes','animal_id','cause'});
+                insert(sln_animal.CageAssignRoom, key_room);
+            end
+            key = rmfield(key,'room_number');
         end
     end
     
