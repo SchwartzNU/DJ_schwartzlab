@@ -64,7 +64,7 @@ classdef BreedingPair < dj.Manual
             
         end
 
-        function ids = active_animal_ids(sex)
+        function ids = active_animal_ids(sex) %TODO finish this, deal with sex
             if nargin < 1
                 sex = 'both';
             end
@@ -76,12 +76,11 @@ classdef BreedingPair < dj.Manual
             ids = fetchn(q,'animal_id');
         end
         
-        function D = breeders_table()
-            
+        function [D, missing_male_ids] = breeders_table()
             % ever paired
             cage = sln_animal.BreedingPair.breeding_cages();
             
-            female = (sln_animal.Animal & 'sex="Female"') & (sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"'));
+            female = (sln_animal.Animal & 'sex="Female"') & (sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"')); %why include female former breeders?
             female_ev = (sln_animal.Animal & 'sex="Female"') * sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"');
             female_status = aggr(female, female_ev, 'substring(max(concat(date, entry_time, project_name)), 30)->project_name', 'animal_id->female_id'); %"scalar-aggregate reduction"
                         
@@ -105,6 +104,13 @@ classdef BreedingPair < dj.Manual
             % Remove cages where the male is absent and the female is
             % retired
             q = q & (proj(female_status & 'project_name="Breeding"') & proj(sln_animal.AssignCage.current,'animal_id->male_id','cage_number'));
+
+            missing_male = q - proj(sln_animal.AssignCage.current,'animal_id->male_id','cage_number');
+            if missing_male.exists
+                missing_male_ids = fetchn(missing_male, 'source_id');
+            else
+                missing_male_ids = [];
+            end
 
             % add ages, strains, genotypes
             D = q * proj(sln_animal.Animal * sln_animal.GenotypeString,'animal_id->male_id','round(datediff(now(), dob)/7, 0)->male_age','strain_name->male_strain','genotype_string->male_genotype') *  proj(sln_animal.Animal * sln_animal.GenotypeString,'animal_id->female_id','round(datediff(now(), dob)/7, 0)->female_age','strain_name->female_strain','genotype_string->female_genotype');
