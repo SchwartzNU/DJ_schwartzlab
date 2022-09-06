@@ -2,7 +2,7 @@
 # The name of a strain of animals, used to reflect intended genotype
 
 strain_name                 : varchar(64) 
-->sln_animal.Background
+->sln_animal.Background # this should not be a primary key
 ---
 -> sln_animal.Species
 
