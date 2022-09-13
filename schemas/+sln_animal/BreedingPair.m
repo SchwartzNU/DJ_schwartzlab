@@ -109,6 +109,16 @@ classdef BreedingPair < dj.Manual
             % add ages, strains, genotypes
             D = q * proj(sln_animal.Animal * sln_animal.GenotypeString,'animal_id->male_id','round(datediff(now(), dob)/7, 0)->male_age','strain_name->male_strain','genotype_string->male_genotype') *  proj(sln_animal.Animal * sln_animal.GenotypeString,'animal_id->female_id','round(datediff(now(), dob)/7, 0)->female_age','strain_name->female_strain','genotype_string->female_genotype');
 
+%             % replace missing   males with nan
+%             male = (sln_animal.Animal & 'sex="Male"') & (sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"'));
+%             male_ev = (sln_animal.Animal & 'sex="Male"') * sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"');
+%             male_status = aggr(male, male_ev, 'substring(max(concat(date, entry_time, project_name)), 30)->project_name', 'animal_id->male_id'); %"scalar-aggregate reduction"
+%            
+%             
+%             
+%             D = proj(D * male_status, '*','male_id->old_male_id', 'if(project_name="Breeding", male_id, null)->new_male_id');
+            
+            
         end
     end
 end
