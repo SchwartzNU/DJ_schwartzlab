@@ -180,7 +180,6 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Weaned.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/add_event.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/add_eyes_for_deceased_animals.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/add_source.asv</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/add_source.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/copy_animal_from_sl_animal.asv</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/copy_animal_from_sl_animal.m</file>
@@ -242,8 +241,6 @@
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/require.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/uninstall.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/compareVersions/compareVersions.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.mexmaci64</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/escapeString.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/Animal.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/AnimalEvent.m</file>
@@ -270,7 +267,9 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/AnimalExternal.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Collaborator.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GenotypeString.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Strain.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/StrainActive.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/StrainAllele.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/StrainSource.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Vendor.m</file>
@@ -283,7 +282,7 @@
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>/Applications/MATLAB_R2020a.app</root>
+      <root>/Applications/MATLAB_R2021b.app</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
@@ -326,7 +325,7 @@
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>10.16</osver>
+      <osver>12.5.1</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>
