@@ -20,8 +20,6 @@ for i=1:length(cellBaseNames)
     end
 end
 
-
-%TODO - make this more automatic somewhere
 sln_cell.init_cells_from_ExperimentCells();
 %sln_animal.updateGenotypeString();
 sln_cell.add_cell_types_from_cellData(cellBaseNames);

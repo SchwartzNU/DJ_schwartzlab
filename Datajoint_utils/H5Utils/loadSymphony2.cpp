@@ -718,7 +718,9 @@ class Parser {
                 sprintf(chan_hold,"chan%dHold", electrode_number);
                 
                 electrode_s[0]["amp_mode"] = parseStrAttr(protocol_params, chan_mode); //need to parse the channel name...
+                DEBUGPRINT("Units are " << unit_i);
                 if (std::strcmp(unit_i, "pA")) {
+                    
                     electrode_s[0]["recording_mode"] = factory.createCharArray("Voltage Clamp");
                 } else if (std::strcmp(unit_i, "mV")) {
                     electrode_s[0]["recording_mode"] = factory.createCharArray("Current Clamp");

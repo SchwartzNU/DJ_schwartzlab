@@ -15,6 +15,13 @@ switch key.source
     case 'breeding'
 
     case 'other lab'
+        key
+        view(sln_animal.CollaboratorStrain);
+        source_id = input('choose source id: ');
+        external_id = input('External id: ', 's');
+        key.source_id = source_id;
+        key.external_id = external_id;
+        do_entry = true;
 
     otherwise %should be the easy cases
         %source is unknown

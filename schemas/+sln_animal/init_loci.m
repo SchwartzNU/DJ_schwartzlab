@@ -1,3 +1,5 @@
+function lmap = init_loci(do_insert)
+
 loci = struct('locus_name',{},'description',{},'chromosome',{},'position',{});
 
 
@@ -15,16 +17,16 @@ loci(end).chromosome = 14;
 loci(end).position = 19.40;
 
 %% ROSA
-loci(end+1).locus_name = 'Rosa';
+loci(end+1).locus_name = 'Rosa26';
 loci(end).description = 'Locus for constitutive, ubiquitous expression';
 loci(end).chromosome = 6;
 loci(end).position = 52.73;
 
-%% TIGRE
-loci(end+1).locus_name = 'TIGRE';
-loci(end).description = 'Locus for constitutive, ubiquitous expression, syntetic';
+%% Igs7 - TIGRE (TITL iGluSnFr)
+loci(end+1).locus_name = 'Igs7';
+loci(end).description = 'Locus for constitutive, ubiquitous expression; intergenic-site 7, a TIGRE locus';
 loci(end).chromosome = 9;
-loci(end).position = nan;
+loci(end).position = 7.82; 
 
 %% CCK
 loci(end+1).locus_name = 'Cck';
@@ -63,10 +65,10 @@ loci(end).chromosome = 1;
 loci(end).position = 44.07;
 
 %% Grm6
-loci(end+1).locus_name = 'Grm6';
-loci(end).description = 'glutamate receptor, metabotropic 6';
-loci(end).chromosome = 11;
-loci(end).position = 30.93;
+% loci(end+1).locus_name = 'Grm6';
+% loci(end).description = 'glutamate receptor, metabotropic 6';
+% loci(end).chromosome = 11;
+% loci(end).position = 30.93;
 
 %% Gad2
 loci(end+1).locus_name = 'Gad2';
@@ -76,7 +78,7 @@ loci(end).position = 15.15;
 
 %% Camk2a
 loci(end+1).locus_name = 'Camk2a';
-loci(end).description = 'calcium-calmodulin-dependent kinase II alpha';
+loci(end).description = 'Calcium/calmodulin-dependent protein kinase II alpha';
 loci(end).chromosome = 18;
 loci(end).position = 34.41;
 
@@ -86,9 +88,72 @@ loci(end).description = 'trafficking regulator of GLUT4 (SLC2A4) ';
 loci(end).chromosome = 11;
 loci(end).position = 45.98;
 
+%% Opn5
+loci(end+1).locus_name = 'Opn5';
+loci(end).description = 'neuropsin';
+loci(end).chromosome = 17;
+loci(end).position = 19.65;
+
+%% Camk2-tetO
+loci(end+1).locus_name = 'Vipr2 / Wdr60 / Esyt2 / Ncapg2';
+loci(end).description = 'location of CaMK2a-tetO insert';
+loci(end).chromosome = 12;
+loci(end).position = 62.6;
+
+%% Scg-2
+loci(end+1).locus_name = 'Scg-2';
+loci(end).description = 'Secretogranin 2';
+loci(end).chromosome = 1;
+loci(end).position = 40.89;
+
 %% unknown
-loci(end+1).locus_name = 'unknown';
-loci(end).description = 'unknown locus';
+loci(end+1).locus_name = 'R.I. / H.C.N.';
+loci(end).description = 'Random insertion, high copy number: multiple unknown loci (e.g., Grm6 from Wong lab)';
 loci(end).chromosome = nan;
 loci(end).position = nan;
+
+
+if nargin==0 || do_insert == true
+    insert(sln_animal.GeneLocus,loci);
+end
+%% return map
+
+lmap = containers.Map();
+
+lmap('Ai14') = 'Rosa26';
+lmap('CCK') = 'Cck';
+lmap('CaMK2') = 'Vipr2 / Wdr60 / Esyt2 / Ncapg2';
+lmap('ChAT') = 'Chat';
+lmap('Cspg4') = 'Ifi208';
+lmap('Gad2cre') = 'Gad2';
+lmap('Gcamp') = 'Rosa26';
+lmap('Gcamp6f') = 'Rosa26';
+lmap('Grm6') = 'R.I. / H.C.N.';
+lmap('RIK') = 'Rosa26';
+lmap('Salsa6f') = 'Rosa26';
+lmap('Scg2') = 'Scg-2';
+lmap('TITL iGluSnfr') = 'Igs7';
+lmap('Tusc5') = 'Trarg1';
+lmap('Vglut C57') = 'Slc17a6';
+lmap('Vglut C57bg') = 'Slc17a6';
+lmap('Vglut cre-mixed') = 'Slc17a6';
+lmap('Vglut-C57bg') = 'Slc17a6';
+lmap('Vglut-Cre C57') = 'Slc17a6';
+lmap('Vglut2-Cre mixed bg') = 'Slc17a6';
+lmap('iGluSnfr') = 'Igs7';
+lmap('nNos') = 'Nos1';
+lmap('opn5cre') = 'Opn5';
+
+
+
+
+
+
+
+
+
+
+
+
+
 

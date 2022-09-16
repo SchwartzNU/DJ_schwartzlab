@@ -2,9 +2,7 @@
 # Log the weaning of a litter
 -> sln_animal.AnimalEvent
 ---
-number_of_pups:tinyint unsigned # how many weaned
--> sln_animal.BreedingPair
--> sln_animal.Cage
+number_of_pups              : tinyint unsigned              # how many weaned
 %}
 
 classdef Weaned < dj.Manual

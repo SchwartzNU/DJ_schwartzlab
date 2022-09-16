@@ -1,8 +1,6 @@
 %{ 
 # Cage for an animal
 cage_number : int unsigned       # the cage number/barcode on the cage card
----
-is_breeding : enum('F','T')     # whether or not it is a breeding cage.
 %}
 
 

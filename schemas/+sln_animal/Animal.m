@@ -1,12 +1,10 @@
 %{
 # animal
-animal_id                : int unsigned AUTO_INCREMENT     # unique animal id
+animal_id                   : int unsigned AUTO_INCREMENT   # unique animal id
 ---
-dob = NULL               : date                            # mouse date of birth
-sex="Unknown"            : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
-external_id = NULL       : varchar(128)                    # id number from external source like tag id from another lab
--> sln_animal.Species
--> [nullable] sln_animal.Background
+dob=null                    : date                          # mouse date of birth
+sex="Unknown"               : enum('Male','Female','Unknown') # sex of mouse - Male, Female, or Unknown/Unclassified
+-> sln_animal.Strain
 -> [nullable] sln_animal.Source
 %}
 
@@ -78,12 +76,15 @@ classdef Animal < dj.Manual
 
     function animals = reservedProject(animal_ids)
         %get the protocol number
-
-        q = sln_animal.ReservedForProject * sln_animal.AnimalEvent * sln_lab.Project;
+        q = sln_animal.Animal;
         if nargin && ~isempty(animal_ids)
             q = restrict_by_animal_ids(q, animal_ids);
         end
-        animals = q.fetch('animal_id','project_name', 'LIMIT 1 PER animal_id ORDER BY date DESC');
+
+        a = aggr(q, sln_animal.AnimalEvent * sln_animal.ReservedForProject, ...
+            'substring(max(concat(date,entry_time,project_name)), 30)->project_name');
+        %animals = q.fetch('animal_id','project_name', 'LIMIT 1 PER animal_id ORDER BY date DESC');
+        animals = a.fetch('animal_id','project_name');
         if isempty(animals)
             animals = reshape(animals,0,1);
         else
@@ -145,8 +146,7 @@ classdef Animal < dj.Manual
                 q = restrict_by_animal_ids(q,animal_ids);
             end
 
-            animals = q.fetch('animal_id','cage_number');
-            animals = rmfield(animals, 'event_id');
+            animals = q.fetch('*');
             if isempty(animals)
                 animals = reshape(animals,0,1);
             else
@@ -157,9 +157,10 @@ classdef Animal < dj.Manual
         end
 
         function full_struct = strainName(animal_ids, liveOnly)
-            all_animals = sln_animal.Animal;
             if nargin>1 && liveOnly
                 all_animals = sln_animal.Deceased.living();
+            else
+                all_animals = sln_animal.Animal;
             end
 
             if nargin && ~isempty(animal_ids)
@@ -167,42 +168,7 @@ classdef Animal < dj.Manual
                 all_animals = restrict_by_animal_ids(all_animals,animal_ids);
             end
 
-            vendor_animals = all_animals * sln_animal.VendorStrain;
-            collaborator_animals = all_animals * sln_animal.CollaboratorStrain;
-            bred_animals = all_animals * sln_animal.BreedingPair;
-
-            unknown_animals = all_animals - proj(vendor_animals) - proj(collaborator_animals) - proj(bred_animals);
-            
-            if vendor_animals.exists
-                vendor_struct = fetch(vendor_animals,'strain_name');
-            else
-                vendor_struct = [];
-            end
-            if collaborator_animals.exists
-                collaborator_struct = fetch(collaborator_animals,'strain_name');
-            else
-                collaborator_struct = [];
-            end
-            if bred_animals.exists
-                bred_struct = fetch(bred_animals,'strain_name');
-            else
-                bred_struct = [];
-            end
-            if unknown_animals.exists
-                unknown_struct = fetch(unknown_animals);
-                for i=1:length(unknown_struct)
-                    unknown_struct(i).source_id = nan;
-                    unknown_struct(i).strain_name = 'unknown';
-                end
-            else
-                unknown_struct = [];
-            end
-
-            full_struct = [vendor_struct; collaborator_struct; bred_struct; unknown_struct];
-
-            if isempty(full_struct)
-                full_struct = reshape(full_struct,0,1);
-            end
+            full_struct = proj(all_animals,'strain_name');
         end
         
         function animals = tagEar(animal_ids, liveOnly)
@@ -287,7 +253,6 @@ classdef Animal < dj.Manual
             end
 
             animals = q.fetch('animal_id','room_number', 'LIMIT 1 PER animal_id');
-            animals = rmfield(animals, 'event_id');
             if isempty(animals)
                 animals = reshape(animals,0,1);
             else
