@@ -97,7 +97,7 @@ cage = rmfield(cage,'room_number');
 cn = cellfun(@(x) str2double(x(isstrprop(x,'digit'))), {cage(:).cage_number},'uni',0);
 d = cellfun(@(x,y) ~strcmp(num2str(x),y), cn, {cage(:).cage_number});
 [cage(:).cage_number] = cn{:};
-[cage(strcmp({cage(:).cause},'')).cause] = 'unknown';
+[cage(strcmp({cage(:).cause},'')).cause] = deal('unknown');
 
 notes = cellfun(@(x) sprintf('Entered as cage number %s', x), {t(d).cage_number},'uni',0);
 [t(d).notes] = notes{:};
@@ -253,25 +253,25 @@ i = num2cell(numel(events)+(1:numel(t)));
 [t.event_id] = i{:};
 
 % insert(sln_animal.GenotypeSource,{...
-%     50, 'Unknown', 'genotype result of uncertain origin; for use with old data only';
-%     51, 'Schwartz Lab', 'in-house genotyping';
-%     52, 'Transnetyx', ''});
+%     90, 'Unknown', 'genotype result of uncertain origin; for use with old data only';
+%     91, 'Schwartz Lab', 'in-house genotyping';
+%     92, 'Transnetyx', ''});
 
 st = fetch(sln_animal.Animal, 'strain_name');
 t = table2struct(innerjoin(struct2table(t), struct2table(st)));
 
 %per Susan, via email/excel sheet:
-[t(:).source_id] = deal(50);
-[t(strcmp({t(:).strain_name},'VGluT2-Cre')).source_id] = deal(51);
-[t(strcmp({t(:).strain_name},'VGluT2-Cre x GCaMP6f')).source_id] = deal(51);
-[t(strcmp({t(:).strain_name},'Grm6-Cre x Salsa6f')).source_id] = deal(52);
-[t(strcmp({t(:).strain_name},'VGluT2-Cre x Ai14')).source_id] = deal(51);
-[t(strcmp({t(:).strain_name},'ChAT-Cre')).source_id] = deal(52);
-[t(strcmp({t(:).strain_name},'Ai14')).source_id] = deal(51);
-[t(strcmp({t(:).strain_name},'ChAT-Cre x Ai14')).source_id] = deal(52);
-[t(strcmp({t(:).strain_name},'Tusc5-eGFP')).source_id] = deal(52);
-[t(strcmp({t(:).strain_name},'VGluT2-Cre x ChAT-Cre x Ai14')).source_id] = deal(52);
-[t(strcmp({t(:).strain_name},'Cspg4-Cre')).source_id] = deal(51);
+[t(:).source_id] = deal(90);
+[t(strcmp({t(:).strain_name},'VGluT2-Cre')).source_id] = deal(91);
+[t(strcmp({t(:).strain_name},'VGluT2-Cre x GCaMP6f')).source_id] = deal(91);
+[t(strcmp({t(:).strain_name},'Grm6-Cre x Salsa6f')).source_id] = deal(92);
+[t(strcmp({t(:).strain_name},'VGluT2-Cre x Ai14')).source_id] = deal(91);
+[t(strcmp({t(:).strain_name},'ChAT-Cre')).source_id] = deal(92);
+[t(strcmp({t(:).strain_name},'Ai14')).source_id] = deal(91);
+[t(strcmp({t(:).strain_name},'ChAT-Cre x Ai14')).source_id] = deal(92);
+[t(strcmp({t(:).strain_name},'Tusc5-eGFP')).source_id] = deal(92);
+[t(strcmp({t(:).strain_name},'VGluT2-Cre x ChAT-Cre x Ai14')).source_id] = deal(92);
+[t(strcmp({t(:).strain_name},'Cspg4-Cre')).source_id] = deal(91);
 
 
 t = rmfield(t,'strain_name');

@@ -18,7 +18,7 @@ insert(sln_animal.Background,...
     'Agouti', 'mouse', 'Spontaneous mutation from the C57bl/6 line';
     'C57bl/6;FVB;129S6', 'mouse', 'A mixed background with black, agouti, and albino coat colors'});
 insert(sln_animal.Source, num2cell(1:6)');
-insert(sln_animal.Source, num2cell(50:52)');
+insert(sln_animal.Source, num2cell(90:92)');
 insert(sln_animal.Source, num2cell(100:109)');
 insert(sln_animal.Vendor,{...
     1, 'Jackson Laboratory';
@@ -29,9 +29,9 @@ insert(sln_animal.Vendor,{...
     6, 'Duke Viral Vector Core';
     });
 insert(sln_animal.GenotypeSource,{...
-    50, 'Unknown', 'genotype result of uncertain origin; for use with old data only';
-    51, 'Schwartz Lab', 'in-house genotyping';
-    52, 'Transnetyx', ''});
+    90, 'Unknown', 'genotype result of uncertain origin; for use with old data only';
+    91, 'Schwartz Lab', 'in-house genotyping';
+    92, 'Transnetyx', ''});
 insert(sln_animal.Collaborator, {...
     100, 'Schwartz Lab', 'NU'; 
     101, 'Rachel Wong', 'U. Washington';
@@ -217,10 +217,20 @@ sln_animal.StrainSource().insert(strain_src)
 
 %% Animals
 sln_animal.init_animals(strains_map);
+sln_animal.Eye().insert(fetch(sl.Eye,'*')); 
 
 s = load('schemas\+sln_animal\full_backup_081522.mat').s;
-s.AnimalExternal(contains({s.AnimalExternal(:).external_info},'test')) = [];
-insert(sln_animal.AnimalExternal, s.AnimalExternal);
+% s.AnimalExternal(contains({s.AnimalExternal(:).external_info},'test')) = [];
+% insert(sln_animal.AnimalExternal, s.AnimalExternal);
+ex = struct('animal_id',{2022;2023;2036;2037;2038;2039},'external_info',{
+    'Fawzi tag: 1974';
+    'Fawzi tag: 1976';
+    'Fawzi tag: 2007';
+    'Fawzi tag: 2010';
+    'Fawzi tag: unknown';
+    'Fawzi tag: unknown'});
+
+insert(sln_animal.AnimalExternal, ex);
 
 %% Cages
 cage = struct2table(fetch(sl.AnimalEventAssignCage,'*','ORDER BY date ASC'));
@@ -264,7 +274,9 @@ substances(contains({substances(:).source},'Fiction')) = [];
 insert(sln_animal.InjectionSubstance, rmfield(substances, {'source'}));
 
 %% Other
-insert(sln_animal.BrainArea, fetch(sl.BrainArea,'*'));
+f = fetch(sl.BrainArea,'*');
+f(strcmp({f(:).target},'HLA')).target = deal('LHA');
+insert(sln_animal.BrainArea, f);
 insert(sln_animal.AnimalProtocol, fetch(sl.AnimalProtocol,'*'));
 
 %% Events
@@ -366,4 +378,9 @@ insert(sln_animal.AlleleLocusMap, s.AlleleLocusMap);
 
 %% clean up
 dj.config('safemode',safemode);
+
+%% testing
+assert(count(sl.Animal - sln_animal.Animal().proj()) == 0);
+assert(count(sln_animal.Deceased) == count(sl.AnimalEventDeceased));
+
 

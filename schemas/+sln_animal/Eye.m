@@ -1,7 +1,7 @@
 %{
 # Eye
 -> sln_animal.Animal
-side: enum('Left', 'Right', 'UnknownA', 'UnknownB')   # left, right, or unknown (could have 2 unknown eyes)
+side: enum('Left', 'Right', 'Unknown1', 'Unknown2')   # left, right, or unknown (could have 2 unknown eyes)
 
 %}
 

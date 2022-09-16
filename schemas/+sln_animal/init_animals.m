@@ -14,10 +14,10 @@ mixed_bg = find(contains(bgn,'mixed'));
 for bg = mixed_bg
     [old_animals(ui==bg).background_name] = deal('C57bl/6;FVB;129S6');
 end
-fathers([fathers.male_id] == 1187) = []; %this one appears to be an entry error
-
 mothers = fetch((sl.AnimalEventAssignCage) * proj(sl.Animal&'sex="Female"'),'animal_id->female_id','cage_number->source_id') ;
 fathers = fetch((sl.AnimalEventAssignCage) * proj(sl.Animal&'sex="Male"'),'animal_id->male_id','cage_number->source_id');
+
+fathers([fathers.male_id] == 1187) = []; %this one appears to be an entry error
 
 tm = struct2cell(rmfield(mothers,'event_id'))';
 tm(:,2) = cellfun(@str2double, tm(:,2), 'UniformOutput', false);
@@ -51,8 +51,10 @@ t(t.animal_id>867 & t.animal_id<872,'female_id') = {786,786,786,786}'; %as above
 t = sortrows(t,'animal_id');
 
 % breeding_pairs = table2struct(sortrows(unique(t(~isnan(t.male_id) & ~isnan(t.female_id),{'strain_name','background_name','male_id','female_id'})),'female_id'));
-[~,i] = unique(t(~isnan(t.male_id) & ~isnan(t.female_id),{'male_id','female_id'}));
-breeding_pairs = table2struct(sortrows(t(i,{'strain_name','background_name','male_id','female_id'}),'female_id'));
+ii = find(~isnan(t.male_id) & ~isnan(t.female_id));
+[~,i] = unique(t(ii,{'male_id','female_id'}));
+breeding_pairs = table2struct(sortrows(t(ii(i),{'strain_name','background_name','male_id','female_id'}),'female_id'));
+
 
 [breeding_pairs.source_id] = subsref(num2cell(1000+(1:numel(breeding_pairs))),substruct('{}',{1:numel(breeding_pairs)}));
 new_animals = rmfield(old_animals, {'source', 'source_id'});
@@ -122,8 +124,3 @@ insert(sln_animal.Animal, insertable);
             
 % insertable_breeders = ismember([breeding_pairs.male_id],[insertable.animal_id]) & ismember([breeding_pairs.female_id],[insertable.animal_id]);
 insert(sln_animal.BreedingPair, breeding_pairs(~inserted_breeders));
-
-
-
-
-

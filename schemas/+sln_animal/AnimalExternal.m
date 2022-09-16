@@ -3,7 +3,7 @@
 # as an ID number from another lab
 -> sln_animal.Animal
 ---
-external_info: blob #stores some text or other data
+external_info: varchar(512) #stores some text
 
 %}
 
