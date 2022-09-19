@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="3797483221" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="98021703" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_V2</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_V2</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_V2</param.files.only>
@@ -225,8 +225,7 @@
     </fileset.resources>
     <fileset.depfun>
       <file>${MATLAB_ROOT}/toolbox/local/userpath.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.mexmaci64</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/mym.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/CellTypeNameMatches.mat</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/H5Utils/loadSymphony2.mexmaci64</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/changeCase.m</file>
