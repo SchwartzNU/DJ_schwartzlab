@@ -13,7 +13,7 @@ classdef ExperimentProtocolMultiPulseV1EpochParameters < sln_symphony.Experiment
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'pulse_vector'};
+		dropped_attributes = {'pulse_vector', 'inter_time_vector'};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
