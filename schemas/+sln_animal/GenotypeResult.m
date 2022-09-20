@@ -9,8 +9,8 @@
 %}
 classdef GenotypeResult < dj.Manual
     properties
-        printStr = '%s %s: Animal %d: Genotype result (%s) entered. User: %s. (%s)\n';
-        printFields = {'date', 'time', 'animal_id', 'source_name', 'user_name' ,'notes'};
+        printStr = '%s %s: Animal %d: Genotype result entered. User: %s. (%s)\n';
+        printFields = {'date', 'time', 'animal_id', 'user_name' ,'notes'};
     end
 
 end
