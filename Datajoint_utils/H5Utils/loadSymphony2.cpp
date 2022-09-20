@@ -855,7 +855,7 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["retinas"]), std::move(s)});
             key[0]["retinas"] = std::move(result);
-        } else if (props.attrExists("type")) {
+        } else if (props.attrExists("confirmedType")) {
             //case cell
             s = factory.createStructArray({1},
             {"file_name","source_id","retina_id","cell_number",
@@ -871,7 +871,34 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cells"]), std::move(s)});
             key[0]["cells"] = std::move(result);
+        } else if (props.attrExists("type")) {
+            //non-retinal cell
+            s = factory.createStructArray({1},
+            {"file_name","source_id","retina_id","cell_number",
+            "online_type", "x", "y"});
 
+            s[0]["online_type"] = parseStrAttr(props, "type");
+            s[0]["cell_number"] = parseNumericAttr(props,"number");
+            s[0]["source_id"] = factory.createScalar(ind);
+            s[0]["file_name"] = factory.createCharArray(fname);
+            s[0]["x"] = factory.createScalar(NAN);
+            s[0]["y"] = factory.createScalar(NAN);
+            s[0]["retina_id"] = factory.createScalar(NAN);
+
+            StructArray s2 = factory.createStructArray({2}, {"file_name", "source_id", "entry_time", "text"});
+            s2[0]["file_name"] = factory.createCharArray(fname);
+            s2[0]["source_id"] = factory.createScalar(ind);
+            s2[0]["text"] = parseStrAttr(props, "notes");
+
+            s2[1]["file_name"] = factory.createCharArray(fname);
+            s2[1]["source_id"] = factory.createScalar(ind);
+            parseDateTimeField(source, s2[1]["entry_time"], "creationTimeDotNetDateTimeOffsetTicks");  
+            s2[1]["text"] = factory.createCharArray(std::string("Experimenter: ") + parseStrAttr(props, "recordingBy").toAscii());//factory.createCharArray("");
+
+            key[0]["source_notes"] = matlabPtr->feval(u"vertcat", {std::move(key[0]["source_notes"]), std::move(s2)});
+                        
+            StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cells"]), std::move(s)});
+            key[0]["cells"] = std::move(result);
         } else if (props.attrExists("Amplifier 1 cell number")) {
             //case cell pair
             s = factory.createStructArray({1},
@@ -1055,6 +1082,22 @@ class Parser {
         
         attr.close();
     }
+
+    void parseDateTimeField(H5::Group group, Reference<Array> start, std::string datetime) {
+        //shared timestamp code
+
+        H5::Attribute attr;
+        // H5::IntType inttype(H5T_STD_I64LE);
+        long long ticks;
+
+        attr = group.openAttribute(datetime);
+        DEBUGPRINT("Reading '"  << datetime << "' attribute (parseDateTime)");
+        attr.read(H5::PredType::NATIVE_LLONG, &ticks);
+        parseDateTime(ticks, start);
+        
+        attr.close();
+    }
+
 
     void parseDateTime(time_t ticks, Reference<Array> time_str) {
         //shared timestamp code
