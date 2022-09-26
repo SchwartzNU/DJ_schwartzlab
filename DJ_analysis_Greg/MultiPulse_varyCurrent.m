@@ -4,22 +4,23 @@ datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
+%variable names must be lowercase
 R = table('Size',[N_datasets, 19], 'VariableNames', ...
     {'file_name', ...
     'dataset_name', ...
     'source_id', ...
     'inj_current', ...
     'n_epochs_per_current', ...
-    'Vrest', ...
-    'Vmax', ...
-    'Vmin', ...
-    'Vmax_rebound', ...
-    'Vmin_rebound', ...
-    'Vsteady', ...
-    'Tmax', ...
-    'Tmin', ...
-    'Tmax_rebound', ...
-    'Tmin_rebound', ...
+    'vrest', ...
+    'vmax', ...
+    'vmin', ...
+    'vmax_rebound', ...
+    'vmin_rebound', ...
+    'vsteady', ...
+    'tmax', ...
+    'tmin', ...
+    'tmax_rebound', ...
+    'tmin_rebound', ...
     'mean_traces', ...
     'sample_rate' ...
     'pre_time_ms', ...
@@ -105,16 +106,16 @@ for d=1:N_datasets
     N_currents = length(currents);
 
     N_epochs_per_current = zeros(N_currents,1);
-    Vmax = zeros(N_currents,1);
-    Vmin = zeros(N_currents,1);
-    Vmax_rebound = zeros(N_currents,1);
-    Vmin_rebound = zeros(N_currents,1);
-    Vsteady= zeros(N_currents,1);
-    Tmax = zeros(N_currents,1);
-    Tmin = zeros(N_currents,1);
-    Tmax_rebound = zeros(N_currents,1);
-    Tmin_rebound = zeros(N_currents,1);
-    Vrest_vector = zeros(N_currents,1);
+    vmax = zeros(N_currents,1);
+    vmin = zeros(N_currents,1);
+    vmax_rebound = zeros(N_currents,1);
+    vmin_rebound = zeros(N_currents,1);
+    vsteady= zeros(N_currents,1);
+    tmax = zeros(N_currents,1);
+    tmin = zeros(N_currents,1);
+    tmax_rebound = zeros(N_currents,1);
+    tmin_rebound = zeros(N_currents,1);
+    vrest_vector = zeros(N_currents,1);
     mean_traces = zeros(N_currents, total_samples);
 
     for s=1:N_currents
@@ -122,21 +123,21 @@ for d=1:N_datasets
         N_epochs_per_current(s) = length(ind);
         trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
         mean_traces(s,:) = trace;
-        Vrest_vector(s) = mean(trace(1:pre_samples));
+        vrest_vector(s) = mean(trace(1:pre_samples));
        
-        [Vmax(s), t] = max(trace(pre_samples+1:pre_samples+stim_samples) - Vrest_vector(s));
-        Tmax(s) = 1E3 * t / sample_rate;
-        [Vmin(s), t] = min(trace(pre_samples+1:pre_samples+stim_samples) - Vrest_vector(s));
-        Tmin(s) = 1E3 * t / sample_rate;
-        Vsteady(s) = mean(trace(pre_samples+stim_samples-ss_samples:pre_samples+stim_samples) - Vrest_vector(s));
+        [vmax(s), t] = max(trace(pre_samples+1:pre_samples+stim_samples) - vrest_vector(s));
+        tmax(s) = 1E3 * t / sample_rate;
+        [vmin(s), t] = min(trace(pre_samples+1:pre_samples+stim_samples) - vrest_vector(s));
+        tmin(s) = 1E3 * t / sample_rate;
+        vsteady(s) = mean(trace(pre_samples+stim_samples-ss_samples:pre_samples+stim_samples) - vrest_vector(s));
         
-        [Vmax_rebound(s), t] = max(trace(pre_samples+stim_samples+1:end) - Vrest_vector(s));
-        Tmax_rebound(s) = 1E3 * t / sample_rate;
-        [Vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - Vrest_vector(s));
-        Tmin_rebound(s) = 1E3 * t / sample_rate;        
+        [vmax_rebound(s), t] = max(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
+        tmax_rebound(s) = 1E3 * t / sample_rate;
+        [vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
+        tmin_rebound(s) = 1E3 * t / sample_rate;        
     end
 
-    Vrest = mean(Vrest_vector);
+    vrest = mean(vrest_vector);
 
     %set table variables
     R.file_name(d) = datasets_struct(d).file_name;
@@ -146,16 +147,16 @@ for d=1:N_datasets
     R.pre_time_ms(d) = pre_stim_tail.pre_time;
     R.stim_time_ms(d) = pre_stim_tail.stim_time;
     R.n_epochs_per_current(d) = {N_epochs_per_current};
-    R.Vrest(d) = Vrest;
-    R.Vsteady(d) = {Vsteady};
-    R.Vmax(d) = {Vmax};
-    R.Vmin(d) = {Vmin};
-    R.Vmax_rebound(d) = {Vmax_rebound};
-    R.Vmin_rebound(d) = {Vmin_rebound};
-    R.Tmax(d) = {Tmax};
-    R.Tmin(d) = {Tmin};
-    R.Tmax_rebound(d) = {Tmax_rebound};
-    R.Tmin_rebound(d) = {Tmin_rebound};
+    R.vrest(d) = vrest;
+    R.vsteady(d) = {vsteady};
+    R.vmax(d) = {vmax};
+    R.vmin(d) = {vmin};
+    R.vmax_rebound(d) = {vmax_rebound};
+    R.vmin_rebound(d) = {vmin_rebound};
+    R.tmax(d) = {tmax};
+    R.tmin(d) = {tmin};
+    R.tmax_rebound(d) = {tmax_rebound};
+    R.tmin_rebound(d) = {tmin_rebound};
     R.mean_traces(d) = {mean_traces};
     R.sample_rate = sample_rate;
 
