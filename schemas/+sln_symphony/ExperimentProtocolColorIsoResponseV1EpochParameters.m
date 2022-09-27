@@ -2,10 +2,10 @@
 #Epoch parameters for ColorIsoResponse (1) 
 -> sln_symphony.ExperimentEpoch
 ---
-contrast1 : float
-contrast2 : float
-intensity1 : float
-intensity2 : float
+contrast_1 : float
+contrast_2 : float
+intensity_1 : float
+intensity_2 : float
 %}
 classdef ExperimentProtocolColorIsoResponseV1EpochParameters < sln_symphony.ExperimentProtocol
 	properties
@@ -14,7 +14,7 @@ classdef ExperimentProtocolColorIsoResponseV1EpochParameters < sln_symphony.Expe
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'sessionId'};
+		dropped_attributes = {'session_ID', 'stimulus_mode'};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
