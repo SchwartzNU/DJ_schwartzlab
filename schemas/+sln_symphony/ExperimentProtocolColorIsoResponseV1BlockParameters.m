@@ -1,5 +1,5 @@
 %{
-#Block parameters for ContrastResponse (1) 
+#Block parameters for ColorIsoResponse (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
 annulusMode : enum('true','false')
@@ -10,10 +10,6 @@ rstar_mean : float
 spot_diameter : float
 stim_time : float
 tail_time : float
-intensity1: float
-intensity2: float
-contrast1: float
-contrast2: float
 %}
 classdef ExperimentProtocolColorIsoResponseV1BlockParameters < sln_symphony.ExperimentProtocol
 	properties
