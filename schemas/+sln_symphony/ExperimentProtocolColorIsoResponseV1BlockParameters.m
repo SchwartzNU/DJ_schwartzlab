@@ -14,22 +14,25 @@ stim_time : float
 tail_time : float
 %}
 classdef ExperimentProtocolColorIsoResponseV1BlockParameters < sln_symphony.ExperimentProtocol
-	properties
+    properties
 
-		%attributes to be renamed
-		renamed_attributes = struct();
+        %attributes to be renamed
+        renamed_attributes = struct();
 
-		%attributes to be removed from the key
-		dropped_attributes = {'session_id', 'color_combination_mode'};
-	end
-	methods
-		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
-		%add entities to the key based on others
-        if block_key.annulus_mode
-            block_key.annulus_mode = 'T';
-        else
-            block_key.annulus_mode = 'F';
+        %attributes to be removed from the key
+        dropped_attributes = {'session_id', 'color_combination_mode'};
+    end
+    methods
+        function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+    		%add entities to the key based on others
+
+            for i=1:length(block_key)
+                if block_key(i).annulus_mode
+                    block_key(i).annulus_mode = 'T';
+                else
+                    block_key(i).annulus_mode = 'F';
+                end
+        	end
         end
-    	end
     end
 end
