@@ -25,12 +25,11 @@ classdef ExperimentProtocolColorIsoResponseV1BlockParameters < sln_symphony.Expe
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
 		%add entities to the key based on others
-%         if annulus_mode
-%             annulus_mode = 'F'
-%         else
-%             annulus_mode = 'T'
-%         end
+        if block_key.annulus_mode
+            block_key.annulus_mode = 'T';
+        else
+            block_key.annulus_mode = 'F';
         end
-
-	end
+    	end
+    end
 end
