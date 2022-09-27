@@ -2,7 +2,7 @@
 #Block parameters for ColorIsoResponse (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-annulus_mode : enum('true','false')
+annulus_mode : enum('F','T')
 annulus_inner_diameter : float
 annulus_outer_diameter : float
 mean_level_1 : float
@@ -25,6 +25,12 @@ classdef ExperimentProtocolColorIsoResponseV1BlockParameters < sln_symphony.Expe
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
 		%add entities to the key based on others
-		end
+%         if annulus_mode
+%             annulus_mode = 'F'
+%         else
+%             annulus_mode = 'T'
+%         end
+        end
+
 	end
 end
