@@ -2,10 +2,10 @@
 #Block parameters for ColorIsoResponse (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-stimulus_mode : enum('Center','Surround','Center-Surround)
+stimulus_mode : enum('Center','Surround','Center-Surround')
 inner_diameter : float
 outer_diameter : float
-pre_time : floats
+pre_time : float
 rstar_mean : float
 spot_diameter : float
 stim_time : float
