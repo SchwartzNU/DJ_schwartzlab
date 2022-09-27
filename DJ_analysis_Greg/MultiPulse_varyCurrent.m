@@ -158,7 +158,7 @@ for d=1:N_datasets
     R.tmax_rebound(d) = {tmax_rebound};
     R.tmin_rebound(d) = {tmin_rebound};
     R.mean_traces(d) = {mean_traces};
-    R.sample_rate = sample_rate;
+    R.sample_rate(d) = sample_rate;
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 
