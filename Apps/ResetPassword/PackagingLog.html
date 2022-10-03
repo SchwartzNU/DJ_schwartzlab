@@ -1,18 +1,65 @@
-<html><meta charset="UTF-8"><pre>
-<font color=blue>mcc -C -W 'webapp:ResetPassword,CONFIG:/var/folders/7r/106m9pg53098qny8dkyprffmz040tj/T/ResetPassword_properties8614924774810870350.xml' -d /Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/ResetPassword -v /Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/ResetPassword.mlapp -a /Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/distribution/mexa64 -a mym -a /Users/gws584/matlab/DataJoint/DJ_schwartzlab/datajoint-SchwartzLab/mym/mymSetup.m </font>
-Compiler version: 8.0 (R2020a)
-
-Dependency analysis by REQUIREMENTS.
-
-Warning: Your deployed application may fail because file or folder paths
+<html>  
+<head>
+    <style>     
+        html{     
+        background-color: white;     
+        padding: 5px;     
+        width: 95%;     
+        }     
+        pre {     
+        overflow-x: auto;     
+        white-space: pre-wrap;     
+        white-space: -moz-pre-wrap;     
+        white-space: -pre-wrap;     
+        white-space: -o-pre-wrap;     
+        word-wrap: break-word;     
+        }     
+    </style>     
+    
+    <script type="text/javascript">     
+            
+            function setup(htmlComponent) {     
+            
+				htmlComponent.addEventListener("DataChanged", function(event) {     
+				scrollID =  htmlComponent.Data;     
+					if (scrollID != ''){
+						if(scrollID==="bottom"){         
+							scrollToBottom();     
+						} else if(scrollID==="DOWNLOAD_MCRINSTALLER" || scrollID==="BUILD_MISSING" || scrollID==="SAMPLE_GEN" || scrollID==="USER_REQUESTED_PACKAGE"){     
+							document.getElementById(scrollID).scrollIntoView(true);     
+						} else {     
+							//document.body.innerHTML = document.body.innerHTML + scrollID;     
+							document.body.appendChild(scrollID);                 
+							scrollToBottom();     
+						}    
+						htmlComponent.Data = '';
+					}		
+				});          
+            }     
+            function scrollToBottom(){     
+            var scrollingElement = (document.scrollingElement || document.body);     
+            scrollingElement.scrollTop = scrollingElement.scrollHeight;     
+            }     
+            
+    </script> 
+</head>
+ <body><meta charset="UTF-8">        
+ <pre><font color=blue>mcc -W 'webapp:ResetPassword,CONFIG:/private/var/folders/jx/95sz97094tqcjlj7zq_yds_r0000gn/T/tpccb53665_a2d1_49e9_a9d6_b5f402e2dcf1.xml' -d /Users/gregschwartz/matlab/DJ_schwartzlab/Apps/ResetPassword -v -a '/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexw64/dialog.dll' -a '/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexw64/libmysql.dll' -a '/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexw64/mym.m' -a '/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexw64/mym.mexw64' -Z autodetect -C /Users/gregschwartz/matlab/DJ_schwartzlab/Apps/ResetPassword.mlapp</font>
+Compiler version: 8.4 (R2022a)
+Analyzing file dependencies. 
+<font color='orange'>Warning: Web apps that generate additional windows or apps are currently not supported. Check the following .mlapp files for window and app
+dependencies:
+/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/ResetPassword.mlapp</font> 
+<font color='orange'>Warning: Your deployed application may fail because file or folder paths
 not present in the deployed environment may be included in your MATLAB startup
 file. Use the MATLAB function "isdeployed" in your MATLAB startup file to
 determine the appropriate execution environment when including file and folder
 paths, and recompile your application.
-
-Parsing file "/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/ResetPassword.mlapp"
+</font> 
+<font color='orange'>> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('compiler.internal.build.builder/Generic/build', '/Applications/MATLAB_R2022a.app/toolbox/compiler/cli/build/+compiler/+internal/+build/+builder/Generic.m', 81)" style="font-weight:bold">compiler.internal.build.builder/Generic/build</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2022a.app/toolbox/compiler/cli/build/+compiler/+internal/+build/+builder/Generic.m',81,0)">line 81</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('compiler.build.webAppArchive', '/Applications/MATLAB_R2022a.app/toolbox/compiler/cli/build/+compiler/+build/webAppArchive.m', 87)" style="font-weight:bold">compiler.build.webAppArchive</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2022a.app/toolbox/compiler/cli/build/+compiler/+build/webAppArchive.m',87,0)">line 87</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('matlab.internal.compiler.ui.deployProject', '/Applications/MATLAB_R2022a.app/toolbox/compiler/ui/package_dialog/+matlab/+internal/+compiler/+ui/deployProject.m', 111)" style="font-weight:bold">matlab.internal.compiler.ui.deployProject</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2022a.app/toolbox/compiler/ui/package_dialog/+matlab/+internal/+compiler/+ui/deployProject.m',111,0)">line 111</a>)</font> 
+Parsing file "/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/ResetPassword.mlapp"
 	(referenced from command line).
-Deleting temporary MEX authorization files...
-Removing: '/var/folders/7r/106m9pg53098qny8dkyprffmz040tj/T/750c-414b-61d5-2f3b_94860.auth'.
-Elapsed packaging time was: 7 seconds.
-</pre></html>
+
+</pre></body></html>
