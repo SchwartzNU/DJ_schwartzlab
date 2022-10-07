@@ -8,8 +8,8 @@ cause = "unknown" : enum('assigned at database insert','weaning','set as breeder
 
 classdef AssignCage < dj.Manual
     properties
-        printStr = '%s: Animal %d moved to cage %d in room %s. Cause: %s. User: %s. (%s)\n';
-        printFields = {'date','animal_id','cage_number','room_number','cause','user_name','notes'};
+        printStr = '%s: Animal %d moved to cage %d. Cause: %s. User: %s. (%s)\n';
+        printFields = {'date','animal_id','cage_number','cause','user_name','notes'};
     end
 
     methods(Static)
