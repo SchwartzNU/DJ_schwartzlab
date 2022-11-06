@@ -1,6 +1,7 @@
 function R = SMS_spike_analysis(dataset, pipeline, P)
 
 R = []; %will be struct. error if isempty
+dataset = dataset * sln_symphony.SpikeTrain; %get only epochs with spike trains
 dataset_struct = dataset.fetch('*');
 
 % if ~strcmp(dataset_struct.dataset_protocol_name, 'Spots Multi Size') && ~strcmp(dataset_struct.dataset_protocol_name,'Spots Multiple Sizes')
