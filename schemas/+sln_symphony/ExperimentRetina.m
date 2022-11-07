@@ -3,8 +3,8 @@
 -> sln_symphony.ExperimentSource
 ---
 -> sln_animal.Eye
-(experimenter) -> [nullable] sl.User
-orientation: enum('ventral down', 'ventral up', 'unknown')
+(experimenter) -> [nullable] sln_lab.User
+orientation                 : enum('ventral down','ventral up','unknown') # 
 %}
 classdef ExperimentRetina < sln_symphony.ExperimentPart
 properties(SetAccess=protected)

@@ -885,15 +885,16 @@ class Parser {
             s[0]["y"] = factory.createScalar(NAN);
             s[0]["retina_id"] = factory.createScalar(NAN);
 
-            StructArray s2 = factory.createStructArray({2}, {"file_name", "source_id", "entry_time", "text"});
+            StructArray s2 = factory.createStructArray({1}, {"file_name", "source_id", "entry_time", "text"});
             s2[0]["file_name"] = factory.createCharArray(fname);
             s2[0]["source_id"] = factory.createScalar(ind);
-            s2[0]["text"] = parseStrAttr(props, "notes");
+            parseDateTimeField(source, s2[0]["entry_time"], "creationTimeDotNetDateTimeOffsetTicks");  
+            s2[0]["text"] = factory.createCharArray(std::string("Experimenter: ") + parseStrAttr(props, "recordingBy").toAscii() + ". " + parseStrAttr(props, "notes").toAscii());            
 
-            s2[1]["file_name"] = factory.createCharArray(fname);
-            s2[1]["source_id"] = factory.createScalar(ind);
-            parseDateTimeField(source, s2[1]["entry_time"], "creationTimeDotNetDateTimeOffsetTicks");  
-            s2[1]["text"] = factory.createCharArray(std::string("Experimenter: ") + parseStrAttr(props, "recordingBy").toAscii());//factory.createCharArray("");
+            // s2[1]["file_name"] = factory.createCharArray(fname);
+            // s2[1]["source_id"] = factory.createScalar(ind);
+            // parseDateTimeField(source, s2[1]["entry_time"], "creationTimeDotNetDateTimeOffsetTicks");  
+            // s2[1]["text"] = factory.createCharArray(std::string("Experimenter: ") + parseStrAttr(props, "recordingBy").toAscii());//factory.createCharArray("");
 
             key[0]["source_notes"] = matlabPtr->feval(u"vertcat", {std::move(key[0]["source_notes"]), std::move(s2)});
                         

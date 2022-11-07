@@ -12,7 +12,7 @@ end
 
 for i=1:length(S)
     reagent_name = S(i).reagent_name;
-    try
+    try        
         sln_tissue.add_reagent(S(i), reagent_type);
         fprintf('Inserted %s\n', reagent_name);
     catch ME

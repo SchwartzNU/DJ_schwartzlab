@@ -1,4 +1,4 @@
-function R = MultiPulse_inactivation(data_group, params)
+function R = MultiPulse_activation(data_group, params)
 
 datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);

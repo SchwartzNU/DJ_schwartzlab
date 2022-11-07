@@ -62,6 +62,9 @@ table_header_str{z} = '---';
 z=z+1;
 for i=1:length(secondary_vars)
     ind = find(strcmp(var_names,secondary_vars{i}));
+%     if length(ind) > 1
+%         keyboard;
+%     end
     if strcmp(var_types{ind},'key')
         table_header_str{z} = sprintf('%s # %s', secondary_vars{i}, var_desc{ind});
     else
