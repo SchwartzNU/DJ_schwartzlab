@@ -2,7 +2,7 @@
 #An experiment using Symphony DAS
 file_name: varchar(64)
 ---
--> sl.Rig
+-> sln_lab.Rig
 -> sln_symphony.Calibration
 experiment_start_time: datetime
 experiment_end_time: datetime

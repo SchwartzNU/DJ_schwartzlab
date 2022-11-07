@@ -35,7 +35,9 @@ for i=1:length(keys)
                     last_id = max(current_source_ids(current_source_ids>=1000));
 
             end
-            key.source_id = last_id + 1;
+            key_source.source_id = last_id + 1;
+            insert(sln_animal.Source, key_source);
+            key.source_id = key_source.source_id;
             insert(feval(sprintf('sln_animal.%s',source_type)), key);
             C.commitTransaction;
         catch ME            
