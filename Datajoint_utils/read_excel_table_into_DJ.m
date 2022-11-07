@@ -11,10 +11,16 @@ elseif contains(table_name, 'Antibody')
 end
 
 for i=1:length(S)
+%    i
     reagent_name = S(i).reagent_name;
     try        
         sln_tissue.add_reagent(S(i), reagent_type);
         fprintf('Inserted %s\n', reagent_name);
+%        c = count(sln_tissue.FluorescentReagent)
+%         if c~=i
+%             keyboard;
+%         end
+
     catch ME
         fprintf('Insertion of %s failed: %s\n', reagent_name, ME.message);
     end

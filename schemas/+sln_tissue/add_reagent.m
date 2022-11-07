@@ -31,20 +31,28 @@ for i=1:length(keys)
         end
     end
 
-    %first check if this task already exists
-    q = feval(sprintf('sln_tissue.%s',reagent_type)) & key;
+    %first check if this reagent already exists
+%    sub_table = feval(sprintf('sln_tissue.%s',reagent_type));
+%     key_r
+%     key
+%     keyboard;
+    q = sln_tissue.StainReagent & sprintf('reagent_name="%s"', key_r.reagent_name);
     if q.exists
+        disp('already exists');
+%        keyboard;
         %do nothing
     else %add it
         C = dj.conn;
         C.startTransaction;
         try
             %key_r
+            disp('insert try')
             insert(sln_tissue.StainReagent,key_r);
             reagent_id(i) = fetch1(sln_tissue.StainReagent, 'reagent_id', 'ORDER BY reagent_id DESC LIMIT 1');
             key.reagent_id = reagent_id(i);
             %key
             insert(feval(sprintf('sln_tissue.%s',reagent_type)), key);
+            disp('insert success')
             C.commitTransaction;
         catch ME            
             C.cancelTransaction;
