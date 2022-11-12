@@ -15,4 +15,3 @@ for i=1:N
     folder_location = ['/' folder_location(1:end-1)];
     exportStructToHDF5(S,fname,folder_location);
 end
-
