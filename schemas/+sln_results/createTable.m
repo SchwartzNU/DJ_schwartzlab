@@ -19,7 +19,7 @@ for i=1:N_vars
             var_types{i} = 'varchar(128)';
         case 'uint16'
             var_types{i} = 'int unsigned';
-        case 'double'
+        case {'single', 'double'}
             var_types{i} = 'float';
         case 'cell'
             var_types{i} = 'longblob';
