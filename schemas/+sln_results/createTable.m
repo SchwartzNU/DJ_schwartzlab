@@ -67,7 +67,7 @@ for i=1:length(secondary_vars)
 %     end
     if strcmp(var_types{ind},'key')
         table_header_str{z} = sprintf('%s # %s', secondary_vars{i}, var_desc{ind});
-    elseif strcmp(var_types{ind}, 'float') %default floats to NULL
+    elseif strcmp(var_types{ind}, 'float') || strcmp(var_types{ind}, 'longblob') %default floats and blobs to NULL
         table_header_str{z} = sprintf('%s=NULL : %s # %s', secondary_vars{i}, var_types{ind}, var_desc{ind});
     else
         table_header_str{z} = sprintf('%s : %s # %s', secondary_vars{i}, var_types{ind}, var_desc{ind});
