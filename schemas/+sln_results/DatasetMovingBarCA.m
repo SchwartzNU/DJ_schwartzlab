@@ -10,13 +10,13 @@ bar_distance : int unsigned # travel distance (microns)
 bar_length : int unsigned # bar length (microns)
 bar_speed : int unsigned # bar speed (microns per second)
 bar_width : int unsigned # bar width (microns
-baseline_rate_hz : float # baseline spike rate in pre time (Hz)
-ds_ang : float # ds angle for the full movement period (degrees)
-ds_ang_leading : float # ds angle for the leading period (degrees)
-ds_ang_trailing : float # ds angle for the leading trailing (degrees)
-dsi : float # vector sum dsi for the full movement period
-dsi_leading : float # vector sum dsi for the leading period
-dsi_trailing : float # vector sum dsi for the trailing period
+baseline_rate_hz=NULL : float # baseline spike rate in pre time (Hz)
+ds_ang=NULL : float # ds angle for the full movement period (degrees)
+ds_ang_leading=NULL : float # ds angle for the leading period (degrees)
+ds_ang_trailing=NULL : float # ds angle for the leading trailing (degrees)
+dsi=NULL : float # vector sum dsi for the full movement period
+dsi_leading=NULL : float # vector sum dsi for the leading period
+dsi_trailing=NULL : float # vector sum dsi for the trailing period
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 leading_trailing_index : longblob # spike count index defined as (leading - trailing) / (leading + trailing)
