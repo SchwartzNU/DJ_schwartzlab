@@ -103,107 +103,93 @@ try
 
     if strcmp(event_type, 'GenotypeResult') %update the genotype of the animal
         % Note: currently only works for diploid species
+        
+        % Not currently used, since inheritance is disabled
+        %         locus = struct('locus_name',key.locus_name);
+        %         parents = proj(proj(sln_animal.Animal & struct('animal_id',animal_id),'source_id') * sln_animal.BreedingPair, '*','animal_id->child_id');
+        %         dad_gt = proj(parents,'male_id') * proj(sln_animal.Genotype & locus,'animal_id->male_id','allele_name');
+        %         dad_gt = aggr((proj(sln_animal.Animal) & proj(dad_gt,'male_id->animal_id'))* proj(sln_animal.Allele) * (proj(sln_animal.GeneLocus) & locus), proj(sln_animal.Allele) * proj(dad_gt,'male_id->animal_id','source_id->tmp','allele_name'),'count(*)->copy_number');
+        %         dad_copy_number = fetch1(aggr((proj(sln_animal.Animal) & proj(parents,'male_id->animal_id')) * proj(sln_animal.GeneLocus & locus), dad_gt, 'sum(copy_number)->counts'), 'counts');
+        %
+        %         mom_gt = proj(parents,'female_id') * proj(sln_animal.Genotype & locus,'animal_id->female_id','allele_name');
+        %         mom_gt = aggr((proj(sln_animal.Animal) & proj(mom_gt,'female_id->animal_id'))* proj(sln_animal.Allele) * (proj(sln_animal.GeneLocus) & locus), proj(sln_animal.Allele) * proj(mom_gt,'female_id->animal_id','source_id->tmp','allele_name'),'count(*)->copy_number');
+        %         mom_copy_number = fetch1(aggr((proj(sln_animal.Animal) & proj(parents,'female_id->animal_id')) * proj(sln_animal.GeneLocus & locus), mom_gt, 'sum(copy_number)->counts'), 'counts');
 
-        %         [existing_ids, existing_names] = fetchn(sln_animal.Genotype & struct('animal_id',animal_id,'locus_name',key.locus_name),'allele_id', 'allele_name');
-
-        locus = struct('locus_name',key.locus_name);
-
-        source_breeder = proj(sln_animal.BreedingPair) * sln_animal.Animal & 'animal_id=2147';
-        if ~source_breeder.exists %genotype result from JAX or something, not from a breeding pair
-            %Greg - 11/11/22 - fixed this, I think
-            gks = fetch(sln_animal.Genotype & struct('animal_id',animal_id,'locus_name',key.locus_name),'*');
-            if ~isempty(gks)
-                gks = struct2table(gks,'asarray',1);
-            else
-                gks = cell2table(cell(0,numel(fieldnames(gks))),'variablenames', fieldnames(gks));
-            end
-            existing = 1:size(gks,1);
-
-            gks(existing,:) = [];
-            gks = table2struct(gks);
-            %                 [gks(strcmp({gks.inheritance},'')).inheritance] = deal(nan);
-            if ~isempty(gks)
-                insert(sln_animal.Genotype, gks);
-            end
+        %Get any existing genotype status for this animal
+        gks = fetch(sln_animal.Genotype & struct('animal_id',animal_id,'locus_name',key.locus_name),'*');
+        if ~isempty(gks)
+            gks = struct2table(gks,'asarray',1);
         else
-            parents = proj(proj(sln_animal.Animal & struct('animal_id',animal_id),'source_id') * sln_animal.BreedingPair, '*','animal_id->child_id');
+            gks = cell2table(cell(0,numel(fieldnames(gks))),'variablenames', fieldnames(gks));
+        end
+        existing = 1:size(gks,1);
+        
+        %Allele 1: if not ambiguous, and no existing matching genotype, we
+        %will enter
+        if ~strcmpi(key.allele1,'Ambiguous') && ~any(strcmp(key.allele1, gks(existing,:).allele_name)) %this is a new entry
+            gks = [gks; {animal_id, key.locus_name, size(gks,1)+1, key.event_id, key.allele1}];
+        end
+        
+        %Allele 2: if not ambiguous, and no existing matching genotype, OR
+        %if there is an existing genotype but it has already matched to
+        %allele 1, we will enter
+        if ~strcmpi(key.allele2,'Ambiguous') && (~any(strcmp(key.allele2, gks(existing,:).allele_name)) || (nnz(strcmp(gks(existing,:).allele_name, key.allele2)) == 1 && strcmpi(key.allele1, key.allele2))) %this is a new entry
+            gks = [gks; {animal_id, key.locus_name, size(gks,1)+1, key.event_id, key.allele2}];
+        end
+        
+        if ~isempty(gks)
+            if gks.allele_id(end) > fetch1((sln_animal.Animal & struct('animal_id',animal_id)) * sln_animal.Species, 'ploidy')
+                error('Result conflicts with the existing genotype for this animal. If this is not a mistake, speak to an admin');
 
-            dad_gt = proj(parents,'male_id') * proj(sln_animal.Genotype & locus,'animal_id->male_id','allele_name');
-            dad_gt = aggr((proj(sln_animal.Animal) & proj(dad_gt,'male_id->animal_id'))* proj(sln_animal.Allele) * (proj(sln_animal.GeneLocus) & locus), proj(sln_animal.Allele) * proj(dad_gt,'male_id->animal_id','source_id->tmp','allele_name'),'count(*)->copy_number');
-            dad_copy_number = fetch1(aggr((proj(sln_animal.Animal) & proj(parents,'male_id->animal_id')) * proj(sln_animal.GeneLocus & locus), dad_gt, 'sum(copy_number)->counts'), 'counts');
+                % The new combination of alleles would exceed the maximum
+                % number allowed for this locus.
 
-            mom_gt = proj(parents,'female_id') * proj(sln_animal.Genotype & locus,'animal_id->female_id','allele_name');
-            mom_gt = aggr((proj(sln_animal.Animal) & proj(mom_gt,'female_id->animal_id'))* proj(sln_animal.Allele) * (proj(sln_animal.GeneLocus) & locus), proj(sln_animal.Allele) * proj(mom_gt,'female_id->animal_id','source_id->tmp','allele_name'),'count(*)->copy_number');
-            mom_copy_number = fetch1(aggr((proj(sln_animal.Animal) & proj(parents,'female_id->animal_id')) * proj(sln_animal.GeneLocus & locus), mom_gt, 'sum(copy_number)->counts'), 'counts');
+                % Probably a mistake, but this could occur if e.g. a prior
+                % genotyping result was erroneous. There are a few possible
+                % scenarios:
 
-            gks = fetch(sln_animal.Genotype & struct('animal_id',animal_id,'locus_name',key.locus_name),'*');
-            if ~isempty(gks)
-                gks = struct2table(gks,'asarray',1);
+                % (1) A prior genotyping result was entered by mistake.
+                %  -> Delete the old GenotypeResult (this will also delete
+                %  the Genotype)
+
+                % (2) A prior genotyping result was entered correctly, but
+                % we now believe it was a false positive/negative
+                %  -> Delete the old Genotype, NOT the GenotypeResult
+
+                % (3) This genotyping result was entered correctly, but we
+                % believe the prior result is more accurate
+                % -> Insert this GenotypeResult manually, ignore Genotype
+
+                % WARNING: deleting data can have significant unintended
+                % side effects. This should be done sparingly, and ideally
+                % only for live animals.
             else
-                gks = cell2table(cell(0,numel(fieldnames(gks))),'variablenames', fieldnames(gks));
-            end
-            existing = 1:size(gks,1);
-
-            if ~strcmpi(key.allele1,'Ambiguous') && ~any(strcmp(key.allele1, gks(existing,:).allele_name)) %this is a new entry
-                gks = [gks; {animal_id, key.locus_name, size(gks,1)+1, key.event_id, key.allele1}];
-            end
-
-            if ~strcmpi(key.allele2,'Ambiguous') && (~any(strcmp(key.allele2, gks(existing,:).allele_name)) || (nnz(strcmp(gks(existing,:).allele_name, key.allele2)) == 1 && strcmpi(key.allele1, key.allele2))) %this is a new entry
-                gks = [gks; {animal_id, key.locus_name, size(gks,1)+1, key.event_id, key.allele2}];
-            end
-            if ~isempty(gks)
-                if gks.allele_id(end) > fetch1((sln_animal.Animal & struct('animal_id',animal_id)) * sln_animal.Species, 'ploidy')
-                    error('Result conflicts with the existing genotype for this animal. If this is not a mistake, speak to an admin');
-
-                    % The new combination of alleles would exceed the maximum
-                    % number allowed for this locus.
-
-                    % Probably a mistake, but this could occur if e.g. a prior
-                    % genotyping result was erroneous. There are a few possible
-                    % scenarios:
-
-                    % (1) A prior genotyping result was entered by mistake.
-                    %  -> Delete the old GenotypeResult (this will also delete
-                    %  the Genotype)
-
-                    % (2) A prior genotyping result was entered correctly, but
-                    % we now believe it was a false positive/negative
-                    %  -> Delete the old Genotype, NOT the GenotypeResult
-
-                    % (3) This genotyping result was entered correctly, but we
-                    % believe the prior result is more accurate
-                    % -> Insert this GenotypeResult manually, ignore Genotype
-
-                    % WARNING: deleting data can have significant unintended
-                    % side effects. This should be done sparingly, and ideally
-                    % only for live animals.
-                else
-                    %                 if ~isempty(gks.inheritance{1})
-                    %                     if strcmp(gks.inheritance{1}, gks.inheritance{2})
-                    %                         error('Error inferring inheritance');
-                    %                     elseif strcmp(gks.inheritance{1},'maternal')
-                    %                         gks.inheritance{2} = 'paternal';
-                    %                     else
-                    %                         gks.inheritance{2} = 'maternal';
-                    %                     end
-                    %                 end
-                    %                 if ~isempty(gks.inheritance{2})
-                    %                     if strcmp(gks.inheritance{1}, gks.inheritance{2})
-                    %                         error('Error inferring inheritance');
-                    %                     elseif strcmp(gks.inheritance{2},'maternal')
-                    %                         gks.inheritance{1} = 'paternal';
-                    %                     else
-                    %                         gks.inheritance{1} = 'maternal';
-                    %                     end
-                    %                 end
-                    gks(existing,:) = [];
-                    gks = table2struct(gks);
-                    %                 [gks(strcmp({gks.inheritance},'')).inheritance] = deal(nan);
-                    if ~isempty(gks)
-                        insert(sln_animal.Genotype, gks);
-                    end
+                %                 if ~isempty(gks.inheritance{1})
+                %                     if strcmp(gks.inheritance{1}, gks.inheritance{2})
+                %                         error('Error inferring inheritance');
+                %                     elseif strcmp(gks.inheritance{1},'maternal')
+                %                         gks.inheritance{2} = 'paternal';
+                %                     else
+                %                         gks.inheritance{2} = 'maternal';
+                %                     end
+                %                 end
+                %                 if ~isempty(gks.inheritance{2})
+                %                     if strcmp(gks.inheritance{1}, gks.inheritance{2})
+                %                         error('Error inferring inheritance');
+                %                     elseif strcmp(gks.inheritance{2},'maternal')
+                %                         gks.inheritance{1} = 'paternal';
+                %                     else
+                %                         gks.inheritance{1} = 'maternal';
+                %                     end
+                %                 end
+                gks(existing,:) = [];
+                gks = table2struct(gks);
+                %                 [gks(strcmp({gks.inheritance},'')).inheritance] = deal(nan);
+                if ~isempty(gks)
+                    insert(sln_animal.Genotype, gks);
                 end
             end
+%             end
         end
     end
 
