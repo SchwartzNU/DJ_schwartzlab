@@ -47,7 +47,7 @@ R = table('Size',[N_datasets, 18], 'VariableNames', ...
     });
 
 %assign UserData of table to be the table name
-R.Properties.UserData = 'MultiPulse_varyCurrent';
+R.Properties.UserData = 'MultiPulse_inactivation';
 
 %assign test descriptions for some of the variables 
 % R.Properties.VariableDescriptions = ...
@@ -74,7 +74,7 @@ R.Properties.UserData = 'MultiPulse_varyCurrent';
 
 for d=1:N_datasets
     tic;
-    fprintf('Processing %d of %d, %s:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).dataset_name);
+    fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
 
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         sln_symphony.ExperimentChannel * ...

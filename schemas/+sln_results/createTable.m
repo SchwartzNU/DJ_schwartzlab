@@ -17,7 +17,7 @@ for i=1:N_vars
     switch class(R.(var_names{i})(1))
         case 'string'
             var_types{i} = 'varchar(128)';
-        case 'uint16'
+        case {'uint16', 'uint32'}
             var_types{i} = 'int unsigned';
         case {'single', 'double'}
             var_types{i} = 'float';
