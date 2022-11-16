@@ -4,19 +4,19 @@ datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
-R = table('Size',[N_datasets, 21], 'VariableNames', ...
+R = table('Size',[N_datasets, 22], 'VariableNames', ...
     {'file_name', ...
     'dataset_name', ...
     'source_id', ...
     'sample_rate', ...
     'speeds', ...
     'directions', ...
-    'half_widths', ...
+    'halfwidths', ...
     'contrasts', ...
     'contrast_by_condition', ...
     'speed_by_condition', ...
     'direction_by_condition', ...
-    'half_width_by_condition', ...
+    'halfwidth_by_condition', ...
     'pre_time_ms', ...
     'movement_delay_ms', ...    
     'cycle_avg_trace_by_condition', ...
@@ -25,7 +25,8 @@ R = table('Size',[N_datasets, 21], 'VariableNames', ...
     'cycle_avg_peak_neg', ...
     'n_epochs_per_condition', ...
     'example_trace_by_condition'...
-    'resting_potential_mean'...
+    'resting_potential_mean', ...
+    'stim_condition_list'... %has to be named this
     }, ...
     'VariableTypes', ...
     {'string', ...
@@ -48,7 +49,8 @@ R = table('Size',[N_datasets, 21], 'VariableNames', ...
     'cell', ...
     'cell', ...
     'cell', ... %actually struct
-    'double'...
+    'double',...
+    'cell'...
     });
 
 %assign UserData of table to be the table name
@@ -76,7 +78,8 @@ R.Properties.VariableDescriptions = ...
     'negative peak of cycle average trace (mV)', ...
     'number of epochs in each condition', ...
     'example trace for each condition (mV)', ...
-    'mean resting potential across all conditions (mV)'...
+    'mean resting potential across all conditions (mV)',...
+    'list of stimulus condtions that can vary - for plotter menus'...
     };
 
 for d=1:N_datasets
@@ -112,20 +115,20 @@ for d=1:N_datasets
     directions = sort(unique(all_directions));
     N_directions = length(directions);
 
-    all_half_widths = round([epochs_in_dataset_struct.cycle_half_width]);
-    half_widths = sort(unique(all_half_widths));
-    N_half_widths = length(half_widths);
+    all_halfwidths = round([epochs_in_dataset_struct.cycle_half_width]);
+    halfwidths = sort(unique(all_halfwidths));
+    N_halfwidths = length(halfwidths);
 
     all_contrasts = round([epochs_in_dataset_struct.contrast]);
     contrasts = sort(unique(all_contrasts));
     N_contrasts = length(contrasts);
 
-    Nconditions = N_speeds * N_directions * N_half_widths * N_contrasts;
+    Nconditions = N_speeds * N_directions * N_halfwidths * N_contrasts;
 
     N_epochs_per_condition = zeros(Nconditions,1);
     speed_by_condition = zeros(Nconditions,1);
     direction_by_condition = zeros(Nconditions,1);
-    half_width_by_condition = zeros(Nconditions,1);
+    halfwidth_by_condition = zeros(Nconditions,1);
     contrast_by_condition = zeros(Nconditions,1);
     cycle_avg_amplitude = zeros(Nconditions,1);
     cycle_avg_peak_pos = zeros(Nconditions,1);
@@ -135,14 +138,14 @@ for d=1:N_datasets
     c = 1;
     for s=1:N_speeds
         for dir = 1:N_directions
-            for w = 1:N_half_widths
+            for w = 1:N_halfwidths
                 for con = 1:N_contrasts
-                    condition_name = sprintf('speed_%d_direction_%d_width_%d_contrast_%d',speeds(s),directions(dir),half_widths(w),contrasts(con));
+                    condition_name = sprintf('speed_%d_direction_%d_halfwidth_%d_contrast_%d',speeds(s),directions(dir),halfwidths(w),contrasts(con));
                     speed_by_condition(c) = speeds(s);
                     direction_by_condition(c) = directions(dir);
-                    half_width_by_condition(c) = half_widths(w);
+                    halfwidth_by_condition(c) = halfwidths(w);
                     contrast_by_condition(c) = contrasts(con);
-                    ind = find(all_speeds == speeds(s) & all_directions == directions(dir) & all_half_widths == half_widths(w) & all_contrasts == contrasts(con));
+                    ind = find(all_speeds == speeds(s) & all_directions == directions(dir) & all_halfwidths == halfwidths(w) & all_contrasts == contrasts(con));
 
                     N_epochs_per_condition(c) = length(ind);
 
@@ -151,7 +154,7 @@ for d=1:N_datasets
                     resting(c) = mean(mean_trace(1:pre_samples));
 
                     %get cycle average here to compute amplitudes and such
-                    cycle_period_s = 2 * half_width_by_condition(c) / speed_by_condition(c);
+                    cycle_period_s = 2 * halfwidth_by_condition(c) / speed_by_condition(c);
                     cycle_period_samples = round(cycle_period_s * sample_rate);
                     start_point_ms = pre_time + movement_delay;
                     start_sample = round((start_point_ms / 1E3) * sample_rate);
@@ -166,7 +169,7 @@ for d=1:N_datasets
                         N_cycles = N_cycles+1;
                     end
                     cycle_avg = cycle_avg / N_cycles;
-                    condition_name_cycle = sprintf('cycleAvg_speed_%d_direction_%d_width_%d_contrast_%d',speeds(s),directions(dir),half_widths(w),contrasts(con));
+                    condition_name_cycle = sprintf('speed_%d_direction_%d_halfwidth_%d_contrast_%d',speeds(s),directions(dir),halfwidths(w),contrasts(con));
                     cycle_avg_trace_by_condition.(condition_name_cycle) = cycle_avg;
 
                     cycle_avg_amplitude(c) = range(cycle_avg);
@@ -180,6 +183,7 @@ for d=1:N_datasets
     end
 
     %set table variables
+    R.stim_condition_list(d) = {{'speed', 'direction', 'halfwidth', 'contrast'}};
     R.mean_resting_potential(d) = mean(resting);
     R.file_name(d) = datasets_struct(d).file_name;
     R.dataset_name(d) = datasets_struct(d).dataset_name;
@@ -189,12 +193,12 @@ for d=1:N_datasets
     R.movement_delay_ms(d) = movement_delay;
     R.speeds(d) = {speeds'};
     R.directions(d) = {directions'};
-    R.half_widths(d) = {half_widths'};
+    R.halfwidths(d) = {halfwidths'};
     R.contrasts(d) = {contrasts'};
     R.speed_by_condition(d) = {speed_by_condition};
     R.direction_by_condition(d) = {direction_by_condition};
-    R.half_width_by_condition(d) = {half_width_by_condition};
-    R.contrast_by_condition(d) = {half_width_by_condition};    
+    R.halfwidth_by_condition(d) = {halfwidth_by_condition};
+    R.contrast_by_condition(d) = {contrast_by_condition};    
     R.n_epochs_per_condition(d) = {N_epochs_per_condition};
     R.example_trace_by_condition(d) = {example_trace_by_condition};
     R.cycle_avg_trace_by_condition(d) = {cycle_avg_trace_by_condition};
