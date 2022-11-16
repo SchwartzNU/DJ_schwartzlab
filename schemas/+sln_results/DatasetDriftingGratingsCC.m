@@ -16,8 +16,8 @@ directions=NULL : longblob # set of directions of movement (degrees)
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 example_trace_by_condition=NULL : longblob # example trace for each condition (mV)
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
-half_width_by_condition=NULL : longblob # half-width for each condition
-half_widths=NULL : longblob # set of cycle (bar) half widths (microns)
+halfwidth_by_condition=NULL : longblob # half-width for each condition
+halfwidths=NULL : longblob # set of cycle (bar) half widths (microns)
 mean_resting_potential=NULL : float # 
 movement_delay_ms : int unsigned # delay after grating onset before it starts moving (ms)
 n_epochs_per_condition=NULL : longblob # number of epochs in each condition
@@ -26,6 +26,7 @@ resting_potential_mean=NULL : float # mean resting potential across all conditio
 sample_rate : int unsigned # sample rate (Hz)
 speed_by_condition=NULL : longblob # speed for each condition
 speeds=NULL : longblob # set of speeds (microns / sec)
+stim_condition_list=NULL : longblob # list of stimulus condtions that can vary - for plotter menus
 %}
 classdef DatasetDriftingGratingsCC < dj.Manual
 end
