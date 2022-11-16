@@ -1,6 +1,6 @@
-function plot_DriftingGratings_MultiCondition_CC_traces(R,condition_struct,ax)
+function plot_DriftingGratings_MultiCondition_CC_cycleAvg(R,condition_struct,ax)
 
-trace_set = R.example_trace_by_condition;
+trace_set = R.cycle_avg_trace_by_condition;
 
 if strcmp(condition_struct.speed,'plot all')
     legend_vals = R.speeds;
