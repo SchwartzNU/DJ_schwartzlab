@@ -26,7 +26,7 @@ elseif strcmp(condition_struct.direction,'plot all')
 elseif strcmp(condition_struct.halfwidth,'plot all')
     legend_vals = R.halfwidths;
     legend_title = 'Half width (µm)';
-        N_traces = length(R.halfwidths);
+    N_traces = length(R.halfwidths);
     for i=1:N_traces
         condition_name = sprintf('speed_%s_direction_%s_halfwidth_%d_contrast_%s',...
             condition_struct.speed, condition_struct.direction, R.halfwidths(i), condition_struct.contrast);
@@ -38,6 +38,8 @@ elseif strcmp(condition_struct.contrast,'plot all')
     N_traces = length(R.contrasts);
     legend_vals = R.contrasts;
     legend_title = 'Contrast';
+    N_traces = length(R.contrasts);
+
     for i=1:N_traces
         condition_name = sprintf('speed_%s_direction_%s_halfwidth_%s_contrast_%d',...
             condition_struct.speed, condition_struct.direction, condition_struct.halfwidth, R.contrasts(i));
@@ -48,7 +50,7 @@ else
     disp('plotting a single trace');
     N_traces = 1;
     condition_name = sprintf('speed_%s_direction_%s_halfwidth_%s_contrast_%s',...
-            condition_struct.speed, condition_struct.direction, condition_struct.halfwidth,  condition_struct.contrast);
+        condition_struct.speed, condition_struct.direction, condition_struct.halfwidth,  condition_struct.contrast);
     traces{1} = trace_set.(condition_name);
 end
 
@@ -76,7 +78,7 @@ ylabel(ax, 'mV');
 
 if N_traces > 1
     lgd = legend(ax, cellstr(num2str(legend_vals)));
-    title(lgd, legend_title);   
+    title(lgd, legend_title);
 end
 
 hold(ax,'off');

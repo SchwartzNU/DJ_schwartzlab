@@ -38,6 +38,7 @@ elseif strcmp(condition_struct.contrast,'plot all')
     N_traces = length(R.contrasts);
     legend_vals = R.contrasts;
     legend_title = 'Contrast';
+    N_traces = length(R.contrasts);
     for i=1:N_traces
         condition_name = sprintf('speed_%s_direction_%s_halfwidth_%s_contrast_%d',...
             condition_struct.speed, condition_struct.direction, condition_struct.halfwidth, R.contrasts(i));
