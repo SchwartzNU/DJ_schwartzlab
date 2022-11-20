@@ -1,4 +1,10 @@
-function plot_DriftingGratings_MultiCondition_CC_cycleAvg(R,condition_struct,ax)
+function required_fields = plot_DriftingGratings_MultiCondition_CC_cycleAvg(R,condition_struct,ax)
+if nargin < 1
+    required_fields = {'cycle_avg_trace_by_condition', ...
+        'speeds', 'directions', 'halfwidths', 'contrasts', ...
+        'sample_rate', 'pre_time_ms'};
+    return;
+end
 
 trace_set = R.cycle_avg_trace_by_condition;
 

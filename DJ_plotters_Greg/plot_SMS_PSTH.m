@@ -1,7 +1,9 @@
-function plot_SMS_PSTH(R,ax)
-%set(ax, 'XLimM',[0 inf]);
-%hold(ax,'on');
-%imagesc(ax,flipud(R.sms_psth));
+function required_fields = plot_SMS_PSTH(R,ax)
+if nargin < 1
+    required_fields = {'psth_x', 'spot_sizes', 'sms_psth'};
+    return;
+end
+
 hold(ax,'on');
 x_vals = R.psth_x;
 y_vals = R.spot_sizes;

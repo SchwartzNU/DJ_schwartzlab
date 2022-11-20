@@ -1,4 +1,9 @@
-function plot_EpochRawData(R,ax)
+function required_fields = plot_EpochRawData(R,ax)
+if nargin < 1
+    required_fields = {'file_name','epoch_number'};
+    return;
+end
+
 ep_struct = fetch(sln_symphony.ExperimentEpochChannel * ...
     sln_symphony.ExperimentChannel * ...
     sln_symphony.ExperimentElectrode ...

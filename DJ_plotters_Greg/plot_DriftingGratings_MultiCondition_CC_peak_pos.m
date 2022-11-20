@@ -1,4 +1,9 @@
-function plot_DriftingGratings_MultiCondition_CC_peak_pos(R,condition_struct,ax)
+function required_fields = plot_DriftingGratings_MultiCondition_CC_peak_pos(R,condition_struct,ax)
+if nargin < 1
+    required_fields = {'cycle_avg_peak_pos', ...
+        'speeds', 'directions', 'halfwidths', 'contrasts'};
+    return;
+end
 
 val_set = R.cycle_avg_peak_pos;
 

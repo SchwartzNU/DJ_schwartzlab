@@ -1,9 +1,11 @@
-function plot_MB_CA_PSTH(R,ax)
-%set(ax, 'XLimM',[0 inf]);
-%hold(ax,'on');
-cmap = colormap(ax,'parula');
+function required_fields = plot_MB_CA_PSTH(R,ax)
+if nargin < 1
+    required_fields = {'psth_by_angle', 'bar_angles', 'psth_x'};
+    return;
+end
+
+colormap(ax,'parula');
 imagesc(ax,R.psth_by_angle);
-%hold(ax,'on');
 x_vals = R.psth_x;
 L = length(x_vals);
 N_ticks = 5;

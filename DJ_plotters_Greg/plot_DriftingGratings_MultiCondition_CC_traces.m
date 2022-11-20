@@ -1,4 +1,10 @@
-function plot_DriftingGratings_MultiCondition_CC_traces(R,condition_struct,ax)
+function required_fields = plot_DriftingGratings_MultiCondition_CC_traces(R,condition_struct,ax)
+if nargin < 1
+    required_fields = {'example_trace_by_condition', ...
+        'speeds', 'directions', 'halfwidths', 'contrasts', ...
+        'sample_rate', 'pre_time_ms'};
+    return;
+end
 
 trace_set = R.example_trace_by_condition;
 

@@ -1,4 +1,9 @@
-function plot_MultiPulse_traces(R,ax)
+function required_fields = plot_MultiPulse_traces(R,ax)
+if nargin < 1
+    required_fields = {'sample_rate', 'example_traces', 'inj_current', 'pre_time_ms'};
+    return;
+end
+
 set(ax, 'XLim',[-inf inf]);
 traces = R.example_traces;
 inj_current = round(R.inj_current);

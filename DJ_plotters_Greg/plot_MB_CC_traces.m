@@ -1,4 +1,9 @@
-function plot_MB_CC_traces(R,ax)
+function required_fields = plot_MB_CC_traces(R,ax)
+if nargin < 1
+    required_fields = {'example_traces_by_angle', 'bar_angles', 'sample_rate', 'pre_time_ms'};
+    return;
+end
+
 set(ax, 'XLim',[-inf inf]);
 traces = R.example_traces_by_angle;
 bar_angles = round(R.bar_angles);

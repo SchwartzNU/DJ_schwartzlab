@@ -1,4 +1,9 @@
-function plot_SMS_VC_traces(R,ax)
+function required_fields = plot_SMS_VC_traces(R,ax)
+if nargin < 1
+    required_fields = {'mean_traces', 'spot_sizes', 'sample_rate', 'pre_time_ms'};
+    return;
+end
+
 set(ax, 'XLim',[-inf inf]);
 traces = R.mean_traces;
 spot_sizes = R.spot_sizes;

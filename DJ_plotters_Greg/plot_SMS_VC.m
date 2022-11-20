@@ -1,4 +1,10 @@
-function plot_SMS_VC(R,ax)
+function required_fields = plot_SMS_VC(R,ax)
+if nargin < 1
+    required_fields = {'peak_stim_mean', 'spot_sizes', 'peak_stim_sem', ...
+        'peak_tail_mean', 'peak_tail_sem'};
+    return;
+end
+
 set(ax, 'XLim',[0 inf]);
 errorbar(ax, R.spot_sizes, R.peak_stim_mean, R.peak_stim_sem,...
     'Color',[0 1 1],...

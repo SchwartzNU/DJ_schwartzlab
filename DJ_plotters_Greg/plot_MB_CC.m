@@ -1,5 +1,11 @@
-function plot_MB_CC(R,ax)
-%set(ax, 'XLimM',[0 inf]);
+function required_fields = plot_MB_CC(R,ax)
+if nargin < 1
+    required_fields = {'peak_leading_mean', 'bar_angles', 'peak_trailing_mean', 'peak_leading_sem', ...
+        'peak_trailing_sem', 'peak_full_mean', 'peak_full_sem', ...
+        'dsi_leading_peak', 'dsi_trailing_peak', 'dsi_peak'};
+    return;
+end
+
 hold(ax,'on');
 errorbar(ax, R.bar_angles, R.peak_leading_mean, R.peak_leading_sem,...
     'Color',[0 1 1],...
