@@ -6,6 +6,7 @@ if nargin < 1
 end
 
 val_set = R.cycle_avg_amplitude;
+polar = false;
 
 if strcmp(condition_struct.speed,'plot all')
     x_vals = R.speeds;
@@ -26,6 +27,7 @@ elseif strcmp(condition_struct.direction,'plot all')
     x_title = 'Movement dir. (°)';
     N_vals = length(R.directions);
     values = zeros(N_vals,1);
+    polar = true;
 
     for i=1:N_vals
         ind = R.speed_by_condition == str2double(condition_struct.speed) & ...
@@ -74,13 +76,33 @@ else
         return;
 end
 
-set(ax, 'XLim',[-inf inf]);
-hold(ax,'on');
-set(ax, 'XtickMode','auto');
-set(ax, 'YtickMode','auto');
+if polar
+    parent_panel = get(ax,'Parent');
+    ax = polaraxes(parent_panel);
+    ax.FontUnits = 'points';
+    ax.FontSize = 12;
+    ax.Units = 'normalized';
+    ax.Position = [.1 .1 .8 .8];
+end
 
-plot(ax, x_vals, values,'Color','k','LineStyle','-','Marker','o','MarkerFaceColor','k','LineWidth',2);
-xlabel(ax, x_title);
-ylabel(ax, 'Cycle avg. amplitude (mV)');
+hold(ax,'on');
+
+if polar
+    angles = deg2rad(x_vals);
+    angles(end+1) = angles(1);
+
+    vals = values;
+    vals(end+1) = vals(1);
+    polarplot(ax, angles, vals, ...
+        'Color',[0 0 0],...
+        'Marker','o',...
+        'MarkerFaceColor',[0 0 0],...
+        'LineWidth',2);
+    legend(ax,{'Cycle avg. amplitude (mV)'},'Location','southwest');
+else
+    plot(ax, x_vals, values,'Color','k','LineStyle','-','Marker','o','MarkerFaceColor','k','LineWidth',2);
+    xlabel(ax, x_title);
+    ylabel(ax, 'Cycle avg. amplitude (mV)');
+end
 
 hold(ax,'off');
