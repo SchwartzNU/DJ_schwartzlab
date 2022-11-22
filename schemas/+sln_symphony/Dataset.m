@@ -103,7 +103,7 @@ classdef Dataset < dj.Manual
                              table.insert(...
                                  vertcat(key(d).epochs));
                              if ~isempty(spikes(d))
-                                 sln_symphony.SpikeTrain().insert(spikes(d));
+                                 sln_symphony.SpikeTrain().insert(spikes(d),'REPLACE');
                              end
                         end
                     end
