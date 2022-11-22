@@ -19,7 +19,7 @@ spike_train = sln_symphony.SpikeTrain & R;
 if spike_train.count == 1
     sp = fetch1(spike_train,'spike_indices');
     hold(ax,'on');
-    scatter(ax, timeAxis(sp), data(sp), 'rx');
+    scatter(ax, timeAxis(sp), data(sp), 40, 'r', 'MarkerFaceColor','r');
     hold(ax,'off');
 end
 if strcmp(ep_struct.amp_mode,'Cell attached')
