@@ -1,6 +1,6 @@
 function required_fields = plot_EpochRawData(R,ax)
 if nargin < 1
-    required_fields = {'file_name','epoch_number'};
+    required_fields = {'file_name','epoch_id'};
     return;
 end
 
