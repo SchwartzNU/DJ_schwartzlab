@@ -11,6 +11,7 @@ p = 1;
 while z < N_trains
     tic;
     sp_trains = repmat(struct,trains_per_file,1);
+    fname = sprintf('%sspike_trains_part_%02d', storage_location, p)
     for i=1:trains_per_file
         i
         sp_trains(i).dataset_index = z;
@@ -23,8 +24,7 @@ while z < N_trains
         if z > N_trains
             break;
         end
-    end
-    fname = sprintf('%sspike_trains_part_%02d', storage_location, p)
+    end    
     fprintf('Time elapsed: %d\n', toc);
     save(fname, 'sp_trains','-v7.3')
     %z=z+trains_per_file;
