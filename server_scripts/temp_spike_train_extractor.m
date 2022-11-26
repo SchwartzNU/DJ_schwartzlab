@@ -4,6 +4,8 @@ spike_trains_meta_data = fetch(sl_epochs,'*');
 N_trains = length(spike_trains_meta_data)
 trains_per_file = 5000
 
+storage_location = '/mnt/fsmresfiles/AnimalLogs/exportedData/';
+
 z=1;
 p = 1;
 while z < N_trains
@@ -19,7 +21,7 @@ while z < N_trains
             break;
         end
     end
-    fname = sprintf('spike_trains_part_%02d', p)
+    fname = sprintf('%sspike_trains_part_%02d', storage_location, p);
     toc;
     save(fname, 'sp_trains','-v7.3');
     z=z+trains_per_file;
