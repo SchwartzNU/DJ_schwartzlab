@@ -1,8 +1,8 @@
-function [event_struct, stims] = reconstruct_behavior_event_from_folder(basedir, fname, event_id_map)
+function [event_struct, stims, event_id_from_fname] = reconstruct_behavior_event_from_folder(basedir, fname, event_id_map)
 if nargin < 3
     event_id_map = [];
 end
-
+fname
 event_struct = struct;
 stims = repmat(struct, 3, 1);
 
@@ -53,19 +53,28 @@ event_struct.animal_type_name = animal_types{ind};
 fname_remainder = extractAfter(fname_remainder,sprintf('%s_',animal_types{ind}));
 
 [purpose_part, fname_remainder] = strtok(fname_remainder,'(');
+if ~strcmp(purpose_part, 'habituation')
+    purpose_part = purpose_part(1:end-1); %remove trailing _
+end
 
 purpose_names = fetchn(sl_behavior.SocialBehaviorExperimentType,'purpose');
-ind = cellfun(@(pat)startsWith(purpose_part,pat), purpose_names);
+ind = cellfun(@(pat)strcmp(purpose_part,pat), purpose_names);
 if sum(ind) ~= 1
     fprintf('Error finding purpose type for string %s\n', purpose_part);
     keyboard;
 end
 event_struct.purpose = purpose_names{ind};
 
-stimulus_names = fetchn(sl_behavior.VisualStimulusType,'stim_type');
-[stimA_name, fname_remainder] = strtok(fname_remainder(4:end),'_');
-[stimB_name, fname_remainder] = strtok(fname_remainder(5:end),'_');
-stimC_name = fname_remainder(5:end);
+if isempty(fname_remainder) && strcmp(purpose_part, 'habituation')
+    stimA_name = 'empty';
+    stimB_name = 'empty';
+    stimC_name = 'empty';
+else
+    %stimulus_names = fetchn(sl_behavior.VisualStimulusType,'stim_type');
+    [stimA_name, fname_remainder] = strtok(fname_remainder(4:end),'_');
+    [stimB_name, fname_remainder] = strtok(fname_remainder(5:end),'_');
+    stimC_name = fname_remainder(5:end);
+end
 
 DJID = 0;
 stims(1).arm = 'A';

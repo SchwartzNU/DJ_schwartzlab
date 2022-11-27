@@ -74,10 +74,10 @@ try
     end
 
     %MAIN INSERT of this event type
-    if strcmp(event_type, 'SocialBehaviorSession')
-        old_event_id = key.event_id;
-        key = rmfield(key,'event_id');
-    end
+%     if strcmp(event_type, 'SocialBehaviorSession')
+%         old_event_id = key.event_id;
+%         key = rmfield(key,'event_id');
+%     end
 
     key
     [key,animal_id] = insert(sln_animal.AnimalEvent, key)
@@ -90,14 +90,14 @@ try
     %     end
     %
     if strcmp(event_type, 'SocialBehaviorSession') %insert stim mice into part table
-        this_event_id = key.event_id;
-
-        stims = fetch(sl.AnimalEventSocialBehaviorSessionStimulus & sprintf('event_id=%d',old_event_id), '*');
-        stims = rmfield(stims,'event_id');
-        [stims.event_id] = deal(this_event_id);
-        insert(sln_animal.SocialBehaviorSessionStimulus, stims);
-        text = sprintf('Stimulus insert successful.\n%s', text);
-        key = rmfield(key,'event_id');
+%         this_event_id = key.event_id;
+% 
+%         stims = fetch(sl.AnimalEventSocialBehaviorSessionStimulus & sprintf('event_id=%d',old_event_id), '*');
+%         stims = rmfield(stims,'event_id');
+%         [stims.event_id] = deal(this_event_id);
+%         insert(sln_animal.SocialBehaviorSessionStimulus, stims);
+%         text = sprintf('Stimulus insert successful.\n%s', text);
+%         key = rmfield(key,'event_id');
     end
 
 

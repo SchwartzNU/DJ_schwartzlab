@@ -19,7 +19,12 @@ while z < N_trains
         sp_trains(i).cell_type = spike_trains_meta_data(z).cell_type;
         sp_trains(i).sample_rate = spike_trains_meta_data(z).sample_rate;
         sp_trains(i).sp = spike_trains_meta_data(z).sp;
-        [~, sp_trains(i).data] = epochRawData(spike_trains_meta_data(z).cell_id, spike_trains_meta_data(z).epoch_number, spike_trains_meta_data(z).channel);
+        try
+            [~, sp_trains(i).data] = epochRawData(spike_trains_meta_data(z).cell_id, spike_trains_meta_data(z).epoch_number, spike_trains_meta_data(z).channel);
+        catch
+            disp('error reading file');
+            sp_trains(i).data = [];
+        end
         z=z+1;
         if z > N_trains
             break;
