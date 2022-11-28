@@ -13,11 +13,13 @@ for p=1:length(purpose_vec)
                 sprintf('user_name="%s"', experimenter_vec{e}) & ...
                 sprintf('purpose="%s"', purpose_vec{p}) & ...
                 sprintf('animal_type_name="%s"', animal_type_vec{a});
+            q_recorded = q & 'recorded="T"';
            if q.exists
                S(z).user_name = experimenter_vec{e};
                S(z).purpose = purpose_vec{p};
                S(z).animal_type_name = animal_type_vec{a};
                S(z).N_sessions = q.count;
+               S(z).N_recorded = q_recorded.count;
                S(z).event_ids = fetchn(q,'event_id');
                S(z).animal_ids = unique(fetchn(q,'animal_id'));
                S(z).dates = unique(fetchn(q,'date'));
