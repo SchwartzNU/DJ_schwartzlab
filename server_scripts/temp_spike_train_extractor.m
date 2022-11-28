@@ -5,10 +5,10 @@ N_trains = length(spike_trains_meta_data)
 trains_per_file = 5000
 
 storage_location = '/mnt/fsmresfiles/AnimalLogs/exportedData/';
-startPoint = 125001;
+startPoint = 170001;
 
 z=startPoint;
-p = 26;
+p = 34;
 while z < N_trains
     tic;
     sp_trains = repmat(struct,trains_per_file,1);
