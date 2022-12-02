@@ -74,6 +74,13 @@ classdef Experiment < dj.Manual
                         'the Channel table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
                 end
                 key.experiment.calibration_id = insertIfNotEmpty(sln_symphony.Calibration(), key.calibration);
+                for r=1:length(key.retinas)
+                    if ~isfield(key.retinas(r), 'animal_id') || isnumeric(key.retinas(r).animal_id)
+                        key.retinas(r)
+                        DJID = input('Enter animal_id for this retina: ');
+                        key.retinas(r).animal_id = DJID;
+                    end
+                end 
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
