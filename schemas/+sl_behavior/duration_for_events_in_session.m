@@ -1,4 +1,4 @@
-function [d, frac] = duration_for_events_in_session(event_id, annotation_type, modifier)
+function [d_total, d_mean, frac] = duration_for_events_in_session(event_id, annotation_type, modifier)
 if nargin<3
     modifier = [];
 end
@@ -16,8 +16,11 @@ else
         sprintf('modifier="%s"', modifier);
 end
 
-d = fetch1(aggr(sln_animal.SocialBehaviorSession & sprintf('event_id=%d', event_id), ...
+d_total = fetch1(aggr(sln_animal.SocialBehaviorSession & sprintf('event_id=%d', event_id), ...
     q, 'sum(duration)->dur'), 'dur');
+
+d_mean = fetch1(aggr(sln_animal.SocialBehaviorSession & sprintf('event_id=%d', event_id), ...
+    q, 'avg(duration)->dur'), 'dur');
 
 start_frame = fetch1(sl_behavior.Annotation & ...
         sprintf('event_id=%d', event_id) & ...
@@ -29,5 +32,6 @@ last_frame = fetch1(aggr(sln_animal.SocialBehaviorSession & sprintf('event_id=%d
 
 total_time = double(last_frame - start_frame) / frame_rate;
 
-d = d / frame_rate;
-frac = d / total_time;
+d_total = d_total / frame_rate;
+d_mean = d_mean / frame_rate;
+frac = d_total / total_time;
