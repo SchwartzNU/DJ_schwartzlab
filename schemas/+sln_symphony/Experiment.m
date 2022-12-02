@@ -75,7 +75,7 @@ classdef Experiment < dj.Manual
                 end
                 key.experiment.calibration_id = insertIfNotEmpty(sln_symphony.Calibration(), key.calibration);
                 for r=1:length(key.retinas)
-                    if ~isfield(key.retinas(r), 'animal_id') || isnumeric(key.retinas(r).animal_id)
+                    if ~isfield(key.retinas(r), 'animal_id') || ~isnumeric(key.retinas(r).animal_id)
                         key.retinas(r)
                         DJID = input('Enter animal_id for this retina: ');
                         key.retinas(r).animal_id = DJID;
