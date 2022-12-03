@@ -98,6 +98,14 @@ classdef Experiment < dj.Manual
 %                         end
 %                     end
                 end 
+
+                %add missing epoch_group end times
+                for g=1:length(key.epoch_groups)
+                    if isempty(key.epoch_groups(i).epoch_group_end_time)
+                        key.epoch_groups(i).epoch_group_end_time = key.experiment.experiment_end_time;
+                    end
+                end
+
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
