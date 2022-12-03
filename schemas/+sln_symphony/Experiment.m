@@ -89,7 +89,7 @@ classdef Experiment < dj.Manual
                             key_R.animal_id = last_id;
                             key_R.side = 'Right';
                             insert(sln_animal.Eye,key_L);
-                            insert(sln_animal.Eye,key_LR;
+                            insert(sln_animal.Eye,key_R);
                             DJID = last_id;
                         end
                         key.retinas(r).animal_id = DJID;
