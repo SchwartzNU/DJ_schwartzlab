@@ -81,7 +81,18 @@ classdef Experiment < dj.Manual
                         key.retinas(r).animal_id = DJID;
                     end
                     if ~isfield(key.retinas(r), 'Eye') || strcmp(key.retinas(r).Eye, 'unknown')
-                        key.retinas(r).side = 'Unknown1';
+                        q_left = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Left"';
+                        disp('Deleting left eye because unknown was entered');
+                        del(q_left);
+                        q_right = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Right"';
+                        disp('Deleting right eye because unknown was entered');
+                        del(q_right);
+                        q = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Unknown1"';
+                        if q.exists
+                            key.retinas(r).side = 'Unknown2';
+                        else
+                            key.retinas(r).side = 'Unknown1';
+                        end
                     end
                 end 
                 insert@dj.Manual(self, key.experiment);
