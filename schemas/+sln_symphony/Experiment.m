@@ -80,7 +80,7 @@ classdef Experiment < dj.Manual
                         DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
                         if DJID == 0
                             key_animal.sex = 'Unknown';
-                            key_animal.stain_name = 'WT';
+                            key_animal.strain_name = 'WT';
                             key_animal.background_name = 'C57bl/6';       
                             insert(sln_animal.Animal,key_animal);
 
