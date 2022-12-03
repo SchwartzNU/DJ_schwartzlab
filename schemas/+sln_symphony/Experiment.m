@@ -121,6 +121,15 @@ classdef Experiment < dj.Manual
                     end
                 end
 
+                %if no experiment end time set to 11:59:59 PM
+                if isempty(key.experiment.experiment_end_time)
+                    d = datetime(key.experiment.experiment_start_time);
+                    d.Hour = 23;
+                    d.Minute = 59;
+                    d.Second = 59;
+                    key.experiment.experiment_end_time = datestr(d, 'yyyy-mm-dd hh:MM:ss');
+                end
+
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
