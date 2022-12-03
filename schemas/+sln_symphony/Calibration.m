@@ -90,21 +90,29 @@ classdef Calibration < dj.Manual
                 led = ledNames{i}(4:end);
                 leds(i).color = led;
                 
-                overlaps = map(sprintf('spectralOverlap_%s', led));
-                leds(i).rod_overlap = overlaps(1);
-                leds(i).s_cone_overlap = overlaps(2);
-                leds(i).m_cone_overlap = overlaps(3);
+                try
+                    overlaps = map(sprintf('spectralOverlap_%s', led));
+                    leds(i).rod_overlap = overlaps(1);
+                    leds(i).s_cone_overlap = overlaps(2);
+                    leds(i).m_cone_overlap = overlaps(3);
+                catch
+                    disp('spectral overlaps not found in calibration');
+                end
                 
                 fits = map(ledNames{i});
                 for j = 1:numel(fits)
                     leds(i).(fit_names{j}) = fits(end - j + 1);
                 end
                 
-                
-                attenuations = num2cell(map(sprintf('filterWheelAttenuationValues_%s', led)));
-                [led_ndfs(n_ndfs*(i-1)+1 : n_ndfs*(i)).color] = deal(led);
-                [led_ndfs(n_ndfs*(i-1)+1 : n_ndfs*(i)).value] = ndf_values{:};
-                [led_ndfs(n_ndfs*(i-1)+1 : n_ndfs*(i)).attenuation] = attenuations{:};
+                try
+                    attenuations = num2cell(map(sprintf('filterWheelAttenuationValues_%s', led)));
+                    [led_ndfs(n_ndfs*(i-1)+1 : n_ndfs*(i)).attenuation] = attenuations{:};
+                    [led_ndfs(n_ndfs*(i-1)+1 : n_ndfs*(i)).color] = deal(led);
+                    [led_ndfs(n_ndfs*(i-1)+1 : n_ndfs*(i)).value] = ndf_values{:};
+                catch
+                    disp('attenuation values by LED not found in calibration');
+                end
+
                 
             end
 
@@ -123,28 +131,33 @@ classdef Calibration < dj.Manual
             end
             
             %search for this set of parameters
-            q = (self & key) * (sln_symphony.CalibrationLED & leds) * (sln_symphony.CalibrationLEDAttenuation & led_ndfs);
-            
-            if count(q) == numel(led_ndfs) %this calibration already exists
-                ind = fetch1(q,'calibration_id');
+            if isempty(leds(1).rod_overlap)
+                disp('Not inserting calibration')
+                ind = 0;
             else
-                insert@dj.Manual(self, key);
-                ind = self.lastInsertID;
-                
-                table = sln_symphony.CalibrationNDF();
-                table.canInsert = true;
-                table.insert(struct('calibration_id',ind,'value',ndf_values));
-                
-                
-                [leds(:).calibration_id] = deal(ind);
-                table = sln_symphony.CalibrationLED();
-                table.canInsert = true;
-                table.insert(leds);
-                
-                [led_ndfs(:).calibration_id] = deal(ind);
-                table = sln_symphony.CalibrationLEDAttenuation();
-                table.canInsert = true;
-                table.insert(led_ndfs);
+                q = (self & key) * (sln_symphony.CalibrationLED & leds) * (sln_symphony.CalibrationLEDAttenuation & led_ndfs);
+
+                if count(q) == numel(led_ndfs) %this calibration already exists
+                    ind = fetch1(q,'calibration_id');
+                else
+                    insert@dj.Manual(self, key);
+                    ind = self.lastInsertID;
+
+                    table = sln_symphony.CalibrationNDF();
+                    table.canInsert = true;
+                    table.insert(struct('calibration_id',ind,'value',ndf_values));
+
+
+                    [leds(:).calibration_id] = deal(ind);
+                    table = sln_symphony.CalibrationLED();
+                    table.canInsert = true;
+                    table.insert(leds);s
+
+                    [led_ndfs(:).calibration_id] = deal(ind);
+                    table = sln_symphony.CalibrationLEDAttenuation();
+                    table.canInsert = true;
+                    table.insert(led_ndfs);
+                end
             end
         end
     end
