@@ -3,7 +3,6 @@
 -> sln_symphony.ExperimentEpoch
 ---
 protocol_version : float
-current_spot_pattern : float
 %}
 classdef ExperimentProtocolLightStepV2EpochParameters < sln_symphony.ExperimentProtocol
 	properties
