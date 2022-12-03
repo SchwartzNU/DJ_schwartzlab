@@ -81,7 +81,7 @@ classdef Experiment < dj.Manual
                         key.retinas(r).animal_id = DJID;
                     end
                     if ~isfield(key.retinas(r), 'Eye') || strcmp(key.retinas(r).Eye, 'unknown')
-                        key.retinas(r).Eye = 'Unknown1';
+                        key.retinas(r).side = 'Unknown1';
                     end
                 end 
                 insert@dj.Manual(self, key.experiment);
