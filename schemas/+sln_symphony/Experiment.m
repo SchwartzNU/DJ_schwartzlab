@@ -90,8 +90,10 @@ classdef Experiment < dj.Manual
                         q = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Unknown1"';
                         if q.exists
                             key.retinas(r).side = 'Unknown2';
+                            insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown2'})
                         else
                             key.retinas(r).side = 'Unknown1';
+                            insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown1'})
                         end
                     end
                 end 
