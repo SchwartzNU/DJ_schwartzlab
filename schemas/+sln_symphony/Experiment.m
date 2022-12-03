@@ -81,7 +81,8 @@ classdef Experiment < dj.Manual
                         if DJID == 0
                             key_animal.sex = 'Unknown';
                             key_animal.stain_name = 'WT';
-                            key_animal.background_name = 'C57bl/6';                            
+                            key_animal.background_name = 'C57bl/6';       
+                            insert(sln_animal.key_animal);
 
                             last_id = max(fetchn(sln_animal.Animal,'animal_id'));
                             key_L.animal_id = last_id;
