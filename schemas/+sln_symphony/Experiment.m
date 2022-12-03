@@ -77,7 +77,21 @@ classdef Experiment < dj.Manual
                 for r=1:length(key.retinas)
                     if ~isfield(key.retinas(r), 'animal_id') || ~isnumeric(key.retinas(r).animal_id)
                         key.retinas(r)
-                        DJID = input('Enter animal_id for this retina: ');
+                        DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                        if DJID == 0
+                            key_animal.sex = 'Unknown';
+                            key_animal.stain_name = 'WT';
+                            key_animal.background_name = 'C57bl/6';                            
+
+                            last_id = max(fetchn(sln_animal.Animal,'animal_id'));
+                            key_L.animal_id = last_id;
+                            key_L.side = 'Left';
+                            key_R.animal_id = last_id;
+                            key_R.side = 'Right';
+                            insert(sln_animal.Eye,key_L);
+                            insert(sln_animal.Eye,key_LR;
+                            DJID = last_id;
+                        end
                         key.retinas(r).animal_id = DJID;
                     end
                     %TODO: deal with unknown eyes
