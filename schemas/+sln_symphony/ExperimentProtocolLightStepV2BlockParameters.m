@@ -15,6 +15,7 @@ imaging_field_height : float
 imaging_field_width : float
 imaging_mean: float
 rstar_midground: float
+do_subtraction : enum('F','T') #bool
 %}
 classdef ExperimentProtocolLightStepV2BlockParameters < sln_symphony.ExperimentProtocol
 	properties
