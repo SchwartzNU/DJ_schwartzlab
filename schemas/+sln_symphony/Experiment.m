@@ -80,6 +80,9 @@ classdef Experiment < dj.Manual
                         DJID = input('Enter animal_id for this retina: ');
                         key.retinas(r).animal_id = DJID;
                     end
+                    if ~isfield(key.retinas(r), 'Eye') || strcmp(key.retinas(r).Eye, 'unknown')
+                        key.retinas(r).Eye = 'Unknown1';
+                    end
                 end 
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
