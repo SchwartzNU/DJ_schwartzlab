@@ -2,7 +2,7 @@
 #Block parameters for SpotsMultiSize (2) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-do_subtraction = NULL : float
+do_subtraction = enum('F','T') #bool
 imaging_field_height : float
 imaging_field_width : float
 imaging_mean : float
