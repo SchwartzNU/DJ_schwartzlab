@@ -302,7 +302,13 @@ outKey.LEDs = struct('color', {},'value', {},...
 for i=1:numel(fn)
     if endsWith(fn{i},'LED')
         color = strsplit(fn{i},'LED');
-        if any(strcmp({inKey.parameters.colorPattern1, inKey.parameters.colorPattern2, inKey.parameters.colorPattern3},color{1}))
+        %Why missing colorPattern3 sometimes?
+        if isfield(inKey.parameters, 'colorPattern3')
+            test = any(strcmp({inKey.parameters.colorPattern1, inKey.parameters.colorPattern2, inKey.parameters.colorPattern3},color{1}));
+        else
+            test = any(strcmp({inKey.parameters.colorPattern1, inKey.parameters.colorPattern2},color{1}));
+        end
+        if test
             outKey.LEDs(end+1).color = color{1};
             outKey.LEDs(end).value = inKey.parameters.(fn{i});
             outKey.LEDs(end).file_name = inKey.file_name;
