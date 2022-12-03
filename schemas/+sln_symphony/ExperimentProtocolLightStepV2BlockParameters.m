@@ -11,10 +11,10 @@ rstar_mean : float
 spot_size : float
 stim_time : float
 tail_time : float
-imaging_field_height : float
-imaging_field_width : float
-imaging_mean: float
-rstar_midground: float
+imaging_field_height = NULL : float
+imaging_field_width = NULL : float
+imaging_mean = NULL : float
+rstar_midground = NULL : float
 do_subtraction : enum('F','T') #bool
 %}
 classdef ExperimentProtocolLightStepV2BlockParameters < sln_symphony.ExperimentProtocol
