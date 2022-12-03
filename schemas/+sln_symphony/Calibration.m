@@ -133,7 +133,7 @@ classdef Calibration < dj.Manual
             %search for this set of parameters
             if isempty(leds(1).rod_overlap)
                 disp('Not inserting calibration')
-                ind = 0;
+                ind = 247; %247 is the index of the null calibration
             else
                 q = (self & key) * (sln_symphony.CalibrationLED & leds) * (sln_symphony.CalibrationLEDAttenuation & led_ndfs);
 
