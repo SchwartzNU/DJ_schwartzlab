@@ -80,7 +80,7 @@ classdef Experiment < dj.Manual
                         DJID = input('Enter animal_id for this retina: ');
                         key.retinas(r).animal_id = DJID;
                     end
-                    if ~isfield(key.retinas(r), 'Eye') || strcmp(key.retinas(r).Eye, 'unknown')
+                    if ~isfield(key.retinas(r), 'side') || strcmp(key.retinas(r).side, 'unknown')
                         q_left = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Left"';
                         disp('Deleting left eye because unknown was entered');
                         del(q_left);
