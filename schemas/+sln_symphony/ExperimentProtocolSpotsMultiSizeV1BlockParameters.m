@@ -22,7 +22,7 @@ classdef ExperimentProtocolSpotsMultiSizeV1BlockParameters < sln_symphony.Experi
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'pick_specific_sizes','spot_sizes','log_scaling'};
+		dropped_attributes = {'pick_specific_sizes','spot_sizes','log_scaling', 'red_led'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
