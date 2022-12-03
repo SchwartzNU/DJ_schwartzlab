@@ -80,22 +80,23 @@ classdef Experiment < dj.Manual
                         DJID = input('Enter animal_id for this retina: ');
                         key.retinas(r).animal_id = DJID;
                     end
-                    if ~isfield(key.retinas(r), 'side') || strcmp(key.retinas(r).side, 'unknown')
-                        q_left = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Left"';
-                        disp('Deleting left eye because unknown was entered');
-                        del(q_left);
-                        q_right = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Right"';
-                        disp('Deleting right eye because unknown was entered');
-                        del(q_right);
-                        q = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Unknown1"';
-                        if q.exists
-                            key.retinas(r).side = 'Unknown2';
-                            insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown2'})
-                        else
-                            key.retinas(r).side = 'Unknown1';
-                            insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown1'})
-                        end
-                    end
+                    %TODO: deal with unknown eyes
+%                     if ~isfield(key.retinas(r), 'side') || strcmp(key.retinas(r).side, 'unknown')
+%                         q_left = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Left"';
+%                         disp('Deleting left eye because unknown was entered');
+%                         del(q_left);
+%                         q_right = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Right"';
+%                         disp('Deleting right eye because unknown was entered');
+%                         del(q_right);
+%                         q = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Unknown1"';
+%                         if q.exists
+%                             key.retinas(r).side = 'Unknown2';
+%                             insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown2'})
+%                         else
+%                             key.retinas(r).side = 'Unknown1';
+%                             insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown1'})
+%                         end
+%                     end
                 end 
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
