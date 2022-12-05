@@ -1,5 +1,12 @@
 function [] = insert_all_datasets_for_experiment(file_name)
-CELL_DATA_FOLDER = getenv('CELL_DATA_FOLDER')
+CELL_DATA_FOLDER = getenv('CELL_DATA_FOLDER');
+D = dir([CELL_DATA_FOLDER filesep file_name '*.mat']);
+if isempty(D)
+    disp('No local cellData files found. Copying from CellDataMaster.');
+    CELL_DATA_MASTER = [getenv('SERVER') filesep 'CellDataMaster'];
+    copyfile([CELL_DATA_MASTER filesep file_name '*.mat'], CELL_DATA_FOLDER)
+end
+
 cellNames = ls([CELL_DATA_FOLDER filesep file_name '*.mat']);
 if ispc
     cellNames = cellstr(cellNames)
