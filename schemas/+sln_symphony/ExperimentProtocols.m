@@ -160,8 +160,11 @@ classdef ExperimentProtocols < handle
                 if numel(k)>1
                     warning('Possible table match: %s',matches{:});
                 else
-                    edit(fullfile(loc, k.name));
-                    edit(fullfile(loc, sprintf('%sEpochParameters',k.name(1:end-17))));
+                    answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
+                    if strcmp(answer,'y')
+                        edit(fullfile(loc, k.name));
+                        edit(fullfile(loc, sprintf('%sEpochParameters',k.name(1:end-17))));
+                    end
                 end
           end
           % there are no matches at all
@@ -181,7 +184,7 @@ classdef ExperimentProtocols < handle
         warning(bt.state,'backtrace');
         end
 
-        
+
         function createTables(self,protocol_name, version, block_params, epoch_params)
             w = {'Block', 'Epoch'};
             h = {'EpochBlock','Epoch'};
