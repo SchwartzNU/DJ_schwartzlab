@@ -105,20 +105,19 @@ classdef Experiment < dj.Manual
                                 end
                             end
 
+                            insert(sln_animal.Animal,key_animal);
+
+                            last_id = max(fetchn(sln_animal.Animal,'animal_id'));
+                            key_L.animal_id = last_id;
+                            key_L.side = 'Left';
+                            key_R.animal_id = last_id;
+                            key_R.side = 'Right';
+                            insert(sln_animal.Eye,key_L);
+                            insert(sln_animal.Eye,key_R);
+                            DJID = last_id;
                         end
-
-                        insert(sln_animal.Animal,key_animal);
-
-                        last_id = max(fetchn(sln_animal.Animal,'animal_id'));
-                        key_L.animal_id = last_id;
-                        key_L.side = 'Left';
-                        key_R.animal_id = last_id;
-                        key_R.side = 'Right';
-                        insert(sln_animal.Eye,key_L);
-                        insert(sln_animal.Eye,key_R);
-                        DJID = last_id;
+                        key.retinas(r).animal_id = DJID;
                     end
-                    key.retinas(r).animal_id = DJID;
                 end
                 %TODO: deal with unknown eyes
                 %                     if ~isfield(key.retinas(r), 'side') || strcmp(key.retinas(r).side, 'unknown')
@@ -145,7 +144,7 @@ classdef Experiment < dj.Manual
                     end
                 end
 
-                %if no experiment end time set to 11:59:59 PM
+                %if no experiment end time sets to 11:59:59 PM
                 if isempty(key.experiment.experiment_end_time)
                     d = datetime(key.experiment.experiment_start_time);
                     d.Hour = 23;

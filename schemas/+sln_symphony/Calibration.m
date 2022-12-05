@@ -41,6 +41,11 @@ classdef Calibration < dj.Manual
             
             %% Stage settings
             orientations = {'normal','reverse'};
+            if ~any(contains(mapKeys,'LightCrafter'))
+                disp('Not inserting calibration')
+                ind = 247; %247 is the index of the null calibration
+                return;
+            end
             lcr = map(mapKeys{contains(mapKeys,'LightCrafter')});
             for prop = lcr
                 switch prop.name

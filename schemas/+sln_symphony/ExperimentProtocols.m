@@ -286,6 +286,10 @@ function outKey = parseProjectorSetting(inKey)
 
 fn = fieldnames(inKey.parameters);
 
+if ~contains(fn,'bitDepth') %if not bitDepth found, assume it is 8 bit
+    inKey.parameters.bitDepth = 8;
+end
+
 %of course, there are more projector parameters than these
 %but these are the only ones that are consistent at an epoch block level
 outKey.projector = struct(...
