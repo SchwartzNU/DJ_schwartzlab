@@ -94,13 +94,13 @@ classdef ExperimentProtocols < handle
             %perhaps instead we should create separate tables for each auto center subcaategory?
           end
           tables = sln_symphony.getSchema().classNames;
-          matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
-              & endsWith(tables, 'BlockParameters');
+          matching = startsWith(tables, ['sln_symphony.ExperimentProt', protocol_name])...
+              & endsWith(tables, 'BP');
           success = false;
           emptyMatches = {};
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              e = feval([match{1}(1:end-2), 'EP']);
               if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
                 b.canInsert = true;
                 b.insert(block_params, epoch_params);
@@ -119,7 +119,7 @@ classdef ExperimentProtocols < handle
           warnStr = sprintf('Failed to match protocol %s', protocol_name);
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              e = feval([match{1}(1:end-2), 'EP']);
               [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
               [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
               
@@ -153,7 +153,7 @@ classdef ExperimentProtocols < handle
               return
           end
           loc = fileparts(which(class(self)));
-          k = dir(fullfile(loc, ['ExperimentProtocol', protocol_name ,'*BlockParameters.m']));
+          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'*BP.m']));
           if ~isempty(k)
               matches = arrayfun(@(x) ['sln_symphony.', x.name(1:end-2)],k,'uni',0);
               matches = setdiff(matches, tables(matching));
@@ -163,7 +163,7 @@ classdef ExperimentProtocols < handle
                     answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
                     if strcmp(answer,'y')
                         edit(fullfile(loc, k.name));
-                        edit(fullfile(loc, sprintf('%sEpochParameters',k.name(1:end-17))));
+                        edit(fullfile(loc, sprintf('%sEP',k.name(1:end-2))));
                     end
                 end
           end
