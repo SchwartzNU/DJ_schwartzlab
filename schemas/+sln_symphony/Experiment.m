@@ -11,9 +11,9 @@ symphony_minor_version: tinyint unsigned
 symphony_patch_version: tinyint unsigned
 symphony_revision_version: tinyint unsigned
 %}
-classdef Experiment < dj.Manual    
+classdef Experiment < dj.Manual
     methods
-        
+
         function [key,success] = insert(self, key)
             if self.schema.conn.inTransaction
                 error('Cannot insert Symphony data while in transaction. Please commit or cancel transaction and try again.');
@@ -49,15 +49,15 @@ classdef Experiment < dj.Manual
 
             if isa(key,'char')
                 key = loadSymphony2(fullfile(getenv('RAW_DATA_FOLDER'), key));
-            elseif ~isa(key,'struct') 
+            elseif ~isa(key,'struct')
                 error('Key must be the name of a file or a struct derived from a Symphony file.');
             end
-            
+
             %TODO: do this elsewhere?
             t = cellfun(@(x) changeCase(x,'snake'),{key.epoch_blocks(:).protocol_name},'uni',0);
             [key.epoch_blocks(:).protocol_name] = t{:};
-            
-            
+
+
             self.schema.conn.startTransaction;
             try
                 channels = unique({key.channels(:).channel_name});
@@ -74,28 +74,107 @@ classdef Experiment < dj.Manual
                         'the Channel table or rename them in the key:%s'], missing_text); %#ok<*SPWRN>
                 end
                 key.experiment.calibration_id = insertIfNotEmpty(sln_symphony.Calibration(), key.calibration);
+                for r=1:length(key.retinas)
+                    if ~isfield(key.retinas(r), 'animal_id') || ~isnumeric(key.retinas(r).animal_id)
+                        key.retinas(r)
+                        DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                        if DJID == 0
+                            key_animal.sex = 'Unknown';
+                            disp('Strains in DB');
+                            fetchn(sln_animal.Strain,'strain_name')
+                            strain_input = input('Enter strain name: ', 's');
+                            q = sln_animal.Strain & sprtinf('strain_name = "%s"', strain_input);
+                            if q.exists
+                                key_animal.strain_name = fetch1(q,'strain_name');
+                                key_animal.background_name = fetch1(q,'background_name');
+                            else
+                                answer = input(sprintf('Strain %s not found in database, add it? [y|n]: ', strain_input), 's');
+                                if strcmp(answer, 'y')
+                                    sln_animal.Background
+                                    bg = input('Which one of these backgrounds? : ', 's');
+                                    q = sln_animal.Background & sprtinf('background_name = "%s"', bg);
+                                    if ~q.exists
+                                        disp('Invalid background: aborting experiment insert');
+                                        return
+                                    else
+                                        key_animal.background_name = bg;
+                                    end
+                                else
+                                    disp('Aborting experiment insert');
+                                    return
+                                end
+                            end
+
+                            insert(sln_animal.Animal,key_animal);
+
+                            last_id = max(fetchn(sln_animal.Animal,'animal_id'));
+                            key_L.animal_id = last_id;
+                            key_L.side = 'Left';
+                            key_R.animal_id = last_id;
+                            key_R.side = 'Right';
+                            insert(sln_animal.Eye,key_L);
+                            insert(sln_animal.Eye,key_R);
+                            DJID = last_id;
+                        end
+                        key.retinas(r).animal_id = DJID;
+                    end
+                end
+                %TODO: deal with unknown eyes
+                %                     if ~isfield(key.retinas(r), 'side') || strcmp(key.retinas(r).side, 'unknown')
+                %                         q_left = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Left"';
+                %                         disp('Deleting left eye because unknown was entered');
+                %                         del(q_left);
+                %                         q_right = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Right"';
+                %                         disp('Deleting right eye because unknown was entered');
+                %                         del(q_right);
+                %                         q = sln_animal.Eye & sprintf('animal_id=%d', key.retinas(r).animal_id) & 'side="Unknown1"';
+                %                         if q.exists
+                %                             key.retinas(r).side = 'Unknown2';
+                %                             insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown2'})
+                %                         else
+                %                             key.retinas(r).side = 'Unknown1';
+                %                             insert(sln_animal.Eye, {key.retinas(r).animal_id, 'Unknown1'})
+                %                         end
+                %                     end
+
+                %add missing epoch_group end times
+                for g=1:length(key.epoch_groups)
+                    if isempty(key.epoch_groups(g).epoch_group_end_time)
+                        key.epoch_groups(g).epoch_group_end_time = key.experiment.experiment_end_time;
+                    end
+                end
+
+                %if no experiment end time sets to 11:59:59 PM
+                if isempty(key.experiment.experiment_end_time)
+                    d = datetime(key.experiment.experiment_start_time);
+                    d.Hour = 23;
+                    d.Minute = 59;
+                    d.Second = 59;
+                    key.experiment.experiment_end_time = datestr(d, 'yyyy-mm-dd hh:MM:ss');
+                end
+
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
                 insertIfNotEmpty(sln_symphony.ExperimentCell(),key.cells);
                 insertIfNotEmpty(sln_symphony.ExperimentCellPair(),key.cell_pairs);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochGroup(),key.epoch_groups);
-                
+
                 insertIfNotEmpty(sln_symphony.ExperimentProtocols(),key.epoch_blocks, key.epochs);
-                
+
                 insertIfNotEmpty(sln_symphony.ExperimentChannel(),key.channels);
-                
-                c = onCleanup(@() warning('on','MATLAB:MKDIR:DirectoryExists'));                
+
+                c = onCleanup(@() warning('on','MATLAB:MKDIR:DirectoryExists'));
                 warning('off','MATLAB:MKDIR:DirectoryExists');
                 insertIfNotEmpty(sln_symphony.ExperimentEpochChannel(),key.epoch_channels);
                 insertIfNotEmpty(sln_symphony.ExperimentElectrode(),key.electrodes);
-                
+
                 insertIfNotEmpty(sln_symphony.ExperimentNote(),key.experiment_notes);
                 insertIfNotEmpty(sln_symphony.ExperimentSourceNote(),key.source_notes);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochGroupNote(),key.epoch_group_notes);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochBlockNote(),key.epoch_block_notes);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochNote(),key.epoch_notes);
-                
+
             catch ME
                 self.schema.conn.cancelTransaction;
 
@@ -111,12 +190,12 @@ end
 
 
 function ret = insertIfNotEmpty(table, varargin)
-    if ~isempty(varargin{1})
-        table.canInsert = true;
-        fprintf('Populating %s...', class(table));
-        
-        tic;
-        ret = table.insert(varargin{:});
-        fprintf(' done (took %.02f seconds).\n',toc);
-    end
+if ~isempty(varargin{1})
+    table.canInsert = true;
+    fprintf('Populating %s...', class(table));
+
+    tic;
+    ret = table.insert(varargin{:});
+    fprintf(' done (took %.02f seconds).\n',toc);
+end
 end

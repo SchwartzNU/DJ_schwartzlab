@@ -6,7 +6,7 @@ classdef ExperimentProtocols < handle
 
     properties
         key
-        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns', 'annulus_mode'};
+        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns', 'annulus_mode', 'doSubtraction'};
         canInsert = false;
     end
     
@@ -94,13 +94,13 @@ classdef ExperimentProtocols < handle
             %perhaps instead we should create separate tables for each auto center subcaategory?
           end
           tables = sln_symphony.getSchema().classNames;
-          matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
-              & endsWith(tables, 'BlockParameters');
+          matching = startsWith(tables, ['sln_symphony.ExperimentProt', protocol_name])...
+              & endsWith(tables, 'BP');
           success = false;
           emptyMatches = {};
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              e = feval([match{1}(1:end-2), 'EP']);
               if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
                 b.canInsert = true;
                 b.insert(block_params, epoch_params);
@@ -119,7 +119,7 @@ classdef ExperimentProtocols < handle
           warnStr = sprintf('Failed to match protocol %s', protocol_name);
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              e = feval([match{1}(1:end-2), 'EP']);
               [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
               [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
               
@@ -153,15 +153,18 @@ classdef ExperimentProtocols < handle
               return
           end
           loc = fileparts(which(class(self)));
-          k = dir(fullfile(loc, ['ExperimentProtocol', protocol_name ,'*BlockParameters.m']));
+          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'*BP.m']));
           if ~isempty(k)
               matches = arrayfun(@(x) ['sln_symphony.', x.name(1:end-2)],k,'uni',0);
               matches = setdiff(matches, tables(matching));
                 if numel(k)>1
                     warning('Possible table match: %s',matches{:});
                 else
-                    edit(fullfile(loc, k.name));
-                    edit(fullfile(loc, sprintf('%sEpochParameters',k.name(1:end-17))));
+                    answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
+                    if strcmp(answer,'y')
+                        edit(fullfile(loc, k.name));
+                        edit(fullfile(loc, sprintf('%sEP',k.name(1:end-2))));
+                    end
                 end
           end
           % there are no matches at all
@@ -180,6 +183,7 @@ classdef ExperimentProtocols < handle
           % and we will return false
         warning(bt.state,'backtrace');
         end
+
 
         function createTables(self,protocol_name, version, block_params, epoch_params)
             w = {'Block', 'Epoch'};
@@ -286,6 +290,10 @@ function outKey = parseProjectorSetting(inKey)
 
 fn = fieldnames(inKey.parameters);
 
+if ~contains(fn,'bitDepth') %if not bitDepth found, assume it is 8 bit
+    inKey.parameters.bitDepth = 8;
+end
+
 %of course, there are more projector parameters than these
 %but these are the only ones that are consistent at an epoch block level
 outKey.projector = struct(...
@@ -302,13 +310,21 @@ outKey.LEDs = struct('color', {},'value', {},...
 for i=1:numel(fn)
     if endsWith(fn{i},'LED')
         color = strsplit(fn{i},'LED');
-        if any(strcmp({inKey.parameters.colorPattern1, inKey.parameters.colorPattern2, inKey.parameters.colorPattern3},color{1}))
-            outKey.LEDs(end+1).color = color{1};
-            outKey.LEDs(end).value = inKey.parameters.(fn{i});
-            outKey.LEDs(end).file_name = inKey.file_name;
-            outKey.LEDs(end).source_id = inKey.source_id;
-            outKey.LEDs(end).epoch_group_id = inKey.epoch_group_id;
-            outKey.LEDs(end).epoch_block_id = inKey.epoch_block_id;
+        %Why missing colorPatterns sometimes?
+        if isfield(inKey.parameters, 'colorPattern1')
+            if isfield(inKey.parameters, 'colorPattern3')
+                test = any(strcmp({inKey.parameters.colorPattern1, inKey.parameters.colorPattern2, inKey.parameters.colorPattern3},color{1}));
+            else
+                test = any(strcmp({inKey.parameters.colorPattern1, inKey.parameters.colorPattern2},color{1}));
+            end
+            if test
+                outKey.LEDs(end+1).color = color{1};
+                outKey.LEDs(end).value = inKey.parameters.(fn{i});
+                outKey.LEDs(end).file_name = inKey.file_name;
+                outKey.LEDs(end).source_id = inKey.source_id;
+                outKey.LEDs(end).epoch_group_id = inKey.epoch_group_id;
+                outKey.LEDs(end).epoch_block_id = inKey.epoch_block_id;
+            end
         end
     end
 end
@@ -316,13 +332,15 @@ end
 
 function outKey = removeRedundantStageBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...
-    'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...
+    'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...    
     'RstarIntensity2','MstarIntensity2','SstarIntensity2',...
     'MstarMean','SstarMean',... %TODO: Rstar also?
     'blueLED','greenLED','uvLED','bluePWM','greenPWM','uvPWM'...
+    'redLED', 'red_led', ...
     'colorPattern1','colorPattern2','colorPattern3','numberOfPatterns',...
     'forcePrerender','prerender',...
     'frameRate','bitDepth',...
+    'patternRate',...
     'offsetX','offsetY'...
     });
 end
@@ -331,14 +349,20 @@ function outKey = removeRedundantBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...
     'chan1','chan1Hold','chan1Mode',...
     'chan2','chan2Hold','chan2Mode',...
+    'chan3','chan3Hold','chan3Mode',...
+    'chan4','chan4Hold','chan4Mode',...
+    'pattern_rate', ...
     'sampleRate',...
     'scanHeadTrigger','stimTimeRecord'...
-    'spikeDetectorMode','spikeThreshold'...
+    'spikeDetectorMode','spikeThreshold', 'spikeThresholdVoltage', ...
     'doPWM','imaging',...
     });
 end
 
 function outKey = removeRedundantEpochFields(inKey)
+if ~isfield(inKey, 'protocolVersion')
+    inKey.protocolVersion = 0.9;
+end
 outKey = rmFieldIfPresent(inKey, {...
     'symphonyVersion'
     });

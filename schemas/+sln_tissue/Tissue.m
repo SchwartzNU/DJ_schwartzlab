@@ -6,7 +6,7 @@ tissue_id : int unsigned AUTO_INCREMENT
 tissue_info = NULL          : varchar(256)
 %}
 
-classdef Tissue < dj.Manual
+classdef Tissue < dj.Manual % I should make this dj.Shared
     methods(Static)
         function q = active()
             q = sln_tissue.Tissue & sln_tissue.TissueActive;

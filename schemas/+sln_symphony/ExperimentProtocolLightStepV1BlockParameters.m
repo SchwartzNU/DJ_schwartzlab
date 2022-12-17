@@ -19,7 +19,7 @@ classdef ExperimentProtocolLightStepV1BlockParameters < sln_symphony.ExperimentP
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'red_led'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
