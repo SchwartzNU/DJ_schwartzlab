@@ -25,7 +25,7 @@ classdef ExperimentProtSpotsMultiSizeV1bp < sln_symphony.ExperimentProtocol
         dropped_attributes = {};
     end
     methods
-        function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+        function block_key_new = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
             %add entities to the key based on others
             for i=1:length(block_key)
                 key = block_key(i);
@@ -44,7 +44,7 @@ classdef ExperimentProtSpotsMultiSizeV1bp < sln_symphony.ExperimentProtocol
                     end
                     key = rmfield(key, 'pick_specific_sizes');
                 end
-                block_key(i) = key;
+                block_key_new(i) = key;
             end
         end
     end
