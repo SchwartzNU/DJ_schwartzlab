@@ -38,7 +38,9 @@ classdef ExperimentProtocols < handle
                     if contains(cur_prot, 'dynamic_clamp')
                         this_prot_ind = strcmp({self.key.epoch_blocks(:).protocol_name}, cur_prot);
                         cur_prot_new = strrep(cur_prot, 'dynamic_clamp_conductance', 'dynamic_clamp');
-                        self.key.epoch_blocks(this_prot_ind).protocol_name = cur_prot_new;
+                        for i=1:length(this_prot_ind)
+                            self.key.epoch_blocks(this_prot_ind(i)).protocol_name = cur_prot_new;
+                        end
                         protocols{p} = cur_prot_new;
                     end             
                 end
