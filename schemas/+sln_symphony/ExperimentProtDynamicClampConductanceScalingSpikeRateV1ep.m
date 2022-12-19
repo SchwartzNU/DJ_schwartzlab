@@ -5,7 +5,7 @@
 conductance_matrix_row_index : float
 protocol_version : float
 %}
-classdef ExperimentProtDynamicClampConductanceScalingSpikeRateV1ep < sln_symphony.ExperimentProt
+classdef ExperimentProtDynamicClampConductanceScalingSpikeRateV1ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

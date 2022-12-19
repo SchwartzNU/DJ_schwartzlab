@@ -222,7 +222,7 @@ classdef ExperimentProtocols < handle
                     end
                 end
                 fprintf(f,'%%}\n');
-                fprintf(f,'classdef ExperimentProt%sV%s%sParameters < sln_symphony.ExperimentProt\n',protocol_name, version, w{n});
+                fprintf(f,'classdef ExperimentProt%sV%s%sp < sln_symphony.ExperimentProtocol\n',protocol_name, version, w{n});
                 fprintf(f,'\tproperties\n');
                 fprintf(f,'\n\t\t%%attributes to be renamed\n');
                 fprintf(f,'\t\trenamed_attributes = struct();\n');
