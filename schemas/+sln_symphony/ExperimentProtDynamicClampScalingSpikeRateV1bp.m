@@ -12,7 +12,7 @@ pre_time : float
 stim_time : float
 tail_time : float
 %}
-classdef ExperimentProtDynamicClampConductanceScalingSpikeRateV1bp < sln_symphony.ExperimentProtocol
+classdef ExperimentProtDynamicClampScalingSpikeRateV1bp < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
