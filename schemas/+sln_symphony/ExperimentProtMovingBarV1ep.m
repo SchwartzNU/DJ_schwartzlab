@@ -5,7 +5,7 @@
 bar_angle : float
 protocol_version : float
 %}
-classdef ExperimentProtlMovingBarV1ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtMovingBarV1ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
