@@ -100,7 +100,7 @@ classdef ExperimentProtocols < handle
           emptyMatches = {};
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-2), 'EP']);
+              e = feval([match{1}(1:end-2), 'ep']);
               if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
                 b.canInsert = true;
                 b.insert(block_params, epoch_params);
@@ -119,7 +119,7 @@ classdef ExperimentProtocols < handle
           warnStr = sprintf('Failed to match protocol %s', protocol_name);
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-2), 'EP']);
+              e = feval([match{1}(1:end-2), 'ep']);
               [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
               [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
               
