@@ -35,8 +35,8 @@ classdef ExperimentProtocols < handle
                 %table names are too long otherwise
                 for p=1:length(protocols)
                     cur_prot = protocols{p};
-                    if contains(cur_prot, 'DynamicClampConductance')
-                        cur_prot = strrep(cur_prot, 'DynamicClampConductance', 'DynamicClampConductance');
+                    if contains(cur_prot, 'dynamic_clamp')
+                        cur_prot = strrep(cur_prot, 'dynamic_clamp_conductance', 'dynamic_clamp');
                     end
                     protocols{p} = cur_prot;
                 end
