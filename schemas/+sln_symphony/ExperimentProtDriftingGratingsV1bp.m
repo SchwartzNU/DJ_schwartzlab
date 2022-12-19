@@ -21,7 +21,7 @@ tail_time : float
 temporal_freq : float
 total_num_epochs : float
 %}
-classdef ExperimentProtlDriftingGratingsV1bp < sln_symphony.ExperimentProtocol
+classdef ExperimentProtDriftingGratingsV1bp < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
