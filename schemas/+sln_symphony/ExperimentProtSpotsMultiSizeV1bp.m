@@ -28,6 +28,20 @@ classdef ExperimentProtSpotsMultiSizeV1bp < sln_symphony.ExperimentProtocol
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
 		%add entities to the key based on others
+            if isfield(block_key,'scaling')
+                block_key
+                keyboard;
+                if strcmp(block_key.scaling,'log')
+                    block_key.log_scaling = 'T';
+                else
+                    block_key.log_scaling = 'F';
+                end
+                if strcmp(block_key.scaling,'custom')
+                    block_key.pick_specific_sizes = 'T';
+                else
+                    block_key.pick_specific_sizes = 'F';
+                end
+            end
 		end
 	end
 end
