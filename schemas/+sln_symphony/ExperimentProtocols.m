@@ -95,7 +95,7 @@ classdef ExperimentProtocols < handle
           end
           tables = sln_symphony.getSchema().classNames;
           matching = startsWith(tables, ['sln_symphony.ExperimentProt', protocol_name])...
-              & endsWith(tables, 'BP');
+              & endsWith(tables, 'bp');
           success = false;
           emptyMatches = {};
           for match = tables(matching)
@@ -148,12 +148,12 @@ classdef ExperimentProtocols < handle
               else
                   c = char(emptyMatches);
                   edit(c);
-                  edit(sprintf('%sEpochParameters',c(1:end-15)));
+                  edit(sprintf('%sep',c(1:end-2)));
               end
               return
           end
           loc = fileparts(which(class(self)));
-          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'*BP.m']));
+          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'*bp.m']));
           if ~isempty(k)
               matches = arrayfun(@(x) ['sln_symphony.', x.name(1:end-2)],k,'uni',0);
               matches = setdiff(matches, tables(matching));
@@ -163,7 +163,7 @@ classdef ExperimentProtocols < handle
                     answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
                     if strcmp(answer,'y')
                         edit(fullfile(loc, k.name));
-                        edit(fullfile(loc, sprintf('%sEP',k.name(1:end-2))));
+                        edit(fullfile(loc, sprintf('%sep',k.name(1:end-2))));
                     end
                 end
           end
@@ -186,13 +186,15 @@ classdef ExperimentProtocols < handle
 
 
         function createTables(self,protocol_name, version, block_params, epoch_params)
-            w = {'Block', 'Epoch'};
+            %w = {'Block', 'Epoch'};
+            w = {'b', 'e'};
             h = {'EpochBlock','Epoch'};
+
             p = {block_params, epoch_params};
             for n=1:2
                 file_name = fullfile(...
                     fileparts(which(class(self))),...
-                    ['ExperimentProtocol',protocol_name,'V',version,w{n},'Parameters.m']...
+                    ['ExperimentProt',protocol_name,'V',version,w{n},'p.m']...
                     );
                 f = fopen(file_name,'w');
                 fprintf(f,'%%{\n');
@@ -220,7 +222,7 @@ classdef ExperimentProtocols < handle
                     end
                 end
                 fprintf(f,'%%}\n');
-                fprintf(f,'classdef ExperimentProtocol%sV%s%sParameters < sln_symphony.ExperimentProtocol\n',protocol_name, version, w{n});
+                fprintf(f,'classdef ExperimentProt%sV%s%sParameters < sln_symphony.ExperimentProt\n',protocol_name, version, w{n});
                 fprintf(f,'\tproperties\n');
                 fprintf(f,'\n\t\t%%attributes to be renamed\n');
                 fprintf(f,'\t\trenamed_attributes = struct();\n');

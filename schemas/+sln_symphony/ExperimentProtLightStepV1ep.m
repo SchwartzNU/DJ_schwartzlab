@@ -5,7 +5,7 @@
 current_spot_pattern : float
 protocol_version : float
 %}
-classdef ExperimentProtocolLightStepV1EpochParameters < sln_symphony.ExperimentProtocol
+classdef ExperimentProtLightStepV1ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

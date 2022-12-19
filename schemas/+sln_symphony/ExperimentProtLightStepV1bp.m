@@ -12,14 +12,14 @@ spot_size : float
 stim_time : float
 tail_time : float
 %}
-classdef ExperimentProtocolLightStepV1BlockParameters < sln_symphony.ExperimentProtocol
+classdef ExperimentProtLightStepV1bp < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'red_led'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
