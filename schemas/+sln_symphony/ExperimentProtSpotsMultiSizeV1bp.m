@@ -30,7 +30,6 @@ classdef ExperimentProtSpotsMultiSizeV1bp < sln_symphony.ExperimentProtocol
             for i=1:length(block_key)
                 key = block_key(i);
                 if isfield(key,'log_scaling')
-                    keyboard;
                     if strcmp(key.log_scaling, 'T')
                         key.scaling = 'log';
                     else
