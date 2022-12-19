@@ -12,7 +12,7 @@ classdef ExperimentProtContrastResponseV1ep < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'protocol_version'};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
