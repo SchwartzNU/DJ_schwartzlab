@@ -36,9 +36,11 @@ classdef ExperimentProtocols < handle
                 for p=1:length(protocols)
                     cur_prot = protocols{p};
                     if contains(cur_prot, 'dynamic_clamp')
-                        cur_prot = strrep(cur_prot, 'dynamic_clamp_conductance', 'dynamic_clamp');
-                    end
-                    protocols{p} = cur_prot;
+                        this_prot_ind = strcmp({self.key.epoch_blocks(:).protocol_name}, cur_prot);
+                        cur_prot_new = strrep(cur_prot, 'dynamic_clamp_conductance', 'dynamic_clamp');
+                        self.key.epoch_blocks(this_prot_ind).protocol_name = cur_prot_new;
+                        protocols{p} = cur_prot_new;
+                    end             
                 end
                 existing_protocols = fetch(sln_symphony.Protocol & struct('protocol_name',protocols));
                 missing_protocols = setdiff(protocols, {existing_protocols(:).protocol_name});
