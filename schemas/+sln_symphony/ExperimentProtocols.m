@@ -31,6 +31,15 @@ classdef ExperimentProtocols < handle
             end
             try
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
+                %altering names of these protocols to make them shorter -
+                %table names are too long otherwise
+                for i=1:length(protocols)
+                    cur_prot = protocols{p};
+                    if contains(cur_prot, 'DynamicClampConductance')
+                        cur_prot = strrep(cur_prot, 'DynamicClampConductance', 'DynamicClampConductance');
+                    end
+                    protocols{p} = cur_prot;
+                end
                 existing_protocols = fetch(sln_symphony.Protocol & struct('protocol_name',protocols));
                 missing_protocols = setdiff(protocols, {existing_protocols(:).protocol_name});
                 if ~isempty(missing_protocols)
