@@ -29,7 +29,7 @@ classdef ExperimentProtMultiPulseV1bp < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct('output_amp_selection','output_amp');
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'protocol_version'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
