@@ -77,7 +77,20 @@ classdef Experiment < dj.Manual
                 for r=1:length(key.retinas)
                     if ~isfield(key.retinas(r), 'animal_id') || ~isnumeric(key.retinas(r).animal_id)
                         key.retinas(r)
-                        DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                        exp_date = datestr(datetime(key.experiment.experiment_start_time),'YYYY-mm-DD');
+                        q = sln_animal.AnimalEvent * sln_animal.Deceased & sprintf('date="%s"', exp_date);
+                        if q.exists
+                            if q.count==1
+                                q
+                                DJID = fetch1(q, 'animal_id');                                
+                                disp('Automatically setting DJID to single deceased animal from experiment day');
+                            else
+                                q
+                                DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');    
+                            end
+                        else
+                            DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                        end
                         if DJID == 0
                             key_animal.sex = 'Unknown';
                             disp('Strains in DB');
