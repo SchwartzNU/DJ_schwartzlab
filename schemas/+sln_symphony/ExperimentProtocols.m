@@ -59,6 +59,14 @@ classdef ExperimentProtocols < handle
                 
                 table = sln_symphony.ExperimentEpochBlock();
                 table.canInsert = true;
+                for i=1:length(self.key.epoch_blocks) %deal with empty epoch_block end times
+                    if isempty(self.key.epoch_blocks(i).epoch_block_end_time)
+                        self.key.epoch_blocks(i).epoch_block_end_time = ...
+                            datestr(datetime(self.key.epoch_blocks(1).epoch_block_start_time) + minutes(30), 'YYYY-mm-dd HH:MM:SS');
+                        %defaults to 30 minutes after the start of the
+                        %epoch block
+                    end
+                end
                 table.insert(self.key.epoch_blocks);
 
                 table = sln_symphony.ExperimentProjectorSettings();
