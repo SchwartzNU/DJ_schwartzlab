@@ -115,6 +115,15 @@ classdef Experiment < dj.Manual
                             insert(sln_animal.Eye,key_L);
                             insert(sln_animal.Eye,key_R);
                             DJID = last_id;
+
+                            %insert a deceased event for the day of the
+                            %experiment
+                            key_deceased.animal_id = last_id;
+                            key_deceased.date = datestr(datetime(key.experiment.experiment_start_time), 'YYYY-MM-DD');
+                            key_deceased.user_name = 'Unknown';
+                            key_deceased.notes = 'Auto inserted by database';
+                            key_deceased.cause = 'sacrificed for experiment';
+                            sln_animal.add_event(key_deceased,'Deceased',self.schema.conn);
                         end
                         key.retinas(r).animal_id = DJID;
                     end
