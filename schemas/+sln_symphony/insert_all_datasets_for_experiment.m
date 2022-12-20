@@ -39,6 +39,5 @@ exp_cells_struct = rmfield(fetch(exp_cells_to_insert),'retina_id');
 insert(sln_cell.Cell,exp_cells_struct)
 
 %sln_cell.init_cells_from_ExperimentCells();
-%sln_animal.updateGenotypeString();
 sln_cell.add_cell_types_from_cellData(cellBaseNames);
 
