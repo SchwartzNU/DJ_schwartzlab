@@ -7,7 +7,13 @@ d = cellfun(@(x) length(feval(x).descendants), c);
 
 [~,i] = sort(d);
 
-
 for ci = i
-    delQuick(feval(c{ci}) & sprintf("`file_name` = '%s'", exp_name));
+      delQuick(feval(c{ci}) & 'file_name = "121622A"');
 end
+% for ci = i
+%      delQuick(feval(c{ci}) & "`file_name` = '121622A'");
+% end
+%
+% for ci = i
+%     delQuick(feval(c{ci}) & sprintf("`file_name` = %s", exp_name));
+% end
