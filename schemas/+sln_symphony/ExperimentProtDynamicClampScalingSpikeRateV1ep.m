@@ -15,7 +15,7 @@ classdef ExperimentProtDynamicClampScalingSpikeRateV1ep < sln_symphony.Experimen
 		dropped_attributes = {};
 	end
 	methods
-		function e_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
 		%add entities to the key based on others
 		end
 	end
