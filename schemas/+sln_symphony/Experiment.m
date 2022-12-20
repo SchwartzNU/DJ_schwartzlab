@@ -119,7 +119,7 @@ classdef Experiment < dj.Manual
                             %insert a deceased event for the day of the
                             %experiment
                             key_deceased.animal_id = last_id;
-                            key_deceased.date = datestr(datetime(key.experiment.experiment_start_time), 'YYYY-MM-DD');
+                            key_deceased.date = datestr(datetime(key.experiment.experiment_start_time), 'YYYY-mm-DD');
                             key_deceased.user_name = 'Unknown';
                             key_deceased.notes = 'Auto inserted by database';
                             key_deceased.cause = 'sacrificed for experiment';
