@@ -1,5 +1,5 @@
 %{
-#b parameters for DynamicClampConductanceScalingSpikeRate (1) 
+#b parameters for DynamicClampScalingSpikeRate (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
 amp : float
