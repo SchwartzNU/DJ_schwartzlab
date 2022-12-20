@@ -83,7 +83,7 @@ classdef Experiment < dj.Manual
                             disp('Strains in DB');
                             fetchn(sln_animal.Strain,'strain_name')
                             strain_input = input('Enter strain name: ', 's');
-                            q = sln_animal.Strain & sprtinf('strain_name = "%s"', strain_input);
+                            q = sln_animal.Strain & sprintf('strain_name = "%s"', strain_input);
                             if q.exists
                                 key_animal.strain_name = fetch1(q,'strain_name');
                                 key_animal.background_name = fetch1(q,'background_name');
