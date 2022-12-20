@@ -201,6 +201,7 @@ classdef ExperimentProtocols < handle
         function createTables(self,protocol_name, version, block_params, epoch_params)
             %w = {'Block', 'Epoch'};
             w = {'b', 'e'};
+            w_full = {'block', 'epoch'};
             h = {'EpochBlock','Epoch'};
 
             p = {block_params, epoch_params};
@@ -245,7 +246,7 @@ classdef ExperimentProtocols < handle
                 % fprintf(f,'\t\ttransferred_attributes = {};\n');
                 fprintf(f,'\tend\n');
                 fprintf(f,'\tmethods\n');
-                fprintf(f,'\t\tfunction %s_key = add_attributes(self, block_key, epoch_key) %%#ok<INUSL,INUSD>\n',lower(w{n}));
+                fprintf(f,'\t\tfunction %s_key = add_attributes(self, block_key, epoch_key) %%#ok<INUSL,INUSD>\n',lower(w_full{n}));
                 fprintf(f,'\t\t%%add entities to the key based on others\n');
                 fprintf(f,'\t\tend\n');
                 fprintf(f,'\tend\n');
