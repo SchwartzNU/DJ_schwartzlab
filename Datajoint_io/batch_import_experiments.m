@@ -1,5 +1,5 @@
 %% bulk load symphony2 experiments
-D = dir([getenv('SERVER') filesep 'RawDataMaster']);
+D = dir([getenv('SERVER_ROOT') filesep 'RawDataMaster']);
 
 %% 
 all_names = {D.name};
@@ -13,7 +13,7 @@ for i=1:N
     i
     fprintf('Experiment %s:\n', sy2_names{i});
     status_table.experiment(i) = sy2_names{i};
-    q = sln_symphony.Experiment & sprintf('file_name="%s"', sy2_names{i});
+    q = sln_symphony.Experiment & sprintf('file_name="%s"', sy2_names{i}(1:end-3));
     if q.exists
         disp('Found in database');
         status_table.status(i) = 'Found';
