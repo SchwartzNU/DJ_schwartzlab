@@ -15,7 +15,7 @@ spot_size : float
 stim_time : float
 tail_time : float
 %}
-classdef ExperimentProtlIvcUrveV1bp < sln_symphony.ExperimentProtocol
+classdef ExperimentProtIvcUrveV1bp < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
