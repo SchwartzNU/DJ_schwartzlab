@@ -92,7 +92,7 @@ classdef Experiment < dj.Manual
                                 if strcmp(answer, 'y')
                                     sln_animal.Background
                                     bg = input('Which one of these backgrounds? : ', 's');
-                                    q = sln_animal.Background & sprtinf('background_name = "%s"', bg);
+                                    q = sln_animal.Background & sprintf('background_name = "%s"', bg);
                                     if ~q.exists
                                         disp('Invalid background: aborting experiment insert');
                                         return
