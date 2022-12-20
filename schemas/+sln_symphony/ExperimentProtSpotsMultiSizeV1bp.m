@@ -44,6 +44,10 @@ classdef ExperimentProtSpotsMultiSizeV1bp < sln_symphony.ExperimentProtocol
                     end
                     key = rmfield(key, 'pick_specific_sizes');
                 end
+
+                if ~isfield(key, 'ramdom_ordering')
+                    key.random_ordering = 'T';
+                end
                 block_key_new(i) = key;
             end
         end
