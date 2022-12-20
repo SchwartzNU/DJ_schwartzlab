@@ -183,10 +183,8 @@ classdef ExperimentProtocols < handle
                 else
                     answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
                     if strcmp(answer,'y')
-                        k.name
-                        keyboard;
                         edit(fullfile(loc, k.name));
-                        edit(fullfile(loc, sprintf('%sep',k.name(1:end-2))));
+                        edit(fullfile(loc, sprintf('%sep',k.name(1:end-4))));
                     end
                 end
           end
