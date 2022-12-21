@@ -85,11 +85,21 @@ classdef Experiment < dj.Manual
                                 DJID = fetch1(q, 'animal_id');                                
                                 disp('Automatically setting DJID to single deceased animal from experiment day');
                             else
-                                q
-                                DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');    
+                                if strcmp(getenv('skip'), 'T')
+                                    ME = MException('SkipExperiment','skipping');
+                                    throw(ME);
+                                else
+                                    q
+                                    DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                                end
                             end
                         else
-                            DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                            if strcmp(getenv('skip'), 'T')
+                                ME = MException('SkipExperiment','skipping');
+                                throw(ME);
+                            else
+                                DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                            end
                         end
                         if DJID == 0
                             key_animal.sex = 'Unknown';
