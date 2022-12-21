@@ -16,9 +16,10 @@ number_of_cycles            : smallint unsigned             #
 pre_time                    : float                         # 
 spatial_freq                : float                         # 
 stim_time                   : float                         # 
-tail_time                   : float                         # 
+tail_time                   : float                                  # 
 temporal_freq               : float                         # 
 total_num_epochs            : float                         # 
+rstar_mean : float
 background_pattern : smallint unsigned
 green_or_uv_led : smallint unsigned
 primary_object_pattern : smallint unsigned
