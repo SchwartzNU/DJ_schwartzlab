@@ -12,7 +12,7 @@ pre_time : float
 random_seed : float
 motion_seed : float
 random_motion : float
-single_angle : smallint unsigned
+single_angle : smallint
 smooth_motion_scale : smallint unsigned
 res_scale_factor : float
 rstar_mean : float
