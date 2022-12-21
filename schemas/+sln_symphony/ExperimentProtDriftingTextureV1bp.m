@@ -39,7 +39,9 @@ classdef ExperimentProtDriftingTextureV1bp < sln_symphony.ExperimentProtocol
         function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
     		%add entities to the key based on others
             for i=1:length(block_key)
-                block_key(i).single_angle
+                if block_key(i).single_angle < 0
+                    block_key(i).single_angle = 0;
+                end
     		end
     	end
     end
