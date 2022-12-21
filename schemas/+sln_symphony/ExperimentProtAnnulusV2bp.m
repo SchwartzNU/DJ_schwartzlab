@@ -18,10 +18,10 @@ rstar_mean : float
 stim_time : float
 tail_time : float
 color_combination_mode : varchar(32)
-contrast_1 : float
-contrast_2 : float
-mean_level_1 : float
-mean_level_2 : float
+contrast_1 = NULL : float
+contrast_2 = NULL : float
+mean_level_1 = NULL : float
+mean_level_2 = NULL : float
 %}
 classdef ExperimentProtAnnulusV2bp < sln_symphony.ExperimentProtocol
 	properties
