@@ -6,7 +6,7 @@ intensity : float
 mean_level : float
 number_of_epochs : smallint unsigned
 pre_time : float
-rstar_mean : float
+rstar_mean = NULL : float
 spot_size : float
 stim_time : float
 tail_time : float
