@@ -4,7 +4,7 @@
 ---
 init_area                   : float                         # 
 init_thick                  : float                         # 
-intensity                   : float                         # 
+intensity=null              : float                         # 
 keep_constant               : varchar(64)                   # 
 max_inner_diam              : float                         # 
 max_outer_diam              : float                         # 
