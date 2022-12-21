@@ -36,8 +36,10 @@ classdef ExperimentProtDriftingTextureV1bp < sln_symphony.ExperimentProtocol
 		dropped_attributes = {'rstarIntensity'};
 	end
 	methods
-		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>            
 		%add entities to the key based on others
+        for i=1:length(block_key)
+            block_key(i).single_angle
 		end
 	end
 end
