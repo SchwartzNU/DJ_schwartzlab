@@ -6,7 +6,7 @@ classdef ExperimentProtocols < handle
 
     properties
         key
-        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns', 'annulus_mode', 'doSubtraction'};
+        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns', 'annulusMode', 'doSubtraction'};
         canInsert = false;
     end
     

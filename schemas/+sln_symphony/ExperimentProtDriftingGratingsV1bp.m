@@ -1,25 +1,25 @@
 %{
-#Block parameters for DriftingGratings (1) 
+# Block parameters for DriftingGratings (1)
 -> sln_symphony.ExperimentEpochBlock
 ---
-aperture_diameter : float
-contrast : float
-cycle_half_width : float
-grating_length : float
-grating_profile : varchar(64)
-grating_speed : float
-grating_width : float
-mean_level : float
-movement_delay : float
-number_of_angles : smallint unsigned
-number_of_cycles : smallint unsigned
-pre_time : float
-rstar_mean : float
-spatial_freq : float
-stim_time : float
-tail_time : float
-temporal_freq : float
-total_num_epochs : float
+aperture_diameter           : float                         # 
+contrast                    : float                         # 
+cycle_half_width            : float                         # 
+grating_length              : float                         # 
+grating_profile             : varchar(64)                   # 
+grating_speed               : float                         # 
+grating_width               : float                         # 
+mean_level                  : float                         # 
+movement_delay              : float                         # 
+number_of_angles            : smallint unsigned             # 
+number_of_cycles            : smallint unsigned             # 
+pre_time                    : float                         # 
+rstar_mean                  : float                         # 
+spatial_freq                : float                         # 
+stim_time                   : float                         # 
+tail_time                   : float                         # 
+temporal_freq               : float                         # 
+total_num_epochs            : float                         # 
 %}
 classdef ExperimentProtDriftingGratingsV1bp < sln_symphony.ExperimentProtocol
 	properties
