@@ -17,7 +17,18 @@ classdef ExperimentProtColorIsoResponseV1ep < sln_symphony.ExperimentProtocol
 		dropped_attributes = {'session_ID', 'stimulus_mode','protocol_version'};
 	end
 	methods
-		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+        function epoch_key_new = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+            for i=1:length(epoch_key)
+                ep = epoch_key(i);
+                if ~isfield(ep,'contrast_1')
+                     ep.contrast_1 = 0;
+                end
+                if ~isfield(ep,'contrast_2')
+                     ep.contrast_2 = 0;
+                end
+                epoch_key_new(i) = ep;
+            end
+
 		%add entities to the key based on others
 		end
 	end

@@ -16,7 +16,7 @@ spot_diameter : float
 stim_time : float
 tail_time : float
 uniform_xy : float
-do_subtraction : enum('T', 'F')
+do_subtraction : enum('F','T')
 %}
 classdef ExperimentProtContrastResponseV3bp < sln_symphony.ExperimentProtocol
 	properties
