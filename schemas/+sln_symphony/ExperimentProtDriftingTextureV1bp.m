@@ -41,9 +41,10 @@ classdef ExperimentProtDriftingTextureV1bp < sln_symphony.ExperimentProtocol
             for i=1:length(block_key)
                 block_key(i).single_angle
                 if block_key(i).single_angle < 0
-                    block_key(i).single_angle = 0;
-                    pause;
-                end                
+                    block_key(i).single_angle = 0.0;
+                end      
+                block_key(i).single_angle
+                pause;
             end
         end
     end
