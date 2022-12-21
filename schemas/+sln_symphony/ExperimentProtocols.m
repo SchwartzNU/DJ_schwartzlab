@@ -121,6 +121,7 @@ classdef ExperimentProtocols < handle
           success = false;
           emptyMatches = {};
           for match = tables(matching)
+              char(match)
               b = feval(char(match));% <- gets an object of the class
               e = feval([match{1}(1:end-2), 'ep']);
               if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
