@@ -107,12 +107,16 @@ classdef Dataset < dj.Manual
                              end
                         end
                     end
-
-                    user_resp = input('Datasets for this cell aleady in database. Overwrite spike trains (y|n)? \n', 's');
-                    if strcmp(user_resp,'y')
-                        replace_spikes = true;
+                    
+                    if ~strcmp(getenv('skip'),'T')
+                        user_resp = input('Datasets for this cell aleady in database. Overwrite spike trains (y|n)? \n', 's');
+                        if strcmp(user_resp,'y')
+                            replace_spikes = true;
+                        else
+                            replace_spikes = false;
+                        end
                     else
-                        replace_spikes = false;
+                        disp('skipping because of environment variable');
                     end
                     if ~isempty(spikes)
                         if replace_spikes
