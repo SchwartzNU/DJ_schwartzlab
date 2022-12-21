@@ -1,11 +1,11 @@
 %{
-#Epoch parameters for DriftingTexture (2) 
+#e parameters for RandomMotionEdge (1) 
 -> sln_symphony.ExperimentEpoch
 ---
+movement_angle : float
 protocol_version : float
-texture_angle : float
 %}
-classdef ExperimentProtDriftingTextureV2ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtRandomMotionEdgeV2ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
