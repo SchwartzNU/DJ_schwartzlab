@@ -1,5 +1,11 @@
 empty_cells = sln_symphony.ExperimentCell - sln_symphony.Dataset;
+cells_with_datasets = sln_symphony.ExperimentCell & sln_symphony.Dataset;
+
 experiments_with_empty_cells = unique(fetchn(empty_cells, 'file_name'));
+experiments_with_datasets = unique(fetchn(cells_with_datasets, 'file_name'));
+
+fully_empty_experiments = setdiff(experiments_with_empty_cells, experiments_with_datasets);
+partially_empty_experiments = intersect(experiments_with_empty_cells, experiments_with_datasets);
 
 error_exps = {};
 
