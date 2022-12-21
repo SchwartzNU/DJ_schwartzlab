@@ -389,7 +389,7 @@ function outKey = fixNullRstar(inKey)
     outKey = inKey;
     if isfield(inKey,'RstarMean')
         if ~isnumeric(inKey.RstarMean)
-            outKey.rstar_mean = nan;
+            outKey.RstarMean = nan;
         end
     end
 end
