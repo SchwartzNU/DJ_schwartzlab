@@ -25,7 +25,6 @@ for i=1:N
        catch ME
             disp(ME.message);
             status_table.status(i) = sprintf('Error: %s', ME.message);
-            pause;
        end
     end
 
