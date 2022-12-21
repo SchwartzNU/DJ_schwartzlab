@@ -13,7 +13,7 @@ real_number_of_contrast_steps : smallint unsigned
 spot_diameter : float
 stim_time : float
 tail_time : float
-rstar_mean : float
+rstar_mean = NULL : float
 background_pattern : smallint unsigned
 green_or_uv_led : smallint unsigned
 primary_object_pattern : smallint unsigned
