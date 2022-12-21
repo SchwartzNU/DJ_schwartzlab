@@ -287,8 +287,8 @@ classdef ExperimentProtocols < handle
             i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
             self.key.block_params = arrayfun(@(x) removeRedundantBlockFields(x.parameters), self.key.epoch_blocks,'uni',0);
             self.key.block_params(i) = cellfun(@removeRedundantStageBlockFields, self.key.block_params(i),'uni',0);
-            self.key.block_params = arrayfun(@(x) fixNullRstar(x.parameters), self.key.epoch_blocks,'uni',0);
-            self.key.block_params(i) = cellfun(@fixNullRstar, self.key.block_params(i),'uni',0);
+            self.key.block_params = arrayfun(@(x) fixNulls(x.parameters), self.key.epoch_blocks,'uni',0);
+            self.key.block_params(i) = cellfun(@fixNulls, self.key.block_params(i),'uni',0);
             
             i = arrayfun(@(x) isfield(x.parameters,'micronsPerPixel'), self.key.epochs);
             self.key.epoch_params = arrayfun(@(x) removeRedundantEpochFields(x.parameters), self.key.epochs,'uni',0);
@@ -385,11 +385,16 @@ outKey = rmFieldIfPresent(inKey, {...
     });
 end
 
-function outKey = fixNullRstar(inKey)
+function outKey = fixNulls(inKey)
     outKey = inKey;
     if isfield(inKey,'RstarMean')
         if ~isnumeric(inKey.RstarMean)
             outKey.RstarMean = nan;
+        end
+    end
+    if isfield(inKey,'singleAngle')
+        if ~isnumeric(inKey.singleAngle)
+            outKey.singleAngle = -1;
         end
     end
 end
