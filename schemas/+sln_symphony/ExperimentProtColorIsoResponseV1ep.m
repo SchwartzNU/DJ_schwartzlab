@@ -26,6 +26,12 @@ classdef ExperimentProtColorIsoResponseV1ep < sln_symphony.ExperimentProtocol
                 if ~isfield(ep,'contrast_2')
                      ep.contrast_2 = 0;
                 end
+                if isnan(ep.contrast_1)
+                    ep.contrast_1 = 0;
+                end
+                if isnan(ep.contrast_2)
+                    ep.contrast_2 = 0;
+                end
                 epoch_key_new(i) = ep;
             end
 
