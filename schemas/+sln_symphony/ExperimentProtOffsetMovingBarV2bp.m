@@ -1,14 +1,12 @@
 %{
-#b parameters for OffsetMovingBar (1) 
+#b parameters for OffsetMovingBar (2) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-angle_offset : float
 bar_length : float
 bar_speed : float
 distance : float
 intensity : float
 mean_level : float
-number_of_angles : smallint unsigned
 number_of_cycles : smallint unsigned
 number_of_offsets : smallint unsigned
 offset_range : tinyblob
@@ -19,7 +17,7 @@ single_edge_mode : float
 stim_time : float
 tail_time : float
 %}
-classdef ExperimentProtOffsetMovingBarV1bp < sln_symphony.ExperimentProtocol
+classdef ExperimentProtOffsetMovingBarV2bp < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
