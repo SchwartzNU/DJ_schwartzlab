@@ -1,27 +1,27 @@
 %{
-#Block parameters for Annulus (2) 
+# Block parameters for Annulus (2)
 -> sln_symphony.ExperimentEpochBlock
 ---
-init_area : float
-init_thick : float
-intensity : float
-keep_constant : varchar(64)
-max_inner_diam : float
-max_outer_diam : float
-mean_level : float
-min_inner_diam : float
-min_outer_diam : float
-number_of_cycles : smallint unsigned
-number_of_size_steps : smallint unsigned
-pre_time : float
-rstar_mean : float
-stim_time : float
-tail_time : float
-color_combination_mode : varchar(32)
-contrast_1 = NULL : float
-contrast_2 = NULL : float
-mean_level_1 = NULL : float
-mean_level_2 = NULL : float
+init_area                   : float                         # 
+init_thick                  : float                         # 
+intensity                   : float                         # 
+keep_constant               : varchar(64)                   # 
+max_inner_diam              : float                         # 
+max_outer_diam              : float                         # 
+mean_level                  : float                         # 
+min_inner_diam              : float                         # 
+min_outer_diam              : float                         # 
+number_of_cycles            : smallint unsigned             # 
+number_of_size_steps        : smallint unsigned             # 
+pre_time                    : float                         # 
+rstar_mean                  : float                         # 
+stim_time                   : float                         # 
+tail_time                   : float                         # 
+color_combination_mode      : varchar(32)                   # 
+contrast_1=null             : float                         # 
+contrast_2=null             : float                         # 
+mean_level_1=null           : float                         # 
+mean_level_2=null           : float                         # 
 %}
 classdef ExperimentProtAnnulusV2bp < sln_symphony.ExperimentProtocol
 	properties
