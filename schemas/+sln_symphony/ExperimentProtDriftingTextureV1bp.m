@@ -27,19 +27,20 @@ texture_scale : float
 uniform_distribution : float
 %}
 classdef ExperimentProtDriftingTextureV1bp < sln_symphony.ExperimentProtocol
-	properties
+    properties
 
-		%attributes to be renamed
-		renamed_attributes = struct();
+        %attributes to be renamed
+        renamed_attributes = struct();
 
-		%attributes to be removed from the key
-		dropped_attributes = {'rstarIntensity'};
-	end
-	methods
-		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>            
-		%add entities to the key based on others
-        for i=1:length(block_key)
-            block_key(i).single_angle
-		end
-	end
+        %attributes to be removed from the key
+        dropped_attributes = {'rstarIntensity'};
+    end
+    methods
+        function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+    		%add entities to the key based on others
+            for i=1:length(block_key)
+                block_key(i).single_angle
+    		end
+    	end
+    end
 end
