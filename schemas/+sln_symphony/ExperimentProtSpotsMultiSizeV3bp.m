@@ -2,10 +2,10 @@
 # Block parameters for SpotsMultiSize (3)
 -> sln_symphony.ExperimentEpochBlock
 ---
-intensity                   : float                         # 
+intensity=null              : float                         # 
 scaling                     : enum('log','linear','custom') # 
 max_size                    : float                         # 
-mean_level                  : float                         # 
+mean_level=null             : float                         # 
 min_size                    : float                         # 
 number_of_cycles            : smallint unsigned             # 
 number_of_size_steps        : smallint unsigned             # 
