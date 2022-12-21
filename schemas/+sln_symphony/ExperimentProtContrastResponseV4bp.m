@@ -10,7 +10,6 @@ number_of_contrast_steps : smallint unsigned
 number_of_cycles : smallint unsigned
 pre_time : float
 real_number_of_contrast_steps : smallint unsigned
-rstar_mean : float
 spot_diameter : float
 stim_time : float
 tail_time : float
