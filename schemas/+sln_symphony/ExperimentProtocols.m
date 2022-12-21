@@ -287,8 +287,6 @@ classdef ExperimentProtocols < handle
             i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
             self.key.block_params = arrayfun(@(x) removeRedundantBlockFields(x.parameters), self.key.epoch_blocks,'uni',0);
             self.key.block_params(i) = cellfun(@removeRedundantStageBlockFields, self.key.block_params(i),'uni',0);
-            self.key.block_params = arrayfun(@(x) fixNulls(x.parameters), self.key.epoch_blocks,'uni',0);
-            self.key.block_params(i) = cellfun(@fixNulls, self.key.block_params(i),'uni',0);
             
             i = arrayfun(@(x) isfield(x.parameters,'micronsPerPixel'), self.key.epochs);
             self.key.epoch_params = arrayfun(@(x) removeRedundantEpochFields(x.parameters), self.key.epochs,'uni',0);
@@ -371,7 +369,7 @@ end
 
 function outKey = removeRedundantStageBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...
-    'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...    
+    'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...
     'RstarIntensity', ...
     'RstarIntensity2','MstarIntensity2','SstarIntensity2',...
     'MstarMean','SstarMean',... %TODO: Rstar also?
@@ -380,24 +378,22 @@ outKey = rmFieldIfPresent(inKey, {...
     'colorPattern1','colorPattern2','colorPattern3','numberOfPatterns',...
     'forcePrerender','prerender',...
     'frameRate','bitDepth',...
-    'patternRate',...    
+    'patternRate',...
     'offsetX','offsetY'...
     });
+%extra part Greg added to hack out parameters with bad values
+if isfield(inKey,'RstarMean')
+    if ~isnumeric(inKey.RstarMean)
+        outKey.RstarMean = nan;
+    end
+end
+if isfield(inKey,'singleAngle')
+    if ~isnumeric(inKey.singleAngle)
+        outKey.singleAngle = -1;
+    end
+end
 end
 
-function outKey = fixNulls(inKey)
-    outKey = inKey;
-    if isfield(inKey,'RstarMean')
-        if ~isnumeric(inKey.RstarMean)
-            outKey.RstarMean = nan;
-        end
-    end
-    if isfield(inKey,'singleAngle')
-        if ~isnumeric(inKey.singleAngle)
-            outKey.singleAngle = -1;
-        end
-    end
-end
 
 function outKey = removeRedundantBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...
