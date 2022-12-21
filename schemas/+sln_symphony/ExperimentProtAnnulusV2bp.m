@@ -8,7 +8,7 @@ intensity=null              : float                         #
 keep_constant               : varchar(64)                   # 
 max_inner_diam              : float                         # 
 max_outer_diam              : float                         # 
-mean_level                  : float                         # 
+mean_level=null             : float                         # 
 min_inner_diam              : float                         # 
 min_outer_diam              : float                         # 
 number_of_cycles            : smallint unsigned             # 
