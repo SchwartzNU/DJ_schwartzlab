@@ -127,9 +127,10 @@ classdef Experiment < dj.Manual
                             if strcmp(key.retinas(r).side, 'left') || strcmp(key.retinas(r).side, 'right') 
                                 key_L.side = 'Left';                            
                                 key_R.side = 'Right';
-                            else
+                            else                                
                                 key_L.side = 'Unknown1';
                                 key_R.side = 'Unknown2';
+                                key.retinas(r).side = 'Unknown1'; %what if there are 2?
                             end
 
                             insert(sln_animal.Eye,key_L);

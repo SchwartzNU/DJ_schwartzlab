@@ -31,6 +31,8 @@ classdef ExperimentProtocols < handle
             end
             try
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
+                disp('protocol list:')
+                protocols
                 %altering names of these protocols to make them shorter -
                 %table names are too long otherwise
                 for p=1:length(protocols)
