@@ -182,10 +182,12 @@ classdef ExperimentProtocols < handle
                 if numel(k)>1
                     warning('Possible table match: %s',matches{:});
                 else
-                    answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
-                    if strcmp(answer,'y')
-                        edit(fullfile(loc, k.name));
-                        edit(fullfile(loc, sprintf('%sep',k.name(1:end-4))));
+                    if ~strcmp(getenv('skip'), 'T')
+                        answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
+                        if strcmp(answer,'y')
+                            edit(fullfile(loc, k.name));
+                            edit(fullfile(loc, sprintf('%sep',k.name(1:end-4))));
+                        end
                     end
                 end
           end
