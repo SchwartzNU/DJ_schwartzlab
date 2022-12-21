@@ -13,7 +13,7 @@ number_of_angles : smallint unsigned
 number_of_cycles : smallint unsigned
 pre_time : float
 rstar_mean : float
-single_edge_mode : float
+single_edge_mode : float #should really be a bool
 stim_time : float
 tail_time : float
 %}
