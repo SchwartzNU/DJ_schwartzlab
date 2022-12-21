@@ -17,7 +17,7 @@ pre_time                    : float                         #
 rstar_mean                  : float                         # 
 stim_time                   : float                         # 
 tail_time                   : float                         # 
-color_combination_mode      : varchar(32)                   # 
+color_combination_mode=null : varchar(32)                   # 
 contrast_1=null             : float                         # 
 contrast_2=null             : float                         # 
 mean_level_1=null           : float                         # 
