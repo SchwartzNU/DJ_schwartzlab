@@ -122,9 +122,16 @@ classdef Experiment < dj.Manual
 
                             last_id = max(fetchn(sln_animal.Animal,'animal_id'));
                             key_L.animal_id = last_id;
-                            key_L.side = 'Left';
                             key_R.animal_id = last_id;
-                            key_R.side = 'Right';
+
+                            if strcmp(key.retinas(r).side, 'left') || strcmp(key.retinas(r).side, 'right') 
+                                key_L.side = 'Left';                            
+                                key_R.side = 'Right';
+                            else
+                                key_L.side = 'Unknown1';
+                                key_R.side = 'Unknown2';
+                            end
+
                             insert(sln_animal.Eye,key_L);
                             insert(sln_animal.Eye,key_R);
                             DJID = last_id;
