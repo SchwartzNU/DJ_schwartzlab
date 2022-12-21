@@ -31,8 +31,7 @@ classdef ExperimentProtocols < handle
             end
             try
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
-                disp('protocol list:')
-                protocols
+                protocols'
                 %altering names of these protocols to make them shorter -
                 %table names are too long otherwise
                 for p=1:length(protocols)
@@ -318,6 +317,10 @@ fn = fieldnames(inKey.parameters);
 
 if ~contains(fn,'bitDepth') %if not bitDepth found, assume it is 8 bit
     inKey.parameters.bitDepth = 8;
+end
+
+if ~contains(fn,'frameRate') %if not frameRate found, assume it is 60 Hz
+    inKey.parameters.frameRate = 60;
 end
 
 %of course, there are more projector parameters than these
