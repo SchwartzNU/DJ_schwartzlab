@@ -224,11 +224,6 @@ classdef Experiment < dj.Manual
 
                 warning(getReport(ME, 'extended', 'hyperlinks', 'on'));
                 warning('Table insertion failed. Key is available as output.');
-                disp('moving')
-                [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep key.experiment.file_name '.h5']
-                [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'error_files' filesep]
-                movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep key.experiment.file_name '.h5'], ...
-                                       [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'error_files' filesep])
                 return;
             end
             self.schema.conn.commitTransaction;

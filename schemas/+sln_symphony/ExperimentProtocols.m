@@ -143,7 +143,9 @@ classdef ExperimentProtocols < handle
                 success = true;
                 return
               elseif b.count == 0
-                 emptyMatches = vertcat(emptyMatches{:}, char(match));
+                 %disp('temp');
+                 %emptyMatches = vertcat(emptyMatches{:}, char(match));
+                 emptyMatches = vertcat(emptyMatches, char(match));
               end
           end
           %%we failed to insert. explain why:
