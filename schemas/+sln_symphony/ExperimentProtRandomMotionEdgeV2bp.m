@@ -18,7 +18,7 @@ rstar_mean                  : float                         #
 stim_time                   : float                         # 
 tail_time                   : float                         # 
 single_edge_mode            : smallint unsigned             # 
-single_edge_polarity        : smallint unsigned             # 
+single_edge_polarity        : smallint             # 
 %}
 classdef ExperimentProtRandomMotionEdgeV2bp < sln_symphony.ExperimentProtocol
 	properties
