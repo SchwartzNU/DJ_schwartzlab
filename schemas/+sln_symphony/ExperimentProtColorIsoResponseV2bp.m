@@ -33,7 +33,7 @@ classdef ExperimentProtColorIsoResponseV2bp < sln_symphony.ExperimentProtocol
 
             for i=1:length(block_key)
                 b = block_key(i);
-                if isfield(b.annulus_mode)
+                if isfield(b,'annulus_mode')
                     if b.annulus_mode
                         b.annulus_mode = 'T';
                     else
