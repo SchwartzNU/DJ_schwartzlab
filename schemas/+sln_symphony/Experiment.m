@@ -14,7 +14,7 @@ symphony_revision_version: tinyint unsigned
 classdef Experiment < dj.Manual
     methods
 
-        function [key,success] = insert(self, key)
+        function [key,success,input_needed] = insert(self, key)
             if self.schema.conn.inTransaction
                 error('Cannot insert Symphony data while in transaction. Please commit or cancel transaction and try again.');
                 %the issue is that we may need to create new tables
@@ -24,6 +24,7 @@ classdef Experiment < dj.Manual
                 error('Cannot access Symphony property descriptors. Is Symphony on the path?');
             end
             success = false;
+            input_needed = false;
             %make sure all the tables are already in the db, otherwise transaction will break
             all_parts = dir(fileparts(which(class(self))));
             all_parts = {all_parts(...
@@ -86,8 +87,8 @@ classdef Experiment < dj.Manual
                                 disp('Automatically setting DJID to single deceased animal from experiment day');
                             else
                                 if strcmp(getenv('skip'), 'T')
-                                    ME = MException('SkipExperiment','skipping');
-                                    throw(ME);
+                                    input_needed = true;
+                                    return;
                                 else
                                     q
                                     DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
