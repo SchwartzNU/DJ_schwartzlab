@@ -1,13 +1,12 @@
 %{
-#e parameters for CenterSurroundNoise (2) 
+#Epoch parameters for DriftingGratings (3) 
 -> sln_symphony.ExperimentEpoch
 ---
-center_noise_seed : float
-current_stimulus : varchar(64)
+angles_like_moving_bar : float
+grating_angle : float
 protocol_version : float
-surround_noise_seed : float
 %}
-classdef ExperimentProtCenterSurroundNoiseV2ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtDriftingGratingsV3ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed

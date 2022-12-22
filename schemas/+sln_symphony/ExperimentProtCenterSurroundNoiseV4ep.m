@@ -1,5 +1,5 @@
 %{
-#e parameters for CenterSurroundNoise (2) 
+#e parameters for CenterSurroundNoise (4) 
 -> sln_symphony.ExperimentEpoch
 ---
 center_noise_seed : float
@@ -7,7 +7,7 @@ current_stimulus : varchar(64)
 protocol_version : float
 surround_noise_seed : float
 %}
-classdef ExperimentProtCenterSurroundNoiseV2ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtCenterSurroundNoiseV4ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
