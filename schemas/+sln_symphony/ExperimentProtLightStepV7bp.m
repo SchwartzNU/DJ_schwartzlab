@@ -2,7 +2,7 @@
 #Block parameters for LightStep (7) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-alternate_patterns : tinyint unsigned
+alternate_patterns : enum('F','T')
 intensity : float
 mean_level : float
 number_of_epochs : smallint unsigned
