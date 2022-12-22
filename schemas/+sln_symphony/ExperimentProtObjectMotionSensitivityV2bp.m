@@ -18,7 +18,7 @@ motion_include_differential : smallint unsigned
 motion_include_global : smallint unsigned
 motion_include_static : smallint unsigned
 motion_include_surround : smallint unsigned
-motion_path_mode
+motion_path_mode : varchar(64)
 pattern_mode : varchar(64)
 pattern_spatial_scale : float
 pre_time : float
