@@ -121,7 +121,7 @@ classdef ExperimentProtocols < handle
             return
           end
           if contains(protocol_name,'SealAndLeak')
-            warning('Skipping AlignmentCross');
+            warning('Skipping SealAndLeak');
             success=true;
             return
           end
