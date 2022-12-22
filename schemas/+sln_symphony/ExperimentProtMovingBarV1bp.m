@@ -28,6 +28,11 @@ classdef ExperimentProtMovingBarV1bp < sln_symphony.ExperimentProtocol
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key)  %#ok<INUSL,INUSD>
+            for i=1:length(block_key)
+                if isempty(block_key(i).angle_offset) || isnan(block_key(i).angle_offset)
+                    block_key(i).angle_offset = 0;
+                end
+            end
 		%add entities to the key based on others
 		end
 	end
