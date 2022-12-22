@@ -120,6 +120,11 @@ classdef ExperimentProtocols < handle
             success=true;
             return
           end
+          if contains(protocol_name,'SealAndLeak')
+            warning('Skipping AlignmentCross');
+            success=true;
+            return
+          end
           tables = sln_symphony.getSchema().classNames;
           matching = startsWith(tables, ['sln_symphony.ExperimentProt', protocol_name])...
               & endsWith(tables, 'bp');
