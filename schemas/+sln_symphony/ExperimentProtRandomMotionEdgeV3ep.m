@@ -1,11 +1,11 @@
 %{
-#e parameters for RandomMotionEdge (2) 
+#e parameters for RandomMotionEdge (3) 
 -> sln_symphony.ExperimentEpoch
 ---
 movement_angle : float
 protocol_version : float
 %}
-classdef ExperimentProtRandomMotionEdgeV2ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtRandomMotionEdgeV3ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
