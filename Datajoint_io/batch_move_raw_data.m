@@ -20,18 +20,10 @@ for i=1:N
     else
        disp('Trying insert');
        try
-            [key,status,needs_input] = sln_symphony.insert_experiment(sy2_names{i}(1:end-3));
+            sln_symphony.insert_experiment(sy2_names{i}(1:end-3));
             status_table.status(i) = 'Inserted';            
        catch ME
             disp(ME.message);
-            if needs_input
-                movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep sy2_names{i}], ...
-                    [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'need_input_files'])
-            else
-                 movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep sy2_names{i}], ...
-                    [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'error_files'])
-            end
-
             status_table.status(i) = sprintf('Error: %s', ME.message);
        end
     end
