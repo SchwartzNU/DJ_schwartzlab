@@ -14,12 +14,12 @@ random_ordering             : enum('F','T')                 # bool
 rstar_mean                  : float                         # 
 stim_time                   : float                         # 
 tail_time                   : float                         # 
-background_pattern : tinyint unsigned
-mstar_intensity : float
-primary_object_pattern : tinyint unsigned
-secondary_object_pattern : tinyint unsigned
-sstar_intensity : float
-color_combination_mode : varchar(32)
+background_pattern          : tinyint unsigned              # 
+mstar_intensity             : float                         # 
+primary_object_pattern      : tinyint unsigned              # 
+secondary_object_pattern    : tinyint unsigned              # 
+sstar_intensity             : float                         # 
+color_combination_mode      : varchar(32)                   # 
 %}
 classdef ExperimentProtSpotsMultiSizeV7bp < sln_symphony.ExperimentProtocol
     properties
