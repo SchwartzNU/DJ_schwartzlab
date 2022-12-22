@@ -1,5 +1,5 @@
 %{
-#b parameters for ColorResponse (1) 
+#b parameters for ColorResponse (2) 
 -> sln_symphony.ExperimentEpochBlock
 ---
 background_pattern : float
