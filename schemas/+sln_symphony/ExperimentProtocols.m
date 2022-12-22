@@ -389,7 +389,7 @@ outKey = rmFieldIfPresent(inKey, {...
 %extra part Greg added to hack out parameters with bad values
 if isfield(inKey,'RstarMean')
     if ~isnumeric(inKey.RstarMean)
-        outKey.RstarMean = nan;
+        outKey.RstarMean = -1;
     end
 end
 if isfield(inKey,'singleAngle')
