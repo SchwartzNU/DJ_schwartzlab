@@ -22,6 +22,9 @@ for i=1:N
        try
             sln_symphony.insert_experiment(sy2_names{i}(1:end-3));
             status_table.status(i) = 'Inserted';
+            disp('moving inserted file out of error_files');
+            movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'error_files' filesep sy2_names{i}], ...
+                [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep]);
        catch ME
             disp(ME.message);
             status_table.status(i) = sprintf('Error: %s', ME.message);
