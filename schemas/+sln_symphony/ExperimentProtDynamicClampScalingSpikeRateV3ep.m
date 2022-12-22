@@ -1,7 +1,7 @@
 %{
 #e parameters for DynamicClampScalingSpikeRate (3) 
 -> sln_symphony.ExperimentEpoch
---3
+---
 conductance_matrix_row_index : float
 protocol_version : float
 trial_label : varchar(128)
