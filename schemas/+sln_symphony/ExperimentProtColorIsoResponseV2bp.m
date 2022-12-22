@@ -1,22 +1,22 @@
 %{
-#Block parameters for ColorIsoResponse (2) 
+# Block parameters for ColorIsoResponse (2)
 -> sln_symphony.ExperimentEpochBlock
 ---
-annulus_mode : enum('F','T')
-annulus_inner_diameter : float
-annulus_outer_diameter : float
-pre_time : float
-rstar_mean : float
-spot_diameter : float
-stim_time : float
-tail_time : float
-background_pattern : tinyint unsigned 
-base_intensity_1 : float
-base_intensity_2 : float
-enable_surround : tinyint unsigned 
-primary_object_pattern : tinyint unsigned 
-secondary_object_pattern : tinyint unsigned 
-surround_diameter : float
+annulus_mode                : enum('F','T')                 # 
+annulus_inner_diameter      : float                         # 
+annulus_outer_diameter      : float                         # 
+pre_time                    : float                         # 
+rstar_mean                  : float                         # 
+spot_diameter               : float                         # 
+stim_time                   : float                         # 
+tail_time                   : float                         # 
+background_pattern          : tinyint unsigned              # 
+base_intensity_1            : float                         # 
+base_intensity_2            : float                         # 
+enable_surround             : tinyint unsigned              # 
+primary_object_pattern      : tinyint unsigned              # 
+secondary_object_pattern    : tinyint unsigned              # 
+surround_diameter           : float                         # 
 %}
 classdef ExperimentProtColorIsoResponseV2bp < sln_symphony.ExperimentProtocol
     properties

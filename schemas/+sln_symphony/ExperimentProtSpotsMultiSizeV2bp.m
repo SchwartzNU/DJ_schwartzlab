@@ -14,11 +14,11 @@ random_ordering             : enum('F','T')                 # bool
 rstar_mean                  : float                         # 
 stim_time                   : float                         # 
 tail_time                   : float                         # 
-do_subtraction              : enum('F','T')                 #
-imaging_field_height        : int unsigned                  #
-imaging_field_width         : int unsigned                  #
-imaging_mean                : float                         #
-rstar_midground             : float                         #
+do_subtraction              : enum('F','T')                 # 
+imaging_field_height        : int unsigned                  # 
+imaging_field_width         : int unsigned                  # 
+imaging_mean                : float                         # 
+rstar_midground             : float                         # 
 %}
 classdef ExperimentProtSpotsMultiSizeV2bp < sln_symphony.ExperimentProtocol
     properties

@@ -1,17 +1,17 @@
 %{
-#Block parameters for ColorIsoResponse (1) 
+# Block parameters for ColorIsoResponse (1)
 -> sln_symphony.ExperimentEpochBlock
 ---
-annulus_mode : enum('F','T')
-annulus_inner_diameter : float
-annulus_outer_diameter : float
-mean_level_1 : float
-mean_level_2 : float
-pre_time : float
-rstar_mean : float
-spot_diameter : float
-stim_time : float
-tail_time : float
+annulus_mode                : enum('F','T')                 # 
+annulus_inner_diameter      : float                         # 
+annulus_outer_diameter      : float                         # 
+mean_level_1                : float                         # 
+mean_level_2                : float                         # 
+pre_time                    : float                         # 
+rstar_mean                  : float                         # 
+spot_diameter               : float                         # 
+stim_time                   : float                         # 
+tail_time                   : float                         # 
 %}
 classdef ExperimentProtColorIsoResponseV1bp < sln_symphony.ExperimentProtocol
     properties
