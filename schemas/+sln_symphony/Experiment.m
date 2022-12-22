@@ -177,12 +177,6 @@ classdef Experiment < dj.Manual
                 %                         end
                 %                     end
 
-                %add missing epoch_group end times
-                for g=1:length(key.epoch_groups)
-                    if isempty(key.epoch_groups(g).epoch_group_end_time)
-                        key.epoch_groups(g).epoch_group_end_time = key.experiment.experiment_end_time;
-                    end
-                end
 
                 %if no experiment end time sets to 11:59:59 PM
                 if isempty(key.experiment.experiment_end_time)
@@ -191,6 +185,13 @@ classdef Experiment < dj.Manual
                     d.Minute = 59;
                     d.Second = 59;
                     key.experiment.experiment_end_time = datestr(d, 'yyyy-mm-dd hh:MM:ss');
+                end
+
+                %add missing epoch_group end times
+                for g=1:length(key.epoch_groups)
+                    if isempty(key.epoch_groups(g).epoch_group_end_time)
+                        key.epoch_groups(g).epoch_group_end_time = key.experiment.experiment_end_time;
+                    end
                 end
 
                 insert@dj.Manual(self, key.experiment);
