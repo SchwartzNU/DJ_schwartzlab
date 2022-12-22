@@ -12,10 +12,8 @@ mean_level : float
 mstar_intensity : float
 num_ramp_steps : float
 number_of_cycles : smallint unsigned
-plot_range : tinyblob
 pre_time : float
 primary_object_pattern : float
-ramp_range : tinyblob
 rstar_mean : float
 secondary_object_pattern : float
 spot_diameter : float
@@ -24,7 +22,7 @@ stim_time : float
 surround_diameter : float
 tail_time : float
 %}
-classdef ExperimentProtColorResponseV1bp < sln_symphony.ExperimentProtocol
+classdef ExperimentProtColorResponseV2bp < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
