@@ -23,16 +23,22 @@ classdef ExperimentProtColorIsoResponseV1bp < sln_symphony.ExperimentProtocol
         dropped_attributes = {'session_id', 'color_combination_mode'};
     end
     methods
-        function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
-    		%add entities to the key based on others
+        function block_key_new = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+            %add entities to the key based on others
 
             for i=1:length(block_key)
-                if block_key(i).annulus_mode
-                    block_key(i).annulus_mode = 'T';
+                b = block_key(i);
+                if isfield(b.annulus_mode)
+                    if b.annulus_mode
+                        b.annulus_mode = 'T';
+                    else
+                        b.annulus_mode = 'F';
+                    end
                 else
-                    block_key(i).annulus_mode = 'F';
+                    b.annulus_mode = 'F';
                 end
-        	end
+                block_key_new(i) = b;
+            end
         end
     end
 end
