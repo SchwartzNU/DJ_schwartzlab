@@ -397,6 +397,16 @@ if isfield(inKey,'singleAngle')
         outKey.singleAngle = -1;
     end
 end
+if isfield(inKey,'MstarIntensity')
+    if ~isnumeric(inKey.MstarIntensity)
+        outKey.MstarIntensity = -1;
+    end
+end
+if isfield(inKey,'SstarIntensity')
+    if ~isnumeric(inKey.SstarIntensity)
+        outKey.SstarIntensity = -1;
+    end
+end
 end
 
 
