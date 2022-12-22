@@ -16,14 +16,14 @@ number_of_cycles            : smallint unsigned             #
 pre_time                    : float                         # 
 spatial_freq                : float                         # 
 stim_time                   : float                         # 
-tail_time                   : float                                  # 
+tail_time                   : float                         # 
 temporal_freq               : float                         # 
 total_num_epochs            : float                         # 
-background_pattern : smallint unsigned
-green_or_uv_led : smallint unsigned
-primary_object_pattern : smallint unsigned
-red_or_green_led : smallint unsigned
-secondary_object_pattern : smallint unsigned
+background_pattern          : smallint unsigned             # 
+green_or_uv_led             : smallint unsigned             # 
+primary_object_pattern      : smallint unsigned             # 
+red_or_green_led            : smallint unsigned             # 
+secondary_object_pattern    : smallint unsigned             # 
 %}
 classdef ExperimentProtDriftingGratingsV5bp < sln_symphony.ExperimentProtocol
 	properties
