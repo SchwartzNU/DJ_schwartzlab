@@ -1,5 +1,5 @@
 %{
-#Block parameters for ContrastResponse (1) 
+#Block parameters for ContrastResponse (4) 
 -> sln_symphony.ExperimentEpochBlock
 ---
 contrast_direction : enum('negative','positive','both')
