@@ -14,11 +14,11 @@ random_ordering             : enum('F','T')                 # bool
 rstar_mean                  : float                         # 
 stim_time                   : float                         # 
 tail_time                   : float                         # 
-background_pattern : smallint unsigned
-green_or_uv_led : smallint unsigned
-primary_object_pattern : smallint unsigned
-red_or_green_led : smallint unsigned
-secondary_object_pattern : smallint unsigned
+background_pattern          : smallint unsigned             # 
+green_or_uv_led             : smallint unsigned             # 
+primary_object_pattern      : smallint unsigned             # 
+red_or_green_led            : smallint unsigned             # 
+secondary_object_pattern    : smallint unsigned             # 
 %}
 classdef ExperimentProtSpotsMultiSizeV5bp < sln_symphony.ExperimentProtocol
     properties
