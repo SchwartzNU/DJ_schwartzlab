@@ -1,5 +1,5 @@
 %% bulk load symphony2 experiments
-D = dir([getenv('SERVER_ROOT') filesep 'RawDataMaster']);
+D = dir([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'error_files']);
 
 %% 
 all_names = {D.name};
