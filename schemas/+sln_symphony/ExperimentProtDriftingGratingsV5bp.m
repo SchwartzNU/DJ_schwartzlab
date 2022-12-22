@@ -24,7 +24,7 @@ green_or_uv_led             : smallint unsigned             #
 primary_object_pattern      : smallint unsigned             # 
 red_or_green_led            : smallint unsigned             # 
 secondary_object_pattern    : smallint unsigned             # 
-rstar_mean  : float
+rstar_mean                  : float                         # 
 %}
 classdef ExperimentProtDriftingGratingsV5bp < sln_symphony.ExperimentProtocol
 	properties
