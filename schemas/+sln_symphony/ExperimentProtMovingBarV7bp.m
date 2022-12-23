@@ -14,7 +14,7 @@ pre_time : float
 rstar_mean : float
 stim_time : float
 tail_time : float
-background_pattern : smallint unsigned
+background_pattern = NULL : smallint unsigned
 primary_object_pattern : smallint unsigned
 secondary_object_pattern : smallint unsigned
 color_combination_mode : varchar(32)
