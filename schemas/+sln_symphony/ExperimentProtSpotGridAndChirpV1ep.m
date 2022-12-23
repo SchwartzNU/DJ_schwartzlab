@@ -1,11 +1,11 @@
 %{
-#e parameters for SpotGridAndChirp (1) 
+# e parameters for SpotGridAndChirp (1)
 -> sln_symphony.ExperimentEpoch
 ---
-cx : tinyblob
-cy : tinyblob
-protocol_version : float
-trial_type : varchar(64)
+cx                          : blob                      # 
+cy                          : blob                      # 
+protocol_version            : float                         # 
+trial_type                  : varchar(64)                   # 
 %}
 classdef ExperimentProtSpotGridAndChirpV1ep < sln_symphony.ExperimentProtocol
 	properties
