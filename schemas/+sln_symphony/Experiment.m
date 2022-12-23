@@ -87,9 +87,9 @@ classdef Experiment < dj.Manual
                             else
                                 if strcmp(getenv('skip'), 'T')
                                      self.schema.conn.cancelTransaction;
-                                     disp('moving to needs_input folder');
-                                     movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep key.experiment.file_name '.h5'], ...
-                                       [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'need_input_files' filesep])
+                                     disp('skipping because needs input');
+                                     %movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep key.experiment.file_name '.h5'], ...
+                                     %  [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'need_input_files' filesep])
                                     return;
                                 else
                                     q
