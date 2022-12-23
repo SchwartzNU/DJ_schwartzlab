@@ -78,7 +78,9 @@ classdef ExperimentProtocols < handle
 
                 table = sln_symphony.ExperimentLEDSettings();
                 table.canInsert = true;
-                table.insert(self.key.LEDs);
+                if isfield(self.key,'LEDs')
+                    table.insert(self.key.LEDs);
+                end
                 
                 table = sln_symphony.ExperimentEpoch();
                 table.canInsert = true;
