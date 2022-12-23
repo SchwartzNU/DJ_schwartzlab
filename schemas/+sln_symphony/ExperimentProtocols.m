@@ -283,9 +283,11 @@ classdef ExperimentProtocols < handle
 
         function parseProjectorSettings(self)
             i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
-            k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
-            self.key.projector = [k(:).projector];
-            self.key.LEDs = horzcat(k(:).LEDs)';
+            if sum(i)>0
+                k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
+                self.key.projector = [k(:).projector];
+                self.key.LEDs = horzcat(k(:).LEDs)';
+            end
         end
         
         function removeRedundantFields(self)
