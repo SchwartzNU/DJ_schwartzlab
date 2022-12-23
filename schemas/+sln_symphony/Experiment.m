@@ -160,6 +160,9 @@ classdef Experiment < dj.Manual
                             sln_animal.add_event(key_deceased,'Deceased',self.schema.conn);
                         end
                         key.retinas(r).animal_id = DJID;
+                        if strcmp(key.retinas(r).side, 'unknown')
+                            key.retinas(r).side = 'Unknown1';
+                        end
                     end
                 end
                 %TODO: deal with unknown eyes
