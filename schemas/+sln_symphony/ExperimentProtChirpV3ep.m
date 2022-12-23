@@ -1,20 +1,16 @@
 %{
-#e parameters for ObjectMotionSensitivity (4) 
+#Epoch parameters for Chirp (3) 
 -> sln_symphony.ExperimentEpoch
 ---
-motion_mode : varchar(32)
-motion_seed_center : float
-motion_seed_surround : float
-protocol_version : float
 %}
-classdef ExperimentProtObjectMotionSensitivityV4ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtChirpV3ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'protocol_version'};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
