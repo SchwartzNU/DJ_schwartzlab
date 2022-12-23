@@ -2,8 +2,8 @@
 #e parameters for SpotFieldAndChirpAndBars (1) 
 -> sln_symphony.ExperimentEpoch
 ---
-cx : tinyblob
-cy : tinyblob
+cx : blob
+cy : blob
 protocol_version : float
 theta : tinyblob
 trial_type : varchar(64)
