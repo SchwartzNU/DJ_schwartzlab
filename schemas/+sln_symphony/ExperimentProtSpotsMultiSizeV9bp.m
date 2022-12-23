@@ -17,7 +17,7 @@ tail_time                   : float                         #
 background_pattern          : smallint unsigned             # 
 primary_object_pattern      : smallint unsigned             # 
 secondary_object_pattern    : smallint unsigned             # 
-color_combination_mode : varchar(32)
+color_combination_mode  = NULL : varchar(32)                   # 
 %}
 classdef ExperimentProtSpotsMultiSizeV9bp < sln_symphony.ExperimentProtocol
     properties

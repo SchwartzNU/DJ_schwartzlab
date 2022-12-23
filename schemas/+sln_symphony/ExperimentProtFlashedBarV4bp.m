@@ -13,7 +13,7 @@ rstar_mean : float
 stim_time : float
 tail_time : float
 color_combination_mode : varchar(32)
-background_pattern : tinyint unsigned
+background_pattern = NULL : tinyint unsigned
 primary_object_pattern : tinyint unsigned
 secondary_object_pattern : tinyint unsigned
 %}
