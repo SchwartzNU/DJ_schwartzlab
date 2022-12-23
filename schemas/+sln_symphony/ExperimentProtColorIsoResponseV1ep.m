@@ -14,7 +14,7 @@ classdef ExperimentProtColorIsoResponseV1ep < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'session_ID', 'stimulus_mode','protocol_version'};
+		dropped_attributes = {'session_ID', 'stimulus_mode','protocol_version','fixed_contrast','fixed_pattern','ramp_ID'};
 	end
 	methods
         function epoch_key_new = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
