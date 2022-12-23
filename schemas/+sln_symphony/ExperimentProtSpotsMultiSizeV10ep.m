@@ -1,11 +1,11 @@
 %{
-#Epoch parameters for SpotsMultiSize (9) 
+#Epoch parameters for SpotsMultiSize (10) 
 -> sln_symphony.ExperimentEpoch
 ---
 cur_spot_size : float
 protocol_version : float
 %}
-classdef ExperimentProtSpotsMultiSizeV9ep < sln_symphony.ExperimentProtocol
+classdef ExperimentProtSpotsMultiSizeV10ep < sln_symphony.ExperimentProtocol
 	properties
 
 		%attributes to be renamed
