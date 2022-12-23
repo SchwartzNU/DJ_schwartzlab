@@ -15,10 +15,13 @@ classdef ExperimentProtObjectMotionSensitivityV3ep < sln_symphony.ExperimentProt
 
 		%attributes to be removed from the key
 		dropped_attributes = {};
-	end
-	methods
-		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
-		%add entities to the key based on others
-		end
+    end
+    methods
+        function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
+            for i=1:length(epoch_key)
+                epoch_key(i).motion_mode = num2str(epoch_key(i).motion_mode);
+            end
+    		%add entities to the key based on others
+        end
 	end
 end
