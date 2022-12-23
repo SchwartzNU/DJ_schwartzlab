@@ -72,7 +72,9 @@ classdef ExperimentProtocols < handle
 
                 table = sln_symphony.ExperimentProjectorSettings();
                 table.canInsert = true;
-                table.insert(self.key.projector);
+                if isfield(self.key,'projector')
+                    table.insert(self.key.projector);
+                end
 
                 table = sln_symphony.ExperimentLEDSettings();
                 table.canInsert = true;
