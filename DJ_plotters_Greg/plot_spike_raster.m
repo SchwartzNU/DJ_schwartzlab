@@ -29,7 +29,7 @@ hold(ax,'on');
 for i=1:N_trials
     y_vals = ones(length(all_spikes{i}),1) * i;
     x_vals = double(all_spikes{i}) / sample_rate - R.pre_time_ms / 1E3;
-    plot(ax,x_vals,y_vals,'k|');
+    plot(ax,x_vals,y_vals,'k|','LineWidth',1);
 end
 
 xlabel(ax, 'Time (s)')
