@@ -39,7 +39,7 @@ R = table('Size',[N_datasets, 12], 'VariableNames', ...
     });
 
 %assign UserData of table to be the table name
-R.Properties.UserData = 'SMS_CA';
+R.Properties.UserData = 'LS_flashes_CA';
 
 %assign test descriptions for some of the variables 
 R.Properties.VariableDescriptions = ...
