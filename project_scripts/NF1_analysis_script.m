@@ -29,13 +29,14 @@ q = sln_results.DatasetSMSCA & proj(data_group);
 R = sln_results.toMatlabTable(q);
 N = height(R);
 
-T = table('Size',[N,17],'VariableTypes',...
+T = table('Size',[N,18],'VariableTypes',...
     {'string',...
     'string',...
     'string',...
     'string',...
     'string',...
     'string',...
+    'double',...
     'double',...
     'double',...
     'double',...
@@ -65,6 +66,7 @@ T = table('Size',[N,17],'VariableTypes',...
     'peak_size_OFF', ...
     'peak_spikes_ON', ...
     'peak_spikes_OFF', ...
+    'half_peak_size', ...
     'SI'...
     });
 
@@ -103,20 +105,51 @@ for i=1:N
 %     pause;    
 
     T.peak_FR(i) = max(R.sms_psth{i}(:));
-    [T.peak_spikes_ON(i), ind] = max(R.spikes_stim_mean{i});
-    T.peak_size_ON(i) = R.spot_sizes{i}(ind);
+    [T.peak_spikes_ON(i), ind_ON_max] = max(R.spikes_stim_mean{i});
+    T.peak_size_ON(i) = R.spot_sizes{i}(ind_ON_max);
     [T.peak_spikes_OFF(i), ind] = max(R.spikes_tail_mean{i});
     T.peak_size_OFF(i) = R.spot_sizes{i}(ind);
-    [T.min_spikes_ON(i), ind] = min(R.spikes_stim_mean{i});
-    T.min_size_ON(i) = R.spot_sizes{i}(ind);
+    [T.min_spikes_ON(i), ind_ON_min] = min(R.spikes_stim_mean{i});
+    T.min_size_ON(i) = R.spot_sizes{i}(ind_ON_min);
     [T.min_spikes_OFF(i), ind] = min(R.spikes_tail_mean{i});
     T.min_size_OFF(i) = R.spot_sizes{i}(ind);
     T.baseline_FR(i) = R.baseline_rate_hz(i);
     if strcmp(thisCell.cell_type, 'ON alpha')
         spikes_ON_large = R.spikes_stim_mean{i}(end);
         T.SI(i) = (T.peak_spikes_ON(i) - spikes_ON_large) / (T.peak_spikes_ON(i) + spikes_ON_large);
+
+        xvals = R.spikes_stim_mean{i}(1:ind_ON_max);
+        yvals = R.spot_sizes{i}(1:ind_ON_max);
+        [xvals_sorted, ind] = sort(xvals,'ascend');
+        yvals_sorted = yvals(ind);
+        [xvals_sorted, ind] = unique(xvals_sorted);
+        yvals_sorted = yvals_sorted(ind);
+        try
+            F = griddedInterpolant(xvals_sorted,yvals_sorted);
+            T.half_peak_size(i) = F(T.peak_spikes_ON(i)/2);
+        catch
+            T.half_peak_size(i) = nan;
+        end
+%         T.half_peak_size(i) = interp1(R.spikes_stim_mean{i}(1:ind_ON_max),R.spot_sizes{i}(1:ind_ON_max),...
+%             T.peak_spikes_ON(i)/2,"linear");
     else
         T.SI(i) = nan;
+
+        xvals = R.spikes_stim_mean{i}(1:ind_ON_min);
+        yvals = R.spot_sizes{i}(1:ind_ON_min);
+        [xvals_sorted, ind] = sort(xvals,'ascend');
+        yvals_sorted = yvals(ind);
+        [xvals_sorted, ind] = unique(xvals_sorted);
+        yvals_sorted = yvals_sorted(ind);
+        try
+            F = griddedInterpolant(xvals_sorted,yvals_sorted);
+            T.half_peak_size(i) = F(T.min_spikes_ON(i)/2);
+        catch
+            T.half_peak_size(i) = nan;
+        end
+
+%         T.half_peak_size(i) = interp1(R.spikes_stim_mean{i}(1:ind_ON_min),R.spot_sizes{i}(1:ind_ON_min),...
+%             T.min_spikes_ON(i)/2,"linear");
     end
 end
 
@@ -158,6 +191,10 @@ lme_max_FR = fitlme(T_ON,model_formula);
 model_formula = 'SI~genotype+sex+which_eye+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
 lme_SI = fitlme(T_ON,model_formula);
 
+ok_ind = ~isnan(T_ON.half_peak_size);
+model_formula = 'half_peak_size~genotype+sex+which_eye+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
+lme_half_peak_size_ON = fitlme(T_ON(ok_ind,:),model_formula);
+
 %% plot some of the coefficients
 figure;
 var_names = categorical(lme_peak_size_ON.CoefficientNames(2:end));
@@ -171,8 +208,19 @@ title('Effect on peak spot size (ON alpha)');
 hold('off');
 
 figure;
+var_names = categorical(lme_half_peak_size_ON.CoefficientNames(2:end));
+bar(var_names, lme_half_peak_size_ON.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
+set(gca, 'TickLabelInterpreter', 'none')
+hold('on');
+errorbar(var_names, lme_half_peak_size_ON.Coefficients.Estimate(2:end), ...
+    lme_half_peak_size_ON.Coefficients.SE(2:end)*1.96, 'k.');
+ylabel('Coefficient');
+title('Effect on half peak spot size (ON alpha)');
+hold('off');
+
+figure;
 var_names = categorical(lme_peak_spikes_ON.CoefficientNames(2:end));
-h = bar(var_names, lme_peak_spikes_ON.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
+bar(var_names, lme_peak_spikes_ON.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
 set(gca, 'TickLabelInterpreter', 'none')
 hold('on');
 errorbar(var_names, lme_peak_spikes_ON.Coefficients.Estimate(2:end), ...
@@ -183,9 +231,9 @@ hold('off');
 
 figure;
 var_names = categorical(lme_SI.CoefficientNames(2:end));
-h = bar(var_names, lme_SI.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
+bar(var_names, lme_SI.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
 set(gca, 'TickLabelInterpreter', 'none')
-hold('on');
+hold('on');home
 errorbar(var_names, lme_SI.Coefficients.Estimate(2:end), ...
     lme_SI.Coefficients.SE(2:end)*1.96, 'k.');
 ylabel('Coefficient');
