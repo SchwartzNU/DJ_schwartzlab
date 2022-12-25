@@ -24,7 +24,7 @@ for i=1:length(all_types)
     fprintf('%s: %d\n', all_types{i}, thisType.count);
 end
 
-%% get SMS results data for all of them
+%% set up table to hold results
 q = sln_results.DatasetSMSCA & proj(data_group);
 R = sln_results.toMatlabTable(q);
 N = height(R);
@@ -68,6 +68,8 @@ T = table('Size',[N,17],'VariableTypes',...
     'SI'...
     });
 
+
+%% get SMS results data for all of them
 for i=1:N
     fprintf('Collecting data for cell %d of %d\n', i, N);
     thisCell = fetch(cells & ...
@@ -81,6 +83,25 @@ for i=1:N
     T.quadrant(i) = thisCell.quadrant;
     T.cell_type(i) = thisCell.cell_type;
     
+    %Fit DOG model to data
+%     yvals = R.spikes_stim_mean{i} - R.baseline_rate_hz(i); %subtract baseline rate
+%     xvals = R.spot_sizes{i};
+% 
+%     if strcmp(thisCell.cell_type, 'ON alpha')
+%         init_params = [max(yvals), 100, max(yvals)/2, 400];
+%     else
+%         init_params = [min(yvals), 100, min(yvals)/2, 400];
+%     end
+% 
+%     fit_params = nlinfit(xvals,yvals,@diffCumGauss,init_params);
+%     y_fit = diffCumGauss(fit_params,xvals);
+%     figure(1);
+%     scatter(xvals,yvals,'kx');
+%     hold('on');
+%     plot(xvals,y_fit,'r');
+%     hold('off');
+%     pause;    
+
     T.peak_FR(i) = max(R.sms_psth{i}(:));
     [T.peak_spikes_ON(i), ind] = max(R.spikes_stim_mean{i});
     T.peak_size_ON(i) = R.spot_sizes{i}(ind);
@@ -110,8 +131,11 @@ ind = strcmp(T.cell_type,'OFF sustained alpha');
 T_OFFsus = T(ind,:);
 
 %% run some linear mixed-effects models to account for individual differences between animals
-model_formula = 'peak_size_ON~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+model_formula = 'peak_size_ON~genotype+sex+which_eye+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
 lme_peak_size_ON = fitlme(T_ON,model_formula);
+
+model_formula = 'peak_size_ON~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(genotype:quadrant-1|animal_id)';
+lme_peak_size_ON_w_interaction = fitlme(T_ON,model_formula);
 
 model_formula = 'peak_size_ON~sex+quadrant+(1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
 lme_peak_size_ON_simpler = fitlme(T_ON,model_formula);
@@ -122,15 +146,48 @@ lme_peak_size_ON_noquad = fitlme(T_ON,model_formula);
 model_formula = 'peak_size_ON~quadrant+(1|animal_id)+(quadrant-1|animal_id)';
 lme_peak_size_ON_nosex = fitlme(T_ON,model_formula);
 
-model_formula = 'peak_spikes_ON~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+model_formula = 'peak_spikes_ON~genotype+sex+quadrant+which_eye+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
 lme_peak_spikes_ON = fitlme(T_ON,model_formula);
 
-model_formula = 'baseline_FR~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+model_formula = 'baseline_FR~genotype+sex+quadrant+which_eye+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
 lme_baseline_FR = fitlme(T_ON,model_formula);
 
-model_formula = 'peak_FR~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+model_formula = 'peak_FR~genotype+sex+which_eye+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
 lme_max_FR = fitlme(T_ON,model_formula);
 
-model_formula = 'SI~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+model_formula = 'SI~genotype+sex+which_eye+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)+(which_eye-1|animal_id)';
 lme_SI = fitlme(T_ON,model_formula);
 
+%% plot some of the coefficients
+figure;
+var_names = categorical(lme_peak_size_ON.CoefficientNames(2:end));
+bar(var_names, lme_peak_size_ON.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
+set(gca, 'TickLabelInterpreter', 'none')
+hold('on');
+errorbar(var_names, lme_peak_size_ON.Coefficients.Estimate(2:end), ...
+    lme_peak_size_ON.Coefficients.SE(2:end)*1.96, 'k.');
+ylabel('Coefficient');
+title('Effect on peak spot size (ON alpha)');
+hold('off');
+
+figure;
+var_names = categorical(lme_peak_spikes_ON.CoefficientNames(2:end));
+h = bar(var_names, lme_peak_spikes_ON.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
+set(gca, 'TickLabelInterpreter', 'none')
+hold('on');
+errorbar(var_names, lme_peak_spikes_ON.Coefficients.Estimate(2:end), ...
+    lme_peak_spikes_ON.Coefficients.SE(2:end)*1.96, 'k.');
+ylabel('Coefficient');
+title('Effect on peak spike count (ON alpha)');
+hold('off');
+
+figure;
+var_names = categorical(lme_SI.CoefficientNames(2:end));
+h = bar(var_names, lme_SI.Coefficients.Estimate(2:end), 'FaceColor',[0.5,0.5,0.5],'EdgeColor','k');
+set(gca, 'TickLabelInterpreter', 'none')
+hold('on');
+errorbar(var_names, lme_SI.Coefficients.Estimate(2:end), ...
+    lme_SI.Coefficients.SE(2:end)*1.96, 'k.');
+ylabel('Coefficient');
+title('Effect on surround suppression index (ON alpha)');
+hold('off');
