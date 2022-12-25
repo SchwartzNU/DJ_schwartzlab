@@ -1,0 +1,136 @@
+%% load the datagroup with the SMS data
+load DataGroups/SMS_NF1.mat;
+
+%% Display the group statistics for the dataset
+animals = sln_animal.Animal * sln_animal.GenotypeString & proj(data_group,'source_id->cell_source');
+males = animals & 'sex="Male"';
+females = animals & 'sex="Female"';
+
+het = animals & 'genotype_string="NF1(NF1-KO/WT)"';
+WT = animals & 'genotype_string="NF1(WT/WT)"';
+
+fprintf("-----------\n");
+fprintf("%d total animals\n", animals.count);
+fprintf("%d male; %d female\n", males.count, females.count);
+fprintf("%d NF1 het; %d NF1 WT\n", het.count, WT.count);
+
+cells = sln_cell.Cell * proj(sln_cell.RetinaQuadrant,'image_id->quad_image_id','*') * sln_cell.AssignType.current & proj(data_group,'image_id->not_used');
+all_types = unique(fetchn(cells, 'cell_type'));
+
+fprintf("-----------\n");
+fprintf("%d total cells\n", cells.count);
+for i=1:length(all_types)
+    thisType = cells & sprintf('cell_type="%s"', all_types{i});
+    fprintf('%s: %d\n', all_types{i}, thisType.count);
+end
+
+%% get SMS results data for all of them
+q = sln_results.DatasetSMSCA & proj(data_group);
+R = sln_results.toMatlabTable(q);
+N = height(R);
+
+T = table('Size',[N,17],'VariableTypes',...
+    {'string',...
+    'string',...
+    'string',...
+    'string',...
+    'string',...
+    'string',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double',...
+    'double'...
+    },...
+    'VariableNames',...
+    {'genotype', ...
+    'sex',...
+    'which_eye', ...
+    'quadrant', ...
+    'cell_type', ...
+    'animal_id',...
+    'peak_FR', ...
+    'baseline_FR', ...
+    'min_spikes_ON', ...
+    'min_spikes_OFF', ...
+    'min_size_ON', ...
+    'min_size_OFF', ...
+    'peak_size_ON', ...
+    'peak_size_OFF', ...
+    'peak_spikes_ON', ...
+    'peak_spikes_OFF', ...
+    'SI'...
+    });
+
+for i=1:N
+    fprintf('Collecting data for cell %d of %d\n', i, N);
+    thisCell = fetch(cells & ...
+        sprintf('file_name="%s"', R.file_name{i}) & ...
+        sprintf('source_id="%d"', R.source_id(i)), '*');
+    thisAnimal = fetch(animals & sprintf('animal_id=%d',thisCell.animal_id), '*');
+    T.genotype(i) = thisAnimal.genotype_string;
+    T.sex(i) = thisAnimal.sex;
+    T.animal_id(i) = sprintf('DJID_%d', thisAnimal.animal_id);
+    T.which_eye(i) = thisCell.side;
+    T.quadrant(i) = thisCell.quadrant;
+    T.cell_type(i) = thisCell.cell_type;
+    
+    T.peak_FR(i) = max(R.sms_psth{i}(:));
+    [T.peak_spikes_ON(i), ind] = max(R.spikes_stim_mean{i});
+    T.peak_size_ON(i) = R.spot_sizes{i}(ind);
+    [T.peak_spikes_OFF(i), ind] = max(R.spikes_tail_mean{i});
+    T.peak_size_OFF(i) = R.spot_sizes{i}(ind);
+    [T.min_spikes_ON(i), ind] = min(R.spikes_stim_mean{i});
+    T.min_size_ON(i) = R.spot_sizes{i}(ind);
+    [T.min_spikes_OFF(i), ind] = min(R.spikes_tail_mean{i});
+    T.min_size_OFF(i) = R.spot_sizes{i}(ind);
+    T.baseline_FR(i) = R.baseline_rate_hz(i);
+    if strcmp(thisCell.cell_type, 'ON alpha')
+        spikes_ON_large = R.spikes_stim_mean{i}(end);
+        T.SI(i) = (T.peak_spikes_ON(i) - spikes_ON_large) / (T.peak_spikes_ON(i) + spikes_ON_large);
+    else
+        T.SI(i) = nan;
+    end
+end
+
+save(['result_tables' filesep 'NF1_SMS_results'],'T');
+
+%% separate sub-tables
+ind = strcmp(T.cell_type,'ON alpha');
+T_ON = T(ind,:);
+ind = strcmp(T.cell_type,'OFF transient alpha');
+T_OFFtr = T(ind,:);
+ind = strcmp(T.cell_type,'OFF sustained alpha');
+T_OFFsus = T(ind,:);
+
+%% run some linear mixed-effects models to account for individual differences between animals
+model_formula = 'peak_size_ON~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+lme_peak_size_ON = fitlme(T_ON,model_formula);
+
+model_formula = 'peak_size_ON~sex+quadrant+(1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+lme_peak_size_ON_simpler = fitlme(T_ON,model_formula);
+
+model_formula = 'peak_size_ON~sex+(1|animal_id)+(sex-1|animal_id)';
+lme_peak_size_ON_noquad = fitlme(T_ON,model_formula);
+
+model_formula = 'peak_size_ON~quadrant+(1|animal_id)+(quadrant-1|animal_id)';
+lme_peak_size_ON_nosex = fitlme(T_ON,model_formula);
+
+model_formula = 'peak_spikes_ON~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+lme_peak_spikes_ON = fitlme(T_ON,model_formula);
+
+model_formula = 'baseline_FR~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+lme_baseline_FR = fitlme(T_ON,model_formula);
+
+model_formula = 'peak_FR~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+lme_max_FR = fitlme(T_ON,model_formula);
+
+model_formula = 'SI~genotype+sex+quadrant+(1|animal_id)+(genotype-1|animal_id)+(sex-1|animal_id)+(quadrant-1|animal_id)';
+lme_SI = fitlme(T_ON,model_formula);
+
