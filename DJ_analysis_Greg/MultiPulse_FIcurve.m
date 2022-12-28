@@ -59,8 +59,8 @@ for d=1:N_datasets
     R.inj_current{d} = currents';
     R.stim_time_s(d) = stim_time;
     R.n_epochs_per_current{d} = N_epochs_per_current;
-    R.FR_per_current_mean{d} = FR_per_current_mean;
-    R.FR_per_current_sem{d} = FR_per_current_sem;
+    R.fr_per_current_mean{d} = FR_per_current_mean;
+    R.fr_per_current_sem{d} = FR_per_current_sem;
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 end
