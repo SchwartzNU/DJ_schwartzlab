@@ -11,12 +11,12 @@ end
 
 behavior_master_folder = [getenv("SERVER") filesep 'BehaviorMaster' filesep];
 
-header_lines = 17; %TODO make a variable
+header_lines = 16; %TODO make a variable
 %TODO, read in pup number... and other possible variables
 
 fname = folder_name_from_behavior_session(event_id);
 event_table = readtable(sprintf('%s%s%s%d.csv', behavior_master_folder, fname, filesep, event_id), ...
-    'NumHeaderLines', header_lines, 'VariableNamesLine',header_lines+1,'delimiter',',')
+    'NumHeaderLines', header_lines, 'VariableNamesLine',header_lines+1,'delimiter','\t')
 
 N_events = height(event_table);
 frame_rate = event_table.FPS(1);

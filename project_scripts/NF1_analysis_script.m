@@ -210,7 +210,7 @@ set(gca, 'TickLabelInterpreter', 'none')
 hold('on');
 errorbar(var_names, lme_peak_size_ON.Coefficients.Estimate(2:end), ...
     lme_peak_size_ON.Coefficients.SE(2:end)*1.96, 'k.');
-ylabel('Coefficient');
+ylabel('Δ peak (µm)');
 title('Effect on peak spot size (ON alpha)');
 hold('off');
 
@@ -221,7 +221,7 @@ set(gca, 'TickLabelInterpreter', 'none')
 hold('on');
 errorbar(var_names, lme_half_peak_size_ON.Coefficients.Estimate(2:end), ...
     lme_half_peak_size_ON.Coefficients.SE(2:end)*1.96, 'k.');
-ylabel('Coefficient');
+ylabel('Δ peak (µm)');
 title('Effect on half peak spot size (ON alpha)');
 hold('off');
 
@@ -232,7 +232,7 @@ set(gca, 'TickLabelInterpreter', 'none')
 hold('on');
 errorbar(var_names, lme_peak_spikes_ON.Coefficients.Estimate(2:end), ...
     lme_peak_spikes_ON.Coefficients.SE(2:end)*1.96, 'k.');
-ylabel('Coefficient');
+ylabel('Δ spike count');
 title('Effect on peak spike count (ON alpha)');
 hold('off');
 
@@ -243,7 +243,7 @@ set(gca, 'TickLabelInterpreter', 'none')
 hold('on');home
 errorbar(var_names, lme_SI.Coefficients.Estimate(2:end), ...
     lme_SI.Coefficients.SE(2:end)*1.96, 'k.');
-ylabel('Coefficient');
+ylabel('Δ SI');
 title('Effect on surround suppression index (ON alpha)');
 hold('off');
 
