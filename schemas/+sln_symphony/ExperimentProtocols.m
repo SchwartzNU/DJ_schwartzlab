@@ -6,7 +6,7 @@ classdef ExperimentProtocols < handle
 
     properties
         key
-        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns', 'annulus_mode', 'doSubtraction'};
+        bool_types = {'logScaling', 'randomOrdering', 'alternatePatterns', 'annulusMode', 'doSubtraction'};
         canInsert = false;
     end
     
@@ -31,6 +31,20 @@ classdef ExperimentProtocols < handle
             end
             try
                 [protocols,~,ind] = unique({self.key.epoch_blocks(:).protocol_name});
+                protocols'
+                %altering names of these protocols to make them shorter -
+                %table names are too long otherwise
+                for p=1:length(protocols)
+                    cur_prot = protocols{p};
+                    if contains(cur_prot, 'dynamic_clamp')
+                        this_prot_ind = find(strcmp({self.key.epoch_blocks(:).protocol_name}, cur_prot));
+                        cur_prot_new = strrep(cur_prot, 'dynamic_clamp_conductance', 'dynamic_clamp');
+                        for i=1:length(this_prot_ind)
+                            self.key.epoch_blocks(this_prot_ind(i)).protocol_name = cur_prot_new;
+                        end
+                        protocols{p} = cur_prot_new;
+                    end             
+                end
                 existing_protocols = fetch(sln_symphony.Protocol & struct('protocol_name',protocols));
                 missing_protocols = setdiff(protocols, {existing_protocols(:).protocol_name});
                 if ~isempty(missing_protocols)
@@ -46,15 +60,27 @@ classdef ExperimentProtocols < handle
                 
                 table = sln_symphony.ExperimentEpochBlock();
                 table.canInsert = true;
+                for i=1:length(self.key.epoch_blocks) %deal with empty epoch_block end times
+                    if isempty(self.key.epoch_blocks(i).epoch_block_end_time)
+                        self.key.epoch_blocks(i).epoch_block_end_time = ...
+                            datestr(datetime(self.key.epoch_blocks(1).epoch_block_start_time) + minutes(30), 'YYYY-mm-dd HH:MM:SS');
+                        %defaults to 30 minutes after the start of the
+                        %epoch block
+                    end
+                end
                 table.insert(self.key.epoch_blocks);
 
                 table = sln_symphony.ExperimentProjectorSettings();
                 table.canInsert = true;
-                table.insert(self.key.projector);
+                if isfield(self.key,'projector')
+                    table.insert(self.key.projector);
+                end
 
                 table = sln_symphony.ExperimentLEDSettings();
                 table.canInsert = true;
-                table.insert(self.key.LEDs);
+                if isfield(self.key,'LEDs')
+                    table.insert(self.key.LEDs);
+                end
                 
                 table = sln_symphony.ExperimentEpoch();
                 table.canInsert = true;
@@ -93,14 +119,30 @@ classdef ExperimentProtocols < handle
             return %TODO: do we want to include autocenter??? the parameters are ridiculous
             %perhaps instead we should create separate tables for each auto center subcaategory?
           end
+          if contains(protocol_name,'AlignmentCross')
+            warning('Skipping AlignmentCross');
+            success=true;
+            return
+          end
+          if contains(protocol_name,'SealAndLeak')
+            warning('Skipping SealAndLeak');
+            success=true;
+            return
+          end
+          if contains(protocol_name,'SetMeanLevel')
+            warning('Skipping SetMeanLevel');
+            success=true;
+            return
+          end
           tables = sln_symphony.getSchema().classNames;
-          matching = startsWith(tables, ['sln_symphony.ExperimentProtocol', protocol_name])...
-              & endsWith(tables, 'BlockParameters');
+          matching = startsWith(tables, ['sln_symphony.ExperimentProt', protocol_name])...
+              & endsWith(tables, 'bp');
           success = false;
           emptyMatches = {};
           for match = tables(matching)
+              char(match)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              e = feval([match{1}(1:end-2), 'ep']);
               if b.allows(block_params, epoch_params) && e.allows(block_params, epoch_params)
                 b.canInsert = true;
                 b.insert(block_params, epoch_params);
@@ -110,7 +152,9 @@ classdef ExperimentProtocols < handle
                 success = true;
                 return
               elseif b.count == 0
-                 emptyMatches = vertcat(emptyMatches{:}, char(match));
+                 %disp('temp');
+                 %emptyMatches = vertcat(emptyMatches{:}, char(match));
+                 emptyMatches = vertcat(emptyMatches, char(match));
               end
           end
           %%we failed to insert. explain why:
@@ -119,11 +163,11 @@ classdef ExperimentProtocols < handle
           warnStr = sprintf('Failed to match protocol %s', protocol_name);
           for match = tables(matching)
               b = feval(char(match));% <- gets an object of the class
-              e = feval([match{1}(1:end-15), 'EpochParameters']);
+              e = feval([match{1}(1:end-2), 'ep']);
               [a_b, e_b, m_b] = b.allows(block_params, epoch_params);
               [a_e, e_e, m_e] = e.allows(block_params, epoch_params);
               
-              warnStr = sprintf('%s\n\tFor table %s:', warnStr, match{1}(1:end-15));
+              warnStr = sprintf('%s\n\tFor table %s:', warnStr, match{1}(1:end-2));
               if ~isempty(e_b)
                   warnStr = sprintf('%s\n\t\tExtra block parameter(s): %s', warnStr, strjoin(e_b, ', '));
               end
@@ -148,22 +192,24 @@ classdef ExperimentProtocols < handle
               else
                   c = char(emptyMatches);
                   edit(c);
-                  edit(sprintf('%sEpochParameters',c(1:end-15)));
+                  edit(sprintf('%sep',c(1:end-2)));
               end
               return
           end
           loc = fileparts(which(class(self)));
-          k = dir(fullfile(loc, ['ExperimentProtocol', protocol_name ,'*BlockParameters.m']));
+          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'*bp.m']));
           if ~isempty(k)
               matches = arrayfun(@(x) ['sln_symphony.', x.name(1:end-2)],k,'uni',0);
               matches = setdiff(matches, tables(matching));
                 if numel(k)>1
                     warning('Possible table match: %s',matches{:});
                 else
-                    answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
-                    if strcmp(answer,'y')
-                        edit(fullfile(loc, k.name));
-                        edit(fullfile(loc, sprintf('%sEpochParameters',k.name(1:end-17))));
+                    if ~strcmp(getenv('skip'), 'T')
+                        answer = input(sprintf('Mismatch for table %s. Make new version? [y|n] ', protocol_name), 's');
+                        if strcmp(answer,'y')
+                            edit(fullfile(loc, k.name));
+                            edit(fullfile(loc, sprintf('%sep',k.name(1:end-4))));
+                        end
                     end
                 end
           end
@@ -186,13 +232,16 @@ classdef ExperimentProtocols < handle
 
 
         function createTables(self,protocol_name, version, block_params, epoch_params)
-            w = {'Block', 'Epoch'};
+            %w = {'Block', 'Epoch'};
+            w = {'b', 'e'};
+            w_full = {'block', 'epoch'};
             h = {'EpochBlock','Epoch'};
+
             p = {block_params, epoch_params};
             for n=1:2
                 file_name = fullfile(...
                     fileparts(which(class(self))),...
-                    ['ExperimentProtocol',protocol_name,'V',version,w{n},'Parameters.m']...
+                    ['ExperimentProt',protocol_name,'V',version,w{n},'p.m']...
                     );
                 f = fopen(file_name,'w');
                 fprintf(f,'%%{\n');
@@ -220,7 +269,7 @@ classdef ExperimentProtocols < handle
                     end
                 end
                 fprintf(f,'%%}\n');
-                fprintf(f,'classdef ExperimentProtocol%sV%s%sParameters < sln_symphony.ExperimentProtocol\n',protocol_name, version, w{n});
+                fprintf(f,'classdef ExperimentProt%sV%s%sp < sln_symphony.ExperimentProtocol\n',protocol_name, version, w{n});
                 fprintf(f,'\tproperties\n');
                 fprintf(f,'\n\t\t%%attributes to be renamed\n');
                 fprintf(f,'\t\trenamed_attributes = struct();\n');
@@ -230,7 +279,7 @@ classdef ExperimentProtocols < handle
                 % fprintf(f,'\t\ttransferred_attributes = {};\n');
                 fprintf(f,'\tend\n');
                 fprintf(f,'\tmethods\n');
-                fprintf(f,'\t\tfunction %s_key = add_attributes(self, block_key, epoch_key) %%#ok<INUSL,INUSD>\n',lower(w{n}));
+                fprintf(f,'\t\tfunction %s_key = add_attributes(self, block_key, epoch_key) %%#ok<INUSL,INUSD>\n',lower(w_full{n}));
                 fprintf(f,'\t\t%%add entities to the key based on others\n');
                 fprintf(f,'\t\tend\n');
                 fprintf(f,'\tend\n');
@@ -243,9 +292,11 @@ classdef ExperimentProtocols < handle
 
         function parseProjectorSettings(self)
             i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
-            k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
-            self.key.projector = [k(:).projector];
-            self.key.LEDs = horzcat(k(:).LEDs)';
+            if sum(i)>0
+                k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
+                self.key.projector = [k(:).projector];
+                self.key.LEDs = horzcat(k(:).LEDs)';
+            end
         end
         
         function removeRedundantFields(self)
@@ -294,6 +345,10 @@ if ~contains(fn,'bitDepth') %if not bitDepth found, assume it is 8 bit
     inKey.parameters.bitDepth = 8;
 end
 
+if ~contains(fn,'frameRate') %if not frameRate found, assume it is 60 Hz
+    inKey.parameters.frameRate = 60;
+end
+
 %of course, there are more projector parameters than these
 %but these are the only ones that are consistent at an epoch block level
 outKey.projector = struct(...
@@ -332,7 +387,8 @@ end
 
 function outKey = removeRedundantStageBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...
-    'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...    
+    'NDF','RstarIntensity1','MstarIntensity1','SstarIntensity1',...
+    'RstarIntensity', ...
     'RstarIntensity2','MstarIntensity2','SstarIntensity2',...
     'MstarMean','SstarMean',... %TODO: Rstar also?
     'blueLED','greenLED','uvLED','bluePWM','greenPWM','uvPWM'...
@@ -343,7 +399,29 @@ outKey = rmFieldIfPresent(inKey, {...
     'patternRate',...
     'offsetX','offsetY'...
     });
+%extra part Greg added to hack out parameters with bad values
+if isfield(inKey,'RstarMean')
+    if ~isnumeric(inKey.RstarMean)
+        outKey.RstarMean = -1;
+    end
 end
+if isfield(inKey,'singleAngle')
+    if ~isnumeric(inKey.singleAngle)
+        outKey.singleAngle = -1;
+    end
+end
+if isfield(inKey,'MstarIntensity')
+    if ~isnumeric(inKey.MstarIntensity)
+        outKey.MstarIntensity = -1;
+    end
+end
+if isfield(inKey,'SstarIntensity')
+    if ~isnumeric(inKey.SstarIntensity)
+        outKey.SstarIntensity = -1;
+    end
+end
+end
+
 
 function outKey = removeRedundantBlockFields(inKey)
 outKey = rmFieldIfPresent(inKey, {...

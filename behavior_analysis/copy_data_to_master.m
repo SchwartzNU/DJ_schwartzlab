@@ -1,5 +1,5 @@
-master_dir = '/Volumes/SchwartzLab/BehaviorMaster/';
-behavior_dir = '/Volumes/SchwartzLab/Behavior/';
+master_dir = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Ophthalmology\Research\SchwartzLab\BehaviorMaster\';
+behavior_dir = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Ophthalmology\Research\SchwartzLab\Behavior\';
 N = height(found_sessions_copy);
 
 startPos = 817;
@@ -11,8 +11,9 @@ for i=startPos:N
     contents = dir(dest);
     if length(contents)==2 %empty
         source = ['''' behavior_dir found_sessions_copy.folder_name{i} filesep ''''];
-        command = sprintf('cp -r %s* %s', source, destination);
-        unix(command);
+        %command = sprintf('cp -r %s* %s', source, destination);
+        command = sprintf('xcopy %s %s', source, destination);
+        system(command);
     end
 end
 

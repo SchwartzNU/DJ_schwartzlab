@@ -77,13 +77,39 @@ classdef Experiment < dj.Manual
                 for r=1:length(key.retinas)
                     if ~isfield(key.retinas(r), 'animal_id') || ~isnumeric(key.retinas(r).animal_id)
                         key.retinas(r)
-                        DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                        exp_date = datestr(datetime(key.experiment.experiment_start_time),'YYYY-mm-DD');
+                        q = sln_animal.AnimalEvent * sln_animal.Deceased & sprintf('date="%s"', exp_date);
+                        if q.exists
+                            if q.count==1
+                                q
+                                DJID = fetch1(q, 'animal_id');                                
+                                disp('Automatically setting DJID to single deceased animal from experiment day');
+                            else
+                                if strcmp(getenv('skip'), 'T')
+                                     self.schema.conn.cancelTransaction;
+                                     disp('skipping because needs input');
+                                     %movefile([getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep key.experiment.file_name '.h5'], ...
+                                     %  [getenv('SERVER_ROOT') filesep 'RawDataMaster' filesep 'need_input_files' filesep])
+                                    return;
+                                else
+                                    q
+                                    DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                                end
+                            end
+                        else
+                            if strcmp(getenv('skip'), 'T')
+                                ME = MException('SkipExperiment','skipping');
+                                throw(ME);
+                            else
+                                DJID = input('Enter animal_id for this retina or 0 for generic unknown animal: ');
+                            end
+                        end
                         if DJID == 0
                             key_animal.sex = 'Unknown';
                             disp('Strains in DB');
                             fetchn(sln_animal.Strain,'strain_name')
                             strain_input = input('Enter strain name: ', 's');
-                            q = sln_animal.Strain & sprtinf('strain_name = "%s"', strain_input);
+                            q = sln_animal.Strain & sprintf('strain_name = "%s"', strain_input);
                             if q.exists
                                 key_animal.strain_name = fetch1(q,'strain_name');
                                 key_animal.background_name = fetch1(q,'background_name');
@@ -92,7 +118,7 @@ classdef Experiment < dj.Manual
                                 if strcmp(answer, 'y')
                                     sln_animal.Background
                                     bg = input('Which one of these backgrounds? : ', 's');
-                                    q = sln_animal.Background & sprtinf('background_name = "%s"', bg);
+                                    q = sln_animal.Background & sprintf('background_name = "%s"', bg);
                                     if ~q.exists
                                         disp('Invalid background: aborting experiment insert');
                                         return
@@ -109,14 +135,34 @@ classdef Experiment < dj.Manual
 
                             last_id = max(fetchn(sln_animal.Animal,'animal_id'));
                             key_L.animal_id = last_id;
-                            key_L.side = 'Left';
                             key_R.animal_id = last_id;
-                            key_R.side = 'Right';
+
+                            if strcmp(key.retinas(r).side, 'left') || strcmp(key.retinas(r).side, 'right') 
+                                key_L.side = 'Left';                            
+                                key_R.side = 'Right';
+                            else                                
+                                key_L.side = 'Unknown1';
+                                key_R.side = 'Unknown2';
+                                key.retinas(r).side = 'Unknown1'; %what if there are 2?
+                            end
+
                             insert(sln_animal.Eye,key_L);
                             insert(sln_animal.Eye,key_R);
                             DJID = last_id;
+
+                            %insert a deceased event for the day of the
+                            %experiment
+                            key_deceased.animal_id = last_id;
+                            key_deceased.date = datestr(datetime(key.experiment.experiment_start_time), 'YYYY-mm-DD');
+                            key_deceased.user_name = 'Unknown';
+                            key_deceased.notes = 'Auto inserted by database';
+                            key_deceased.cause = 'sacrificed for experiment';
+                            sln_animal.add_event(key_deceased,'Deceased',self.schema.conn);
                         end
                         key.retinas(r).animal_id = DJID;
+                        if strcmp(key.retinas(r).side, 'unknown')
+                            key.retinas(r).side = 'Unknown1';
+                        end
                     end
                 end
                 %TODO: deal with unknown eyes
@@ -137,12 +183,6 @@ classdef Experiment < dj.Manual
                 %                         end
                 %                     end
 
-                %add missing epoch_group end times
-                for g=1:length(key.epoch_groups)
-                    if isempty(key.epoch_groups(g).epoch_group_end_time)
-                        key.epoch_groups(g).epoch_group_end_time = key.experiment.experiment_end_time;
-                    end
-                end
 
                 %if no experiment end time sets to 11:59:59 PM
                 if isempty(key.experiment.experiment_end_time)
@@ -151,6 +191,13 @@ classdef Experiment < dj.Manual
                     d.Minute = 59;
                     d.Second = 59;
                     key.experiment.experiment_end_time = datestr(d, 'yyyy-mm-dd hh:MM:ss');
+                end
+
+                %add missing epoch_group end times
+                for g=1:length(key.epoch_groups)
+                    if isempty(key.epoch_groups(g).epoch_group_end_time)
+                        key.epoch_groups(g).epoch_group_end_time = key.experiment.experiment_end_time;
+                    end
                 end
 
                 insert@dj.Manual(self, key.experiment);
