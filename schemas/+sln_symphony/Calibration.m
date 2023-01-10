@@ -156,7 +156,7 @@ classdef Calibration < dj.Manual
                     [leds(:).calibration_id] = deal(ind);
                     table = sln_symphony.CalibrationLED();
                     table.canInsert = true;
-                    table.insert(leds);s
+                    table.insert(leds);
 
                     [led_ndfs(:).calibration_id] = deal(ind);
                     table = sln_symphony.CalibrationLEDAttenuation();
