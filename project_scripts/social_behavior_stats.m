@@ -118,18 +118,21 @@ errorbar(intruder_distances, order_male_smell_mean, order_male_smell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval order');
 title('Male intruder with smell')
+ylim([0 10])
 
 subplot(3,1,2);
 errorbar(intruder_distances, order_female_smell_mean, order_female_smell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval order');
 title('Female intruder with smell')
+ylim([0 10])
 
 subplot(3,1,3);
 errorbar(intruder_distances, order_object_smell_mean, order_object_smell_sem);
 xlabel('Degrees from object')
 ylabel('Pup retrieval order');
 title('Object with smell')
+ylim([0 10])
 
 figure;
 subplot(3,1,1);
@@ -137,18 +140,21 @@ errorbar(intruder_distances, order_male_nosmell_mean, order_male_nosmell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval order');
 title('Male intruder no smell')
+ylim([0 10])
 
 subplot(3,1,2);
 errorbar(intruder_distances, order_female_nosmell_mean, order_female_nosmell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval order');
 title('Female intruder no smell')
+ylim([0 10])
 
 subplot(3,1,3);
 errorbar(intruder_distances, order_object_nosmell_mean, order_object_nosmell_sem);
 xlabel('Degrees from object')
 ylabel('Pup retrieval order');
 title('Object no smell')
+ylim([0 10])
 
 figure;
 subplot(3,1,1);
@@ -156,18 +162,19 @@ errorbar(intruder_distances, latency_male_smell_mean, latency_male_smell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval latency (s)');
 title('Male intruder with smell')
-
+ylim([0 200])
 subplot(3,1,2);
 errorbar(intruder_distances, latency_female_smell_mean, latency_female_smell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval latency (s)');
 title('Female intruder with smell')
-
+ylim([0 200])
 subplot(3,1,3);
 errorbar(intruder_distances, latency_object_smell_mean, latency_object_smell_sem);
 xlabel('Degrees from object')
 ylabel('Pup retrieval latency (s)');
 title('Object with smell')
+ylim([0 200])
 
 figure;
 subplot(3,1,1);
@@ -175,19 +182,21 @@ errorbar(intruder_distances, latency_male_nosmell_mean, latency_male_nosmell_sem
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval latency (s)');
 title('Male intruder no smell')
+ylim([0 200])
 
 subplot(3,1,2);
 errorbar(intruder_distances, latency_female_nosmell_mean, latency_female_nosmell_sem);
 xlabel('Degrees from intruder')
 ylabel('Pup retrieval latency (s)');
 title('Female intruder no smell')
+ylim([0 200])
 
 subplot(3,1,3);
 errorbar(intruder_distances, latency_object_nosmell_mean, latency_object_nosmell_sem);
 xlabel('Degrees from object')
 ylabel('Pup retrieval latency (s)');
 title('Object no smell')
-
+ylim([0 200])
 
 %% fit some linear mixed-effects models
 model_formula_order = 'Pup_order~Pup_degrees_from_intruder+(1|Animal_id)+(Pup_degrees_from_intruder-1|Animal_id)';
@@ -197,10 +206,13 @@ lme_order_male_smell = fitlme(R_male_smell,model_formula_order);
 lme_order_male_nosmell = fitlme(R_male_nosmell,model_formula_order);
 lme_order_female_smell = fitlme(R_female_smell,model_formula_order);
 lme_order_female_nosmell = fitlme(R_female_nosmell,model_formula_order);
+lme_order_object_smell = fitlme(R_object_smell,model_formula_order);
+lme_order_object_nosmell = fitlme(R_object_nosmell,model_formula_order);
 
 lme_latency_male_smell = fitlme(R_male_smell,model_formula_latency);
 lme_latency_male_nosmell = fitlme(R_male_nosmell,model_formula_latency);
 lme_latency_female_smell = fitlme(R_female_smell,model_formula_latency);
 lme_latency_female_nosmell = fitlme(R_female_nosmell,model_formula_latency);
-
+lme_latency_object_smell = fitlme(R_object_smell,model_formula_latency);
+lme_latency_object_nosmell = fitlme(R_object_nosmell,model_formula_latency);
 
