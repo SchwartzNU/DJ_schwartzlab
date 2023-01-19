@@ -58,6 +58,7 @@ for d=1:N_datasets
             trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
             mean_traces(s,:) = trace;
         else
+            trace = example_traces(s,:);
             mean_traces(s,:) = example_traces(s,:);
         end
        
