@@ -71,12 +71,12 @@ for d=1:N_datasets
         ahp_decay_tau1(s) = beta_fit(1);
         ahp_decay_tau2(s) = beta_fit(2);
         ahp_tau1_coeff(s) = beta_fit(3);
-        figure(1);
-        plot(x,trace,'k')
-        hold('on');
-        plot(x, double_exp_decay(beta_fit, x), 'r','LineWidth',2);
-        hold('off');
-        pause;
+%         figure(1);
+%         plot(x,trace,'k')
+%         hold('on');
+%         plot(x, double_exp_decay(beta_fit, x), 'r','LineWidth',2);
+%         hold('off');
+%         pause;
 
         spike_count_vec = zeros(N_epochs_per_current(s),1);
         vrest_by_epoch_vec = zeros(N_epochs_per_current(s),1);
