@@ -1,6 +1,6 @@
 function R = PulseLong(data_group, params)
 
-datasets = aka.Dataset * sln_symphony.ExperimentCell & data_group;
+datasets = aka.Dataset * sln_symphony.ExperimentCell & proj(data_group);
 datasets_struct = fetch(datasets,'cell_number');
 N_datasets = datasets.count;
 
