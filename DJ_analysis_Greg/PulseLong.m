@@ -49,6 +49,7 @@ for d=1:N_datasets
     example_traces = zeros(N_currents, total_samples);
     spike_count_all = cell(N_currents,1);
     vrest_by_epoch = cell(N_currents,1);
+    vrest_mean = zeros(N_currents,1);
 
     for s=1:N_currents
         ind = find(all_currents == currents(s));
@@ -95,6 +96,7 @@ for d=1:N_datasets
         spike_count_all{s} = spike_count_vec;
         spike_count_mean(s) = mean(spike_count_vec);
         spike_count_sem(s) = std(spike_count_vec) ./ sqrt(N_epochs_per_current(s)-1);
+        vrest_mean(s) = mean(vrest_by_epoch_vec);
         vrest_by_epoch{s} = vrest_by_epoch_vec;
     end
 
@@ -118,6 +120,7 @@ for d=1:N_datasets
     R.spike_count_mean{d} = spike_count_mean;
     R.spike_count_sem{d} = spike_count_sem;
     R.vrest_by_epoch{d} = vrest_by_epoch;
+    R.vrest_mean{d} = vrest_mean';
     R.mean_traces{d} = mean_traces;
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
