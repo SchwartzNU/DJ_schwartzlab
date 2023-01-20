@@ -1,7 +1,7 @@
 function R = PulseLong(data_group, params)
 
 datasets = aka.Dataset * sln_symphony.ExperimentCell & data_group;
-datasets_struct = fetch(datasets,'*');
+datasets_struct = fetch(datasets,'cell_number');
 N_datasets = datasets.count;
 
 R = sln_results.table_definition_from_template('PulseLong',N_datasets);
