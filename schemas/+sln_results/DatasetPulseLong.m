@@ -24,6 +24,7 @@ spike_count_sem=NULL : longblob # stanrdard error of spike count during step for
 stim_time_ms=NULL : float # stim time (ms)
 vrest=NULL : float # mean resting potential (mV) overall
 vrest_by_epoch=NULL : longblob # resting potential (mV) for each epoch at each current value
+vrest_mean=NULL : longblob # mean resting potential (mV) for each current injection value
 %}
 classdef DatasetPulseLong < dj.Manual
 end
