@@ -1,6 +1,6 @@
 function R = PulseLong(data_group, params)
 
-datasets = aka.Dataset & data_group;
+datasets = aka.Dataset * sln_symphony.ExperimentCell & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
@@ -8,7 +8,7 @@ R = sln_results.table_definition_from_template('PulseLong',N_datasets);
 
 for d=1:N_datasets
     tic;
-    fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
+    fprintf('Processing %d of %d, %sc%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).cell_number, datasets_struct(d).dataset_name);
 
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         sln_symphony.ExperimentChannel * ...
