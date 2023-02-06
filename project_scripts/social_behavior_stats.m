@@ -1,11 +1,33 @@
 %% load data into one big table
 
 sessions = unique(fetchn(sl_behavior.Annotation, 'event_id')); %for now this works because all the sessions in there are Devon's pup retrieval
+
 R_pup = table;
-for i=1:length(sessions)
+R_sessions = table;
+R_cur_session = struct;
+
+for i=1:length(sessions)    
     %disp(i); disp(sessions(i)); pause; 
-    R = sl_behavior.pup_retrieved_relative_order_for_session(sessions(i));
-    R_pup = [R_pup; R];
+    thisSession = sln_animal.SocialBehaviorSession & sprintf('event_id=%d', sessions(i));
+    if contains(fetch1(thisSession,'purpose'), 'intruder')
+        R = sl_behavior.pup_retrieved_relative_order_for_session(sessions(i));        
+        R_pup = [R_pup; R];
+
+        %get stimuli
+        stims_struct = fetch(sln_animal.SocialBehaviorSessionStimulus & sprintf('event_id=%d', sessions(i)), '*');
+        %pause; 
+        R_cur_session.purpose = string(fetch1(thisSession,'purpose'));
+        for j=1:length(stims_struct)
+            if ~strcmp(stims_struct(j).stim_type,'empty')
+                R_cur_session.stim_type = string(stims_struct(j).stim_type);                    
+                intruder_arm = stims_struct(j).arm;
+            end
+        end        
+        sessions(i)
+        [R_cur_session.inv_time, R_cur_session.inv_mean, R_cur_session.inv_frac] = ...
+            sl_behavior.duration_for_events_in_session(sessions(i),'investigate window',['window' intruder_arm]);         
+        R_sessions = [R_sessions; struct2table(R_cur_session)];
+    end    
 end
 
 %% make sub-tables
