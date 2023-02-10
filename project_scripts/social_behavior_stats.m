@@ -19,7 +19,8 @@ for i=1:length(sessions)
         R_cur_session.purpose = string(fetch1(thisSession,'purpose'));
         for j=1:length(stims_struct)
             if ~strcmp(stims_struct(j).stim_type,'empty')
-                R_cur_session.stim_type = string(stims_struct(j).stim_type);                    
+                R_cur_session.stim_type = string(s ...
+                    tims_struct(j).stim_type);                    
                 intruder_arm = stims_struct(j).arm;
             end
         end        
