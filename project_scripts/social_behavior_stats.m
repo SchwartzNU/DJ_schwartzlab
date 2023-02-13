@@ -23,6 +23,8 @@ for i=1:length(sessions)
             sl_behavior.duration_for_events_in_session(sessions(i),'investigate window',['window' intruder_arm]);
         [R_cur_session.groom_time, R_cur_session.groom_mean, R_cur_session.groom_frac] = ...
         sl_behavior.duration_for_events_in_session(sessions(i),'groom');
+        [R_cur_session.mutualInts] = sl_behavior.count_events_in_session(sessions(i),'mutual interaction');
+
         R_sessions = [R_sessions; struct2table(R_cur_session)];
     end
 end
@@ -307,3 +309,12 @@ ylim([0 .33])
 xticklabels({'Male intruder', 'Smelly Male', 'Female intruder', 'Smelly Female', 'Novel object', 'Smelly Object'})
 sgtitle('Maternal Groom Time w/ Intruders')
 
+figure()
+xTotal = xAxis;
+scatter(xTotal.xAxis, R_plots.mutualInts);
+ylabel('Count');
+xticks([1 2 3 4 5 6])
+xlim([0.5 4.5])
+% ylim([0 50])
+xticklabels({'Male intruder', 'Smelly Male', 'Female intruder', 'Smelly Female', 'Novel object', 'Smelly Object'})
+sgtitle('Total mutual interaction events')
