@@ -11,7 +11,7 @@ end
 
 behavior_master_folder = [getenv("SERVER") filesep 'BehaviorMaster' filesep];
 
-header_lines = 16; %TODO make a variable
+header_lines = 15; %TODO make a variable
 %TODO, read in pup number... and other possible variables
 
 fname = folder_name_from_behavior_session(event_id);
