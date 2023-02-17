@@ -199,6 +199,7 @@ ylim([0 200])
 model_formula_order = 'Pup_order~Pup_degrees_from_intruder+(1|Animal_id)+(Pup_degrees_from_intruder-1|Animal_id)';
 model_formula_latency = 'Pup_retrieval_latency~Pup_degrees_from_intruder+(1|Animal_id)+(Pup_degrees_from_intruder-1|Animal_id)';
 
+% Run the linear mixed-effects models
 lme_order_male_smell = fitlme(R_male_smell,model_formula_order);
 lme_order_male_nosmell = fitlme(R_male_nosmell,model_formula_order);
 lme_order_female_smell = fitlme(R_female_smell,model_formula_order);
@@ -213,6 +214,7 @@ lme_latency_female_nosmell = fitlme(R_female_nosmell,model_formula_latency);
 lme_latency_object_smell = fitlme(R_object_smell,model_formula_latency);
 lme_latency_object_nosmell = fitlme(R_object_nosmell,model_formula_latency);
 
+<<<<<<< Updated upstream
 %% make sub-tables
 % pull the conditions in the order I want them plotted
 % cannot use strmp or find otherwise it will find "male" conditions inside
@@ -318,3 +320,34 @@ xlim([0.5 4.5])
 % ylim([0 50])
 xticklabels({'Male intruder', 'Smelly Male', 'Female intruder', 'Smelly Female', 'Novel object', 'Smelly Object'})
 sgtitle('Total mutual interaction events')
+=======
+% Plot raw residuals to check for outliers
+figure;
+subplot(3,2,1);
+plotResiduals(lme_order_male_smell, 'fitted')
+subplot(3,2,2);
+plotResiduals(lme_order_male_nosmell, 'fitted')
+subplot(3,2,3);
+plotResiduals(lme_order_female_smell, 'fitted')
+subplot(3,2,4);
+plotResiduals(lme_order_female_nosmell, 'fitted')
+subplot(3,2,5);
+plotResiduals(lme_order_object_smell, 'fitted')
+subplot(3,2,6);
+plotResiduals(lme_order_object_nosmell, 'fitted')
+
+figure;
+subplot(3,2,1);
+plotResiduals(lme_latency_male_smell, 'fitted')
+subplot(3,2,2);
+plotResiduals(lme_latency_male_nosmell, 'fitted')
+subplot(3,2,3);
+plotResiduals(lme_latency_female_smell, 'fitted')
+subplot(3,2,4);
+plotResiduals(lme_latency_female_nosmell, 'fitted')
+subplot(3,2,5);
+plotResiduals(lme_latency_object_smell, 'fitted')
+subplot(3,2,6);
+plotResiduals(lme_latency_object_nosmell, 'fitted')
+
+>>>>>>> Stashed changes
