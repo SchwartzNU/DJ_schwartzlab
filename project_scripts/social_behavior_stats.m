@@ -63,10 +63,19 @@ latency_object_smell_mean = zeros(N,1);
 latency_object_smell_sem = zeros(N,1);
 latency_object_nosmell_mean = zeros(N,1);
 latency_object_nosmell_sem = zeros(N,1);
+igor_struct_order = struct;
+igor_struct_latency = struct;
 for i=1:N
     order_male_smell = R_male_smell.Pup_order(strcmp(R_male_smell.Pup_degrees_from_intruder, intruder_distances(i)));
     order_female_smell = R_female_smell.Pup_order(strcmp(R_female_smell.Pup_degrees_from_intruder, intruder_distances(i)));
     order_object_smell = R_object_smell.Pup_order(strcmp(R_object_smell.Pup_degrees_from_intruder, intruder_distances(i)));
+
+    igor_struct_order.(['male_smell_' char(intruder_distances(i)) '_y']) = order_male_smell;
+    igor_struct_order.(['male_smell_' char(intruder_distances(i)) '_x']) = ones(length(order_male_smell),1) * str2double(intruder_distances(i));
+    igor_struct_order.(['female_smell_' char(intruder_distances(i)) '_y']) = order_female_smell;
+    igor_struct_order.(['female_smell_' char(intruder_distances(i)) '_x']) = ones(length(order_female_smell),1) * str2double(intruder_distances(i));
+    igor_struct_order.(['object_smell_' char(intruder_distances(i)) '_y']) = order_object_smell;
+    igor_struct_order.(['object_smell_' char(intruder_distances(i)) '_x']) = ones(length(order_object_smell),1) * str2double(intruder_distances(i));
 
     order_male_smell_mean(i) = mean(order_male_smell);
     order_male_smell_sem(i) = std(order_male_smell) ./ sqrt(length(order_male_smell) - 1);
@@ -75,9 +84,23 @@ for i=1:N
     order_object_smell_mean(i) = mean(order_object_smell);
     order_object_smell_sem(i) = std(order_object_smell) ./ sqrt(length(order_object_smell) - 1);
 
+    igor_struct_order.order_male_smell_mean(i) = order_male_smell_mean(i);
+    igor_struct_order.order_male_smell_sem(i) = order_male_smell_sem(i);
+    igor_struct_order.order_female_smell_mean(i) = order_female_smell_mean(i);
+    igor_struct_order.order_female_smell_sem(i) = order_female_smell_sem(i);
+    igor_struct_order.order_object_smell_mean(i)  = order_object_smell_mean(i);
+    igor_struct_order.order_object_smell_sem(i) = order_object_smell_sem(i);
+
     order_male_nosmell = R_male_nosmell.Pup_order(strcmp(R_male_nosmell.Pup_degrees_from_intruder, intruder_distances(i)));
     order_female_nosmell = R_female_nosmell.Pup_order(strcmp(R_female_nosmell.Pup_degrees_from_intruder, intruder_distances(i)));
     order_object_nosmell = R_object_nosmell.Pup_order(strcmp(R_object_nosmell.Pup_degrees_from_intruder, intruder_distances(i)));
+
+    igor_struct_order.(['male_nosmell_' char(intruder_distances(i)) '_y']) = order_male_nosmell;
+    igor_struct_order.(['male_nosmell_' char(intruder_distances(i)) '_x']) = ones(length(order_male_nosmell),1) * str2double(intruder_distances(i));
+    igor_struct_order.(['female_nosmell_' char(intruder_distances(i)) '_y']) = order_female_nosmell;
+    igor_struct_order.(['female_nosmell_' char(intruder_distances(i)) '_x']) = ones(length(order_female_nosmell),1) * str2double(intruder_distances(i));
+    igor_struct_order.(['object_nosmell_' char(intruder_distances(i)) '_y']) = order_object_nosmell;
+    igor_struct_order.(['object_nosmell_' char(intruder_distances(i)) '_x']) = ones(length(order_object_nosmell),1) * str2double(intruder_distances(i));
 
     order_male_nosmell_mean(i) = mean(order_male_nosmell);
     order_male_nosmell_sem(i) = std(order_male_nosmell) ./ sqrt(length(order_male_nosmell) - 1);
@@ -86,27 +109,62 @@ for i=1:N
     order_object_nosmell_mean(i) = mean(order_object_nosmell);
     order_object_nosmell_sem(i) = std(order_object_nosmell) ./ sqrt(length(order_object_nosmell) - 1);
 
+    igor_struct_order.order_male_nosmell_mean(i) = order_male_nosmell_mean(i);
+    igor_struct_order.order_male_nosmell_sem(i) = order_male_nosmell_sem(i);
+    igor_struct_order.order_female_nosmell_mean(i) = order_female_nosmell_mean(i);
+    igor_struct_order.order_female_nosmell_sem(i) = order_female_nosmell_sem(i);
+    igor_struct_order.order_object_nosmell_mean(i)  = order_object_nosmell_mean(i);
+    igor_struct_order.order_object_nosmell_sem(i) = order_object_nosmell_sem(i);
+
     latency_male_smell = R_male_smell.Pup_retrieval_latency(strcmp(R_male_smell.Pup_degrees_from_intruder, intruder_distances(i)));
     latency_female_smell = R_female_smell.Pup_retrieval_latency(strcmp(R_female_smell.Pup_degrees_from_intruder, intruder_distances(i)));
     latency_object_smell = R_object_smell.Pup_retrieval_latency(strcmp(R_object_smell.Pup_degrees_from_intruder, intruder_distances(i)));
 
-    latency_male_smell_mean(i) = mean(latency_male_smell);
+    igor_struct_latency.(['male_smell_' char(intruder_distances(i)) '_y']) = latency_male_smell;
+    igor_struct_latency.(['male_smell_' char(intruder_distances(i)) '_x']) = ones(length(latency_male_smell),1) * str2double(intruder_distances(i));
+    igor_struct_latency.(['female_smell_' char(intruder_distances(i)) '_y']) = latency_female_smell;
+    igor_struct_latency.(['female_smell_' char(intruder_distances(i)) '_x']) = ones(length(latency_female_smell),1) * str2double(intruder_distances(i));
+    igor_struct_latency.(['object_smell_' char(intruder_distances(i)) '_y']) = latency_object_smell;
+    igor_struct_latency.(['object_smell_' char(intruder_distances(i)) '_x']) = ones(length(latency_object_smell),1) * str2double(intruder_distances(i));
+
+    latency_male_smell_mean(i) = median(latency_male_smell);
     latency_male_smell_sem(i) = std(latency_male_smell) ./ sqrt(length(latency_male_smell) - 1);
-    latency_female_smell_mean(i) = mean(latency_female_smell);
+    latency_female_smell_mean(i) = median(latency_female_smell);
     latency_female_smell_sem(i) = std(latency_female_smell) ./ sqrt(length(latency_female_smell) - 1);
-    latency_object_smell_mean(i) = mean(latency_object_smell);
+    latency_object_smell_mean(i) = median(latency_object_smell);
     latency_object_smell_sem(i) = std(latency_object_smell) ./ sqrt(length(latency_object_smell) - 1);
+
+    igor_struct_latency.latency_male_smell_mean(i) = latency_male_smell_mean(i);
+    igor_struct_latency.latency_male_smell_sem(i) = latency_male_smell_sem(i);
+    igor_struct_latency.latency_female_smell_mean(i) = latency_female_smell_mean(i);
+    igor_struct_latency.latency_female_smell_sem(i) = latency_female_smell_sem(i);
+    igor_struct_latency.latency_object_smell_mean(i)  = latency_object_smell_mean(i);
+    igor_struct_latency.latency_object_smell_sem(i) = latency_object_smell_sem(i);
 
     latency_male_nosmell = R_male_nosmell.Pup_retrieval_latency(strcmp(R_male_nosmell.Pup_degrees_from_intruder, intruder_distances(i)));
     latency_female_nosmell = R_female_nosmell.Pup_retrieval_latency(strcmp(R_female_nosmell.Pup_degrees_from_intruder, intruder_distances(i)));
     latency_object_nosmell = R_object_nosmell.Pup_retrieval_latency(strcmp(R_object_nosmell.Pup_degrees_from_intruder, intruder_distances(i)));
 
-    latency_male_nosmell_mean(i) = mean(latency_male_nosmell);
+    igor_struct_latency.(['male_nosmell_' char(intruder_distances(i)) '_y']) = latency_male_nosmell;
+    igor_struct_latency.(['male_nosmell_' char(intruder_distances(i)) '_x']) = ones(length(latency_male_nosmell),1) * str2double(intruder_distances(i));
+    igor_struct_latency.(['female_nosmell_' char(intruder_distances(i)) '_y']) = latency_female_nosmell;
+    igor_struct_latency.(['female_nosmell_' char(intruder_distances(i)) '_x']) = ones(length(latency_female_nosmell),1) * str2double(intruder_distances(i));
+    igor_struct_latency.(['object_nosmell_' char(intruder_distances(i)) '_y']) = latency_object_nosmell;
+    igor_struct_latency.(['object_nosmell_' char(intruder_distances(i)) '_x']) = ones(length(latency_object_nosmell),1) * str2double(intruder_distances(i));
+
+    latency_male_nosmell_mean(i) = median(latency_male_nosmell);
     latency_male_nosmell_sem(i) = std(latency_male_nosmell) ./ sqrt(length(latency_male_nosmell) - 1);
-    latency_female_nosmell_mean(i) = mean(latency_female_nosmell);
+    latency_female_nosmell_mean(i) = median(latency_female_nosmell);
     latency_female_nosmell_sem(i) = std(latency_female_nosmell) ./ sqrt(length(latency_female_nosmell) - 1);
-    latency_object_nosmell_mean(i) = mean(latency_object_nosmell);
+    latency_object_nosmell_mean(i) = median(latency_object_nosmell);
     latency_object_nosmell_sem(i) = std(latency_object_nosmell) ./ sqrt(length(latency_object_nosmell) - 1);
+
+    igor_struct_latency.latency_male_nosmell_mean(i) = latency_male_nosmell_mean(i);
+    igor_struct_latency.latency_male_nosmell_sem(i) = latency_male_nosmell_sem(i);
+    igor_struct_latency.latency_female_nosmell_mean(i) = latency_female_nosmell_mean(i);
+    igor_struct_latency.latency_female_nosmell_sem(i) = latency_female_nosmell_sem(i);
+    igor_struct_latency.latency_object_nosmell_mean(i)  = latency_object_nosmell_mean(i);
+    igor_struct_latency.latency_object_nosmell_sem(i) = latency_object_nosmell_sem(i);
 end
 
 %% plots
@@ -251,6 +309,8 @@ intruderSmell_ttest = [femaleSmell_ttest; maleSmell_ttest];
 [fmutints.h,fmutints.p,fmutints.ci,fmutints.stats] = ttest2(female_ttest.mutualInts,femaleSmell_ttest.mutualInts); %p=.04
 [mmutints.h,mmutints.p,mmutints.ci,mmutints.stats] = ttest2(male_ttest.mutualInts,maleSmell_ttest.mutualInts);
 [intmutints.h,intmutints.p,intmutints.ci,intmutints.stats] = ttest2(intruder_ttest.mutualInts,intruderSmell_ttest.mutualInts);
+[MvFmutints.h,MvFmutints.p,MvFmutints.ci,MvFmutints.stats] = ttest2(female_ttest.mutualInts,male_ttest.mutualInts); %p=.13
+
 % window investigation time
 [minv_mean.h,minv_mean.p,minv_mean.ci,minv_mean.stats] = ttest2(male_ttest.inv_mean,maleSmell_ttest.inv_mean); 
 [mInvTime.h,mInvTime.p,mInvTime.ci,mInvTime.stats] = ttest2(male_ttest.inv_time,maleSmell_ttest.inv_time);
@@ -258,7 +318,7 @@ intruderSmell_ttest = [femaleSmell_ttest; maleSmell_ttest];
 [fInvTime.h,fInvTime.p,fInvTime.ci,fInvTime.stats] = ttest2(female_ttest.inv_time,femaleSmell_ttest.inv_time);
 [ffracInvTime.h,ffracInvTime.p,ffracInvTime.ci,ffracInvTime.stats] = ttest2(female_ttest.inv_frac,femaleSmell_ttest.inv_frac);
 %[mfracInvTime.h,mfracInvTime.p,mfracInvTime.ci,mfracInvTime.stats] = ttest2(male_ttest.inv_frac,maleSmell_ttest.inv_frac);
-
+[MvFfracInvTime.h,MvFfracInvTime.p,MvFfracInvTime.ci,MvFfracInvTime.stats] = ttest2(female_ttest.inv_frac,male_ttest.inv_frac);
 
 %[intfracInvTime.h,intfracInvTime.p,intfracInvTime.ci,intfracInvTime.stats] = ttest2(intruder_ttest.inv_frac,intruderSmell_ttest.inv_frac);
 
