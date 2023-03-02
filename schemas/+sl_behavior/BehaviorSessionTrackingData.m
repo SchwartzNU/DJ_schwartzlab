@@ -1,7 +1,7 @@
 %{
 # Behavior session tracking data
 
--> sl.AnimalEventSocialBehaviorSession
+-> sln_animal.SocialBehaviorSession
 ---
 time_axis : longblob            # vector with units of seconds 
 dlc_raw : longblob              # struct with dlc positions and confidence data

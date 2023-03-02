@@ -29,12 +29,12 @@ for i=1:L
         else
             window_order = zeros(1,3);
             
-            stims = fetch(sl.AnimalEventSocialBehaviorSessionStimulus & session_ids(i), '*');
+            stims = fetch(sln_animal.SocialBehaviorSessionStimulus & session_ids(i), '*');
             %need to check sex for these ones
-            purpose = fetch1(sl.AnimalEventSocialBehaviorSession & session_ids(i), 'purpose');
+            purpose = fetch1(sln_animal.SocialBehaviorSession & session_ids(i), 'purpose');
             if strcmp(purpose, 'female_2_males') || strcmp(purpose, 'male_2_females')
                 for j=1:3
-                    stims(j).sex = fetch1(sl.Animal & sprintf('animal_id=%d',stims(j).stimulus_animal_id), 'sex');
+                    stims(j).sex = fetch1(sln_animal.Animal & sprintf('animal_id=%d',stims(j).stimulus_animal_id), 'sex');
                 end
             end
             
@@ -45,7 +45,7 @@ for i=1:L
                 randpick = false;
                 for z=1:3
                     %need to check sex for these ones
-                    purpose = fetch1(sl.AnimalEventSocialBehaviorSession & session_ids(i), 'purpose');
+                    purpose = fetch1(sln_animal.SocialBehaviorSession & session_ids(i), 'purpose');
                     if strcmp(purpose, 'female_2_males') || strcmp(purpose, 'male_2_females')
                         ind = find(strcmp({stims.sex}, stim_order{z}));
                     else
@@ -70,19 +70,22 @@ for i=1:L
                     end
                 end
                 if length(unique(window_order)) ~= 3 %duplicated window
-                    sprintf('designated windows not found for session %d, skipping\n', session_ids(i).event_id);
+                    fprintf('designated windows not found for session %d, skipping\n', session_ids(i).event_id);
                     doAnalysis = false;
+                    keyboard;
                 end
             catch
-                sprintf('designated windows not found for session %d, skipping\n', session_ids(i).event_id);
+                fprintf('designated windows not found for session %d, skipping\n', session_ids(i).event_id);
                 doAnalysis = false;
+                keyboard;
             end
             
         end
         curP = P;
         curP.window_order = window_order;
         
-        trackingData = sl_behavior.BehaviorSessionTrackingData & session_ids(i);
+        trackingData = sl_behavior.BehaviorSessionTrackingData & session_ids(i)
+        doAnalysis
         if trackingData.exists && doAnalysis
             R.animal_id(s) = animal_id;
 
@@ -97,5 +100,7 @@ for i=1:L
             end
             s=s+1;
         end
+        R
+        pause;
     end
 end
