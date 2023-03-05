@@ -128,7 +128,7 @@ classdef EpochParams < dj.internal.GeneralRelvar
                 
             end
             
-            self.fullTableName = sprintf('(%s) AS `%s`', strjoin(sql,' UNION '), protocolBaseName);
+            self.fullTableName = sprintf('(%s) AS `ep%s`', strjoin(sql,' UNION '), protocolBaseName);
             
             self.init('table', {self});
         end
