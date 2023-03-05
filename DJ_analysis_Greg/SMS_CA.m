@@ -22,6 +22,14 @@ for d=1:N_datasets
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         aka.SMSparams & ...
         datasets_struct(d),'*');
+
+    N_epochs = length(epochs_in_dataset);
+
+    if N_epochs == 0 %try SpotsMultiSizeClassify instead... weird insert error
+        epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
+            sln_symphony.ExperimentProtSpotsMultiSizeClassifyV1ep * sln_symphony.ExperimentProtSpotsMultiSizeClassifyV1bp & ...
+        datasets_struct(d),'*');
+    end
     
     N_epochs = length(epochs_in_dataset);
 
