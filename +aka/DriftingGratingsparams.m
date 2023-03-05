@@ -1,5 +1,5 @@
 classdef DriftingGratingsparams < aka.Alias
     properties
-        query = sln_symphony.ExperimentProtDriftingGratingsV1bp * sln_symphony.ExperimentProtDriftingGratingsV1ep;
+        query = aka.BlockParams('DriftingGratings') * aka.EpochParams('DriftingGratings');
     end
 end
