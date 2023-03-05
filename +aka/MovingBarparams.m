@@ -1,5 +1,5 @@
 classdef MovingBarparams < aka.Alias
     properties
-        query = sln_symphony.ExperimentProtMovingBarV1bp * sln_symphony.ExperimentProtMovingBarV1ep;
+        query = aka.BlockParams('MovingBar') * aka.EpochParams('MovingBar');
     end
 end
