@@ -1,4 +1,4 @@
-function S = CellTypeHistogram(data_group)
+function S = CellTypeHistogram_Tusc5(data_group)
 data_group_with_genotypes = data_group * sln_animal.GenotypeString;
 homo_part = data_group_with_genotypes & 'genotype_string LIKE "%Tusc5-eGFP/Tusc5-eGFP%"';
 het_part = data_group_with_genotypes - proj(homo_part);
