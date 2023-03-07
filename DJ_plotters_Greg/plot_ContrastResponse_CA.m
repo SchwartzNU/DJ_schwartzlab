@@ -5,7 +5,7 @@ if nargin < 1
     return;
 end
 
-set(ax, 'XLim',[0 inf]);
+set(ax, 'XLim',[-1 1]);
 errorbar(ax, R.contrasts, R.spikes_stim_mean, R.spikes_stim_sem,...
     'Color',[0 0 0],...
     'LineWidth',2);
