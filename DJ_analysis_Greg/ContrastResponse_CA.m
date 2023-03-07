@@ -37,7 +37,7 @@ for d=1:N_datasets
     total_ms = pre_stim_tail.pre_time + pre_stim_tail.stim_time + pre_stim_tail.tail_time;
     psth_length = ceil(total_ms/binSize);
 
-    all_contrasts = epochs_in_dataset.contrast;
+    all_contrasts = [epochs_in_dataset.contrast];
     contrasts = sort(unique(all_contrasts));
     N_contrasts = length(contrasts);
 
