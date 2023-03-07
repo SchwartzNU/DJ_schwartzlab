@@ -61,9 +61,13 @@ for d=1:N_datasets
             tail_spikes(i) = spikes_in_interval(epochs_in_dataset(ind(i)),pre_stim_tail,'tail');
         end
         if s==1
-            [psth_x, psth_by_contrast(s,:)] = psth_for_epochs(epochs_in_dataset_table & epochs_in_dataset(ind), binSize);
+            psth = psth_for_epochs(epochs_in_dataset_table & epochs_in_dataset(ind), binSize);
+            psth = psth(1:psth_length);
+            [psth_x, psth_by_contrast(s,:)] = psth;
         else
-            [~, psth_by_contrast(s,:)] = psth_for_epochs(epochs_in_dataset_table & epochs_in_dataset(ind), binSize);
+            psth = psth_for_epochs(epochs_in_dataset_table & epochs_in_dataset(ind), binSize);
+            psth = psth(1:psth_length);
+            [~, psth_by_contrast(s,:)] = psth;
         end
         spikes_pre_mean(s) = mean(pre_spikes);
         spikes_stim_mean(s) = mean(stim_spikes);
