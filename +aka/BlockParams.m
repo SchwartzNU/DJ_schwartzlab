@@ -87,11 +87,7 @@ classdef BlockParams < dj.internal.GeneralRelvar
                                 contains(jutype, 'float') || contains(jutype, 'double')
                             tclass{j} = 'num';
                         elseif contains(jutype, 'char') || contains(jutype, 'enum')
-                            tclass{j} = 'str';
-                            re = regexp(jutype, 'char(\d*)', 'tokens');
-                            if ~isempty(re)
-                                mostChars = max(mostChars, str2double(re{1}{1}));
-                            end
+                            tclass{j} = 'str';                            
                         elseif contains(jutype, 'date') || contains(jutype, 'time')
                             tclass{j} = 'datetime';
                         elseif contains(jutype, 'blob')
