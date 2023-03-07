@@ -31,9 +31,14 @@ spikes_query = aka.SpikeTrain & epochs;
 sp = fetchn(spikes_query,'spike_indices');
 sp = [sp{:}]; %concatenate all spikes together
 
-sp = double(sp) * 1000 / sample_rate; %samples to ms
 bins = 0:binSize:duration;
-spCount = histcounts(sp,bins);
+
+if isempty(sp)
+    spCount = zeros(1,length(bins));
+else
+    sp = double(sp) * 1000 / sample_rate; %samples to ms
+    spCount = histcounts(sp,bins);
+end
 
 if gauss_win > 0
     w = gausswin(gauss_win);
