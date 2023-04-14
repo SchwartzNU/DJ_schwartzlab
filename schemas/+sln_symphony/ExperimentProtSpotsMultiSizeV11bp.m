@@ -1,5 +1,5 @@
 %{
-# Block parameters for SpotsMultiSize (1)
+# Block parameters for SpotsMultiSize (11)
 -> sln_symphony.ExperimentEpochBlock
 ---
 intensity                   : float                         # 
@@ -16,7 +16,7 @@ stim_time                   : float                         #
 tail_time                   : float                         # 
 antialias : tinyint unsigned
 %}
-classdef ExperimentProtSpotsMultiSizeV1bp < sln_symphony.ExperimentProtocol
+classdef ExperimentProtSpotsMultiSizeV11bp < sln_symphony.ExperimentProtocol
     properties
 
         %attributes to be renamed
