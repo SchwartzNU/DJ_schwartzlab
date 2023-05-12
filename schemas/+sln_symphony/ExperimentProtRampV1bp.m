@@ -5,7 +5,7 @@
 output_amp_selection : smallint unsigned
 ramp_slope : float
 pre_time: float
-stim_stim: float
+stim_time: float
 tail_time: float
 %}
 classdef ExperimentProtRampV1bp < sln_symphony.ExperimentProtocol
