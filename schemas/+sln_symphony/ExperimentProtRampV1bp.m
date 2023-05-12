@@ -15,7 +15,7 @@ classdef ExperimentProtRampV1bp < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'number_of_epochs'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
