@@ -62,17 +62,17 @@ for d=1:N_datasets
         vsteady(s) = mean(trace(pre_samples+stim_samples-ss_samples:pre_samples+stim_samples));
         if currents(s)>0
             [vmax(s), t] = max(trace(pre_samples+1:pre_samples+stim_samples));
-            vmax(s) = vmax(s) - vsteady(s); %overshoot            
+            vmax(s) = vmax(s) - vsteady(s); %overshoot
             tmax(s) = 1E3 * t / sample_rate;
         else
             [vmin(s), t] = min(trace(pre_samples+1:pre_samples+stim_samples) - vrest_vector(s));
             tmin(s) = 1E3 * t / sample_rate;
-        end            
-        
+        end
+
         [vmax_rebound(s), t] = max(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
         tmax_rebound(s) = 1E3 * t / sample_rate;
         [vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
-        tmin_rebound(s) = 1E3 * t / sample_rate;        
+        tmin_rebound(s) = 1E3 * t / sample_rate;
     end
 
     vrest = mean(vrest_vector);
@@ -100,7 +100,8 @@ for d=1:N_datasets
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
 
-    feature_struct = FeatureExtract(R);
+    R(d)
+    feature_struct = FeatureExtract(R(d));
     feature_struct.latency_to_first_spike
     MultiPulse_varyCurrent_FeatureExtract.m;
 
