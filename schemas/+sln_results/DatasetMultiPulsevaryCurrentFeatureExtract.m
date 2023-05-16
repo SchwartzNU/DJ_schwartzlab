@@ -2,7 +2,7 @@
 # DatasetMultiPulsevaryCurrentFeatureExtract
 file_name : varchar(128) # file name from symphony
 dataset_name : varchar(128) # dataset name
-source_id : float # source id used to identify the cell to which the dataset belongs
+source_id : int unsigned # source id used to identify the cell to which the dataset belongs
 ---
 -> sln_lab.User # user who entered this result
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered

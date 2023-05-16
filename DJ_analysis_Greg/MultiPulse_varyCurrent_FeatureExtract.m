@@ -101,9 +101,9 @@ for d=1:N_datasets
     R.sample_rate(d) = sample_rate;
 
     R(d, :)
-    feature_struct = FeatureExtract(R(d, :));
+    feature_struct = FeatureExtract_new(R(d, :));
     feature_struct.latency_to_first_spike
-    MultiPulse_varyCurrent_FeatureExtract.m;
+
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 
