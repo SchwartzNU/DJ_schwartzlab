@@ -102,7 +102,7 @@ for d=1:N_datasets
 
     R(d, :)
     feature_struct = FeatureExtract_new(R(d, :));
-    R.features{d} = feature_struct;
+    R.features{d} = {feature_struct};
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 
