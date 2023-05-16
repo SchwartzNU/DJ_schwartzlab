@@ -102,8 +102,7 @@ for d=1:N_datasets
 
     R(d, :)
     feature_struct = FeatureExtract_new(R(d, :));
-    feature_struct.latency_to_first_spike
-
+    R.feature_struct{d} = feature_struct;
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 

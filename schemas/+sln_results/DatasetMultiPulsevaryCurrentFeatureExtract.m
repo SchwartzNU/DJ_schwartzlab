@@ -7,6 +7,7 @@ source_id : int unsigned # source id used to identify the cell to which the data
 -> sln_lab.User # user who entered this result
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 example_traces=NULL : longblob # waveforms of example traces (mV)
+features=NULL : longblob # features
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 inj_current=NULL : longblob # vector of current injection amplitudes (pA)
 mean_traces=NULL : longblob # waveforms of mean traces (mV)
