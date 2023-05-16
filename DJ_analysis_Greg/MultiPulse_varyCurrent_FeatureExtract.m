@@ -100,8 +100,8 @@ for d=1:N_datasets
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
 
-    R(d)
-    feature_struct = FeatureExtract(R(d));
+    R(d, :)
+    feature_struct = FeatureExtract(R(d, :));
     feature_struct.latency_to_first_spike
     MultiPulse_varyCurrent_FeatureExtract.m;
 
