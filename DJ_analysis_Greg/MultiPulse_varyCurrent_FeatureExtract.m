@@ -109,6 +109,7 @@ for d=1:N_datasets
     MIN_PEAK_HEIGHT = -10; %mV, change to 0 when access resistance is standardized and all peaked is ensured to overshoot 0.
     MIN_PEAK_PROMINENCE = 6; %works well for ganglions. Decrease to find smaller peaks.
     MIN_PEAK_DISTANCE = sample_rate*1e-3; %peak separation of at least 1ms;
+    THRESHOLD_FIND_WINDOWS =  5 % ms before the spike to find the threshold of first AP
     
     % return arrays most are in the shape of (number of trials, 1)
     resistance_array_MOhm = nan(number_of_trials, 1);
@@ -117,8 +118,14 @@ for d=1:N_datasets
     capacitance_array_pF = nan(number_of_trials,1);
     sag_array = nan(number_of_trials, 1);
     spontaneous_firing_rate_Hz = nan(number_of_trials, 1);
-    
-    
+    V_threshold_array_mV = nan(number_of_trials, 1);
+    half_width_time_array_ms = nan(number_of_trials, 1); 
+    first_AP_peak_amplitude_mV = nan(number_of_trials, 1);
+    first_AP_peak_location_ms = nan(number_of_trials, 1);
+    first_AP_trough_amplitude_mV = nan(number_of_trials, 1);
+    first_AP_trough_location_ms = nan(number_of_trials, 1);
+    max_number_of_spikes = nan(number_of_trials, 1);
+
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
@@ -196,7 +203,6 @@ for d=1:N_datasets
             [pks, locs] = findpeaks(depol_Vm(start_time_find:end_time_find, i), ...
                 'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, ...
                 "MinPeakDistance", MIN_PEAK_DISTANCE);
-            
             try
                 first_spike = [pks(1) locs(1) i];
             catch
@@ -208,7 +214,72 @@ for d=1:N_datasets
         
         if spontaneous_firing_rate_Hz(trial) == 0
             first_spike(2) = start_time_find + first_spike(2);
+        end
+        
+        Vm_diff_1 = diff(depol_Vm(first_spike(2):(first_spike(2) + (10 * 1e-3 * sample_rate)), first_spike(3)),1); %take from 10ms
+        locations = find(Vm_diff_1 == 0);
+        trough = [0 0 0];
+        trough(2) = first_spike(2) + locations(1); % trough location;
+        trough(3) = first_spike(3); %trough epoch;
+        trough(1) = depol_Vm(trough(2), trough(3)); %trough level mV
+        start_time_for_threshold = max(1, (first_spike(2) - (THRESHOLD_FIND_WINDOWS * 1e-3 * sample_rate))); 
+        Vm_diff_2 = diff(depol_Vm(start_time_for_threshold : first_spike(2), first_spike(3)), 1);
+        threshold_loc = find(Vm_diff_2 >= max(Vm_diff_2)*0.2,1);
+        V_threshold_array_mV(trial) = depol_Vm(threshold_loc + 1, first_spike(3)); % + 1 bc diff lost one position
+        half_height = (first_spike(1) + trough(1)) / 2;
+        half_width_time_array_ms(trial) = sum(depol_Vm(threshold_loc : trough(2), trough(3)) >= half_height) /sample_rate * 1e3;
+        
+        first_AP_peak_amplitude_mV(trial) = first_spike(1);
+        first_AP_peak_location_ms(trial) = first_spike(2);
+        first_AP_trough_amplitude_mV(trial) = trough(1);
+        first_AP_trough_location_ms(trial) = trough(2);
+
+
+        %% spikes and ISIs during current injections
+        
+        spike_numbers = zeros(length(depol_current_epoch), 1);
+        latency_to_first_spike = zeros(length(depol_current_epoch), 1);
+        adaptation_index = zeros(length(depol_current_epoch), 1);
+        ISI_cv = zeros(length(depol_current_epoch), 1);
+        blocked = zeros(length(depol_current_epoch), 1);
+        
+        %figure; hold on;
+        for epoch=1:length(depol_current_epoch)
             
+            %findpeaks(depol_Vm(start_time:end_time, epoch), ...
+            %    'MinPeakProminence', 6, 'MinPeakHeight', -5, "MinPeakDistance", sample_rate*1e-3);
+            [spikes, locs] = findpeaks(depol_Vm(start_time:end_time, epoch), ...
+                'MinPeakProminence', 6, 'MinPeakHeight', -10, "MinPeakDistance", sample_rate*1e-3); %peak separation at least 1 ms
+            try
+                latency_to_first_spike(epoch) = locs(1) *1e3 / sample_rate ;
+                spike_numbers(epoch) = length(spikes);
+                locs_move_1 = [0; locs(1:end-1)];
+                ISIs = locs - locs_move_1; ISIs = ISIs(2:end);
+                ISI_cv(epoch) = std(ISIs) / mean(ISIs);
+                for j=1:(length(ISIs)-1)
+                    
+                    adaptation = (ISIs(j+1) - ISIs(j))/ (ISIs(j+1) + ISIs(j));
+                    adaptation_index(epoch) = adaptation_index(epoch) + adaptation;
+                    
+                end
+                adaptation_index(epoch) = adaptation_index(epoch) / (length(ISIs) - 1);
+                if locs(end) < (end_time - start_time)/2
+                    blocked(epoch) = true;
+                else
+                    blocked(epoch) = false;
+                end
+                
+            catch
+                latency_to_first_spike(epoch) =  (end_time - start_time)/ sample_rate*1e3;
+                spike_numbers(epoch) = length(spikes);
+            end
+        end
+        
+        blocked_epoch = find(blocked == true, 1);
+        if isempty(blocked_epoch)
+            blocked_current_level = NaN; % not blocked yet
+        else
+            blocked_current_level = depol_current_level_pA(blocked_epoch(1));
         end
         
         
