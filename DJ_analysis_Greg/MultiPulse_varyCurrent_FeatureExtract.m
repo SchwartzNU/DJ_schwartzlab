@@ -6,6 +6,7 @@ N_datasets = datasets.count;
 
 R = sln_results.table_definition_from_template('MultiPulse_varyCurrent_FeatureExtract',N_datasets);
 
+
 for d=1:N_datasets
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
@@ -93,6 +94,7 @@ for d=1:N_datasets
         
     end
     
+
     
     %% Feature Extraction Part
     %% Init
@@ -104,12 +106,20 @@ for d=1:N_datasets
     hyper_current_level_pA = hyper_current_level_pA';
     depol_current_level_pA = currents(depol_current_epoch);
     depol_current_level_pA = depol_current_level_pA';
+    MIN_PEAK_HEIGHT = -10; %mV, change to 0 when access resistance is standardized and all peaked is ensured to overshoot 0.
+    MIN_PEAK_PROMINENCE = 6; %works well for ganglions. Decrease to find smaller peaks.
+    MIN_PEAK_DISTANCE = sample_rate*1e-3; %peak separation of at least 1ms;
     
-    % return arrays
+    % return arrays most are in the shape of (number of trials, 1)
     resistance_array_MOhm = nan(number_of_trials, 1);
     resistance_Adjusted_RSquare = nan(number_of_trials, 1);
     tau_array_ms = nan(number_of_trials,1);
     capacitance_array_pF = nan(number_of_trials,1);
+    sag_array = nan(number_of_trials, 1);
+    spontaneous_firing_rate_Hz = nan(number_of_trials, 1);
+
+
+    %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
         hyper_Vm = cell2mat(all_traces(hyper_current_epoch, trial));
@@ -138,7 +148,7 @@ for d=1:N_datasets
         for i=1:length(hyper_epoch_less_than_minus50)
             f = fit([time_in_s(start_time:end_time)]', hyper_Vm(start_time:end_time,...
                 hyper_epoch_less_than_minus50(i)), ft, 'StartPoint',[-60,10,30]);
-            tau_array(i) =  f.c;    
+            tau_array(i) =  f.c;
         end
         
         
@@ -151,12 +161,32 @@ for d=1:N_datasets
         
         %Return Capacitance
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
-
-
         
-    
+        %% Sag
+        min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
+        fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
+        sag_array(trial) = table2array(fit_sag_peak_vs_stable.Coefficients(2,1));
+        
+        %% Does it spike spontaneously
+        spontaneous_peak_array = zeros(size(depol_current_level_pA,1), 1);
+        
+        
+        for i=1:size(depol_current_level_pA, 1)
+            spontaneous_peak_array(i) = size(findpeaks(depol_Vm(1:start_time, i), ...
+                "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE),1);
+        end
+        
+        spontaneous_firing_rate_Hz(trial) = (mean(spontaneous_peak_array))/(start_time/sample_rate); %Hz
+        
+        
+        
+        
+        
+        
+        
+        
     end % Feature Extraction end. Don't go out of this loop.
-     
+    
     
     
     %% Returning
