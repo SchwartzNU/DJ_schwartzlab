@@ -53,7 +53,7 @@ for d=1:N_datasets
     example_traces = zeros(N_currents, total_samples);
     countstbl = countlabels(all_currents);
     number_of_trials = max(countstbl.Count);
-    if sum(countstbl.Count ~= number_of_trials) > 0 | number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
+    if sum(countstbl.Count ~= number_of_trials) > 0 || number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
         warning('Numbers of epochs between trials are not the same')
         number_of_trials = min(countstbl.Count);
     end % maximize the number of complete trials for analysis
@@ -109,7 +109,7 @@ for d=1:N_datasets
     MIN_PEAK_HEIGHT = -10; %mV, change to 0 when access resistance is standardized and all peaked is ensured to overshoot 0.
     MIN_PEAK_PROMINENCE = 6; %works well for ganglions. Decrease to find smaller peaks.
     MIN_PEAK_DISTANCE = sample_rate*1e-3; %peak separation of at least 1ms;
-    THRESHOLD_FIND_WINDOWS =  5 % ms before the spike to find the threshold of first AP
+    THRESHOLD_FIND_WINDOWS =  5; % ms before the spike to find the threshold of first AP
     
     % return arrays most are in the shape of (number of trials, 1)
     resistance_array_MOhm = nan(number_of_trials, 1);
@@ -125,6 +125,12 @@ for d=1:N_datasets
     first_AP_trough_amplitude_mV = nan(number_of_trials, 1);
     first_AP_trough_location_ms = nan(number_of_trials, 1);
     max_number_of_spikes = nan(number_of_trials, 1);
+    max_latency_of_spike = nan(number_of_trials, 1);
+    max_adaptation_index = nan(number_of_trials, 1);
+    max_ISI_CV = nan(number_of_trials, 1);
+    first_current_level_to_block = nan(number_of_trials, 1);
+    max_slope_array_mV = nan(number_of_trials, 1);
+
 
     %start of the FE loop
     for trial = 1:number_of_trials
@@ -218,7 +224,7 @@ for d=1:N_datasets
         
         Vm_diff_1 = diff(depol_Vm(first_spike(2):(first_spike(2) + (10 * 1e-3 * sample_rate)), first_spike(3)),1); %take from 10ms
         locations = find(Vm_diff_1 == 0);
-        trough = [0 0 0];
+        trough = [0 0 0]; %mV ms epoch#
         trough(2) = first_spike(2) + locations(1); % trough location;
         trough(3) = first_spike(3); %trough epoch;
         trough(1) = depol_Vm(trough(2), trough(3)); %trough level mV
@@ -243,11 +249,8 @@ for d=1:N_datasets
         ISI_cv = zeros(length(depol_current_epoch), 1);
         blocked = zeros(length(depol_current_epoch), 1);
         
-        %figure; hold on;
+       
         for epoch=1:length(depol_current_epoch)
-            
-            %findpeaks(depol_Vm(start_time:end_time, epoch), ...
-            %    'MinPeakProminence', 6, 'MinPeakHeight', -5, "MinPeakDistance", sample_rate*1e-3);
             [spikes, locs] = findpeaks(depol_Vm(start_time:end_time, epoch), ...
                 'MinPeakProminence', 6, 'MinPeakHeight', -10, "MinPeakDistance", sample_rate*1e-3); %peak separation at least 1 ms
             try
@@ -263,7 +266,7 @@ for d=1:N_datasets
                     
                 end
                 adaptation_index(epoch) = adaptation_index(epoch) / (length(ISIs) - 1);
-                if locs(end) < (end_time - start_time)/2
+                if locs(end) < (end_time - start_time)/2 % if spike train stops before half of the stim time
                     blocked(epoch) = true;
                 else
                     blocked(epoch) = false;
@@ -277,11 +280,18 @@ for d=1:N_datasets
         
         blocked_epoch = find(blocked == true, 1);
         if isempty(blocked_epoch)
-            blocked_current_level = NaN; % not blocked yet
+            blocked_current_level = 999; % not blocked yet
         else
             blocked_current_level = depol_current_level_pA(blocked_epoch(1));
         end
         
+        max_number_of_spikes(trial) = max(max_number_of_spikes);
+        max_latency_of_spike(trial) = max(latency_to_first_spike)
+        max_adaptation_index(trial) = max(adaptation_index);
+        max_ISI_CV(trial) = max(ISI_cv);
+        first_current_level_to_block(trial) = blocked_current_level;
+        max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;  
+
         
         
         
