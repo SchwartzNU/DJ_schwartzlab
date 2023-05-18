@@ -1,6 +1,5 @@
 function R = MultiPulse_varyCurrent_FeatureExtract(data_group, params)
 
-
 datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
@@ -33,7 +32,12 @@ for d=1:N_datasets
     total_samples = pre_samples + stim_samples + tail_samples;
     ss_samples = 50E-3 * sample_rate;
 
-    all_currents = round([epochs_in_dataset.pulse_1_curr]);
+    all_currents = [epochs_in_dataset.pulse_1_curr];
+    countstbl = countlabels(all_currents);
+    number_of_trials = max(countstbl.Count);
+    if sum(countstbl.Count ~= number_of_trials) > 0 | number_of_train  ~= epochs_in_dataset(1).number_of_cycles
+        warning('Numbers of epochs between trials are not the same')
+    end
     currents  = sort(unique(all_currents));
     N_currents = length(currents);
 
@@ -50,6 +54,7 @@ for d=1:N_datasets
     vrest_vector = zeros(N_currents,1);
     mean_traces = zeros(N_currents, total_samples);
     example_traces = zeros(N_currents, total_samples);
+    other_traces = zeros()
 
     for s=1:N_currents
         ind = find(all_currents == currents(s));
@@ -75,7 +80,12 @@ for d=1:N_datasets
         tmin_rebound(s) = 1E3 * t / sample_rate;
     end
 
+
+
     vrest = mean(vrest_vector);
+
+
+
 
     %set table variables
     R.file_name{d} = datasets_struct(d).file_name;
