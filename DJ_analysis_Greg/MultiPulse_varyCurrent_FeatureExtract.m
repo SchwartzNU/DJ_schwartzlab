@@ -54,10 +54,11 @@ for d=1:N_datasets
     number_of_trials = max(countstbl.Count);
     if sum(countstbl.Count ~= number_of_trials) > 0 | number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
         warning('Numbers of epochs between trials are not the same')
-        number_of_trials = min([epochs_in_dataset.number_of_cycles]);
-    end
-    all_traces = zeros(number_of_trials, N_currents, total_samples);
-    
+        number_of_trials = min(countstbl.Count);
+    end % maximize the number of complete trials for analysis
+
+    all_traces = cell(N_currents, number_of_trials); 
+    % cell array of current (row) x trial (columns) 
 
     for s=1:N_currents
         ind = find(all_currents == currents(s));
@@ -67,7 +68,8 @@ for d=1:N_datasets
         example_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
 
         for j = 1:number_of_trials
-            all_traces(j, s, :) = epochs_in_dataset(ind(j)).raw_data;
+            
+            all_traces{s, j} = [epochs_in_dataset(ind(j)).raw_data];
         end
 
         vrest_vector(s) = mean(trace(1:pre_samples));
@@ -89,21 +91,22 @@ for d=1:N_datasets
 
         %% Feature Extraction Part
         %% Init
-        start_time = pre_time_ms * 10^-3 * sample_rate;
-        end_time = start_time + pre_stim_tail.stim_time * 10^-3 * sample_rate;
-        hyper_current_epoch = find(currents' < 0);
-        depol_current_epoch = find(currents' > 0);
-        hyper_current_level_pA = currents'(hyper_current_epoch);
-        depol_current_level_pA = currents'(depol_current_epoch);
-        time_in_s = linspace(0, size(hyper_Vm,1), size(hyper_Vm,1)) / sample_rate;
+        % start_time = pre_stim_tail.pre_time * 10^-3 * sample_rate;
+        % end_time = start_time + pre_stim_tail.stim_time * 10^-3 * sample_rate;
+        % hyper_current_epoch = find(currents' < 0);
+        % depol_current_epoch = find(currents' > 0);
+        % hyper_current_level_pA = currents(hyper_current_epoch);
+        % depol_current_level_pA = currents(depol_current_epoch);
+      
 
-        for trial = 1:number_of_trials
-            hyper_Vm = all_traces(trial,currents' < 0 ,:);
-            hyper_Vm = hyper_Vm'
-            depol_Vm = example_traces(trial,currents' > 0,:);
-            depol_Vm = depol_Vm'
+        % for trial = 1:number_of_trials
+        %     hyper_Vm = all_traces(trial,currents' < 0 ,:)
+        %     hyper_Vm = hyper_Vm'
+        %     depol_Vm = example_traces(trial,currents' > 0,:)
+        %     depol_Vm = depol_Vm'
+        %     time_in_s = linspace(0, size(hyper_Vm,1), size(hyper_Vm,1)) / sample_rate;
          
-        end
+        % end
     
     end
 
@@ -137,9 +140,7 @@ for d=1:N_datasets
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
 
-    R(d, :)
-    feature_struct = FeatureExtract_new(R(d, :));
-    R.features{d} = {feature_struct};
+    
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 
