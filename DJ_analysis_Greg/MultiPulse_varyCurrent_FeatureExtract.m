@@ -98,21 +98,66 @@ for d=1:N_datasets
     %% Init
     start_time = pre_stim_tail.pre_time * 10^-3 * sample_rate;
     end_time = start_time + pre_stim_tail.stim_time * 10^-3 * sample_rate;
-    hyper_current_epoch = find(currents' < 0)
-    depol_current_epoch = find(currents' > 0)
-    hyper_current_level_pA = currents(hyper_current_epoch)
-    hyper_current_level_pA = hyper_current_level_pA'
-    depol_current_level_pA = currents(depol_current_epoch)
-    depol_current_level_pA = depol_current_level_pA'
+    hyper_current_epoch = find(currents' < 0);
+    depol_current_epoch = find(currents' > 0);
+    hyper_current_level_pA = currents(hyper_current_epoch);
+    hyper_current_level_pA = hyper_current_level_pA';
+    depol_current_level_pA = currents(depol_current_epoch);
+    depol_current_level_pA = depol_current_level_pA';
       
-
-    for trial = 1:number_of_trials
-        hyper_Vm = all_traces(hyper_current_epoch, trial);
-        
-        depol_Vm = all_traces(depol_current_epoch, trial);
-        
-        time_in_s = (0:size(hyper_Vm{1},2) - 1) / sample_rate;
+    % return arrays
+    resistance_array_MOhm = nan(number_of_trials, 1);
+    resistance_Adjusted_RSquare = nan(number_of_trials, 1);
     
+    for trial = 1:number_of_trials
+        %get voltage trace into matrix of time x current
+        hyper_Vm = cell2mat(all_traces(hyper_current_epoch, trial));
+        hyper_Vm = hyper_Vm';
+        depol_Vm = cell2mat(all_traces(depol_current_epoch, trial));
+        depol_Vm = depol_Vm';
+        time_in_s = (0:size(hyper_Vm,1) - 1) / sample_rate;
+
+        
+        %resistance fit
+        stable_Vm = mean(hyper_Vm(start_time:end_time,:));
+        R_linear = fitlm(hyper_current_level_pA, stable_Vm');
+        
+        resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
+        resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
+        if R_linear.Rsquared.Adjusted < 0.90
+            warning('Resistance fit kinda sucky. Check if Ih went brrr')
+        end
+
+        % Calculate Tau (ms)
+        hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
+
+        ft = fittype('a + b*exp(-x*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
+        tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
+        Vinf_array = zeros(length(hyper_current_epoch), 1);
+        for i=1:length(hyper_epoch_less_than_minus50)
+            f = fit([time_in_s(start_time:end_time)]', hyper_Vm(start_time:end_time,...
+                hyper_epoch_less_than_minus50(i)), ft, 'StartPoint',[-60,10,30]);
+
+
+
+            tau_array(i) =  f.c;
+
+
+        end
+
+
+        %Return tau struct
+        tau = struct();
+        tau.Tau_ms = mean(1./tau_array)*1000;
+        tau.SD_ms = std(1./tau_array)*1000;
+        tau.N = size(tau_array, 2);
+        if tau.SD_ms > 10
+            warning('Tau SD too high')
+        end
+
+        %Return Capacitance
+        capacitance_pF = tau.Tau_ms / resistance.R_MOhm * 100;
+        
     end
   
 
