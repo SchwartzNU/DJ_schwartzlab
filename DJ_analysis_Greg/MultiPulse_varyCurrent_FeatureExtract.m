@@ -94,7 +94,7 @@ for d=1:N_datasets
         
     end
     
-
+    
     
     %% Feature Extraction Part
     %% Init
@@ -117,8 +117,8 @@ for d=1:N_datasets
     capacitance_array_pF = nan(number_of_trials,1);
     sag_array = nan(number_of_trials, 1);
     spontaneous_firing_rate_Hz = nan(number_of_trials, 1);
-
-
+    
+    
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
@@ -180,12 +180,41 @@ for d=1:N_datasets
         
         
         
+        %% Find first spike
+        first_spike = [0 0 0]; %peak loc epoch
+        if spontaneous_firing_rate_Hz(trial) ~= 0
+            end_time_find = start_time;
+            start_time_find = 1;
+        else
+            end_time_find = end_time;
+            start_time_find = start_time;
+        end
+        
+        i = 1;
+        
+        while first_spike(2) == 0
+            [pks, locs] = findpeaks(depol_Vm(start_time_find:end_time_find, i), ...
+                'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, ...
+                "MinPeakDistance", MIN_PEAK_DISTANCE);
+            
+            try
+                first_spike = [pks(1) locs(1) i];
+            catch
+                warning('No peak found')
+            end
+            i = i+1;
+            
+        end
+        
+        if spontaneous_firing_rate_Hz(trial) == 0
+            first_spike(2) = start_time_find + first_spike(2);
+            
+        end
         
         
         
         
-        
-    end % Feature Extraction end. Don't go out of this loop.
+    end % Feature Extraction end. Don't paste things outside of this loop.
     
     
     
