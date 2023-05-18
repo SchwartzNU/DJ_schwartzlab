@@ -33,11 +33,7 @@ for d=1:N_datasets
     ss_samples = 50E-3 * sample_rate;
 
     all_currents = [epochs_in_dataset.pulse_1_curr];
-    countstbl = countlabels(all_currents);
-    number_of_trials = max(countstbl.Count);
-    if sum(countstbl.Count ~= number_of_trials) > 0 | number_of_train  ~= epochs_in_dataset(1).number_of_cycles
-        warning('Numbers of epochs between trials are not the same')
-    end
+    
     currents  = sort(unique(all_currents));
     N_currents = length(currents);
 
@@ -54,7 +50,14 @@ for d=1:N_datasets
     vrest_vector = zeros(N_currents,1);
     mean_traces = zeros(N_currents, total_samples);
     example_traces = zeros(N_currents, total_samples);
-    other_traces = zeros()
+    countstbl = countlabels(all_currents);
+    number_of_trials = max(countstbl.Count);
+    if sum(countstbl.Count ~= number_of_trials) > 0 | number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
+        warning('Numbers of epochs between trials are not the same')
+        number_of_trials = min([epochs_in_dataset.number_of_cycles]);
+    end
+    all_traces = zeros(number_of_trials, N_currents, total_samples);
+    
 
     for s=1:N_currents
         ind = find(all_currents == currents(s));
@@ -62,6 +65,11 @@ for d=1:N_datasets
         trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
         mean_traces(s,:) = trace;
         example_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
+
+        for j = 1:number_of_trials
+            all_traces(j, s, :) = epochs_in_dataset(ind(j)).raw_data;
+        end
+
         vrest_vector(s) = mean(trace(1:pre_samples));
 
         vsteady(s) = mean(trace(pre_samples+stim_samples-ss_samples:pre_samples+stim_samples));
@@ -78,6 +86,25 @@ for d=1:N_datasets
         tmax_rebound(s) = 1E3 * t / sample_rate;
         [vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
         tmin_rebound(s) = 1E3 * t / sample_rate;
+
+        %% Feature Extraction Part
+        %% Init
+        start_time = pre_time_ms * 10^-3 * sample_rate;
+        end_time = start_time + pre_stim_tail.stim_time * 10^-3 * sample_rate;
+        hyper_current_epoch = find(currents' < 0);
+        depol_current_epoch = find(currents' > 0);
+        hyper_current_level_pA = currents'(hyper_current_epoch);
+        depol_current_level_pA = currents'(depol_current_epoch);
+        time_in_s = linspace(0, size(hyper_Vm,1), size(hyper_Vm,1)) / sample_rate;
+
+        for trial = 1:number_of_trials
+            hyper_Vm = all_traces(trial,currents' < 0 ,:);
+            hyper_Vm = hyper_Vm'
+            depol_Vm = example_traces(trial,currents' > 0,:);
+            depol_Vm = depol_Vm'
+         
+        end
+    
     end
 
 
