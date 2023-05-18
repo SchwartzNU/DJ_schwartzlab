@@ -89,34 +89,36 @@ for d=1:N_datasets
         [vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
         tmin_rebound(s) = 1E3 * t / sample_rate;
 
-        %% Feature Extraction Part
-        %% Init
-        % start_time = pre_stim_tail.pre_time * 10^-3 * sample_rate;
-        % end_time = start_time + pre_stim_tail.stim_time * 10^-3 * sample_rate;
-        % hyper_current_epoch = find(currents' < 0);
-        % depol_current_epoch = find(currents' > 0);
-        % hyper_current_level_pA = currents(hyper_current_epoch);
-        % depol_current_level_pA = currents(depol_current_epoch);
-      
-
-        % for trial = 1:number_of_trials
-        %     hyper_Vm = all_traces(trial,currents' < 0 ,:)
-        %     hyper_Vm = hyper_Vm'
-        %     depol_Vm = example_traces(trial,currents' > 0,:)
-        %     depol_Vm = depol_Vm'
-        %     time_in_s = linspace(0, size(hyper_Vm,1), size(hyper_Vm,1)) / sample_rate;
-         
-        % end
+        
     
     end
 
 
+    %% Feature Extraction Part
+    %% Init
+    start_time = pre_stim_tail.pre_time * 10^-3 * sample_rate;
+    end_time = start_time + pre_stim_tail.stim_time * 10^-3 * sample_rate;
+    hyper_current_epoch = find(currents' < 0)
+    depol_current_epoch = find(currents' > 0)
+    hyper_current_level_pA = currents(hyper_current_epoch)
+    hyper_current_level_pA = hyper_current_level_pA'
+    depol_current_level_pA = currents(depol_current_epoch)
+    depol_current_level_pA = depol_current_level_pA'
+      
 
+    for trial = 1:number_of_trials
+        hyper_Vm = all_traces(hyper_current_epoch, trial);
+        
+        depol_Vm = all_traces(depol_current_epoch, trial);
+        
+        time_in_s = (0:size(hyper_Vm{1},2) - 1) / sample_rate;
+    
+    end
+  
+
+
+    %% Returning 
     vrest = mean(vrest_vector);
-
-
-
-
     %set table variables
     R.file_name{d} = datasets_struct(d).file_name;
     R.dataset_name{d} = datasets_struct(d).dataset_name;
