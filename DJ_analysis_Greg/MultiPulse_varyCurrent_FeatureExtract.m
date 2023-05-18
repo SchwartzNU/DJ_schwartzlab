@@ -9,18 +9,18 @@ R = sln_results.table_definition_from_template('MultiPulse_varyCurrent_FeatureEx
 for d=1:N_datasets
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
-
+    
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         sln_symphony.ExperimentChannel * ...
         sln_symphony.ExperimentEpochChannel * ...
         aka.MultiPulseParams & ...
         datasets_struct(d),'*');
     N_epochs = length(epochs_in_dataset);
-
+    
     if N_epochs == 0
         error('No epochs in dataset: %s', datasets_struct(d).dataset_name);
     end
-
+    
     %parameters to save for the whole dataset
     sample_rate = epochs_in_dataset(1).sample_rate;
     pre_stim_tail = struct('pre_time', epochs_in_dataset(1).pre_time, ...
@@ -31,12 +31,12 @@ for d=1:N_datasets
     tail_samples = sample_rate * (pre_stim_tail.tail_time / 1E3);
     total_samples = pre_samples + stim_samples + tail_samples;
     ss_samples = 50E-3 * sample_rate;
-
+    
     all_currents = [epochs_in_dataset.pulse_1_curr];
     
     currents  = sort(unique(all_currents));
     N_currents = length(currents);
-
+    
     N_epochs_per_current = zeros(N_currents,1);
     vmax = zeros(N_currents,1);
     vmin = zeros(N_currents,1);
@@ -56,24 +56,24 @@ for d=1:N_datasets
         warning('Numbers of epochs between trials are not the same')
         number_of_trials = min(countstbl.Count);
     end % maximize the number of complete trials for analysis
-
-    all_traces = cell(N_currents, number_of_trials); 
-    % cell array of current (row) x trial (columns) 
-
+    
+    all_traces = cell(N_currents, number_of_trials);
+    % cell array of current (row) x trial (columns)
+    
     for s=1:N_currents
         ind = find(all_currents == currents(s));
         N_epochs_per_current(s) = length(ind);
         trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
         mean_traces(s,:) = trace;
         example_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
-
+        
         for j = 1:number_of_trials
             
             all_traces{s, j} = [epochs_in_dataset(ind(j)).raw_data];
         end
-
+        
         vrest_vector(s) = mean(trace(1:pre_samples));
-
+        
         vsteady(s) = mean(trace(pre_samples+stim_samples-ss_samples:pre_samples+stim_samples));
         if currents(s)>0
             [vmax(s), t] = max(trace(pre_samples+1:pre_samples+stim_samples));
@@ -83,17 +83,17 @@ for d=1:N_datasets
             [vmin(s), t] = min(trace(pre_samples+1:pre_samples+stim_samples) - vrest_vector(s));
             tmin(s) = 1E3 * t / sample_rate;
         end
-
+        
         [vmax_rebound(s), t] = max(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
         tmax_rebound(s) = 1E3 * t / sample_rate;
         [vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
         tmin_rebound(s) = 1E3 * t / sample_rate;
-
         
-    
+        
+        
     end
-
-
+    
+    
     %% Feature Extraction Part
     %% Init
     start_time = pre_stim_tail.pre_time * 10^-3 * sample_rate;
@@ -104,11 +104,12 @@ for d=1:N_datasets
     hyper_current_level_pA = hyper_current_level_pA';
     depol_current_level_pA = currents(depol_current_epoch);
     depol_current_level_pA = depol_current_level_pA';
-      
+    
     % return arrays
     resistance_array_MOhm = nan(number_of_trials, 1);
     resistance_Adjusted_RSquare = nan(number_of_trials, 1);
-    
+    tau_array_ms = nan(number_of_trials,1);
+    capacitance_array_pF = nan(number_of_trials,1);
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
         hyper_Vm = cell2mat(all_traces(hyper_current_epoch, trial));
@@ -116,7 +117,7 @@ for d=1:N_datasets
         depol_Vm = cell2mat(all_traces(depol_current_epoch, trial));
         depol_Vm = depol_Vm';
         time_in_s = (0:size(hyper_Vm,1) - 1) / sample_rate;
-
+        
         
         %resistance fit
         stable_Vm = mean(hyper_Vm(start_time:end_time,:));
@@ -125,44 +126,40 @@ for d=1:N_datasets
         resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
         resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
         if R_linear.Rsquared.Adjusted < 0.90
-            warning('Resistance fit kinda sucky. Check if Ih went brrr')
+            warning('Resistance fit is bad. Check if Ih kicked in!')
         end
-
+        
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
-
+        
         ft = fittype('a + b*exp(-x*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
-        Vinf_array = zeros(length(hyper_current_epoch), 1);
+        
         for i=1:length(hyper_epoch_less_than_minus50)
             f = fit([time_in_s(start_time:end_time)]', hyper_Vm(start_time:end_time,...
                 hyper_epoch_less_than_minus50(i)), ft, 'StartPoint',[-60,10,30]);
-
-
-
-            tau_array(i) =  f.c;
-
-
+            tau_array(i) =  f.c;    
         end
-
-
-        %Return tau struct
-        tau = struct();
-        tau.Tau_ms = mean(1./tau_array)*1000;
-        tau.SD_ms = std(1./tau_array)*1000;
-        tau.N = size(tau_array, 2);
-        if tau.SD_ms > 10
+        
+        
+        %Return tau
+        
+        tau_array_ms(trial) = mean(1./tau_array)*1000;
+        if std(1./tau_array)*1000 > 10
             warning('Tau SD too high')
         end
-
-        %Return Capacitance
-        capacitance_pF = tau.Tau_ms / resistance.R_MOhm * 100;
         
-    end
-  
+        %Return Capacitance
+        capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
 
 
-    %% Returning 
+        
+    
+    end % Feature Extraction end. Don't go out of this loop.
+     
+    
+    
+    %% Returning
     vrest = mean(vrest_vector);
     %set table variables
     R.file_name{d} = datasets_struct(d).file_name;
@@ -186,9 +183,9 @@ for d=1:N_datasets
     R.mean_traces{d} = mean_traces;
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
-
     
-
+    
+    
     fprintf('Elapsed time = %d seconds\n', round(toc));
-
+    
 end
