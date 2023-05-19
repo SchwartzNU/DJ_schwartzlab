@@ -294,21 +294,22 @@ for d=1:N_datasets
         max_ISI_CV(trial) = max(ISI_cv);
         first_current_level_to_block(trial) = blocked_current_level;
         max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;  
-        figure;
+        
         
         spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
-        plot([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], "b-+");
-        hold on;
-        yline((max_number_of_spikes(trial) + spike_number_at_0_pA)/2);
+        % figure;
+        % plot([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], "b-+");
+        % hold on;
+        % yline((max_number_of_spikes(trial) + spike_number_at_0_pA)/2);
         
         horizontal_line_half_max_x = [0:1:depol_current_level_pA(epoch_max_loc)];
         horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
  
         [xi yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
                                 horizontal_line_half_max_x, horizontal_line_half_max_y)    
-        plot(xi, yi, "r-o")
-        xlabel('Current (pA)')
-        ylabel('Number of spikes')
+        % plot(xi, yi, "r-o")
+        % xlabel('Current (pA)')
+        % ylabel('Number of spikes')
 
         if ~isempty(xi) || ~isempty(yi)
             half_max_spike_number(trial) = yi;
@@ -318,7 +319,7 @@ for d=1:N_datasets
             half_max_spike_number(trial) = NaN;
         end
 
-        
+
     end % Feature Extraction end. Don't paste things outside of this loop.
     
     
