@@ -294,7 +294,7 @@ for d=1:N_datasets
             catch
                 latency_to_first_spike(epoch) =  (end_time - start_time)/ sample_rate*1e3;
                 spike_numbers(epoch) = length(spikes);
-                decay_to_63_percent(epoch) = NaN %(end_time - start_time)/ sample_rate*1e3;
+                decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
             end
         end
         
@@ -330,6 +330,8 @@ for d=1:N_datasets
         % ylabel('Number of spikes')
         
         if ~isempty(xi) || ~isempty(yi)
+            yi
+            xi
             half_max_spike_number(trial) = yi(1);
             half_max_spike_current(trial) = xi(1);
         else
