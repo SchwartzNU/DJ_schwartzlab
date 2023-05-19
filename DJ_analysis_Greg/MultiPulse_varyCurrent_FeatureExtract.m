@@ -110,6 +110,7 @@ for d=1:N_datasets
     MIN_PEAK_PROMINENCE = 6; %works well for ganglions. Decrease to find smaller peaks.
     MIN_PEAK_DISTANCE = sample_rate*1e-3; %peak separation of at least 1ms;
     THRESHOLD_FIND_WINDOWS =  5; % ms before the spike to find the threshold of first AP
+    AHP_FIND_WINDOWS = 10; % ms after depol current injection to find AHP peak (anti-peak)
     
     % return arrays most are in the shape of (number of trials, 1)
     resistance_array_MOhm = nan(number_of_trials, 1);
@@ -119,7 +120,7 @@ for d=1:N_datasets
     sag_array = nan(number_of_trials, 1);
     spontaneous_firing_rate_Hz = nan(number_of_trials, 1);
     V_threshold_array_mV = nan(number_of_trials, 1);
-    half_width_time_array_ms = nan(number_of_trials, 1); 
+    half_width_time_array_ms = nan(number_of_trials, 1);
     first_AP_peak_amplitude_mV = nan(number_of_trials, 1);
     first_AP_peak_location_ms = nan(number_of_trials, 1);
     first_AP_trough_amplitude_mV = nan(number_of_trials, 1);
@@ -133,7 +134,11 @@ for d=1:N_datasets
     max_slope_array_mV = nan(number_of_trials, 1);
     half_max_spike_number = nan(number_of_trials,1);
     half_max_spike_current = nan(number_of_trials, 1);
-
+    Nspike_max_vs_last_epoch_ratio = nan(number_of_trials, 1);
+    max_AHP_after_depol_injection = nan(number_of_trials, 1);
+    max_63_percent_decay_time = nan(number_of_trials, 1);
+    min_63_percent_decay_time = nan(number_of_trials, 1);
+    spontenous_spike_amplitude_cv = nan(number_of_trials, 1);
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
@@ -184,15 +189,17 @@ for d=1:N_datasets
         
         %% Does it spike spontaneously
         spontaneous_peak_array = zeros(size(depol_current_level_pA,1), 1);
-        
+        spike_amplitudes = [];
         
         for i=1:size(depol_current_level_pA, 1)
-            spontaneous_peak_array(i) = size(findpeaks(depol_Vm(1:start_time, i), ...
-                "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE),1);
+            spontaneous_spikes = findpeaks(depol_Vm(1:start_time, i), ...
+                "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE);
+            spontaneous_peak_array(i) = size(spontaneous_spikes,1);
+            spike_amplitudes = cat(1, spike_amplitudes, spontaneous_spikes);
         end
         
         spontaneous_firing_rate_Hz(trial) = (mean(spontaneous_peak_array))/(start_time/sample_rate); %Hz
-        
+        spontenous_spike_amplitude_cv(trial) = std(spike_amplitudes) ./ mean(spike_amplitudes);
         
         
         %% Find first spike
@@ -230,7 +237,7 @@ for d=1:N_datasets
         trough(2) = first_spike(2) + locations(1); % trough location;
         trough(3) = first_spike(3); %trough epoch;
         trough(1) = depol_Vm(trough(2), trough(3)); %trough level mV
-        start_time_for_threshold = max(1, (first_spike(2) - (THRESHOLD_FIND_WINDOWS * 1e-3 * sample_rate))); 
+        start_time_for_threshold = max(1, (first_spike(2) - (THRESHOLD_FIND_WINDOWS * 1e-3 * sample_rate)));
         Vm_diff_2 = diff(depol_Vm(start_time_for_threshold : first_spike(2), first_spike(3)), 1);
         threshold_loc = find(Vm_diff_2 >= max(Vm_diff_2)*0.2,1);
         V_threshold_array_mV(trial) = depol_Vm(threshold_loc + 1, first_spike(3)); % + 1 bc diff lost one position
@@ -241,8 +248,8 @@ for d=1:N_datasets
         first_AP_peak_location_ms(trial) = first_spike(2);
         first_AP_trough_amplitude_mV(trial) = trough(1);
         first_AP_trough_location_ms(trial) = trough(2);
-
-
+        
+        
         %% spikes and ISIs during current injections
         
         spike_numbers = zeros(length(depol_current_epoch), 1);
@@ -250,8 +257,8 @@ for d=1:N_datasets
         adaptation_index = zeros(length(depol_current_epoch), 1);
         ISI_cv = zeros(length(depol_current_epoch), 1);
         blocked = zeros(length(depol_current_epoch), 1);
+        decay_to_63_percent = zeros(length(depol_current_epoch),1);
         
-       
         for epoch=1:length(depol_current_epoch)
             [spikes, locs] = findpeaks(depol_Vm(start_time:end_time, epoch), ...
                 'MinPeakProminence', 6, 'MinPeakHeight', -10, "MinPeakDistance", sample_rate*1e-3); %peak separation at least 1 ms
@@ -274,9 +281,20 @@ for d=1:N_datasets
                     blocked(epoch) = false;
                 end
                 
+                %decay 36%
+                
+                spike_63_loc = find(abs(spikes) < abs((spikes(1) * 0.63)), 1);
+                
+                if ~isempty(spike_63_loc)
+                    
+                    decay_to_63_percent(epoch) = locs(spike_63_loc) / sample_rate * 1e3; %ms
+                else
+                    decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
+                end
             catch
                 latency_to_first_spike(epoch) =  (end_time - start_time)/ sample_rate*1e3;
                 spike_numbers(epoch) = length(spikes);
+                decay_to_63_percent(epoch) = NaN %(end_time - start_time)/ sample_rate*1e3;
             end
         end
         
@@ -293,7 +311,7 @@ for d=1:N_datasets
         max_adaptation_index(trial) = max(adaptation_index);
         max_ISI_CV(trial) = max(ISI_cv);
         first_current_level_to_block(trial) = blocked_current_level;
-        max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;  
+        max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
         
         
         spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
@@ -304,13 +322,13 @@ for d=1:N_datasets
         
         horizontal_line_half_max_x = [0:1:depol_current_level_pA(epoch_max_loc)];
         horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
- 
+        
         [xi yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
-                                horizontal_line_half_max_x, horizontal_line_half_max_y)    
+            horizontal_line_half_max_x, horizontal_line_half_max_y);
         % plot(xi, yi, "r-o")
         % xlabel('Current (pA)')
         % ylabel('Number of spikes')
-
+        
         if ~isempty(xi) || ~isempty(yi)
             half_max_spike_number(trial) = yi;
             half_max_spike_current(trial) = xi;
@@ -318,8 +336,11 @@ for d=1:N_datasets
             half_max_spike_current(trial) = NaN;
             half_max_spike_number(trial) = NaN;
         end
-
-
+        
+        Nspike_max_vs_last_epoch_ratio(trial) = max_number_of_spikes(trial) / spike_numbers(end);
+        max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:)));
+        max_63_percent_decay_time(trial) = max(decay_to_63_percent);
+        min_63_percent_decay_time(trial) = min(decay_to_63_percent);
     end % Feature Extraction end. Don't paste things outside of this loop.
     
     
@@ -348,8 +369,33 @@ for d=1:N_datasets
     R.mean_traces{d} = mean_traces;
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
-    
-    
+
+    R.resistance{d} = resistance_array_MOhm ;
+    R.resistance_Rsquared{d} = resistance_Adjusted_RSquare ;
+    R.tau{d} = tau_array_ms ;
+    R.capacitance{d} = capacitance_array_pF; 
+    R.sag{d} = sag_array ;
+    R.spontaneous_firing_rate{d} = spontaneous_firing_rate_Hz ;
+    R.V_threshold{d} = V_threshold_array_mV ;
+    R.half_width_time{d} = half_width_time_array_ms ;
+    R.first_AP_peak_amplitude{d} = first_AP_peak_amplitude_mV ;
+    R.first_AP_peak_time{d} = first_AP_peak_location_ms ;
+    R.first_AP_trough_amplitude{d} = first_AP_trough_amplitude_mV ;
+    R.first_AP_trough_time{d} = first_AP_trough_location_ms ;
+    R.max_number_of_spike{d} = max_number_of_spikes ;
+    R.current_max_number_of_spike{d} = current_where_max_spikes ;
+    R.max_latency_of_spike{d} = max_latency_of_spike ;
+    R.max_adaptation_index{d} = max_adaptation_index ;
+    R.max_ISI_CV{d} = max_ISI_CV ;
+    R.first_current_level_to_block{d} = first_current_level_to_block; 
+    R.max_slope{d} = max_slope_array_mV ;
+    R.half_max_spike_number{d} = half_max_spike_number ;
+    R.half_max_spike_current{d} = half_max_spike_current ;
+    R.Nspike_max_vs_last_epoch_ratio{d} = Nspike_max_vs_last_epoch_ratio ;
+    R.max_AHP_after_depol_injection{d} = max_AHP_after_depol_injection ;
+    R.max_63_percent_decay_time{d} = max_63_percent_decay_time ;
+    R.min_63_percent_decay_time{d} = min_63_percent_decay_time ;
+    R.spontenous_spike_amplitude_cv{d} = spontenous_spike_amplitude_cv;
     
     fprintf('Elapsed time = %d seconds\n', round(toc));
     
