@@ -330,8 +330,7 @@ for d=1:N_datasets
         % ylabel('Number of spikes')
         
         if ~isempty(xi) || ~isempty(yi)
-            yi
-            xi
+            
             half_max_spike_number(trial) = yi(1);
             half_max_spike_current(trial) = xi(1);
         else
