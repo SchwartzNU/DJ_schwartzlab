@@ -125,12 +125,14 @@ for d=1:N_datasets
     first_AP_trough_amplitude_mV = nan(number_of_trials, 1);
     first_AP_trough_location_ms = nan(number_of_trials, 1);
     max_number_of_spikes = nan(number_of_trials, 1);
+    current_where_max_spikes = nan(number_of_trials, 1);
     max_latency_of_spike = nan(number_of_trials, 1);
     max_adaptation_index = nan(number_of_trials, 1);
     max_ISI_CV = nan(number_of_trials, 1);
     first_current_level_to_block = nan(number_of_trials, 1);
     max_slope_array_mV = nan(number_of_trials, 1);
-
+    half_max_spike_number = nan(number_of_trials,1);
+    half_max_spike_current = nan(number_of_trials, 1);
 
     %start of the FE loop
     for trial = 1:number_of_trials
@@ -285,15 +287,37 @@ for d=1:N_datasets
             blocked_current_level = depol_current_level_pA(blocked_epoch(1));
         end
         
-        max_number_of_spikes(trial) = max(max_number_of_spikes);
-        max_latency_of_spike(trial) = max(latency_to_first_spike)
+        [max_number_of_spikes(trial), epoch_max_loc] = max(spike_numbers);
+        current_where_max_spikes(trial) = depol_current_level_pA(epoch_max_loc);
+        max_latency_of_spike(trial) = max(latency_to_first_spike);
         max_adaptation_index(trial) = max(adaptation_index);
         max_ISI_CV(trial) = max(ISI_cv);
         first_current_level_to_block(trial) = blocked_current_level;
         max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;  
+        figure;
+        
+        spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
+        plot([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], "b-+");
+        hold on;
+        yline((max_number_of_spikes(trial) + spike_number_at_0_pA)/2);
+        
+        horizontal_line_half_max_x = [0:1:depol_current_level_pA(epoch_max_loc)];
+        horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
+ 
+        [xi yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
+                                horizontal_line_half_max_x, horizontal_line_half_max_y)    
+        plot(xi, yi, "r-o")
+        xlabel('Current (pA)')
+        ylabel('Number of spikes')
 
-        
-        
+        if ~isempty(xi) || ~isempty(yi)
+            half_max_spike_number(trial) = yi;
+            half_max_spike_current(trial) = xi;
+        else
+            half_max_spike_current(trial) = NaN;
+            half_max_spike_number(trial) = NaN;
+        end
+
         
     end % Feature Extraction end. Don't paste things outside of this loop.
     
