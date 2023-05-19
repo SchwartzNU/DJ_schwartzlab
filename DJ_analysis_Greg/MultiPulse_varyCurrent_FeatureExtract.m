@@ -1,12 +1,8 @@
 function R = MultiPulse_varyCurrent_FeatureExtract(data_group, params)
-
 datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
-
 R = sln_results.table_definition_from_template('MultiPulse_varyCurrent_FeatureExtract',N_datasets);
-
-
 for d=1:N_datasets
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
@@ -93,8 +89,6 @@ for d=1:N_datasets
         
         
     end
-    
-    
     
     %% Feature Extraction Part
     %% Init
@@ -313,21 +307,13 @@ for d=1:N_datasets
         first_current_level_to_block(trial) = blocked_current_level;
         max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
         
-        
         spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
-        % figure;
-        % plot([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], "b-+");
-        % hold on;
-        % yline((max_number_of_spikes(trial) + spike_number_at_0_pA)/2);
         
         horizontal_line_half_max_x = [0:1:depol_current_level_pA(epoch_max_loc)];
         horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
         
         [xi yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
             horizontal_line_half_max_x, horizontal_line_half_max_y);
-        % plot(xi, yi, "r-o")
-        % xlabel('Current (pA)')
-        % ylabel('Number of spikes')
         
         if ~isempty(xi) || ~isempty(yi)
             
@@ -370,11 +356,11 @@ for d=1:N_datasets
     R.mean_traces{d} = mean_traces;
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
-
+    % Feature parts. Everything is returned into a cell of n trials 
     R.resistance{d} =resistance_array_MOhm ;
     R.resistance_rsquared{d} =resistance_Adjusted_RSquare ;
     R.tau{d} =tau_array_ms ;
-    R.capacitance{d} =capacitance_array_pF; 
+    R.capacitance{d} =capacitance_array_pF;
     R.sag{d} =sag_array ;
     R.spontaneous_firing_rate{d} =spontaneous_firing_rate_Hz ;
     R.v_threshold{d} =V_threshold_array_mV ;
@@ -388,7 +374,7 @@ for d=1:N_datasets
     R.max_latency_of_spike{d} =max_latency_of_spike ;
     R.max_adaptation_index{d} =max_adaptation_index ;
     R.max_isi_cv{d} =max_ISI_CV ;
-    R.first_current_level_to_block{d} =first_current_level_to_block; 
+    R.first_current_level_to_block{d} =first_current_level_to_block;
     R.max_slope{d} =max_slope_array_mV ;
     R.half_max_spike_number{d} =half_max_spike_number ;
     R.half_max_spike_current{d} =half_max_spike_current ;
