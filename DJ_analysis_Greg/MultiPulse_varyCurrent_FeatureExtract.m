@@ -198,6 +198,7 @@ for d=1:N_datasets
         
         %% Find first spike
         first_spike = [0 0 0]; %peak loc epoch
+        trough = [0 0 0]; %mV ms epoch#
         if spontaneous_firing_rate_Hz(trial) ~= 0
             end_time_find = start_time;
             start_time_find = 1;
@@ -221,17 +222,14 @@ for d=1:N_datasets
             i = i+1;
             
         end
-        catch
-            pks = 0;
-            locs = 0;
-        end
+        
         if spontaneous_firing_rate_Hz(trial) == 0
             first_spike(2) = start_time_find + first_spike(2);
         end
         
         Vm_diff_1 = diff(depol_Vm(first_spike(2):(first_spike(2) + (10 * 1e-3 * sample_rate)), first_spike(3)),1); %take from 10ms
         locations = find(Vm_diff_1 == 0);
-        trough = [0 0 0]; %mV ms epoch#
+        
         trough(2) = first_spike(2) + locations(1); % trough location;
         trough(3) = first_spike(3); %trough epoch;
         trough(1) = depol_Vm(trough(2), trough(3)); %trough level mV
@@ -241,7 +239,10 @@ for d=1:N_datasets
         V_threshold_array_mV(trial) = depol_Vm(threshold_loc + 1, first_spike(3)); % + 1 bc diff lost one position
         half_height = (first_spike(1) + trough(1)) / 2;
         half_width_time_array_ms(trial) = sum(depol_Vm(threshold_loc : trough(2), trough(3)) >= half_height) /sample_rate * 1e3;
-        
+        catch
+            pks = 0;
+            locs = 0;
+        end
         first_AP_peak_amplitude_mV(trial) = first_spike(1);
         first_AP_peak_location_ms(trial) = first_spike(2);
         first_AP_trough_amplitude_mV(trial) = trough(1);
