@@ -209,7 +209,7 @@ for d=1:N_datasets
         
         i = 1;
         try
-        while first_spike(2) == 0
+        while first_spike(2) == 0 && i <= length(depol_Vm, 1)
             [pks, locs] = findpeaks(depol_Vm(start_time_find:end_time_find, i), ...
                 'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, ...
                 "MinPeakDistance", MIN_PEAK_DISTANCE);
