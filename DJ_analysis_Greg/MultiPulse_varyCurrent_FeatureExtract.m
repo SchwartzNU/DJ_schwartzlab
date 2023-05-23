@@ -208,7 +208,7 @@ for d=1:N_datasets
         end
         
         i = 1;
-        try
+        
         while first_spike(2) == 0 && i <= length(depol_Vm, 1)
             [pks, locs] = findpeaks(depol_Vm(start_time_find:end_time_find, i), ...
                 'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, ...
@@ -222,11 +222,11 @@ for d=1:N_datasets
             i = i+1;
             
         end
-        
         if spontaneous_firing_rate_Hz(trial) == 0
             first_spike(2) = start_time_find + first_spike(2);
         end
         
+        try
         Vm_diff_1 = diff(depol_Vm(first_spike(2):(first_spike(2) + (10 * 1e-3 * sample_rate)), first_spike(3)),1); %take from 10ms
         locations = find(Vm_diff_1 == 0);
         
