@@ -46,13 +46,13 @@ for d=1:N_datasets
     vrest_vector = zeros(N_currents,1);
     mean_traces = zeros(N_currents, total_samples);
     example_traces = zeros(N_currents, total_samples);
-    countstbl = countlabels(all_currents)
-    number_of_trials = max(countstbl.Count)
-    epochs_in_dataset(1).number_of_cycles
-    if sum(countstbl.Count ~= number_of_trials) > 0 || number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
-        warning('Numbers of epochs between trials are not the same')
-        number_of_trials = min(countstbl.Count);
-    end % maximize the number of complete trials for analysis
+    %countstbl = countlabels(all_currents)
+    number_of_trials = epochs_in_dataset(1).number_of_cycles;
+    
+    % if sum(countstbl.Count ~= number_of_trials) > 0 || number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
+    %     warning('Numbers of epochs between trials are not the same')
+    %     number_of_trials = min(countstbl.Count);
+    % end % maximize the number of complete trials for analysis
     
     all_traces = cell(N_currents, number_of_trials);
     % cell array of current (row) x trial (columns)
