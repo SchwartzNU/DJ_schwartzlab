@@ -194,13 +194,16 @@ for d=1:N_datasets
         spontaneous_peak_array = zeros(size(depol_current_level_pA,1), 1);
         spike_amplitudes = [];
         
-        for i=1:size(depol_current_level_pA, 1)
-            spontaneous_spikes = findpeaks(depol_Vm(1:start_time, i), ...
-                "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE);
-            spontaneous_peak_array(i) = size(spontaneous_spikes,1);
-            spike_amplitudes = cat(1, spike_amplitudes, spontaneous_spikes);
+        try
+            for i=1:size(depol_current_level_pA, 1)
+                spontaneous_spikes = findpeaks(depol_Vm(1:start_time, i), ...
+                    "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE);
+                spontaneous_peak_array(i) = size(spontaneous_spikes,1);
+                spike_amplitudes = cat(1, spike_amplitudes, spontaneous_spikes);
+            end
+        catch
+            warning('No Spontaneous Peak Found')
         end
-        
         spontaneous_firing_rate_Hz(trial) = (mean(spontaneous_peak_array))/(start_time/sample_rate); %Hz
         spontenous_spike_amplitude_cv(trial) = std(spike_amplitudes) ./ mean(spike_amplitudes);
         
@@ -219,16 +222,23 @@ for d=1:N_datasets
         i = 1;
         
         while first_spike(2) == 0 && i <= size(depol_Vm, 2)
+            try
             [pks, locs] = findpeaks(depol_Vm(start_time_find:end_time_find, i), ...
                 'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, ...
                 "MinPeakDistance", MIN_PEAK_DISTANCE);
-            try
-                first_spike = [pks(1) locs(1) i];
-            catch
-                warning('No peak found')
+            
             end
-
-            i = i+1;
+            if isempty(pks)
+                if i == size(depol_Vm, 2):
+                    warning('No peak found')
+                else
+                    continue
+                end
+            else
+                first_spike = [pks(1) locs(1) i];
+                break
+            end
+             i = i+1;
             
         end
         %if spontaneous_firing_rate_Hz(trial) == 0
@@ -274,9 +284,10 @@ for d=1:N_datasets
         decay_to_63_percent = zeros(length(depol_current_epoch),1);
         
         for epoch=1:length(depol_current_epoch)
-            [spikes, locs] = findpeaks(depol_Vm(start_time:end_time, epoch), ...
-                'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE); %peak separation at least 1 ms
+            
             try
+                [spikes, locs] = findpeaks(depol_Vm(start_time:end_time, epoch), ...
+                'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE); %peak separation at least 1 ms
                 latency_to_first_spike(epoch) = locs(1) *1e3 / sample_rate ;
                 spike_numbers(epoch) = length(spikes);
                 locs_move_1 = [0; locs(1:end-1)];
@@ -309,6 +320,7 @@ for d=1:N_datasets
                 latency_to_first_spike(epoch) =  NaN;
                 spike_numbers(epoch) = length(spikes);
                 decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
+                
             end
         end
         
