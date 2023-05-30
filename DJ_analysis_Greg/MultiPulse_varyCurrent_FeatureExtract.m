@@ -135,6 +135,8 @@ for d=1:N_datasets
     spontenous_spike_amplitude_cv = nan(number_of_trials, 1);
     resting_Vm = nan(number_of_trials, 1);
     resting_Vm_range = nan(number_of_trials, 1);
+
+    warning('off', 'signal:findpeaks:largeMinPeakHeight')
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
