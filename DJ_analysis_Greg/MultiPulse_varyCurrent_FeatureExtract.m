@@ -324,7 +324,7 @@ for d=1:N_datasets
                     decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
                 end
             catch
-                warning('Cannot find AP during depol at %f in trial %d', depol_current_level_pA(epoch), trial)
+                warning('Cannot find AP during depol at %.3f pA in trial %d', depol_current_level_pA(epoch), trial)
                 latency_to_first_spike(epoch) =  NaN;
                 spike_numbers(epoch) = length(spikes);
                 decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
