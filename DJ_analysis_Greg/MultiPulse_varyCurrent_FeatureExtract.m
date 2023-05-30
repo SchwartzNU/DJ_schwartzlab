@@ -275,7 +275,7 @@ for d=1:N_datasets
         
         for epoch=1:length(depol_current_epoch)
             [spikes, locs] = findpeaks(depol_Vm(start_time:end_time, epoch), ...
-                'MinPeakProminence', 6, 'MinPeakHeight', -10, "MinPeakDistance", sample_rate*1e-3); %peak separation at least 1 ms
+                'MinPeakProminence', MIN_PEAK_PROMINENCE, 'MinPeakHeight', MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE); %peak separation at least 1 ms
             try
                 latency_to_first_spike(epoch) = locs(1) *1e3 / sample_rate ;
                 spike_numbers(epoch) = length(spikes);
