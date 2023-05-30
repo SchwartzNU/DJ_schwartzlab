@@ -30,7 +30,6 @@ for d=1:N_datasets
     ss_samples = 50E-3 * sample_rate;
     
     all_currents = [epochs_in_dataset.pulse_1_curr];
-    epochs_in_dataset.pulse_1_curr
     currents  = sort(unique(all_currents));
     N_currents = length(currents);
     
@@ -47,8 +46,9 @@ for d=1:N_datasets
     vrest_vector = zeros(N_currents,1);
     mean_traces = zeros(N_currents, total_samples);
     example_traces = zeros(N_currents, total_samples);
-    countstbl = countlabels(all_currents);
-    number_of_trials = max(countstbl.Count);
+    countstbl = countlabels(all_currents)
+    number_of_trials = max(countstbl.Count)
+    epochs_in_dataset(1).number_of_cycles
     if sum(countstbl.Count ~= number_of_trials) > 0 || number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
         warning('Numbers of epochs between trials are not the same')
         number_of_trials = min(countstbl.Count);
