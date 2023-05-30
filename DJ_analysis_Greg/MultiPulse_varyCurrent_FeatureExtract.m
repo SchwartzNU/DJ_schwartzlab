@@ -229,7 +229,7 @@ for d=1:N_datasets
             
             end
             if isempty(pks)
-                if i == size(depol_Vm, 2):
+                if i == size(depol_Vm, 2)
                     warning('No peak found')
                 else
                     continue
