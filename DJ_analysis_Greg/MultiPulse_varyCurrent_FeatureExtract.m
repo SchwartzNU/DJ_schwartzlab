@@ -227,12 +227,14 @@ for d=1:N_datasets
         end
         
         try
-        Vm_diff_1 = diff(depol_Vm(first_spike(2):(first_spike(2) + (10 * 1e-3 * sample_rate)), first_spike(3)),1); %take from 10ms
-        locations = find(Vm_diff_1 == 0);
+            if length(locs) > 1
+                [trough_size trough_loc] = min(depol_Vm(locs(1):locs(2), first_spike(3)));
+            else
+                [trough_size trough_loc] = min(depol_Vm(locs(1):locs(1) + sample_rate*5*1e-3, first_spike(3)));
         
-        trough(2) = first_spike(2) + locations(1); % trough location;
+        trough(2) = trough_loc + locs(1); % trough location;
         trough(3) = first_spike(3); %trough epoch;
-        trough(1) = depol_Vm(trough(2), trough(3)); %trough level mV
+        trough(1) = trough_size; %trough level mV
         start_time_for_threshold = max(1, (first_spike(2) - (THRESHOLD_FIND_WINDOWS * 1e-3 * sample_rate)));
         Vm_diff_2 = diff(depol_Vm(start_time_for_threshold : first_spike(2), first_spike(3)), 1);
         threshold_loc = find(Vm_diff_2 >= max(Vm_diff_2)*0.2,1);
