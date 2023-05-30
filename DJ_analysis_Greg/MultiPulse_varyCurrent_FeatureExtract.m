@@ -206,7 +206,7 @@ for d=1:N_datasets
         end
         
         if isempty(spike_amplitudes)
-            warning('No Spontaneous Peak Found at trial %d \n', trial)
+            warning('No Spontaneous Peak Found at trial %d', trial)
         end
         spontaneous_firing_rate_Hz(trial) = (mean(spontaneous_peak_array))/(start_time/sample_rate); %Hz
         spontenous_spike_amplitude_cv(trial) = std(spike_amplitudes) ./ mean(spike_amplitudes);
@@ -324,7 +324,7 @@ for d=1:N_datasets
                     decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
                 end
             catch
-                warning('Cannot find AP during depol at %f in trial %d', hyper_current_level_pA(epoch), trial)
+                warning('Cannot find AP during depol at %f in trial %d', depol_current_level_pA(epoch), trial)
                 latency_to_first_spike(epoch) =  NaN;
                 spike_numbers(epoch) = length(spikes);
                 decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
