@@ -100,11 +100,11 @@ for d=1:N_datasets
     hyper_current_level_pA = hyper_current_level_pA';
     depol_current_level_pA = currents(depol_current_epoch);
     depol_current_level_pA = depol_current_level_pA';
-    MIN_PEAK_HEIGHT = -10; %mV, change to 0 when access resistance is standardized and all peaked is ensured to overshoot 0.
+    MIN_PEAK_HEIGHT = -20; %mV, change to 0 when access resistance is standardized and all peaked is ensured to overshoot 0.
     MIN_PEAK_PROMINENCE = 6; %works well for ganglions. Decrease to find smaller peaks.
     MIN_PEAK_DISTANCE = sample_rate*1e-3; %peak separation of at least 1ms;
     THRESHOLD_FIND_WINDOWS =  5; % ms before the spike to find the threshold of first AP
-    AHP_FIND_WINDOWS = 10; % ms after depol current injection to find AHP peak (anti-peak)
+    AHP_FIND_WINDOWS = 20; % ms after depol current injection to find AHP peak (anti-peak)
     
     % return arrays most are in the shape of (number of trials, 1)
     resistance_array_MOhm = nan(number_of_trials, 1);
