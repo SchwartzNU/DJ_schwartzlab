@@ -153,7 +153,7 @@ for d=1:N_datasets
         resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
         resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
         if resting_Vm_range > 5
-            warning('Resting Membrane Potential fluctuates within trial')
+            warning('Resting Membrane Potential fluctuates within trial %d', trial)
         end
         %resistance fit
         stable_Vm = mean(hyper_Vm(start_time:end_time,:));
@@ -162,7 +162,7 @@ for d=1:N_datasets
         resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
         resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
         if R_linear.Rsquared.Adjusted < 0.90
-            warning('Resistance fit is bad. Check if Ih kicked in!')
+            warning('Resistance fit of trial %d is bad. Check if Ih kicked in!', trial)
         end
         
         % Calculate Tau (ms)
@@ -254,9 +254,9 @@ for d=1:N_datasets
         
         try
             if length(locs) > 1
-                [trough_size trough_loc] = min(depol_Vm(locs(1):locs(2), first_spike(3)));
+                [trough_size, trough_loc] = min(depol_Vm(locs(1):locs(2), first_spike(3)));
             else
-                [trough_size trough_loc] = min(depol_Vm(locs(1):locs(1) + sample_rate*5*1e-3, first_spike(3)));
+                [trough_size, trough_loc] = min(depol_Vm(locs(1):locs(1) + sample_rate*5*1e-3, first_spike(3)));
             end
         
         trough(2) = (trough_loc + locs(1)); % trough location;
