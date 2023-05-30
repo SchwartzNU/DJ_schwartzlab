@@ -112,7 +112,7 @@ for d=1:N_datasets
     tau_array_ms = nan(number_of_trials,1);
     capacitance_array_pF = nan(number_of_trials,1);
     sag_array = nan(number_of_trials, 1);
-    spontaneous_firing_rate_Hz = nan(number_of_trials, 1);
+    spontaneous_firing_rate_Hz = zeros(number_of_trials, 1);
     V_threshold_array_mV = nan(number_of_trials, 1);
     half_width_time_array_ms = nan(number_of_trials, 1);
     first_AP_peak_amplitude_mV = nan(number_of_trials, 1);
@@ -133,6 +133,8 @@ for d=1:N_datasets
     max_63_percent_decay_time = nan(number_of_trials, 1);
     min_63_percent_decay_time = nan(number_of_trials, 1);
     spontenous_spike_amplitude_cv = nan(number_of_trials, 1);
+    resting_Vm = nan(number_of_trials, 1);
+    resting_Vm_range = nan(number_of_trials, 1);
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
@@ -141,8 +143,15 @@ for d=1:N_datasets
         depol_Vm = cell2mat(all_traces(depol_current_epoch, trial));
         depol_Vm = depol_Vm';
         time_in_s = (0:size(hyper_Vm,1) - 1) / sample_rate;
-        
-        
+        figure; hold on;
+        plot(hyper_Vm);
+        plot(depol_Vm);
+
+        resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+        resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+        if resting_Vm_range > 5
+            warning('Resting Membrane Potential fluctuates within trial')
+        end
         %resistance fit
         stable_Vm = mean(hyper_Vm(start_time:end_time,:));
         R_linear = fitlm(hyper_current_level_pA, stable_Vm');
@@ -222,9 +231,9 @@ for d=1:N_datasets
             i = i+1;
             
         end
-        if spontaneous_firing_rate_Hz(trial) == 0
-            first_spike(2) = start_time_find + first_spike(2);
-        end
+        %if spontaneous_firing_rate_Hz(trial) == 0
+        %    first_spike(2) = start_time_find + first_spike(2);
+        %end
         
         try
             if length(locs) > 1
@@ -233,7 +242,7 @@ for d=1:N_datasets
                 [trough_size trough_loc] = min(depol_Vm(locs(1):locs(1) + sample_rate*5*1e-3, first_spike(3)));
             end
         
-        trough(2) = trough_loc + locs(1); % trough location;
+        trough(2) = (trough_loc + locs(1)); % trough location;
         trough(3) = first_spike(3); %trough epoch;
         trough(1) = trough_size; %trough level mV
         start_time_for_threshold = max(1, (first_spike(2) - (THRESHOLD_FIND_WINDOWS * 1e-3 * sample_rate)));
@@ -242,6 +251,9 @@ for d=1:N_datasets
         V_threshold_array_mV(trial) = depol_Vm(threshold_loc + 1, first_spike(3)); % + 1 bc diff lost one position
         half_height = (first_spike(1) + trough(1)) / 2;
         half_width_time_array_ms(trial) = sum(depol_Vm(threshold_loc : trough(2), trough(3)) >= half_height) /sample_rate * 1e3;
+        first_spike(2) = first_spike(2) / sample_rate * 1e3;
+        trough(2) = (trough_loc + locs(1)) / sample_rate * 1e3; % trough location;
+
         catch
             pks = 0;
             locs = 0;
@@ -255,7 +267,7 @@ for d=1:N_datasets
         %% spikes and ISIs during current injections
         
         spike_numbers = zeros(length(depol_current_epoch), 1);
-        latency_to_first_spike = zeros(length(depol_current_epoch), 1);
+        latency_to_first_spike = nan(length(depol_current_epoch), 1);
         adaptation_index = zeros(length(depol_current_epoch), 1);
         ISI_cv = zeros(length(depol_current_epoch), 1);
         blocked = zeros(length(depol_current_epoch), 1);
@@ -294,7 +306,7 @@ for d=1:N_datasets
                     decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
                 end
             catch
-                latency_to_first_spike(epoch) =  (end_time - start_time)/ sample_rate*1e3;
+                latency_to_first_spike(epoch) =  NaN;
                 spike_numbers(epoch) = length(spikes);
                 decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
             end
@@ -314,7 +326,7 @@ for d=1:N_datasets
         max_ISI_CV(trial) = max(ISI_cv);
         first_current_level_to_block(trial) = blocked_current_level;
         max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
-        
+        ISI_CV_at_max_spikes = ISI_cv(epoch_max_loc);
         spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
         
         horizontal_line_half_max_x = [0:1:depol_current_level_pA(epoch_max_loc)];
@@ -332,13 +344,17 @@ for d=1:N_datasets
             half_max_spike_number(trial) = NaN;
         end
         
-        Nspike_max_vs_last_epoch_ratio(trial) = max_number_of_spikes(trial) / spike_numbers(end);
-        max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:)));
+        Nspike_max_vs_last_epoch_ratio(trial) = spike_numbers(end) / max_number_of_spikes(trial);
+        max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:))) - resting_Vm(trial);
         max_63_percent_decay_time(trial) = max(decay_to_63_percent);
         min_63_percent_decay_time(trial) = min(decay_to_63_percent);
     end % Feature Extraction end. Don't paste things outside of this loop.
     
     
+    if std(resting_Vm) > 5
+        warning('Resting membrane potential changed between trial.')
+        warning('Check Access resistance')
+    end
     
     %% Returning
     vrest = mean(vrest_vector);
@@ -370,7 +386,7 @@ for d=1:N_datasets
     R.tau{d} =tau_array_ms ;
     R.capacitance{d} =capacitance_array_pF;
     R.sag{d} =sag_array ;
-    R.spontaneous_firing_rate{d} =spontaneous_firing_rate_Hz ;
+    R.spontaneous_firing_rate{d} = spontaneous_firing_rate_Hz ;
     R.v_threshold{d} =V_threshold_array_mV ;
     R.half_width_time{d} =half_width_time_array_ms ;
     R.first_ap_peak_amplitude{d} =first_AP_peak_amplitude_mV ;
@@ -391,7 +407,12 @@ for d=1:N_datasets
     R.max_63_percent_decay_time{d} =max_63_percent_decay_time ;
     R.min_63_percent_decay_time{d} =min_63_percent_decay_time ;
     R.spontenous_spike_amplitude_cv{d} =spontenous_spike_amplitude_cv;
+    R.isi_cv_at_max_spikes{d} = ISI_CV_at_max_spikes;
+    R.resting_vm{d} = resting_Vm;
+    R.resting_vm_range{d} = resting_Vm_range;
+    
     
     fprintf('Elapsed time = %d seconds\n', round(toc));
+    
     
 end
