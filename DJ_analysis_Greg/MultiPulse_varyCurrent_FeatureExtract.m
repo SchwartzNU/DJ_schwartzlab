@@ -137,6 +137,7 @@ for d=1:N_datasets
     resting_Vm_range = nan(number_of_trials, 1);
 
     warning('off', 'signal:findpeaks:largeMinPeakHeight')
+    warning('off', 'backtrace')
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
@@ -196,14 +197,15 @@ for d=1:N_datasets
         spontaneous_peak_array = zeros(size(depol_current_level_pA,1), 1);
         spike_amplitudes = [];
         
-        try
-            for i=1:size(depol_current_level_pA, 1)
-                spontaneous_spikes = findpeaks(depol_Vm(1:start_time, i), ...
-                    "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE);
-                spontaneous_peak_array(i) = size(spontaneous_spikes,1);
-                spike_amplitudes = cat(1, spike_amplitudes, spontaneous_spikes);
-            end
-        catch
+        
+        for i=1:size(depol_current_level_pA, 1)
+            spontaneous_spikes = findpeaks(depol_Vm(1:start_time, i), ...
+                "MinPeakProminence", MIN_PEAK_PROMINENCE, "MinPeakHeight", MIN_PEAK_HEIGHT, "MinPeakDistance", MIN_PEAK_DISTANCE);
+            spontaneous_peak_array(i) = size(spontaneous_spikes,1);
+            spike_amplitudes = cat(1, spike_amplitudes, spontaneous_spikes);
+        end
+        
+        if isempty(spike_amplitudes)
             warning('No Spontaneous Peak Found')
         end
         spontaneous_firing_rate_Hz(trial) = (mean(spontaneous_peak_array))/(start_time/sample_rate); %Hz
