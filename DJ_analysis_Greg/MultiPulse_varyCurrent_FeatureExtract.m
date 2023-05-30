@@ -46,8 +46,8 @@ for d=1:N_datasets
     vrest_vector = zeros(N_currents,1);
     mean_traces = zeros(N_currents, total_samples);
     example_traces = zeros(N_currents, total_samples);
-    %countstbl = countlabels(all_currents)
-    number_of_trials = epochs_in_dataset(1).number_of_cycles;
+    countstbl = countlabels(all_currents)
+    number_of_trials = min([epochs_in_dataset(1).number_of_cycles, min(countstbl.Count)]);
     
     % if sum(countstbl.Count ~= number_of_trials) > 0 || number_of_trials  ~= epochs_in_dataset(1).number_of_cycles
     %     warning('Numbers of epochs between trials are not the same')
