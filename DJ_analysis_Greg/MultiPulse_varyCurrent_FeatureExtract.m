@@ -231,6 +231,7 @@ for d=1:N_datasets
                 [trough_size trough_loc] = min(depol_Vm(locs(1):locs(2), first_spike(3)));
             else
                 [trough_size trough_loc] = min(depol_Vm(locs(1):locs(1) + sample_rate*5*1e-3, first_spike(3)));
+            end
         
         trough(2) = trough_loc + locs(1); % trough location;
         trough(3) = first_spike(3); %trough epoch;
