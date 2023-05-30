@@ -30,7 +30,7 @@ for d=1:N_datasets
     ss_samples = 50E-3 * sample_rate;
     
     all_currents = [epochs_in_dataset.pulse_1_curr];
-    
+    epochs_in_dataset.pulse_1_curr
     currents  = sort(unique(all_currents));
     N_currents = length(currents);
     
