@@ -274,6 +274,7 @@ for d=1:N_datasets
         catch
             pks = 0;
             locs = 0;
+            Vm_diff_2 = NaN;
         end
         first_AP_peak_amplitude_mV(trial) = first_spike(1);
         first_AP_peak_location_ms(trial) = first_spike(2);
