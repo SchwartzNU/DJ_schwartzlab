@@ -147,8 +147,8 @@ for d=1:N_datasets
         depol_Vm = depol_Vm';
         time_in_s = (0:size(hyper_Vm,1) - 1) / sample_rate;
         figure; hold on;
-        plot(hyper_Vm);
-        plot(depol_Vm);
+        %plot(hyper_Vm);
+        %plot(depol_Vm);
 
         resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
         resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
