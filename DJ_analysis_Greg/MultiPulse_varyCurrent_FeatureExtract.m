@@ -146,7 +146,7 @@ for d=1:N_datasets
         depol_Vm = cell2mat(all_traces(depol_current_epoch, trial));
         depol_Vm = depol_Vm';
         time_in_s = (0:size(hyper_Vm,1) - 1) / sample_rate;
-        figure; hold on;
+        %figure; hold on;
         %plot(hyper_Vm);
         %plot(depol_Vm);
 
