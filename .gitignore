@@ -22,12 +22,4 @@ schemas/+sln_animal/init_animals.m
 schemas/+sln_symphony/insert_all_datasets_for_experiment.m
 schemas/+sln_animal/Cage.m
 .DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
+**/.DS_Store
