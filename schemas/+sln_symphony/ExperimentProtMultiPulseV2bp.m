@@ -24,7 +24,7 @@ classdef ExperimentProtMultiPulseV2bp < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct('output_amp_selection','output_amp');
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'min_of_loglog'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
