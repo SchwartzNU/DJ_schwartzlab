@@ -42,7 +42,7 @@ if missing_results.exists
             try
                 for i = 1:height(Rnew)
                     sln_results.insert(Rnew(i,:),result_level);
-                    fprintf('Inserted %s %s %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i))
+                    fprintf('Inserted %s %s source id: %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i))
                 end
                 R = eval(sprintf('sln_results.%s & items_struct', table_name));
                 inserted = true;
