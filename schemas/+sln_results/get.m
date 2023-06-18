@@ -38,16 +38,34 @@ if missing_results.exists
     Rnew = eval(sprintf('%s(missing_results);', func_name));
     inserted = false;
     if do_insert
-        try
-            sln_results.insert(Rnew,result_level);
-            R = eval(sprintf('sln_results.%s & items_struct', table_name));
-            inserted = true;
-        catch ME
-            disp('insert failed');
-            disp(ME.message);
+        while ~inserted
+            try
+                for i = 1:height(Rnew)
+                    sln_results.insert(Rnew(i,:),result_level);
+                    fprintf('Inserted %s %s %d successful', Rnew.file_name(i), Rnew.dataset_name.(i), Rnew.source_id(i))
+                end
+                R = eval(sprintf('sln_results.%s & items_struct', table_name));
+                inserted = true;
+            catch ME
+                disp('insert failed');
+                disp(ME.message);
+                if regexp(ME.message,  'You have locally modified files in')
+                    disp('!!!! COMMIT YOUR GIT !!!!');
+                    prompt = 'Try again? Make sure all Git changes were commited! Y/N [Y]: ';
+                    txt = input(prompt,"s");
+                    if isempty(txt) || strcmpi(txt, 'y')
+                        inserted = false;
+                        continue
+                    else
+                        break
+                    end
+                else
+                    break
+                end
+            end
         end
     end
-    if ~inserted
+    if ~inserted %WUT IS DIS FOR?
         N_rows = height(Rnew);
         C = dj.conn;
         for i=1:N_rows
