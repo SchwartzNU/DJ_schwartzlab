@@ -33,6 +33,7 @@ sp = [sp{:}]; %concatenate all spikes together
 
 bins = 0:binSize:duration;
 
+
 if isempty(sp)
     spCount = zeros(1,length(bins));
 else
@@ -55,3 +56,4 @@ end
 %convert to Hz
 psth_y = 1E3 * spCount ./ (N_epochs * binSize);
 psth_x = bins(1:end-1) / 1E3; % units of seconds
+psth_y = psth_y(1:length(psth_x));
