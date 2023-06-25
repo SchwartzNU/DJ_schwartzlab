@@ -41,3 +41,30 @@ insert(sln_cell.Cell,exp_cells_struct)
 %sln_cell.init_cells_from_ExperimentCells();
 sln_cell.add_cell_types_from_cellData(cellBaseNames);
 
+%get user params and insert nulls
+[data_levels, user_params_table_names] = sln_symphony.get_all_user_param_in_db;
+s = fetch(exp_cells);
+for i = 1:length(data_levels)
+    table_name = sprintf('sln_symphony.UserParam%s%s', data_levels{i}, user_params_table_names{i});
+    
+    switch data_levels{i}
+        case 'Experiment'
+            s_for_insert = rmfield(s, {'animal_id', 'source_id', 'retina_id'});
+            
+        case 'Animal'
+            s_for_insert = rmfield(s, {'file_name', 'source_id', 'retina_id'});
+            
+        case 'Cell'
+            s_for_insert = rmfield(s, {'animal_id', 'retina_id'});
+            
+        case 'Dataset'
+            unlabeled_items = fetch(sln_symphony.Dataset * exp_cells);
+            s_for_insert = rmfield(unlabeled_items, {'retina_id', 'animal_id'});
+            
+        case 'Epoch'
+            unlabeled_items = fetch(aka.Epoch * exp_cells);
+            s_for_insert = rmfield(unlabeled_items, {'retina_id', 'animal_id'});
+        
+    end
+    insert(eval(table_name),s_for_insert,'IGNORE');
+end
