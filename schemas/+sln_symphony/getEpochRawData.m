@@ -2,6 +2,12 @@ function [timeAxis, data, data_mean, data_sd] = getEpochRawData(ep, channel_name
 if nargin < 2
     channel_name = 'Amp1';
 end
+
+timeAxis = [];
+data = [];
+data_mean = [];
+data_sd = [];
+
 %ep is the query containing all the epochs
 ep = sln_symphony.ExperimentEpochChannel * ...
     sln_symphony.ExperimentChannel * ...
@@ -9,12 +15,12 @@ ep = sln_symphony.ExperimentEpochChannel * ...
     aka.Epoch & proj(ep) & ...
     sprintf('channel_name = "%s"', channel_name);
 
-Nepochs = length(ep.count);
-if Nepochs == 0
+if ~ep.exists
     disp('no epochs in query');
     return
 end
 
+Nepochs = length(ep.count);
 ep_struct = fetch(ep,'*');
 
 if length(unique([ep_struct.sample_rate])) > 1
