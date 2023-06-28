@@ -6,7 +6,54 @@ dataset_name: varchar(64)
 classdef Dataset < dj.Manual
     methods
 
-        function insert(self, celldata)
+        function insert(self, key)
+            N_epochs = length(key.epoch_id);
+            key_ds_entry = rmfield(key,'epoch_id');
+            key_no_ds = rmfield(key,{'dataset_name', 'epoch_id'});
+%            dataset_ep = key_no_epochs;
+%            dataset_ep.epoch_id = 0;
+%            dataset_epochs_struct = repmat(dataset_ep,[N_epochs, 1]);
+            for i=1:N_epochs
+                ep = aka.Epoch & key_no_ds & sprintf('epoch_id=%d',key.epoch_id(i));
+                dep = fetch(ep);
+                dep.dataset_name = key.dataset_name;
+                dataset_epochs_struct(i) = dep;
+            end
+            
+            transacted = false;
+            if self.schema.conn.inTransaction
+                transacted = true;
+            else
+                self.schema.conn.startTransaction;
+            end
+            try                
+                table = sln_symphony.DatasetEpoch();
+                table.canInsert = true;
+                %see if dataset_epochs are already in the DB 
+                q = sln_symphony.DatasetEpoch & key_ds_entry;
+                if q.exists
+                    fprintf('overwriting dataset %s with %d existing epochs\n', key.dataset_name, q.count);
+                    delQuick(q);
+                    delQuick(sln_symphony.Dataset & key_ds_entry)                    
+                    insert@dj.Manual(self, key_ds_entry);
+                    table.insert(dataset_epochs_struct);
+                else
+                    insert@dj.Manual(self, key_ds_entry);
+                    table.insert(dataset_epochs_struct);
+                end
+            catch ME
+                if ~transacted
+                    self.schema.conn.cancelTransaction;
+                end
+                rethrow(ME);
+            end
+            if ~transacted
+                self.schema.conn.commitTransaction;
+            end
+        end
+%function insert_from_celldata(self, celldata)
+
+        function insert_from_celldata(self, celldata)
             if ~isa(celldata,'cell')
                 celldata = {celldata};
             end
@@ -99,7 +146,8 @@ classdef Dataset < dj.Manual
                         cur_dataset = self & thisKey(d);
                         if ~cur_dataset.exists
                             fprintf('inserting new datset %s\n', thisKey(d).dataset_name);
-                            insert@dj.Manual(self, thisKey(d));
+                            %insert@dj.Manual(self, thisKey(d));
+                             dj.Manual.insert(self, thisKey(d));
                              table.insert(...
                                  vertcat(key(d).epochs));
                              if ~isempty(spikes(d))
@@ -126,7 +174,8 @@ classdef Dataset < dj.Manual
                         end
                     end
                 else %first insert
-                    insert@dj.Manual(self, thisKey);
+                    %insert@dj.Manual(self, thisKey);
+                    dj.Manual.insert(self, thisKey);
                     table.insert(...
                         vertcat(key(:).epochs));
                     if ~isempty(spikes)
