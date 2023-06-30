@@ -90,11 +90,11 @@ classdef SpikeDetectorGUI_DB < handle
                 'String', 'Autosave', ...
                 'Value', true, ...
                 'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
-            obj.handles.saveNowButton = uicontrol('Parent', L_info, ...
-                'Style', 'pushbutton', ...
-                'String', 'Save & Sync', ...
-                'Callback', @(uiobj, evt)obj.autoSave(true), ...
-                'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));            
+%             obj.handles.saveNowButton = uicontrol('Parent', L_info, ...
+%                 'Style', 'pushbutton', ...
+%                 'String', 'Save & Sync', ...
+%                 'Callback', @(uiobj, evt)obj.autoSave(true), ...
+%                 'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));            
             
             uicontrol('Parent', L_info, ...
                 'Style', 'text', ...
@@ -123,11 +123,11 @@ classdef SpikeDetectorGUI_DB < handle
                 'String', 'Detect spikes', ...
                 'Callback', @(uiobj, evt)obj.updateSpikeTimes(), ...
                 'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
-            obj.handles.clearSpikesButton = uicontrol('Parent', L_info, ...
-                'Style', 'pushbutton', ...
-                'String', 'Clear spikes', ...
-                'Callback', @(uiobj, evt)obj.clearSpikes(), ...
-                'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
+%             obj.handles.clearSpikesButton = uicontrol('Parent', L_info, ...
+%                 'Style', 'pushbutton', ...
+%                 'String', 'Clear spikes', ...
+%                 'Callback', @(uiobj, evt)obj.clearSpikes(), ...
+%                 'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
             obj.handles.clickThresholdButton = uicontrol('Parent', L_info, ...
                 'Style', 'pushbutton', ...
                 'String', 'Click Threshold', ...
@@ -136,7 +136,12 @@ classdef SpikeDetectorGUI_DB < handle
             obj.handles.selectValidSpikesButton = uicontrol('Parent', L_info, ...
                 'Style', 'pushbutton', ...
                 'String', 'Select valid region', ...
-                'Callback', @(uiobj, evt)obj.selectValidSpikes(), ...
+                'Callback', @(uiobj, evt)obj.selectValidSpikes(false), ...
+                'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
+            obj.handles.selectInValidSpikesButton = uicontrol('Parent', L_info, ...
+                'Style', 'pushbutton', ...
+                'String', 'Select invalid region', ...
+                'Callback', @(uiobj, evt)obj.selectValidSpikes(true), ...
                 'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
             
             
@@ -169,7 +174,7 @@ classdef SpikeDetectorGUI_DB < handle
                 'KeyPressFcn',@(uiobj,evt)obj.keyHandler(evt));
             
             set(L_main, 'Heights', [50, -1, 50]);
-            set(L_info, 'Widths', [-.8, -.8, -.8, -1.5, -.8, -.6, -2, -1, -1, -1]);
+            set(L_info, 'Widths', [-.8, -.8, -1.5, -.8, -.6, -2, -1, -1, -1]);
         end
         
         function detectSpikes(obj, index)
@@ -370,20 +375,20 @@ classdef SpikeDetectorGUI_DB < handle
         end
         
         function clearSpikes(obj)
-            obj.spikeTimes = [];
-
-            epoch = obj.cellData.epochs(obj.epochIndicesList(obj.curEpochListIndex));
-            if strcmp(obj.streamName, 'Amplifier_Ch1')
-                channel = 'spikes_ch1';
-            else
-                channel = 'spikes_ch2';
-            end
-            
-            epoch.attributes(channel) = obj.spikeTimes;
-        
-            obj.autoSave();
-            
-            obj.updateUI();
+%             obj.spikeTimes = [];
+% 
+%             epoch = obj.cellData.epochs(obj.epochIndicesList(obj.curEpochListIndex));
+%             if strcmp(obj.streamName, 'Amplifier_Ch1')
+%                 channel = 'spikes_ch1';
+%             else
+%                 channel = 'spikes_ch2';
+%             end
+%             
+%             epoch.attributes(channel) = obj.spikeTimes;
+%         
+%             obj.autoSave();
+%             
+%             obj.updateUI();
             
         end
         
@@ -408,32 +413,38 @@ classdef SpikeDetectorGUI_DB < handle
             obj.updateSpikeTimes()
         end
         
-        function selectValidSpikes(obj)
+        function selectValidSpikes(obj, invalid_region)
+            if nargin < 2
+                invalid_region = false;
+            end
+            ep = aka.Epoch * sln_symphony.ExperimentChannel & obj.loaded_cell & ...
+                sprintf('channel_name="%s"',obj.channel_name) & ...
+                sprintf('epoch_id=%d', obj.epochIndicesList(obj.curEpochListIndex));
+
             selection = getrect(obj.handles.primaryAxes);
             times = obj.spikeTimes / obj.sampleRate;
             amps = obj.data(obj.spikeTimes);
-
+            
             selectX = times > selection(1) & times < selection(1) + selection(3);
             selectY = amps > selection(2) & amps < selection(2) + selection(4);
-            
-            obj.spikeTimes(~(selectX & selectY)) = [];
-            
-            epoch = obj.cellData.epochs(obj.epochIndicesList(obj.curEpochListIndex));
-            if strcmp(obj.streamName, 'Amplifier_Ch1')
-                channel = 'spikes_ch1';
+
+            if invalid_region
+                obj.spikeTimes((selectX & selectY)) = [];
             else
-                channel = 'spikes_ch2';
+                obj.spikeTimes(~(selectX & selectY)) = [];
             end
             
-            epoch.attributes(channel) = obj.spikeTimes;
-            
-            obj.autoSave();
-            
+            spikeIndices = obj.spikeTimes;
+
+            %write the spike train to the database
+            key = fetch(ep);
+            key.spike_count = length(spikeIndices);
+            key.spike_indices = spikeIndices;
+            insert(sln_symphony.SpikeTrain, key, 'replace');
+                        
             obj.updateUI();
         end
-        
-
-        
+                
         function skipBackward10(obj)
             obj.curEpochListIndex = max(obj.curEpochListIndex-10, 1);
             obj.loadCurrentEpochResponse();
