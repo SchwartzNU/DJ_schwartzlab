@@ -12,7 +12,7 @@ classdef AssignType < dj.Manual
         end
 
         function type = initial()
-            type = sln_cell.AssignType * sln_cell.CellEvent & 'LIMIT 1 PER cell_unid ORDER BY entry_time DESC';
+            type = sln_cell.AssignType * sln_cell.CellEvent & 'LIMIT 1 PER cell_unid ORDER BY entry_time ASC';
         end
     end
 end
