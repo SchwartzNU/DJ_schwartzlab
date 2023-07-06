@@ -168,12 +168,19 @@ for d=1:N_datasets
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
         
-        ft = fittype('a + b*exp(-x*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
+        ft = fittype('a + b*exp(-(x-d)*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
         
         for i=1:length(hyper_epoch_less_than_minus50)
+            % read documentation for the fit function
+            % 1) needs better starting conditions
+            %  use ohm's law to predict the deltaV -> b param
+            % d = ~time_in_s(start_time)
+            % a ~ resting_vm(trial)
+            % c ~ 1/(average capacticance for a neuron * resting_vm(trial)
+            % 2) needs bounds
             f = fit([time_in_s(start_time:end_time)]', hyper_Vm(start_time:end_time,...
-                hyper_epoch_less_than_minus50(i)), ft, 'StartPoint',[-60,10,30]);
+                hyper_epoch_less_than_minus50(i)), ft, 'StartPoint',[-60,10,30,-.5]);
             tau_array(i) =  f.c;
         end
         
