@@ -27,8 +27,8 @@ classdef SMSCCRunner < dj.Computed
                 key.git_tag = fetch1(q,'git_tag');
                 self.insert(key);
             else
-                R = SMS_CC(key);
                 try
+                    R = SMS_CC(key);
                     sln_results.insert(R,'Dataset','false');
                     q = sln_results.DatasetSMSCC & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
                     key.git_tag = fetch1(q,'git_tag');
