@@ -28,7 +28,6 @@ classdef SMSCCRunner < dj.Computed
                 self.insert(key);
             else
                 R = SMS_CC(key);
-                C = dj.conn;
                 try
                     sln_results.insert(R,'Dataset','false');
                     q = sln_results.DatasetSMSCC & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
