@@ -1,6 +1,6 @@
 function plot_morphology_for_cell(cellname, base_folder, save_plot)
 try
-    if nargin < 2
+    if nargin < 2 || isempty(base_folder)
         base_folder = '~/OneDrive - Northwestern University/dAC_images/done/';
     end
     if nargin < 3
@@ -42,8 +42,9 @@ try
 
     if save_plot
         saveas(f,sprintf('%smorph_summary.png',cell_dir));
-        fclose(f);
+        close(f);
     end
-catch
-
+catch ME
+    cellname
+    disp(ME.message);
 end
