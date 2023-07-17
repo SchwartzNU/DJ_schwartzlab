@@ -31,7 +31,7 @@ classdef ExperimentProtSpatialNoiseV7bp < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'rfmemory', 'subsample_t', 'color_combination_mode', 'contrast', 'mean_level'};
+		dropped_attributes = {'rfmemory', 'rfm_emory', 'subsample_t', 'color_combination_mode', 'contrast', 'mean_level', 'pixel_width','pixel_height'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
