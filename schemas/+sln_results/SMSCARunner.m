@@ -41,7 +41,7 @@ classdef SMSCARunner < dj.Computed
 
     methods 
         function err = errors(self)
-            err = self.keySource - sln_results.SMSCCRunner;
+            err = self.keySource - sln_results.SMSCARunner;
         end
     end
 end
