@@ -40,4 +40,10 @@ classdef SMSCCRunner < dj.Computed
         end
     end
 
+    methods 
+        function err = errors(self)
+            err = self.keySource - sln_results.SMSCCRunner;
+        end
+    end
+
 end
