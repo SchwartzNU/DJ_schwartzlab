@@ -231,7 +231,58 @@ classdef ExperimentProtocols < handle
         end
 
 
-        function createTables(self,protocol_name, version, block_params, epoch_params)
+        function parseProjectorSettings(self)
+            i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
+            if sum(i)>0
+                k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
+                self.key.projector = [k(:).projector];
+                self.key.LEDs = horzcat(k(:).LEDs)';
+            end
+        end
+        
+        function removeRedundantFields(self)
+            
+            %remove fields that are either already in the keys or calculable from these
+            i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
+            self.key.block_params = arrayfun(@(x) removeRedundantBlockFields(x.parameters), self.key.epoch_blocks,'uni',0);
+            self.key.block_params(i) = cellfun(@removeRedundantStageBlockFields, self.key.block_params(i),'uni',0);
+            
+            i = arrayfun(@(x) isfield(x.parameters,'micronsPerPixel'), self.key.epochs);
+            self.key.epoch_params = arrayfun(@(x) removeRedundantEpochFields(x.parameters), self.key.epochs,'uni',0);
+            self.key.epoch_params(i) = cellfun(@removeRedundantStageEpochFields, self.key.epoch_params(i),'uni',0);
+            
+            i = cellfun(@(x) isfield(x, 'wholeCellRecordingMode_Ch1'), self.key.epoch_params);
+            self.key.epoch_params(i) = cellfun(@(x) rmfield(x,'wholeCellRecordingMode_Ch1'), self.key.epoch_params(i),'uni',0);
+            
+            i = cellfun(@(x) isfield(x, 'wholeCellRecordingMode_Ch2'), self.key.epoch_params);
+            self.key.epoch_params(i) = cellfun(@(x) rmfield(x,'wholeCellRecordingMode_Ch2'), self.key.epoch_params(i),'uni',0);
+
+            self.key.epoch_blocks = arrayfun(@(x) rmfield(x,'parameters'), self.key.epoch_blocks);
+            self.key.epochs = arrayfun(@(x) rmfield(x,'parameters'), self.key.epochs);
+        end
+
+        function copyPrimaryKeys(self)
+          self.key.block_params = arrayfun(@(x,y) copyBlockPrimaryKey(x{1},y), self.key.block_params, self.key.epoch_blocks,'uni',0);
+          self.key.epoch_params = arrayfun(@(x,y) copyEpochPrimaryKey(x{1},y), self.key.epoch_params, self.key.epochs,'uni',0);
+        end
+
+        function makeSnakeCase(self)
+            self.key.block_params = cellfun(@toSnake,self.key.block_params,'uni',0);
+            self.key.epoch_params = cellfun(@toSnake,self.key.epoch_params,'uni',0);
+        end
+
+        function convertToBool(self)
+            self.key.block_params = cellfun(@(x) toBool(x,self.bool_types),self.key.block_params,'uni',0);
+            self.key.epoch_params = cellfun(@(x) toBool(x,self.bool_types),self.key.epoch_params,'uni',0);
+        end
+    end
+
+    methods
+    function createTables(self,protocol_name, version, block_params, epoch_params)
+            if isnumeric(version)
+                version = num2str(version);
+            end
+
             %w = {'Block', 'Epoch'};
             w = {'b', 'e'};
             w_full = {'block', 'epoch'};
@@ -288,51 +339,6 @@ classdef ExperimentProtocols < handle
                 edit(file_name);
             end
 
-        end
-
-        function parseProjectorSettings(self)
-            i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
-            if sum(i)>0
-                k = arrayfun(@parseProjectorSetting, self.key.epoch_blocks(i));
-                self.key.projector = [k(:).projector];
-                self.key.LEDs = horzcat(k(:).LEDs)';
-            end
-        end
-        
-        function removeRedundantFields(self)
-            
-            %remove fields that are either already in the keys or calculable from these
-            i = arrayfun(@(x) isfield(x.parameters,'NDF'), self.key.epoch_blocks);
-            self.key.block_params = arrayfun(@(x) removeRedundantBlockFields(x.parameters), self.key.epoch_blocks,'uni',0);
-            self.key.block_params(i) = cellfun(@removeRedundantStageBlockFields, self.key.block_params(i),'uni',0);
-            
-            i = arrayfun(@(x) isfield(x.parameters,'micronsPerPixel'), self.key.epochs);
-            self.key.epoch_params = arrayfun(@(x) removeRedundantEpochFields(x.parameters), self.key.epochs,'uni',0);
-            self.key.epoch_params(i) = cellfun(@removeRedundantStageEpochFields, self.key.epoch_params(i),'uni',0);
-            
-            i = cellfun(@(x) isfield(x, 'wholeCellRecordingMode_Ch1'), self.key.epoch_params);
-            self.key.epoch_params(i) = cellfun(@(x) rmfield(x,'wholeCellRecordingMode_Ch1'), self.key.epoch_params(i),'uni',0);
-            
-            i = cellfun(@(x) isfield(x, 'wholeCellRecordingMode_Ch2'), self.key.epoch_params);
-            self.key.epoch_params(i) = cellfun(@(x) rmfield(x,'wholeCellRecordingMode_Ch2'), self.key.epoch_params(i),'uni',0);
-
-            self.key.epoch_blocks = arrayfun(@(x) rmfield(x,'parameters'), self.key.epoch_blocks);
-            self.key.epochs = arrayfun(@(x) rmfield(x,'parameters'), self.key.epochs);
-        end
-
-        function copyPrimaryKeys(self)
-          self.key.block_params = arrayfun(@(x,y) copyBlockPrimaryKey(x{1},y), self.key.block_params, self.key.epoch_blocks,'uni',0);
-          self.key.epoch_params = arrayfun(@(x,y) copyEpochPrimaryKey(x{1},y), self.key.epoch_params, self.key.epochs,'uni',0);
-        end
-
-        function makeSnakeCase(self)
-            self.key.block_params = cellfun(@toSnake,self.key.block_params,'uni',0);
-            self.key.epoch_params = cellfun(@toSnake,self.key.epoch_params,'uni',0);
-        end
-
-        function convertToBool(self)
-            self.key.block_params = cellfun(@(x) toBool(x,self.bool_types),self.key.block_params,'uni',0);
-            self.key.epoch_params = cellfun(@(x) toBool(x,self.bool_types),self.key.epoch_params,'uni',0);
         end
     end
 end
