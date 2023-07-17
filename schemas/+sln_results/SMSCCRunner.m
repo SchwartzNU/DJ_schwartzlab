@@ -22,12 +22,26 @@ classdef SMSCCRunner < dj.Computed
     methods(Access=protected)
         function makeTuples(self, key)
             key.analysis_name = 'SMS_CC';
-            R = SMS_CC(key);
-            
-            key
-            %keyboard;
+            q = sln_results.DatasetSMSCC & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
+            if q.exists
+                key.git_tag = fetch1(q,'git_tag');
+                self.insert(key);
+            else
+                R = SMS_CC(key);
+                C = dj.conn;
+                C.startTransaction;
+                try
+                    sln_results.insert(R,'Dataset','false');
+                    q = sln_results.DatasetSMSCC & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
+                    key.git_tag = fetch1(q,'git_tag');
+                    self.insert(key);
+                catch ME
+                    disp(ME.message);
+                    C.cancelTransaction;
+                end
+                C.commitTransaction;
+            end
         end
-
     end
 
 end
