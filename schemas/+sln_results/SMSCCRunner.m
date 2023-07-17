@@ -29,7 +29,6 @@ classdef SMSCCRunner < dj.Computed
             else
                 R = SMS_CC(key);
                 C = dj.conn;
-                C.startTransaction;
                 try
                     sln_results.insert(R,'Dataset','false');
                     q = sln_results.DatasetSMSCC & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
@@ -37,9 +36,7 @@ classdef SMSCCRunner < dj.Computed
                     self.insert(key);
                 catch ME
                     disp(ME.message);
-                    C.cancelTransaction;
                 end
-                C.commitTransaction;
             end
         end
     end
