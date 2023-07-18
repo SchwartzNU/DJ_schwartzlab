@@ -27,7 +27,7 @@ classdef DGCARunner < dj.Computed
                 self.insert(key);
             else
                 try
-                    R = SMS_CA(key);
+                    R = DriftingGratings_CA(key);
                     sln_results.insert(R,'Dataset','false');
                     q = sln_results.DatasetDriftingGratingsCA & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
                     key.git_tag = fetch1(q,'git_tag');
