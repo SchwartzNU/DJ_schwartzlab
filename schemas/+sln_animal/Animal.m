@@ -53,7 +53,7 @@ classdef Animal < dj.Manual
         function animals = assignedProtocol(animal_ids, liveOnly)
             %get the protocol number
 
-            q = sln_animal.AssignProtocol * sln_animal.AnimalEvent * sln_animal.AnimalProtocol;
+            q = sln_animal.AssignProtocol.current * sln_animal.AnimalProtocol;
 
             if nargin>1 && liveOnly
                 %restrict by living mice
