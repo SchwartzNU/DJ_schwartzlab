@@ -37,6 +37,9 @@ sample_rate = ep_struct(1).sample_rate;
 protocol_name = sqlProtName2ProtName(ep_struct(1).protocol_name);
 
 block_params = fetch(aka.BlockParams(protocol_name) & ep, '*');
+if isempty(block_params) %HACK
+    block_params = fetch(aka.BlockParams('SpotsMultiSizeClassify') & ep, '*');
+end
 
 data = cell(Nepochs,1);
 T = cell(Nepochs,1);
