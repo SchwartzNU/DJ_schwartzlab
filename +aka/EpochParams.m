@@ -123,9 +123,12 @@ classdef EpochParams < dj.internal.GeneralRelvar
                 nkf = fields;%ub{i}.nonKeyFields;
                 hasField = ismember(nkf, ub{i}.nonKeyFields);%, fields);
                 nkf(hasField) = cellfun(@(s) sprintf('`%s`',s), nkf(hasField), 'uni', 0);nkf(~hasField) = cellfun(@(s) sprintf('NULL AS `%s`',s), nkf(~hasField), 'uni', 0);
+                if isempty(nkf)
+                    sql{i} = sprintf('(SELECT `file_name`,`source_id`,`epoch_group_id`,`epoch_block_id`,`epoch_id` FROM %s)', ub{i}.sql);%, aliasCount);
                 
-                sql{i} = sprintf('(SELECT `file_name`,`source_id`,`epoch_group_id`,`epoch_block_id`,`epoch_id`,%s FROM %s)', strjoin(nkf,','), ub{i}.sql);%, aliasCount);
-                
+                else
+                    sql{i} = sprintf('(SELECT `file_name`,`source_id`,`epoch_group_id`,`epoch_block_id`,`epoch_id`,%s FROM %s)', strjoin(nkf,','), ub{i}.sql);%, aliasCount);
+                end
             end
             
             self.fullTableName = sprintf('(%s) AS `ep%s`', strjoin(sql,' UNION '), protocolBaseName);
