@@ -42,7 +42,7 @@ classdef MultiPulseFIRunner < dj.Computed
 
     methods 
         function err = errors(self)
-            err = self.keySource - sln_results.SMSCCRunner;
+            err = self.keySource - sln_results.MultiPulseFIRunner;
         end
     end
 end
