@@ -27,11 +27,12 @@ classdef SpikeDetectCC < dj.Computed
                 try
                     trace = fetch1(sln_symphony.ExperimentEpochChannel & key, 'raw_data');
                     sample_rate = fetch1(sln_symphony.ExperimentChannel & key, 'sample_rate');
+                    MIN_PEAK_DISTANCE_samples = self.MIN_PEAK_DISTANCE * sample_rate;
 
-                    [~, sp] = findpeaks(trace, 1./sample_rate,...
+                    [~, sp] = findpeaks(trace, ...
                     "MinPeakProminence", self.MIN_PEAK_PROMINENCE, ...
                     "MinPeakHeight", self.MIN_PEAK_HEIGHT, ...
-                    "MinPeakDistance", self.MIN_PEAK_DISTANCE);
+                    "MinPeakDistance", MIN_PEAK_DISTANCE_samples);
 
                     sp_train_key = key;
 
