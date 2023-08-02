@@ -17,8 +17,8 @@ for i=1:N
 end
 bar(X_cat,mean_vals,'FaceColor',[0.7 0.7 0.7]);
 hold('on')
-xlabel(x_var);
-ylabel(y_var);
+xlabel(x_var,'Interpreter','none');
+ylabel(y_var,'Interpreter','none');
 errorbar(X_cat,mean_vals,sem_vals,'k.');
 for i=1:N
    plot(categorical(cellstr(X{i})),Y{i},'kx','LineWidth',2)
