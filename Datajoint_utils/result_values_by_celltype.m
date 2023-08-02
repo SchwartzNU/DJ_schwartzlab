@@ -1,4 +1,4 @@
-function T = plot_result_values_by_celltype(data_group, result_table_name, result_field, each_epoch)
+function T = result_values_by_celltype(data_group, result_table_name, result_field, each_epoch)
 if nargin<4
     each_epoch = false;
 end
@@ -25,3 +25,4 @@ for i=1:N_types
         T.(result_field)(i) = {val_means};
     end
 end
+
