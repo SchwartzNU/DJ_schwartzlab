@@ -11,8 +11,8 @@ figure;
 mean_vals = zeros(N,1);
 sem_vals = zeros(N,1);
 for i=1:N
-   mean_vals(i) = mean(Y{i});
-   sem_vals(i) = std(Y{i}./sqrt(length(Y{i})-1));
+   mean_vals(i) = nanmean(Y{i});
+   sem_vals(i) = nanstd(Y{i}./sqrt(length(Y{i})-1));
    plot(categorical(cellstr(X{i})),Y{i},'kx','LineWidth',2)
 end
 bar(X_cat,mean_vals,'FaceColor',[0.7 0.7 0.7]);
