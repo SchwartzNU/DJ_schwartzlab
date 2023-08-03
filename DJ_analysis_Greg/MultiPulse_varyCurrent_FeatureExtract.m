@@ -169,9 +169,6 @@ for d=1:N_datasets
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
 
         ft = fittype('a + b*exp(-x*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
-        options = fitoptions(ft);
-        options.Lower = [-120, 7, 15];
-        options.Upper = [20, 20, 50];
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
          
         for i=1:length(hyper_epoch_less_than_minus50)
@@ -183,7 +180,7 @@ for d=1:N_datasets
             % c ~ 1/(average capacticance for a neuron * resting_vm(trial)
             % 2) needs bounds
             dt = time_in_s(2)-time_in_s(1);
-            endInd = start_time+round(0.05/dt);
+            endInd = start_time+round(0.02/dt);
             xval = time_in_s(start_time:endInd)';
             xval = xval - xval(1);
             yval = hyper_Vm(start_time:endInd, hyper_epoch_less_than_minus50(i));
@@ -191,6 +188,7 @@ for d=1:N_datasets
             %yval = hyper_Vm(start_time:end_time, hyper_epoch_less_than_minus50(i));
             %plot(time_in_s,hyper_Vm(:,hyper_epoch_less_than_minus50(i)))%
             [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
+            plot (f)
             tau_array(i) =  f.c;
              
         end
@@ -199,10 +197,15 @@ for d=1:N_datasets
         %Return tau
         
         tau_array_ms(trial) = mean(1./tau_array)*1000;
+        while tau_array_ms < 0 
+            disp Nan
+        end
         if std(1./tau_array)*1000 > 10
             warning('Tau SD too high')
         end
         
+        
+
         %Return Capacitance
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
         
