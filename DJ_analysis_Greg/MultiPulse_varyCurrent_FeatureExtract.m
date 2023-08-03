@@ -180,7 +180,7 @@ for d=1:N_datasets
             % c ~ 1/(average capacticance for a neuron * resting_vm(trial)
             % 2) needs bounds
             dt = time_in_s(2)-time_in_s(1);
-            endInd = start_time+round(0.012/dt);
+            endInd = start_time+round(0.004/dt);
             xval = time_in_s(start_time:endInd)';
             xval = xval - xval(1);
             yval = hyper_Vm(start_time:endInd, hyper_epoch_less_than_minus50(i));
@@ -195,12 +195,10 @@ for d=1:N_datasets
         
         %Return tau
         
-        tau_array_ms(trial) = mean(1./tau_array)*1000;
-        if std(1./tau_array)*1000 > 10
-            warning('Tau SD too high')
-        end
+        B = rmoutliers(tau_array);
+        tau_array_ms(trial) = mean(1./B)*1000;
         
-        
+           
 
         %Return Capacitance
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
