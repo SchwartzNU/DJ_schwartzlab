@@ -180,14 +180,14 @@ for d=1:N_datasets
             % c ~ 1/(average capacticance for a neuron * resting_vm(trial)
             % 2) needs bounds
             dt = time_in_s(2)-time_in_s(1);
-            endInd = start_time+round(0.015/dt);
+            endInd = start_time+round(0.02/dt);
             xval = time_in_s(start_time:endInd)';
             xval = xval - xval(1);
             yval = hyper_Vm(start_time:endInd, hyper_epoch_less_than_minus50(i));
             %xval = [time_in_s(start_time:end_time)]';
             %yval = hyper_Vm(start_time:end_time, hyper_epoch_less_than_minus50(i));
             %plot(time_in_s,hyper_Vm(:,hyper_epoch_less_than_minus50(i)))%
-            [f,gof] = fit(xval,yval , ft, 'StartPoint',[-105,50,.05]);
+            [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
             tau_array(i) =  f.c;
              
         end
