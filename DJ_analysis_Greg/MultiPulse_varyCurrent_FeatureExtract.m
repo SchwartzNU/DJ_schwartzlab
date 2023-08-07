@@ -180,7 +180,7 @@ for d=1:N_datasets
             % c ~ 1/(average capacticance for a neuron * resting_vm(trial)
             % 2) needs bounds
             dt = time_in_s(2)-time_in_s(1);
-            endInd = start_time+round(0.01/dt);
+            endInd = start_time+round(0.05/dt);
             xval = time_in_s(start_time:endInd)';
             xval = xval - xval(1);
             yval = hyper_Vm(start_time:endInd, hyper_epoch_less_than_minus50(i));
@@ -418,10 +418,10 @@ for d=1:N_datasets
     R.example_traces{d} = example_traces;
     R.sample_rate(d) = sample_rate;
     % Feature parts. Everything is returned into a cell of n trials 
-    R.resistance{d} =resistance_array_MOhm ;
+    R.resistance{d} =rmoutliers(resistance_array_MOhm, "median") ;
     R.resistance_rsquared{d} =resistance_Adjusted_RSquare ;
     R.tau{d} = rmoutliers(tau_array_ms,"median") ;
-    R.capacitance{d} =capacitance_array_pF;
+    R.capacitance{d} =rmoutliers(capacitance_array_pF,"median") ;
     R.sag{d} =sag_array ;
     R.spontaneous_firing_rate{d} = spontaneous_firing_rate_Hz ;
     R.v_threshold{d} =V_threshold_array_mV ;
