@@ -195,10 +195,10 @@ for d=1:N_datasets
         
         %Return tau
         
-        B = rmoutliers(tau_array);
+        B = rmoutliers(tau_array,"median");
         B = B(B>=0);
         tau_array_ms(trial) = mean(1./B)*1000;
-        tau_array_ms(trial) = rmoutliers(tau_array_ms(trial));
+        tau_array_ms(trial) = rmoutliers(tau_array_ms(trial),"median");
            
 
         %Return Capacitance
@@ -420,7 +420,7 @@ for d=1:N_datasets
     % Feature parts. Everything is returned into a cell of n trials 
     R.resistance{d} =resistance_array_MOhm ;
     R.resistance_rsquared{d} =resistance_Adjusted_RSquare ;
-    R.tau{d} =tau_array_ms ;
+    R.tau{d} = rmoutliers(tau_array_ms,"median") ;
     R.capacitance{d} =capacitance_array_pF;
     R.sag{d} =sag_array ;
     R.spontaneous_firing_rate{d} = spontaneous_firing_rate_Hz ;
