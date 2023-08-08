@@ -188,9 +188,6 @@ for d=1:N_datasets
             %yval = hyper_Vm(start_time:end_time, hyper_epoch_less_than_minus50(i));
             %plot(time_in_s,hyper_Vm(:,hyper_epoch_less_than_minus50(i)))%
             [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
-            plot (f);
-            hold on
-            plot (xval,yval);
             tau_array(i) =  f.c;
             
         end
