@@ -10,7 +10,7 @@ for c=1:N_cells
     tic;
     fprintf('Processing %d of %d, %s\n', c, N_cells, cells_struct(c).cell_name);
 
-    results_for_cell = sln_results.DatasetDriftingGratingsCC & cells_struct(c);
+    results_for_cell = sln_results.DatasetDriftingGratingsCC & proj(data_group) & cells_struct(c);
     %epochs_in_dataset_struct = fetch(epochs_in_dataset,'*');
 
     N_results = results_for_cell.count;
