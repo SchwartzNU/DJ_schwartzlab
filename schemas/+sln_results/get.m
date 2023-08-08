@@ -32,7 +32,7 @@ if existing_results.exists
     R = sln_results.toMatlabTable(existing_results);
 end
 
-missing_results = items - existing_results;
+missing_results = items - existing_results
 if missing_results.exists
     fprintf('Running %s for %d remaining items of type %s\n', func_name, missing_results.count, result_level);
     Rnew = eval(sprintf('%s(missing_results);', func_name));

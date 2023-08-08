@@ -19,7 +19,8 @@ for c=1:N_cells
         fprintf('No stored results for cell: %s\n', cells_struct(c).cell_name);
     end
 
-    R.cell_unid(c) = cells_struct(c).cell_unid;
+    R.file_name(c) = cells_struct(c).file_name;
+    R.source_id(c) = cells_struct(c).cell_unid;
 
     result_struct = fetch(results_for_cell, ...
         'cycle_avg_amplitude', ...

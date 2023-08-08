@@ -36,16 +36,16 @@ switch resultLevel
     case 'Animal'
     case 'Eye'
     case 'Cell'
-        primary_vars = {'cell_unid'};
+        primary_vars = {'file_name', 'source_id'};
         if ~all(ismember(primary_vars,var_names))
-            error('Cell results must contain a cell_unid column');
+            error('Cell results must contain file_name and source_id columns');
         end
         secondary_vars = setdiff(var_names, primary_vars);
     case 'Cell pair'
     case 'Dataset'
         primary_vars = {'file_name', 'dataset_name', 'source_id'};
         if ~all(ismember(primary_vars,var_names))
-            error('Dataset results must contain file_name and dataset_name columns');
+            error('Dataset results must contain file_name, source_id, and dataset_name columns');
         end
         secondary_vars = setdiff(var_names, primary_vars);
     case 'Epoch'
