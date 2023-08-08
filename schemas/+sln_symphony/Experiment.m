@@ -20,7 +20,7 @@ classdef Experiment < dj.Manual
                 %the issue is that we may need to create new tables
                 %but creating new tables breaks transactions (a dj bug?)
             end
-            if isempty(which('symphonyui.core.PropertyDescriptor'))
+            if isempty(which('symphonyui.core.PropertyDescriptor')) || isempty(which('sa_labs.devices.RigPropertyDevice'))
                 error('Cannot access Symphony property descriptors. Is Symphony on the path?');
             end
             success = false;
