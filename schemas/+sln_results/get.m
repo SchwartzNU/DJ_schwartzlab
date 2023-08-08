@@ -53,6 +53,7 @@ if missing_results.exists
             catch ME
                 disp('insert failed');
                 disp(ME.message);
+                rethrow(ME);
                 if regexp(ME.message,  'You have locally modified files in')
                     disp('!!!! COMMIT YOUR GIT !!!!');
                     prompt = 'Try again? Make sure all Git changes were commited! Y/N [Y]: ';
