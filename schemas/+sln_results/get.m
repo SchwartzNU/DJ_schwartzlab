@@ -42,14 +42,17 @@ if missing_results.exists
             try
                 for i = 1:height(Rnew)
                     sln_results.insert(Rnew(i,:),result_level);
-                    fprintf('Inserted %s %s source id: %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i))
+                    if strcmp(result_level, 'Dataset')
+                        fprintf('Inserted %s %s source id: %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i));
+                    else
+                        fprintf('Inserted %s source id: %d successful \n', Rnew.file_name(i), Rnew.source_id(i));
+                    end
                 end
                 R = eval(sprintf('sln_results.%s & items_struct', table_name));
                 inserted = true;
             catch ME
                 disp('insert failed');
                 disp(ME.message);
-                keyboard;
                 if regexp(ME.message,  'You have locally modified files in')
                     disp('!!!! COMMIT YOUR GIT !!!!');
                     prompt = 'Try again? Make sure all Git changes were commited! Y/N [Y]: ';
