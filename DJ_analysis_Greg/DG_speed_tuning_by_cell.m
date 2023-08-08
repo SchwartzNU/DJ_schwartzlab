@@ -19,7 +19,6 @@ for c=1:N_cells
         fprintf('No stored results for cell: %s\n', cells_struct(c).cell_name);
     end
 
-    R.cell_name(c) = cells_struct(c).cell_name;
     R.cell_unid(c) = cells_struct(c).cell_unid;
 
     result_struct = fetch(results_for_cell, ...

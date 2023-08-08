@@ -36,9 +36,9 @@ switch resultLevel
     case 'Animal'
     case 'Eye'
     case 'Cell'
-        primary_vars = {'cell_name', 'cell_unid'};
+        primary_vars = {'cell_unid'};
         if ~all(ismember(primary_vars,var_names))
-            error('Cell results must contain cell_name and cell_unid columns');
+            error('Cell results must contain a cell_unid column');
         end
         secondary_vars = setdiff(var_names, primary_vars);
     case 'Cell pair'

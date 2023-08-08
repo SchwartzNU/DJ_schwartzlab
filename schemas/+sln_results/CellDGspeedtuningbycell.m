@@ -1,6 +1,5 @@
 %{
 # CellDGspeedtuningbycell
-cell_name : varchar(128) # name of the cell
 cell_unid : int unsigned # cell_id_number
 ---
 -> sln_lab.User # user who entered this result
