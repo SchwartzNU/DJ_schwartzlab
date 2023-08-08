@@ -1,6 +1,7 @@
 %{
 # CellDGspeedtuningbycell
-cell_unid : int unsigned # cell_id_number
+file_name : varchar(128) # file name of symphony file
+source_id : int unsigned # source id of cell
 ---
 -> sln_lab.User # user who entered this result
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
