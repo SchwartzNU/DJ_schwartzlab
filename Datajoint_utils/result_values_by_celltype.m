@@ -1,6 +1,13 @@
-function T = result_values_by_celltype(data_group, result_table_name, result_field, each_epoch)
+function T = result_values_by_celltype(data_group, result_table_name, result_field, each_epoch, remove_outliers)
 if nargin<4
     each_epoch = false;
+end
+if nargin<5
+    remove_outliers = false;    
+end
+
+if remove_outliers
+    std_thres = 3;
 end
 
 T = table;
@@ -19,8 +26,18 @@ for i=1:N_types
     else
         N_items = length(vals);
         val_means = zeros(N_items,1);
-        for n=1:N_items 
+        if remove_outliers
+            val_stds = zeros(N_items,1);
+        end
+        for n=1:N_items
             val_means(n) = mean(vals{n});
+            if remove_outliers
+                val_stds(n) = std(vals{n});
+                outliers = abs(vals{n} - val_means(n)) > val_stds(n)*std_thres;
+                temp = vals{n};
+                temp = temp(~outliers);
+                val_means(n) = mean(temp);
+            end
         end
         T.(result_field)(i) = {val_means};
     end
