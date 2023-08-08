@@ -14,7 +14,7 @@ switch result_level
         items = sln_animal.Eye & data_group;
     case 'Cell pair' %TODO, cell pair and eye levels
     case 'Cell'
-        items = sln_symphony.ExperimentCell & data_group;
+        items = sln_symphony.ExperimentCell & proj(data_group);
     case 'Dataset'
         items = aka.Dataset & data_group;
     case 'Epoch'
