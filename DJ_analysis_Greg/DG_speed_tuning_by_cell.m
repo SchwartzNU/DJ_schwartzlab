@@ -20,7 +20,7 @@ for c=1:N_cells
     end
 
     R.file_name(c) = cells_struct(c).file_name;
-    R.source_id(c) = cells_struct(c).cell_unid;
+    R.source_id(c) = cells_struct(c).source_id;
 
     result_struct = fetch(results_for_cell, ...
         'cycle_avg_amplitude', ...
