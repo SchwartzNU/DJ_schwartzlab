@@ -39,6 +39,8 @@ if missing_results.exists
     inserted = false;
     if do_insert
         while ~inserted
+            result_level
+            Rnew
             try
                 for i = 1:height(Rnew)
                     sln_results.insert(Rnew(i,:),result_level);
