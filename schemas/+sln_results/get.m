@@ -41,7 +41,6 @@ if missing_results.exists
         while ~inserted
             try
                 for i = 1:height(Rnew)
-                    result_level
                     sln_results.insert(Rnew(i,:),result_level);
                     fprintf('Inserted %s %s source id: %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i))
                 end
