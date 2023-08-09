@@ -7,3 +7,7 @@ end
 plot(ax,R.speeds,R.max_cycle_avg_amplitude,'kx-','linewidth',2);
 xlabel(ax,'Speed (µm/s)');
 ylabel(ax,'Cycle avg. max amplitude (mV)');
+set(ax,'XTickMode','auto');
+set(ax,'YTickMode','auto');
+set(ax,'XTickLabelMode','auto'); 
+set(ax,'YTickLabelMode','auto');
