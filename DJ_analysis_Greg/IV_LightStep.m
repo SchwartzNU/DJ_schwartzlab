@@ -54,7 +54,7 @@ for d=1:N_datasets
         N_epochs_per_hold(h) = length(ind);
         mean_traces(h,:) = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
         holding_current_vector(h) = mean(mean_traces(h,1:pre_samples));
-        %baseline subtraction
+        %baseline subtraction        
         mean_traces(h,:) = mean_traces(h,:) - holding_current_vector(h);
 
         for t=1:N_timeslices
@@ -62,8 +62,10 @@ for d=1:N_datasets
             mean_current = zeros(N_epochs_per_hold(h),1);
             time_points = pre_samples + timeslices(t,1)*1E-3*sample_rate:pre_samples + timeslices(t,2)*1E-3*sample_rate; 
             for i=1:N_epochs_per_hold(h)
-                peak_current(i) = max(mean_traces(h,time_points));
-                mean_current(i) = mean(mean_traces(h,time_points));
+                this_trace = epochs_in_dataset(ind(i)).raw_data;
+                this_trace = this_trace - mean(this_trace(1:pre_samples));
+                peak_current(i) = max(this_trace(time_points));
+                mean_current(i) = mean(this_trace(time_points));
             end
             peak_current_by_timeslice_mean{t}(h) = mean(peak_current);
             peak_current_by_timeslice_sem{t}(h) = std(peak_current) / sqrt(N_epochs_per_hold(h)-1);            
