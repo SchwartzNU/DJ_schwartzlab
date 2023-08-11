@@ -71,7 +71,6 @@ for d=1:N_datasets
                 else
                     peak_current(i) = minVal;
                 end
-
                 mean_current(i) = mean(this_trace(time_points));
             end
             peak_current_by_timeslice_mean{t}(h) = mean(peak_current);
