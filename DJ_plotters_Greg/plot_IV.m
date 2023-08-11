@@ -17,7 +17,6 @@ for i=1:N_timeslices
 end
 line(ax,[0 0], get(ax,'Ylim'),'Color','k','linestyle','--');
 line(ax, get(ax,'Xlim'),[0 0],'Color','k','linestyle','--');
-get(ax)
 set(ax,'XtickMode','auto');
 set(ax,'YtickMode','auto');
 xlabel(ax, 'Hold voltage (mV)')
