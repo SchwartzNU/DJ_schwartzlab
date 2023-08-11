@@ -64,7 +64,14 @@ for d=1:N_datasets
             for i=1:N_epochs_per_hold(h)
                 this_trace = epochs_in_dataset(ind(i)).raw_data;
                 this_trace = this_trace - mean(this_trace(1:pre_samples));
-                peak_current(i) = max(this_trace(time_points));
+                maxVal = max(this_trace(time_points));
+                minVal = min(this_trace(time_points));
+                if abs(maxVal)>abs(minVal)
+                    peak_current(i) = maxVal;
+                else
+                    peak_current(i) = minVal;
+                end
+
                 mean_current(i) = mean(this_trace(time_points));
             end
             peak_current_by_timeslice_mean{t}(h) = mean(peak_current);
