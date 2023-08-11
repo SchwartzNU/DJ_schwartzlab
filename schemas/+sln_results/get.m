@@ -1,7 +1,11 @@
-function R = get(func_name,data_group,result_level,do_insert)
+function R = get(func_name,data_group,result_level,do_insert,params)
 if nargin < 4
     do_insert = true;
 end
+if nargin < 5
+    params = [];
+end
+
 
 R = table; %start empty
 
@@ -35,7 +39,7 @@ end
 missing_results = items - existing_results;
 if missing_results.exists
     fprintf('Running %s for %d remaining items of type %s\n', func_name, missing_results.count, result_level);
-    Rnew = eval(sprintf('%s(missing_results);', func_name));
+    Rnew = eval(sprintf('%s(missing_results,params);', func_name));
     inserted = false;
     if do_insert
         while ~inserted
