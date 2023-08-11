@@ -11,7 +11,7 @@ N_timeslices = size(R.timeslices,1);
 slice_names = cell(N_timeslices,1);
 hold(ax,'on');
 for i=1:N_timeslices
-    slice_names{i} = sprintf('%d-%d ms', R.timeslices(i,1), R.timeslices(1,2));
+    slice_names{i} = sprintf('%d-%d ms', R.timeslices(i,1), R.timeslices(i,2));
     errorbar(ax, R.hold_voltages, R.peak_current_by_timeslice_mean{i}, R.peak_current_by_timeslice_sem{i},...
         'LineWidth',2);    
 end
