@@ -37,8 +37,13 @@ for i=1:N_types
                 temp = vals{n};
                 temp = temp(~outliers);
                 val_means(n) = mean(temp);
+                N_outliers = sum(outliers);
+                if N_outliers>1
+                    fprintf('Dropping %d outliers for type %s\n', N_outliers, cur_type);
+                end
             end
         end
+        %val_means = 1E8*(val_means * 10)*1E-6/0.9;
         T.(result_field)(i) = {val_means};
     end
 end

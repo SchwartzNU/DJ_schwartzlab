@@ -1,7 +1,11 @@
-function R = get(func_name,data_group,result_level,do_insert)
+function R = get(func_name,data_group,result_level,do_insert,params)
 if nargin < 4
     do_insert = true;
 end
+if nargin < 5
+    params = [];
+end
+
 
 R = table; %start empty
 
@@ -14,7 +18,7 @@ switch result_level
         items = sln_animal.Eye & data_group;
     case 'Cell pair' %TODO, cell pair and eye levels
     case 'Cell'
-        items = sln_symphony.ExperimentCell & data_group;
+        items = sln_symphony.ExperimentCell & proj(data_group);
     case 'Dataset'
         items = aka.Dataset & data_group;
     case 'Epoch'
@@ -35,14 +39,18 @@ end
 missing_results = items - existing_results;
 if missing_results.exists
     fprintf('Running %s for %d remaining items of type %s\n', func_name, missing_results.count, result_level);
-    Rnew = eval(sprintf('%s(missing_results);', func_name));
+    Rnew = eval(sprintf('%s(missing_results,params);', func_name));
     inserted = false;
     if do_insert
         while ~inserted
             try
                 for i = 1:height(Rnew)
                     sln_results.insert(Rnew(i,:),result_level);
-                    fprintf('Inserted %s %s source id: %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i))
+                    if strcmp(result_level, 'Dataset')
+                        fprintf('Inserted %s %s source id: %d successful \n', Rnew.file_name(i), Rnew.dataset_name(i), Rnew.source_id(i));
+                    else
+                        fprintf('Inserted %s source id: %d successful \n', Rnew.file_name(i), Rnew.source_id(i));
+                    end
                 end
                 R = eval(sprintf('sln_results.%s & items_struct', table_name));
                 inserted = true;
