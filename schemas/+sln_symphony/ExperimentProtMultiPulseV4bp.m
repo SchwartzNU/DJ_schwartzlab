@@ -1,5 +1,5 @@
 %{
-#Block parameters for MultiPulse (3) 
+#Block parameters for MultiPulse (4) 
 -> sln_symphony.ExperimentEpochBlock
 ---
 inter_time : float
