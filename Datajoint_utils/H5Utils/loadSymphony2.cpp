@@ -411,11 +411,14 @@ class Parser {
 
         s[ind]["epoch_group_label"] = parseStrAttr(epochGroup, "label");
         
+        DEBUGPRINT("Got epoch group label");
        
         auto source = epochGroup.openGroup("source");
         auto s_id = factory.createScalar(parseSource(source));
         s[ind]["source_id"] = s_id;//factory.createScalar(s_id);
         source.close();
+        
+        DEBUGPRINT("Got epoch group source");
 
         key[0]["epoch_groups"] = std::move(s);
 
@@ -800,6 +803,7 @@ class Parser {
     }
     
     uint64_t parseSource(H5::Group source) {
+        DEBUGPRINT("Parsing source");
         auto source_uuid = parseStrAttr(source, "uuid").toAscii();
         if (sources.count(source_uuid)) {
             return sources[source_uuid];
@@ -808,9 +812,12 @@ class Parser {
         bool has_parent = source.exists("parent");
         uint64_t parent_ind;
         if (has_parent) {
+            
+            DEBUGPRINT("Parsing source parent");
             auto parent = source.openGroup("parent");
             parent_ind = parseSource(parent);
             parent.close();
+            DEBUGPRINT("Done parsing source parent");
         }
         auto ind = sources.size() + 1; //the parent ind should proceed this one
         sources.insert({source_uuid, ind});
@@ -827,6 +834,8 @@ class Parser {
 
         auto props = source.openGroup("properties");
         if (props.attrExists("DataJoint Identifier")) {
+            
+            DEBUGPRINT("Parsing new-style retina");
             //case new-style retina
             s = factory.createStructArray({1},
             {"source_id","animal_id", "side", "orientation", "experimenter", "file_name"});
@@ -841,6 +850,8 @@ class Parser {
             key[0]["retinas"] = std::move(result);
         } else if (props.attrExists("genotype")) {
             //case old-style retina
+            
+            DEBUGPRINT("Parsing old-style retina");
             s = factory.createStructArray({1},
             {"source_id","animal_id", "side", "orientation", "experimenter", "file_name"});
             s[0]["animal_id"] = parseStrAttr(props, "genotype");
@@ -857,6 +868,8 @@ class Parser {
             key[0]["retinas"] = std::move(result);
         } else if (props.attrExists("confirmedType")) {
             //case cell
+
+            DEBUGPRINT("Parsing cell");
             s = factory.createStructArray({1},
             {"file_name","source_id","retina_id","cell_number",
             "online_type", "x", "y"});
@@ -873,6 +886,8 @@ class Parser {
             key[0]["cells"] = std::move(result);
         } else if (props.attrExists("type")) {
             //non-retinal cell
+
+            DEBUGPRINT("Parsing non-retinal cell");
             s = factory.createStructArray({1},
             {"file_name","source_id","retina_id","cell_number",
             "online_type", "x", "y"});
@@ -902,6 +917,8 @@ class Parser {
             key[0]["cells"] = std::move(result);
         } else if (props.attrExists("Amplifier 1 cell number")) {
             //case cell pair
+            
+            DEBUGPRINT("Parsing cell pair");
             s = factory.createStructArray({1},
             {"file_name","source_id","cell_1_id","cell_2_id"});
             s[0]["source_id"] = factory.createScalar(ind);
@@ -911,8 +928,11 @@ class Parser {
             TypedArray<double> cell_1 = parseStr2DoubleAttr(props, "Amplifier 1 cell number");
             TypedArray<double> cell_2 = parseStr2DoubleAttr(props, "Amplifier 2 cell number");
             
+            
+            DEBUGPRINT("Got cell pair source numbers...");
             StructArray cells = std::move(key[0]["cells"]);
 
+            DEBUGPRINT("Copied existing cells... (" << cells.getNumberOfElements() << ")");
             for (auto elem : cells) {
                 matlab::data::Array temp = elem["cell_number"];
                 TypedArray<double> cell_i = temp;
@@ -932,12 +952,16 @@ class Parser {
 
         } else if (props.attrExists("Description")){
             //TODO: add a note with the description of this cell!
+            DEBUGPRINT("TODO: other...");
         } else {
             //unparsed
             CharArray result = matlabPtr->feval(u"strcat",{factory.createCharArray("Unparseable source: "), parseStrAttr(source,"label")});
             matlabPtr->feval(u"error", 0, std::vector<Array>({result}));
         }
+
         if (source.exists("notes")) {
+            
+            DEBUGPRINT("Parsing source note");
             auto notes = source.openDataSet("notes");
             auto space = notes.getSpace();
             hsize_t n_samples;
@@ -953,6 +977,8 @@ class Parser {
             space.close();
             notes.close();
         }
+        
+        DEBUGPRINT("Done parsing source");
 
         return ind;
     }
