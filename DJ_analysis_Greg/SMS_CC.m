@@ -151,7 +151,7 @@ for d=1:N_datasets
             tail_trace = -tail_trace;
         end
         
-        [peak_resp_tail(s), peak_time_tail_samples] = max(stim_trace);
+        [peak_resp_tail(s), peak_time_tail_samples] = max(tail_trace);
         if peak_resp_tail(s) > response_std_thres * baseline_std %crosses threshold
             peak_time_tail(s) = peak_time_tail_samples / sample_rate;                
             peak_to_end_trace = tail_trace(peak_time_tail_samples:end);
