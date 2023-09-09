@@ -7,6 +7,8 @@ source_id : int unsigned # source id used to identify the cell to which the data
 -> sln_lab.User # user who entered this result
 capacitance=NULL : longblob # membrane capacitance (pf)  from each trial
 current_max_number_of_spike=NULL : longblob # depolarization current at which max number of spikes is achieved
+depol_overshoot=NULL : longblob # overshoot for each depolarizing current step, equal to maximum minus steady-state from last 100 ms of stimulus (mV)
+depol_overshoot_max=NULL : float # maximum dpolarization overshoot (mV)
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 example_traces=NULL : longblob # waveforms of example traces (mV)
 first_ap_peak_amplitude=NULL : longblob # first ap peak amplitude(mv)
@@ -37,6 +39,7 @@ resistance_rsquared=NULL : longblob # gof adjusted r square of resistance calcul
 resting_vm=NULL : longblob # resting membrane potential calculated up to prestim by each trial
 resting_vm_range=NULL : longblob # resting vm range upto prestim within each trial
 sag=NULL : longblob # coefficient of sag amplitude in hyperpolarizing eps  from each trial
+sag_amplitude=NULL : float # amplitude of sag for voltage step closest to -80 mV (mV)
 sample_rate=NULL : float # samples per second
 spontaneous_firing_rate=NULL : longblob # spontaneous firing rate at rest (hz)  from each trial
 spontenous_spike_amplitude_cv=NULL : longblob # cv of all spontaneous spikes amplitude
