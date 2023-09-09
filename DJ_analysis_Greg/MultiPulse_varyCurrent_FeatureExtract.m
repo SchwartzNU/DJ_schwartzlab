@@ -205,10 +205,24 @@ for d=1:N_datasets
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
         
         %% Sag
-        min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
-        fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
-        sag_array(trial) = table2array(fit_sag_peak_vs_stable.Coefficients(2,1));
-        
+        [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)))
+        plateau_value = hyper_Vm(stim_samples + pre_samples,I)
+        peak_value = min(hyper_Vm(:,I)) %peak value
+        sag_amplitude = plateau_value - peak_value
+        %min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
+        %fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
+        %sag_array(trial) = table2array(fit_sag_peak_vs_stable.Coefficients(2,1));
+
+        %% Max Depol Overshoot
+        depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
+
+        for i=1:length(depol_epoch_greater_than_minus50);
+            [M,I] = max(depol_Vm(:,depol_current_level_pA > -50));
+            stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50)
+            depol_overshoot = M - stable_Vm_depol 
+            max_depol_overshoot = max(depol_overshoot);
+        end
+
         %% Does it spike spontaneously
         spontaneous_peak_array = zeros(size(depol_current_level_pA,1), 1);
         spike_amplitudes = [];
@@ -422,7 +436,8 @@ for d=1:N_datasets
     R.resistance_rsquared{d} =resistance_Adjusted_RSquare ;
     R.tau{d} = rmoutliers(tau_array_ms,"median") ;
     R.capacitance{d} =rmoutliers(capacitance_array_pF,"median") ;
-    R.sag{d} =sag_array ;
+    R.sag_amplitude{d} =sag_amplitude ;
+    R.depol_overshoot{d} = depol_overshoot ;
     R.spontaneous_firing_rate{d} = spontaneous_firing_rate_Hz ;
     R.v_threshold{d} =V_threshold_array_mV ;
     R.half_width_time{d} =half_width_time_array_ms ;
