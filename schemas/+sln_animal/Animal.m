@@ -197,8 +197,8 @@ classdef Animal < dj.Manual
         end
 
         function result = isActiveBreeder(animal_ids)
-            q_male = proj(sln_animal.BreedingPair.active(),'male_id->animal_id');
-            q_female = proj(sln_animal.BreedingPair.active(),'female_id->animal_id');
+            q_male = proj(sln_animal.BreedingPair.active_pairs(),'male_id->animal_id');
+            q_female = proj(sln_animal.BreedingPair.active_pairs(),'female_id->animal_id');
 
             if nargin && ~isempty(animal_ids)
                 q_male = restrict_by_animal_ids(q_male,animal_ids);
