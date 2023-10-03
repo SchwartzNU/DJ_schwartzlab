@@ -33,7 +33,7 @@ end
 
 %if not found, then try other DBs
 %get all user dbs
-if missingEntries.exists
+if ~isempty(missingEntries) && missingEntries.exists
     user_dbs = fetchn(sl.UserDB,'db_name');
     N = length(user_dbs);
     %put this user's db first

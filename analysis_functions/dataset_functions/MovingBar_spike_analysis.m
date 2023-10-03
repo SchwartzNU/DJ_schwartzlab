@@ -83,6 +83,17 @@ outputStruct.ON_OFF_index_min = min(outputStruct.ON_OFF_index_mean);
 outputStruct.ON_OFF_index_meanAcrossAngles = mean(outputStruct.ON_OFF_index_mean);
 outputStruct.ON_OFF_index_CVAcrossAngles =  std(outputStruct.ON_OFF_index_mean) ./ outputStruct.ON_OFF_index_meanAcrossAngles;
 
+L = length(outputStruct.barAngle);
+maxFR = zeros(1,L);
+for i=1:L
+    ind = outputStruct.key_ind(i,:);
+    [psth_x, psth_y] = psth(dataset_struct.cell_data, epoch_ids(ind), 10, 1);    
+    maxFR(i) = max(psth_y(psth_x>0));
+end
+
+outputStruct.maxFR_mean = mean(maxFR);
+outputStruct.maxFR_sem = std(maxFR) ./ sqrt(L-1);
+
 responseTypes = {'spikeCountFull',...
     'spikeRateFull',...
     'spikeCountON',...

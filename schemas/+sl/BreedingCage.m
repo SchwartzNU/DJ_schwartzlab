@@ -43,7 +43,7 @@ classdef BreedingCage < dj.Manual
         
         function animal = getMember(obj, sex)
             %get only breeders
-            allAnimals = fetch(sl.AnimalEventDeceased.living(),'*');
+            allAnimals = fetch(sl.Animal(),'*');
             animal_ids = [allAnimals.animal_id]';
             isBreeder = sl.Animal.isBreeder(animal_ids);
             animal_ids = animal_ids(isBreeder);            
@@ -54,6 +54,12 @@ classdef BreedingCage < dj.Manual
             animal_id_struct = rmfield(cageStruct(ind), 'cage_number');
             
             animal = sl.Animal & animal_id_struct & sprintf('sex="%s"', sex);
+        end
+
+        function animal = getHistoricalMember(obj,sex)
+            thisCage = fetch1(obj, 'cage_number');  
+            assign_events = sl.AnimalEventAssignCage & sprintf('cage_number="%s"', thisCage);
+            animal = sl.Animal & assign_events  & sprintf('sex="%s"', sex);
         end
         
         function [littersN, littersDates] = getLitters(obj)

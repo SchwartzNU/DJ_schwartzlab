@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="3463606770" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="470827220" file="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps/AnimalInterface_New.prj" location="/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Apps" name="AnimalInterface_New" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_New</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_New</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_New</param.files.only>
@@ -86,6 +86,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/UserActive.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/UserDB.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl_mutable/getSchema.m</file>
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/+dj/+internal/AutoPopulate.m</file>
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/+dj/+internal/GeneralRelvar.m</file>
       <file>/Users/gws584/matlab/DataJoint/ForWebAppCompiler/+dj/+internal/Header.m</file>
@@ -141,6 +142,7 @@
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/cellID_to_dateAndRig.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/Datajoint_utils/escapeString.m</file>
       <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl/AnimalEventTag.m</file>
+      <file>/Users/gws584/matlab/DataJoint/DJ_schwartzlab/schemas/+sl_mutable/TodoQueries.m</file>
       <file>/Users/gws584/matlab/SymphonyAnalysis/core/loadAndSyncCellData.m</file>
     </fileset.depfun>
     <fileset.package />

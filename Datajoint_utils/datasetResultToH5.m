@@ -31,6 +31,9 @@ elseif ds_result.count > 1
             fields = fieldnames(R);
             for i = 1:length(fields)
                 if ~isempty(R.(fields{i}))
+                    if islogical(R.(fields{i}))
+                        R.(fields{i}) = double(R.(fields{i}));
+                    end
                     hdf5write(fileName, sprintf('/%s/%s', ds_name{r}, fields{i}), R.(fields{i}), 'WriteMode', 'append');
                 end
             end
@@ -42,6 +45,9 @@ else
     fields = fieldnames(R);
     for i = 1:length(fields)
         if ~isempty(R.(fields{i}))
+            if islogical(R.(fields{i}))
+                R.(fields{i}) = double(R.(fields{i}));
+            end
             hdf5write(fileName, sprintf('/%s/%s', ds_name, fields{i}), R.(fields{i}), 'WriteMode', 'append');
         end
     end

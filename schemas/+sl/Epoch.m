@@ -26,7 +26,7 @@ data_link2=NULL             : varchar(512)                  # hdf5 location of r
 classdef Epoch < dj.Manual   
     methods
 
-        function [data, xvals, units] = getData(self, channel)
+        function [data, xvals, units, protocol_params] = getData(self, channel)
             if nargin < 2
                 channel = 1;
             end
@@ -91,14 +91,17 @@ classdef Epoch < dj.Manual
                 end
             end
             stimStart = cellfun(@(x) x.preTime * 1e-3, protocol_params);
-            stimStart(cellfun(@(x) ~isfield(x,'stimStart'), protocol_params)) = 0;
+%             stimStart(cellfun(@(x) ~isfield(x,'stimStart'), protocol_params)) = 0;
 %             xvals = (1:length(data)) / sampleRate - stimStart;
-            xvals = arrayfun( @(x,y,z) (1:length(x{1}))/y - z, data, sample_rate, stimStart,'uniformOutput',false);
+            xvals = arrayfun( @(x,y,z) (1:length(x{1}))'/y - z, data, sample_rate, stimStart,'uniformOutput',false);
             
             if numel(dL) == 1
                data = data{1};
                xvals = xvals{1};
                units = units{1};
+               protocol_params = protocol_params{1};
+            elseif nargout<=1
+                data = struct('raw_trace',data,'t',xvals,'units',units,'protocol_params',protocol_params);
             end
         end
         

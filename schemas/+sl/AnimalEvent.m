@@ -79,8 +79,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
             %                 self = self.proj(args{:});
             %                 [hdr, sql_] = self.compile;
             %             end
-
-            [limit, per, args, outer] = makeLimitClause(compile(self).names, varargin{:});
+            t = compile(self);
+            [limit, per, args, outer] = makeLimitClause(t.names, varargin{:});
 
             if ~isempty(args)
                 self = self.proj(args{:});
@@ -90,7 +90,9 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
             if ~isempty(outer)
                 sql = enclose(hdr, sql_, inf, per); %need to pass limit, per, args...
-                hdr.attributes = hdr.attributes(ismember(hdr.names, outer));
+                if numel(outer)~=1 || numel(outer{1})~=1 || outer{1}~='*'
+                    hdr.attributes = hdr.attributes(ismember(hdr.names, outer));
+                end
                 sql = enclose(hdr, sql, limit);
             else
                 sql = enclose(hdr, sql_, limit, per);
@@ -110,8 +112,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
         end
 
         function varargout = fetchn(self, varargin)
-
-            [limit, per, args] = makeLimitClause(compile(self).names, varargin{:});
+            t = compile(self);
+            [limit, per, args] = makeLimitClause(t.names, varargin{:});
             specs = args(cellfun(@(x) ischar(x) && ismember(x, varargin), args)); % attribute specifiers
             %             returnKey = nargout==length(specs)+1;
             returnKey = false;
@@ -288,7 +290,8 @@ classdef AnimalEvent < dj.internal.GeneralRelvar
 
         function n = count(self, varargin)
             % COUNT - the number of tuples in the relation.
-            [limit, per, args] = makeLimitClause(compile(self).names, varargin{:});
+            t = compile(self);
+            [limit, per, args] = makeLimitClause(t.names, varargin{:});
 
             self = self.proj(args{:});
 
@@ -487,6 +490,11 @@ function [limit, per, args, outer] = makeLimitClause(names, varargin)
     end
 
     lastArg = args{end};
+    
+    
+    if isstring(lastArg)
+        lastArg = char(lastArg);
+    end
 
     %check if there is a limit operation at the end
     if strcmp(lastArg, '*')
@@ -502,9 +510,10 @@ function [limit, per, args, outer] = makeLimitClause(names, varargin)
         args = args(1:end - 1);
         lastArg = args{end};
     end
+    
 
     if ischar(lastArg) && contains(lastArg, 'PER')
-        per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
+        per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s`?(?<selector>\w+)`?\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
         %     if isempty(per.selector)
         %         per.selector = 'animal_id';
         %     end

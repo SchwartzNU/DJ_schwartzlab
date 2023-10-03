@@ -14,7 +14,11 @@ for i=1:Nepochs
     thisEpoch = sl.Epoch & sprintf('cell_id="%s"', cell_id) & sprintf('epoch_number=%d', epoch_numbers(i));
     ep_struct = thisEpoch.fetch('*');
     sampleRate = ep_struct.sample_rate;
-    preTime = ep_struct.protocol_params.preTime;
+    if isfield(ep_struct.protocol_params, 'preTime')
+        preTime = ep_struct.protocol_params.preTime;
+    else
+        preTime = 0;
+    end
     if channel==2
         D = h5read(fname, ep_struct.data_link2);
     else

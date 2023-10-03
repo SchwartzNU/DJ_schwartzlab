@@ -70,7 +70,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
             %                 [hdr, sql_] = self.compile;
             %             end
 
-            [limit, per, args, outer] = makeLimitClause(varargin{:});
+            [limit, per, args, outer] = makeLimitClause(compile(self).names,varargin{:});
 
             if ~isempty(args)
                 self = self.proj(args{:});
@@ -101,7 +101,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
 
         function varargout = fetchn(self, varargin)
 
-            [limit, per, args] = makeLimitClause(varargin{:});
+            [limit, per, args] = makeLimitClause(compile(self).names, varargin{:});
             specs = args(cellfun(@(x) ischar(x) && ismember(x, varargin), args)); % attribute specifiers
             %             returnKey = nargout==length(specs)+1;
             returnKey = false;
@@ -254,7 +254,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
 
             end
 
-            maxRows = dj.set('maxPreviewRows');
+            maxRows = dj.config('displayLimit');
             preview = self.fetch(attrList{:}, sprintf('LIMIT %d', maxRows + 1));
 
             if ~isempty(preview)
@@ -277,7 +277,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
 
         function n = count(self, varargin)
             % COUNT - the number of tuples in the relation.
-            [limit, per, args] = makeLimitClause(varargin{:});
+            [limit, per, args] = makeLimitClause(compile(self).names, varargin{:});
 
             self = self.proj(args{:});
 
@@ -403,7 +403,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
 
                 if any(isPer)
                     assert(nnz(isPer) == 1, 'only one PER state is allowed for a single relation.');
-                    [~, per, ~] = makeLimitClause(self.restrictions{isPer});
+                    [~, per, ~] = makeLimitClause(header.names, self.restrictions{isPer});
                     perInd = find(isPer);
                 else
                     perInd = length(self.restrictions) + 1;
@@ -465,7 +465,7 @@ classdef CellEvent < dj.internal.GeneralRelvar
 
 end
 
-function [limit, per, args, outer] = makeLimitClause(varargin)
+function [limit, per, args, outer] = makeLimitClause(names,varargin)
     args = varargin;
     limit = '';
     per = [];
@@ -478,6 +478,10 @@ function [limit, per, args, outer] = makeLimitClause(varargin)
     lastArg = args{end};
 
     %check if there is a limit operation at the end
+    if isstring(lastArg)
+        lastArg = char(lastArg);
+    end
+    
     if strcmp(lastArg, '*')
         return
     end
@@ -491,9 +495,9 @@ function [limit, per, args, outer] = makeLimitClause(varargin)
         args = args(1:end - 1);
         lastArg = args{end};
     end
-
+    
     if ischar(lastArg) && contains(lastArg, 'PER')
-        per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s(?<selector>\w+)\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
+        per = regexp(lastArg, '^LIMIT\s(?<limit>\d+)\sPER\s`?(?<selector>\w+)`?\s*(ORDER\sBY)?(?<orderby>(([\s*\w*\s*,?])*))', 'names');
         %     if isempty(per.selector)
         %         per.selector = 'animal_id';
         %     end
