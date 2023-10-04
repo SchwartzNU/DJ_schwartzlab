@@ -365,7 +365,7 @@ class Parser {
         StructArray cells = std::move(key[0]["cells"]);
         StructArray pairs = std::move(key[0]["cell_pairs"]);
 
-        for (auto pair : pairs) {
+        for (StructArray pair : pairs) {
 
             TypedArray<double> cell_1 = pair[0]["cell_1_id"];
             TypedArray<double> cell_2 = pair[0]["cell_2_id"];
