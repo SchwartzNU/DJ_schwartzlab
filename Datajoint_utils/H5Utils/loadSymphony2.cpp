@@ -946,7 +946,7 @@ class Parser {
 
             #ifdef VERBOSE
             DEBUGPRINT("Attrs are: ");
-            proprs.iterateAttrs([](H5::H5Location &loc, const std::string attr_name, void *operator_data) {
+            props.iterateAttrs([](H5::H5Location &loc, const std::string attr_name, void *operator_data) {
                 DEBUGPRINT(attr_name);        
             });
             
