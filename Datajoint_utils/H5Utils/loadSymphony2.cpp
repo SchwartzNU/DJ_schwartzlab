@@ -439,8 +439,9 @@ class Parser {
         parseDateTime(epochGroup, s[ind]["epoch_group_start_time"], s[ind]["epoch_group_end_time"]);
         
 
-        s[ind]["epoch_group_label"] = parseStrAttr(epochGroup, "label");
-        DEBUGPRINT("Read epoch group label" << static_cast<CharArray>(s[ind]["epoch_group_label"]).toAscii());
+        CharArray label = parseStrAttr(epochGroup, "label");
+        s[ind]["epoch_group_label"] = label;
+        DEBUGPRINT("Read epoch group label" << label.toAscii());
         
        
         auto source = epochGroup.openGroup("source");
