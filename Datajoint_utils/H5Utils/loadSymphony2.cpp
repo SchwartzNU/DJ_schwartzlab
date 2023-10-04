@@ -374,21 +374,28 @@ class Parser {
 
         for (Struct pair : pairs) {
 
-            TypedArray<double> cell_1 = pair["cell_1_id"];
-            TypedArray<double> cell_2 = pair["cell_2_id"];
+            DEBUGPRINT("Testing pair...");
+            auto cell_1 = pair["cell_1_id"];
+            auto cell_2 = pair["cell_2_id"];
+
+            size_t matches = 0;
 
             for (auto elem : cells) {
-                matlab::data::Array temp = elem["cell_number"];
-                TypedArray<double> cell_i = temp;
+                matlab::data::Array cell_i = elem["cell_number"];
                 if (cell_i[0] == cell_1[0]) {
                     auto s_id = elem["source_id"];
                     pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    matches++;
+                    DEBUGPRINT("Matched cell 1");
                 }
                 if (cell_i[0] == cell_2[0]) {
                     auto s_id = elem["source_id"];
                     pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    matches++;
+                    DEBUGPRINT("Matched cell 2");
                 }
             }
+            if (matches != 2) throwError("Failed to match cell pairs!"); // should never happen?
         }
 
         key[0]["cells"] = std::move(cells);
