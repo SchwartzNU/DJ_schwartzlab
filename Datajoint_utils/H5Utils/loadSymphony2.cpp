@@ -852,7 +852,9 @@ class Parser {
         StructArray s = factory.createStructArray({1}, {
             "source_id","file_name","source_label"
         });
-        s[0]["source_label"] = parseStrAttr(source, "label");
+        CharArray label = parseStrAttr(source, "label");
+        s[0]["source_label"] = label;
+        DEBUGPRINT("Source: " << label);
         s[0]["source_id"] = factory.createScalar(ind);
         s[0]["file_name"] = factory.createCharArray(fname);
  
