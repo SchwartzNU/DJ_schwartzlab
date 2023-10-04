@@ -961,16 +961,22 @@ class Parser {
             
             DEBUGPRINT("Reading cell numbers...");
             //we want the cells with the matching number, not source_id...
-            TypedArray<double> cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
-            TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
+            // TypedArray<double> cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
+            // TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
             // TypedArray<double> cell_1 = parseNumericAttr(props, "Amplifier 1 cell number");
             // TypedArray<double> cell_2 = parseNumericAttr(props, "Amplifier 2 cell number");
             // s[0]["cell_1_id"] = factory.createScalar<uint64_t>(cell_1);
             // s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);    
-            DEBUGPRINT("Cells " << cell_1[0] << " and " << cell_2[0]);
+            // DEBUGPRINT("Cells " << cell_1[0] << " and " << cell_2[0]);
 
-            s[0]["cell_1_id"] = cell_1;
-            s[0]["cell_2_id"] = cell_2;
+            // s[0]["cell_1_id"] = cell_1;
+            // s[0]["cell_2_id"] = cell_2;
+
+            
+            s[0]["cell_1_id"] = parseStr2IntAttr(props, "Amplifier 1 cell number");
+            s[0]["cell_2_id"] = parseStr2IntAttr(props, "Amplifier 2 cell number");
+            
+            DEBUGPRINT("Cells " << s[0]["cell_1_id"][0] << " and " << s[0]["cell_2_id"][0]);
 
             // StructArray cells = std::move(key[0]["cells"]);
 
