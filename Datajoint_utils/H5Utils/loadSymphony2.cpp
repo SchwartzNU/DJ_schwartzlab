@@ -943,10 +943,18 @@ class Parser {
             {"file_name","source_id","cell_1_id","cell_2_id"});
             s[0]["source_id"] = factory.createScalar(ind);
             s[0]["file_name"] = factory.createCharArray(fname);
+
+            #ifdef VERBOSE
+            DEBUGPRINT("Attrs are: ");
+            proprs.iterateAttrs([](H5::H5Location &loc, const std::string attr_name, void *operator_data) {
+                DEBUGPRINT(attr_name);        
+            });
+            
+            // The signature of user_op is void (*)(H5::H5Location&, H5std_string, void*).
+            #endif
             
             
             DEBUGPRINT("Reading cell numbers...");
-
             //we want the cells with the matching number, not source_id...
             TypedArray<double> cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
             TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
