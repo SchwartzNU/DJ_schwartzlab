@@ -831,6 +831,12 @@ class Parser {
         key[0]["epoch_channels"] = std::move(s);
       
     }
+
+    void attr_op(H5::H5Location &loc, const std::string attr_name,
+             void *operator_data) {
+        DEBUGPRINT(attr_name);
+    }
+
     
     uint64_t parseSource(H5::Group source) {
         auto source_uuid = parseStrAttr(source, "uuid").toAscii();
@@ -946,9 +952,7 @@ class Parser {
 
             #ifdef VERBOSE
             DEBUGPRINT("Attrs are: ");
-            props.iterateAttrs([](H5::H5Location &loc, const std::string attr_name, void *operator_data) {
-                DEBUGPRINT(attr_name);        
-            });
+            props.iterateAttrs(attr_op);
             
             // The signature of user_op is void (*)(H5::H5Location&, H5std_string, void*).
             #endif
