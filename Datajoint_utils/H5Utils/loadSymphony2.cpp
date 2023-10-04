@@ -980,8 +980,8 @@ class Parser {
             // s[0]["cell_1_id"] = cell_1;
             // s[0]["cell_2_id"] = cell_2;
 
-            size_t cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
-            size_t cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
+            size_t cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number")[0];
+            size_t cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number")[0];
 
             // StructArray cells = std::move(key[0]["cells"]);
 
