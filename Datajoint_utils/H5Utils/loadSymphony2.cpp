@@ -854,7 +854,7 @@ class Parser {
         });
         CharArray label = parseStrAttr(source, "label");
         s[0]["source_label"] = label;
-        DEBUGPRINT("Source: " << label.toAscii());
+        DEBUGPRINT("Working on source: " << label.toAscii());
         s[0]["source_id"] = factory.createScalar(ind);
         s[0]["file_name"] = factory.createCharArray(fname);
  
@@ -937,6 +937,7 @@ class Parser {
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cells"]), std::move(s)});
             key[0]["cells"] = std::move(result);
         } else if (props.attrExists("Amplifier 1 cell number")) {
+            DEBUGPRINT("Parsing cell pair");
             //case cell pair
             s = factory.createStructArray({1},
             {"file_name","source_id","cell_1_id","cell_2_id"});
@@ -947,7 +948,9 @@ class Parser {
             TypedArray<double> cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
             TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
             // s[0]["cell_1_id"] = factory.createScalar<uint64_t>(cell_1);
-            // s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);            
+            // s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);    
+            DEBUGPRINT("Cells " << cell_1 << " and " << cell_2);
+
             s[0]["cell_1_id"] = cell_1;
             s[0]["cell_2_id"] = cell_2;
 
