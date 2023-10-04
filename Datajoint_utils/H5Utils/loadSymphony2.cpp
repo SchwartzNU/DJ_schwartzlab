@@ -441,10 +441,11 @@ class Parser {
 
         CharArray label = parseStrAttr(epochGroup, "label");
         s[ind]["epoch_group_label"] = label;
-        DEBUGPRINT("Read epoch group label" << label.toAscii());
+        DEBUGPRINT("Read epoch group label: " << label.toAscii());
         
        
         auto source = epochGroup.openGroup("source");
+        DEBUGPRINT("Opened epoch group source");
         auto s_id = factory.createScalar(parseSource(source));
         s[ind]["source_id"] = s_id;//factory.createScalar(s_id);
         source.close();
@@ -833,6 +834,7 @@ class Parser {
     
     uint64_t parseSource(H5::Group source) {
         auto source_uuid = parseStrAttr(source, "uuid").toAscii();
+        DEBUGPRINT("Opened source " << source_uuid);
         if (sources.count(source_uuid)) {
             return sources[source_uuid];
         }
