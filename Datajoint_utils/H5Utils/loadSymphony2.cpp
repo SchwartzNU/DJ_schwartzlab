@@ -372,7 +372,7 @@ class Parser {
         StructArray cells = std::move(key[0]["cells"]);
         StructArray pairs = std::move(key[0]["cell_pairs"]);
 
-        for (Struct &pair : pairs) {
+        for (Reference<Struct> pair : pairs) {
 
             DEBUGPRINT("Testing pair...");
             size_t cell_1 = pair["cell_1_id"][0];
