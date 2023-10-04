@@ -1095,8 +1095,9 @@ class Parser {
         auto attr = group.openAttribute(attr_name);
         double result;
         
-        DEBUGPRINT("Reading numeric attribute");
+        DEBUGPRINT("Reading numeric attribute: " << attr_name);
         attr.read(H5::PredType::NATIVE_DOUBLE, &result);
+        DEBUGPRINT("Value was: " << result);
         return factory.createScalar(result);
     }
 
