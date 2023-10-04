@@ -854,7 +854,7 @@ class Parser {
         });
         CharArray label = parseStrAttr(source, "label");
         s[0]["source_label"] = label;
-        DEBUGPRINT("Source: " << label);
+        DEBUGPRINT("Source: " << label.toAscii());
         s[0]["source_id"] = factory.createScalar(ind);
         s[0]["file_name"] = factory.createCharArray(fname);
  
