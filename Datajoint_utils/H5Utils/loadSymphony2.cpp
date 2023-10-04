@@ -367,8 +367,8 @@ class Parser {
 
         for (auto pair : pairs) {
 
-            TypedArray<double> cell_1 = s[0]["cell_1_id"];
-            TypedArray<double> cell_2 = s[0]["cell_2_id"];
+            TypedArray<double> cell_1 = pair[0]["cell_1_id"];
+            TypedArray<double> cell_2 = pair[0]["cell_2_id"];
 
             for (auto elem : cells) {
                 matlab::data::Array temp = elem["cell_number"];
