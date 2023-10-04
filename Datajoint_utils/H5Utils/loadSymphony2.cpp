@@ -938,11 +938,13 @@ class Parser {
             s[0]["file_name"] = factory.createCharArray(fname);
             
             //we want the cells with the matching number, not source_id...
-            TypedArray<double> cell_1 = parseStr2DoubleAttr(props, "Amplifier 1 cell number");
-            TypedArray<double> cell_2 = parseStr2DoubleAttr(props, "Amplifier 2 cell number");
-            s[0]["cell_1_id"] = factory.createScalar<uint64_t>(cell_1);
-            s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);            
-            
+            TypedArray<double> cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
+            TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
+            // s[0]["cell_1_id"] = factory.createScalar<uint64_t>(cell_1);
+            // s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);            
+            s[0]["cell_1_id"] = cell_1;
+            s[0]["cell_2_id"] = cell_2;
+
             // StructArray cells = std::move(key[0]["cells"]);
 
             // for (auto elem : cells) {
