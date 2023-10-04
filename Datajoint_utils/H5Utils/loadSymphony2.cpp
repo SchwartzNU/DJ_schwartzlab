@@ -980,9 +980,8 @@ class Parser {
             // s[0]["cell_1_id"] = cell_1;
             // s[0]["cell_2_id"] = cell_2;
 
-            
-            s[0]["cell_1_id"] = parseStr2IntAttr(props, "Amplifier 1 cell number");
-            s[0]["cell_2_id"] = parseStr2IntAttr(props, "Amplifier 2 cell number");
+            size_t cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
+            size_t cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
 
             // StructArray cells = std::move(key[0]["cells"]);
 
@@ -999,6 +998,25 @@ class Parser {
             //     }
             // }
             // key[0]["cells"] = std::move(cells);
+
+            StructArray cells = std::move(key[0]["cells"]);
+            for (auto elem : cells) {
+                // matlab::data::Array cell_i = elem["cell_number"];
+                size_t cell_i = elem["cell_number"][0];
+                if (cell_i == cell_1) {
+                    auto s_id = elem["source_id"];
+                    s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    // matches++;
+                    DEBUGPRINT("Matched cell 1");
+                }
+                if (cell_i == cell_2) {
+                    auto s_id = elem["source_id"];
+                    s[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    // matches++;
+                    DEBUGPRINT("Matched cell 2");
+                }
+            }
+            key[0]["cells"] = std::move(cells);
 
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cell_pairs"]), std::move(s)});
             key[0]["cell_pairs"] = std::move(result);
