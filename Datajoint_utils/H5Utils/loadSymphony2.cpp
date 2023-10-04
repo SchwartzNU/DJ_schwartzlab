@@ -375,8 +375,8 @@ class Parser {
         for (Struct pair : pairs) {
 
             DEBUGPRINT("Testing pair...");
-            auto cell_1 = pair["cell_1_id"];
-            auto cell_2 = pair["cell_2_id"];
+            matlab::data::Array cell_1 = pair["cell_1_id"];
+            matlab::data::Array cell_2 = pair["cell_2_id"];
 
             size_t matches = 0;
 
