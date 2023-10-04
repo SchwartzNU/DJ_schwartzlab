@@ -169,6 +169,9 @@ class Parser {
             DEBUGPRINT("Mapping resources");
             mapResources();
 
+            DEBUGPRINT("Assigning cell pairs");
+            mapCellPairs();
+
             output[0] = std::move(key);
         }
 
@@ -358,6 +361,33 @@ class Parser {
         key[0]["calibration"] = std::move(matlabPtr->feval(u"containers.Map", {cKeys, cVals}));
     }
 
+    void mapCellPairs() {
+        StructArray cells = std::move(key[0]["cells"]);
+        StructArray pairs = std::move(key[0]["cell_pairs"]);
+
+        for (auto pair : pairs) {
+
+            TypedArray<double> cell_1 = s[0]["cell_1_id"];
+            TypedArray<double> cell_2 = s[0]["cell_2_id"];
+
+            for (auto elem : cells) {
+                matlab::data::Array temp = elem["cell_number"];
+                TypedArray<double> cell_i = temp;
+                if (cell_i[0] == cell_1[0]) {
+                    auto s_id = elem["source_id"];
+                    pair[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                }
+                if (cell_i[0] == cell_2[0]) {
+                    auto s_id = elem["source_id"];
+                    pair[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                }
+            }
+        }
+
+        key[0]["cells"] = std::move(cells);
+        key[0]["cell_pairs"] = std::move(pairs);
+    }
+    
     void parseEpochGroups(H5::Group epochGroups) {
         auto c_egs = epochGroups.getNumObjs();
         auto n_egs = c_egs;
@@ -910,22 +940,24 @@ class Parser {
             //we want the cells with the matching number, not source_id...
             TypedArray<double> cell_1 = parseStr2DoubleAttr(props, "Amplifier 1 cell number");
             TypedArray<double> cell_2 = parseStr2DoubleAttr(props, "Amplifier 2 cell number");
+            s[0]["cell_1_id"] = factory.createScalar<uint64_t>(cell_1);
+            s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);            
             
-            StructArray cells = std::move(key[0]["cells"]);
+            // StructArray cells = std::move(key[0]["cells"]);
 
-            for (auto elem : cells) {
-                matlab::data::Array temp = elem["cell_number"];
-                TypedArray<double> cell_i = temp;
-                if (cell_i[0] == cell_1[0]) {
-                    auto s_id = elem["source_id"];
-                    s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                }
-                if (cell_i[0] == cell_2[0]) {
-                    auto s_id = elem["source_id"];
-                    s[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                }
-            }
-            key[0]["cells"] = std::move(cells);
+            // for (auto elem : cells) {
+            //     matlab::data::Array temp = elem["cell_number"];
+            //     TypedArray<double> cell_i = temp;
+            //     if (cell_i[0] == cell_1[0]) {
+            //         auto s_id = elem["source_id"];
+            //         s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+            //     }
+            //     if (cell_i[0] == cell_2[0]) {
+            //         auto s_id = elem["source_id"];
+            //         s[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+            //     }
+            // }
+            // key[0]["cells"] = std::move(cells);
 
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cell_pairs"]), std::move(s)});
             key[0]["cell_pairs"] = std::move(result);
