@@ -944,6 +944,9 @@ class Parser {
             s[0]["source_id"] = factory.createScalar(ind);
             s[0]["file_name"] = factory.createCharArray(fname);
             
+            
+            DEBUGPRINT("Reading cell numbers...");
+
             //we want the cells with the matching number, not source_id...
             TypedArray<double> cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number");
             TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
