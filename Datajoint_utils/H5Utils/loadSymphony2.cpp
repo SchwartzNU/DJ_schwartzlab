@@ -365,21 +365,21 @@ class Parser {
         StructArray cells = std::move(key[0]["cells"]);
         StructArray pairs = std::move(key[0]["cell_pairs"]);
 
-        for (StructArray pair : pairs) {
+        for (Struct pair : pairs) {
 
-            TypedArray<double> cell_1 = pair[0]["cell_1_id"];
-            TypedArray<double> cell_2 = pair[0]["cell_2_id"];
+            TypedArray<double> cell_1 = pair["cell_1_id"];
+            TypedArray<double> cell_2 = pair["cell_2_id"];
 
             for (auto elem : cells) {
                 matlab::data::Array temp = elem["cell_number"];
                 TypedArray<double> cell_i = temp;
                 if (cell_i[0] == cell_1[0]) {
                     auto s_id = elem["source_id"];
-                    pair[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
                 }
                 if (cell_i[0] == cell_2[0]) {
                     auto s_id = elem["source_id"];
-                    pair[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
                 }
             }
         }
