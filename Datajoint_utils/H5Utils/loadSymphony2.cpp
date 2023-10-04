@@ -1004,7 +1004,7 @@ class Parser {
             for (auto elem : cells) {
                 // matlab::data::Array cell_i = elem["cell_number"];
                 size_t cell_i = elem["cell_number"][0];
-                DEBUGPRINT("Cell " << cell_i << " (source " << (size_t)elem["source_id"][0] << ")")
+                DEBUGPRINT("Cell " << cell_i << " (source " << (size_t)elem["source_id"][0] << ")");
                 if (cell_i == cell_1) {
                     auto s_id = elem["source_id"];
                     s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
