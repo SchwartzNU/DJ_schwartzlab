@@ -67,6 +67,13 @@ typedef struct note_data {
     char* text;
 } note_data;
 
+
+
+void attr_op(H5::H5Location &loc, const std::string attr_name,
+            void *operator_data) {
+    DEBUGPRINT(attr_name);
+}
+
 ArrayFactory factory;
 class Parser {
     private:
@@ -831,12 +838,6 @@ class Parser {
         key[0]["epoch_channels"] = std::move(s);
       
     }
-
-    void attr_op(H5::H5Location &loc, const std::string attr_name,
-             void *operator_data) {
-        DEBUGPRINT(attr_name);
-    }
-
     
     uint64_t parseSource(H5::Group source) {
         auto source_uuid = parseStrAttr(source, "uuid").toAscii();
