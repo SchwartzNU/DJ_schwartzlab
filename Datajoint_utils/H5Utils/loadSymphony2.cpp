@@ -1078,7 +1078,7 @@ class Parser {
 
         attr.read(strtype, attr_value);
 
-        DEBUGPRINT("Value was: " << attr_value);
+        DEBUGPRINT("Value was: " << attr_value << " (" << std::stoi(attr_value) << ")");
         // strtype.close();
         attr.close();
         return factory.createScalar(std::stoi(attr_value));
