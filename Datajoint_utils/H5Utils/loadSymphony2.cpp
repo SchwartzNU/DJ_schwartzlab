@@ -953,7 +953,7 @@ class Parser {
 
             #ifdef VERBOSE
             DEBUGPRINT("Attrs are: ");
-            props.iterateAttrs(attr_op);
+            props.iterateAttrs((H5::attr_operator_t)attr_op);
             
             // The signature of user_op is void (*)(H5::H5Location&, H5std_string, void*).
             #endif
