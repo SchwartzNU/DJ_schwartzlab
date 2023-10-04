@@ -396,7 +396,7 @@ class Parser {
                     matches++;
 
                     for (Reference<Struct> electrode : electrodes) {
-                        if ((electrode["source_id"][0] == src) && (electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
+                        if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
                             electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
                         }
                     }
@@ -408,7 +408,7 @@ class Parser {
                     matches++;
 
                     for (Reference<Struct> electrode : electrodes) {
-                        if ((electrode["source_id"][0] == src) && (electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
+                        if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
                             electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
                         }
                     }
