@@ -371,12 +371,19 @@ class Parser {
     void mapCellPairs() {
         StructArray cells = std::move(key[0]["cells"]);
         StructArray pairs = std::move(key[0]["cell_pairs"]);
+        StructArray electrodes = std::move(key[0]["electrodes"]);
+
+        // we need to check the electrodes against cell pairs
+
+        // if the source_id for an electrode is a cell pair, replace source_id with the correct cell id?
 
         for (Reference<Struct> pair : pairs) {
 
             DEBUGPRINT("Testing pair...");
             size_t cell_1 = pair["cell_1_id"][0];
             size_t cell_2 = pair["cell_2_id"][0];
+
+            size_t src = pair["source_id"][0];
 
             size_t matches = 0;
 
@@ -387,12 +394,24 @@ class Parser {
                     auto s_id = elem["source_id"];
                     pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
                     matches++;
+
+                    for (Reference<Struct> electrode : electrodes) {
+                        if ((electrode["source_id"][0] == src) && (electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
+                            electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                        }
+                    }
                     DEBUGPRINT("Matched cell 1");
                 }
                 if (cell_i == cell_2) {
                     auto s_id = elem["source_id"];
                     pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
                     matches++;
+
+                    for (Reference<Struct> electrode : electrodes) {
+                        if ((electrode["source_id"][0] == src) && (electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
+                            electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                        }
+                    }
                     DEBUGPRINT("Matched cell 2");
                 }
             }
@@ -401,6 +420,7 @@ class Parser {
 
         key[0]["cells"] = std::move(cells);
         key[0]["cell_pairs"] = std::move(pairs);
+        key[0]["electrodes"] = std::move(electrodes);
     }
     
     void parseEpochGroups(H5::Group epochGroups) {
@@ -782,25 +802,31 @@ class Parser {
                 auto source = epochGroup.openGroup("source");
                 auto props = source.openGroup("properties");
 
-                if (props.attrExists("type")) {
+                // if (props.attrExists("type")) {
+                //     //case cell
+                //     electrode_s[0]["cell_id"] = source_id;
+                // } else if (props.attrExists("Amplifier 1 cell number")) {
+                //     //case cell pair -- we need the corresponding cell...
+                //     char index[10];
+                //     sprintf(index,"cell_%d_id", electrode_number);
+                //     StructArray pairs = std::move(key[0]["cell_pairs"]);
+                //     for (auto elem : pairs) {
+                //         // TypedArray<uint64_t> cell_i = elem["source_id"];
+                //         matlab::data::Array temp = elem["source_id"];
+                //         TypedArray<uint64_t> cell_i = temp;
+                //         if (cell_i[0] == source_id[0]) {
+                //             auto s_id = elem[index];
+                //             electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                //         }
+                //     }
+                //     key[0]["cell_pairs"] = std::move(pairs);
+                    
+                // }
+                if (props.attrExists("type")) { //|| props.attrExists("Amplifier 1 cell number")){
                     //case cell
                     electrode_s[0]["cell_id"] = source_id;
                 } else if (props.attrExists("Amplifier 1 cell number")) {
-                    //case cell pair -- we need the corresponding cell...
-                    char index[10];
-                    sprintf(index,"cell_%d_id", electrode_number);
-                    StructArray pairs = std::move(key[0]["cell_pairs"]);
-                    for (auto elem : pairs) {
-                        // TypedArray<uint64_t> cell_i = elem["source_id"];
-                        matlab::data::Array temp = elem["source_id"];
-                        TypedArray<uint64_t> cell_i = temp;
-                        if (cell_i[0] == source_id[0]) {
-                            auto s_id = elem[index];
-                            electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                        }
-                    }
-                    key[0]["cell_pairs"] = std::move(pairs);
-                    
+                    electrode_s[0]["cell_id"] = electrode_number;                    
                 } else if (props.attrExists("Description")){
                     //"other" source, do nothing
                 } else if (props.attrExists("orientation")) {
@@ -980,8 +1006,9 @@ class Parser {
             // s[0]["cell_1_id"] = cell_1;
             // s[0]["cell_2_id"] = cell_2;
 
-            size_t cell_1 = parseStr2IntAttr(props, "Amplifier 1 cell number")[0];
-            size_t cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number")[0];
+            
+            s[0]["cell_1_id"] = parseStr2IntAttr(props, "Amplifier 1 cell number");
+            s[0]["cell_2_id"] = parseStr2IntAttr(props, "Amplifier 2 cell number");
 
             // StructArray cells = std::move(key[0]["cells"]);
 
@@ -998,27 +1025,6 @@ class Parser {
             //     }
             // }
             // key[0]["cells"] = std::move(cells);
-            DEBUGPRINT("Checking to known cells...");
-
-            StructArray cells = std::move(key[0]["cells"]);
-            for (auto elem : cells) {
-                // matlab::data::Array cell_i = elem["cell_number"];
-                size_t cell_i = elem["cell_number"][0];
-                DEBUGPRINT("Cell " << cell_i << " (source " << (size_t)elem["source_id"][0] << ")");
-                if (cell_i == cell_1) {
-                    auto s_id = elem["source_id"];
-                    s[0]["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                    // matches++;
-                    DEBUGPRINT("Matched cell 1");
-                }
-                if (cell_i == cell_2) {
-                    auto s_id = elem["source_id"];
-                    s[0]["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                    // matches++;
-                    DEBUGPRINT("Matched cell 2");
-                }
-            }
-            key[0]["cells"] = std::move(cells);
 
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cell_pairs"]), std::move(s)});
             key[0]["cell_pairs"] = std::move(result);
