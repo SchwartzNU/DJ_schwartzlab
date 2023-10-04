@@ -826,7 +826,7 @@ class Parser {
                     //case cell
                     electrode_s[0]["cell_id"] = source_id;
                 } else if (props.attrExists("Amplifier 1 cell number")) {
-                    electrode_s[0]["cell_id"] = electrode_number;                    
+                    electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(electrode_number);                    
                 } else if (props.attrExists("Description")){
                     //"other" source, do nothing
                 } else if (props.attrExists("orientation")) {
