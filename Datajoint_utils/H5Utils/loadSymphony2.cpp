@@ -375,20 +375,21 @@ class Parser {
         for (Struct pair : pairs) {
 
             DEBUGPRINT("Testing pair...");
-            matlab::data::Array cell_1 = pair["cell_1_id"];
-            matlab::data::Array cell_2 = pair["cell_2_id"];
+            size_t cell_1 = pair["cell_1_id"][0];
+            size_t cell_2 = pair["cell_2_id"][0];
 
             size_t matches = 0;
 
             for (auto elem : cells) {
-                matlab::data::Array cell_i = elem["cell_number"];
-                if (cell_i[0] == cell_1[0]) {
+                // matlab::data::Array cell_i = elem["cell_number"];
+                size_t cell_i = elem["cell_number"][0]
+                if (cell_i == cell_1) {
                     auto s_id = elem["source_id"];
                     pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
                     matches++;
                     DEBUGPRINT("Matched cell 1");
                 }
-                if (cell_i[0] == cell_2[0]) {
+                if (cell_i == cell_2) {
                     auto s_id = elem["source_id"];
                     pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
                     matches++;
