@@ -440,6 +440,7 @@ class Parser {
         
 
         s[ind]["epoch_group_label"] = parseStrAttr(epochGroup, "label");
+        DEBUGPRINT("Read epoch group label" << s[ind]["epoch_group_label"].toAscii());
         
        
         auto source = epochGroup.openGroup("source");
