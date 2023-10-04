@@ -949,7 +949,7 @@ class Parser {
             TypedArray<double> cell_2 = parseStr2IntAttr(props, "Amplifier 2 cell number");
             // s[0]["cell_1_id"] = factory.createScalar<uint64_t>(cell_1);
             // s[0]["cell_2_id"] = factory.createScalar<uint64_t>(cell_2);    
-            DEBUGPRINT("Cells " << cell_1 << " and " << cell_2);
+            DEBUGPRINT("Cells " << cell_1[0] << " and " << cell_2[0]);
 
             s[0]["cell_1_id"] = cell_1;
             s[0]["cell_2_id"] = cell_2;
