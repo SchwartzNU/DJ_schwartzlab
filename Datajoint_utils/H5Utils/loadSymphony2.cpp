@@ -400,7 +400,7 @@ class Parser {
                     for (Reference<Struct> electrode : electrodes) {
                         if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
                             DEBUGPRINT("Fixing response");
-                            electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                            electrode["cell_id"][0] = s_id[0]; //factory.createScalar<uint64_t>(s_id[0]);
                         }
                     }
                     DEBUGPRINT("Fixed cell 1 responses");
@@ -415,7 +415,7 @@ class Parser {
                     for (Reference<Struct> electrode : electrodes) {
                         if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
                             DEBUGPRINT("Fixing response");
-                            electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                            electrode["cell_id"][0] = s_id[0]; //factory.createScalar<uint64_t>(s_id[0]);
                         }
                     }
                     DEBUGPRINT("Fixed cell 2 responses");
