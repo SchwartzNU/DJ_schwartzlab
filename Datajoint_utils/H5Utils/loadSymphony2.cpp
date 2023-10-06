@@ -391,8 +391,9 @@ class Parser {
                 // matlab::data::Array cell_i = elem["cell_number"];
                 size_t cell_i = elem["cell_number"][0];
                 if (cell_i == cell_1) {
-                    auto s_id = elem["source_id"];
-                    pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    TypedArray<uint64_t> s_id = elem["source_id"];
+                    // pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    pair["cell_1_id"] = s_id;
                     matches++;
 
                     
@@ -400,14 +401,16 @@ class Parser {
                     for (Reference<Struct> electrode : electrodes) {
                         if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
                             DEBUGPRINT("Fixing response");
-                            electrode["cell_id"][0] = s_id[0]; //factory.createScalar<uint64_t>(s_id[0]);
+                            // electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                            electrode["cell_id"] = s_id;                            
                         }
                     }
                     DEBUGPRINT("Fixed cell 1 responses");
                 }
                 if (cell_i == cell_2) {
                     auto s_id = elem["source_id"];
-                    pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    // pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                    pair["cell_2_id"] = s_id;
                     matches++;
 
                     DEBUGPRINT("Matched cell 2");
@@ -415,7 +418,8 @@ class Parser {
                     for (Reference<Struct> electrode : electrodes) {
                         if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
                             DEBUGPRINT("Fixing response");
-                            electrode["cell_id"][0] = s_id[0]; //factory.createScalar<uint64_t>(s_id[0]);
+                            // electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                            electrode["cell_id"] = s_id;
                         }
                     }
                     DEBUGPRINT("Fixed cell 2 responses");
@@ -830,7 +834,7 @@ class Parser {
                 // }
                 if (props.attrExists("type")) { //|| props.attrExists("Amplifier 1 cell number")){
                     //case cell
-                    electrode_s[0]["cell_id"] = source_id;
+                    electrode_s[0]["cell_id"] = source_id;  
                 } else if (props.attrExists("Amplifier 1 cell number")) {
                     electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(electrode_number);                    
                 } else if (props.attrExists("Description")){
