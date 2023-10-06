@@ -397,7 +397,7 @@ class Parser {
                     matches++;
 
                     
-                    DEBUGPRINT("Matched cell 1");
+                    DEBUGPRINT("Matched cell 1 ("  << (size_t) s_id[0]<< ")");
                     for (Reference<Struct> electrode : electrodes) {
                         if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
                             DEBUGPRINT("Fixing response");
@@ -408,13 +408,12 @@ class Parser {
                     DEBUGPRINT("Fixed cell 1 responses");
                 }
                 if (cell_i == cell_2) {
-                    auto s_id = elem["source_id"];
+                    TypedArray<uint64_t> s_id = elem["source_id"];
                     // pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
                     pair["cell_2_id"] = s_id;
                     matches++;
 
-                    DEBUGPRINT("Matched cell 2");
-                    
+                    DEBUGPRINT("Matched cell 2 ("  << (size_t) s_id[0]<< ")");
                     for (Reference<Struct> electrode : electrodes) {
                         if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
                             DEBUGPRINT("Fixing response");
