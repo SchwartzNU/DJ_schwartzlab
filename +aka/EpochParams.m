@@ -43,8 +43,14 @@ classdef EpochParams < dj.internal.GeneralRelvar
                 fi = strcmp({attrs(:).name},fields{i});
                 
                 %only certain field types are valid, at least for now
-                if any([attrs(fi).isUuid]) || any([attrs(fi).isExternal]) || any([attrs(fi).isFilepath]) ...
-                        || any([attrs(fi).isAttachment]) || any([attrs(fi).store])
+                % if any([attrs(fi).isUuid]) || any([attrs(fi).isExternal]) || any([attrs(fi).isFilepath]) ...
+                %         || any([attrs(fi).isAttachment]) || any([attrs(fi).store])
+                %     error('Don''t know how to merge tables');
+                % end
+                
+                %why no blobs?
+                if any([attrs(fi).isUuid]) || any([attrs(fi).isFilepath]) ...
+                        || any([attrs(fi).isAttachment])
                     error('Don''t know how to merge tables');
                 end
                 
