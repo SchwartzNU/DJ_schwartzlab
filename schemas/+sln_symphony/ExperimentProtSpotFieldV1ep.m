@@ -2,8 +2,8 @@
     #Epoch parameters for SpotField (1) 
     -> sln_symphony.ExperimentEpoch
     ---
-    cx : blob@raw
-    cy : blob@raw
+    cx : blob
+    cy : blob
     
 %}
 
