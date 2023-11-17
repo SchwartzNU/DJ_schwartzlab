@@ -5,6 +5,7 @@ dataset_name : varchar(128) # dataset name
 source_id : int unsigned # source id used to identify the cell to which the dataset belongs
 ---
 -> sln_lab.User # user who entered this result
+charge_matrix=NULL : longblob # charge of each trace in trace_matrix_mean
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 n_epochs : int unsigned # number of epochs

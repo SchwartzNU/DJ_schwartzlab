@@ -54,6 +54,8 @@ for d=1:N_datasets
 
     peak_matrix_mean = zeros(N_ang, N_dist);
     peak_matrix_sem = zeros(N_ang, N_dist);
+
+    charge_matrix = zeros(N_ang, N_dist);
    
     spot_period_samples = (spot_pre_frames+spot_stim_frames+spot_tail_frames) / frame_rate * sample_rate;
     pre_samples = spot_pre_frames / frame_rate * sample_rate;
@@ -93,7 +95,8 @@ for d=1:N_datasets
                 t = vertcat(trace_tensor{i, j, :});
                 if ~isempty(t)
                     trace_matrix_mean{i,j} = mean(t,1);
-                    trace_matrix_sem{i,j} = std(t,[],1) ./ sqrt(N_epochs-1);                    
+                    trace_matrix_sem{i,j} = std(t,[],1) ./ sqrt(N_epochs-1);     
+                    charge_matrix(i,j) = sum(trace_matrix_mean{i,j}(pre_samples+1:end));                    
                 end
             end
         end
@@ -108,6 +111,7 @@ for d=1:N_datasets
     R.trace_matrix_sem{d} = trace_matrix_sem;
     R.peak_matrix_mean{d} = peak_matrix_mean;
     R.peak_matrix_sem{d} = peak_matrix_sem;
+    R.charge_matrix{d} = charge_matrix;
     R.spot_dist{d} = all_dist_unique;
     R.spot_ang{d} = all_ang_unique;
     R.rstar_intensity_spot(d) = rstar_intensity_spot;
