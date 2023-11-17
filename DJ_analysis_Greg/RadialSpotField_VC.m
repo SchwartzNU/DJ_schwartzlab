@@ -92,8 +92,8 @@ for d=1:N_datasets
             for j=1:N_dist
                 t = vertcat(trace_tensor{i, j, :});
                 if ~isempty(t)
-                    trace_matrix_mean = mean(t,1);
-                    trace_matrix_sem = std(t,[],1) ./ sqrt(N_epochs-1);                    
+                    trace_matrix_mean{i,j} = mean(t,1);
+                    trace_matrix_sem{i,j} = std(t,[],1) ./ sqrt(N_epochs-1);                    
                 end
             end
         end
