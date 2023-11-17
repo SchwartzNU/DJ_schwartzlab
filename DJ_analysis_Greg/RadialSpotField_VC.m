@@ -1,11 +1,11 @@
-function R = RadialSpotField_CC(data_group, params)
+function R = RadialSpotField_VC(data_group, params)
 frame_rate = 60; %Hz
 
 datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
-R = sln_results.table_definition_from_template('RadialSpots_CC',N_datasets);
+R = sln_results.table_definition_from_template('RadialSpots_VC',N_datasets);
 
 for d=1:N_datasets
     tic;
@@ -52,9 +52,6 @@ for d=1:N_datasets
     trace_matrix_mean = cell(N_ang, N_dist);
     trace_matrix_sem = cell(N_ang, N_dist);
 
-    spike_count_matrix_mean = zeros(N_ang, N_dist);
-    spike_count_matrix_sem = zeros(N_ang, N_dist);
-
     peak_matrix_mean = zeros(N_ang, N_dist);
     peak_matrix_sem = zeros(N_ang, N_dist);
    
@@ -67,11 +64,7 @@ for d=1:N_datasets
     
     for ep=1:N_epochs
         ind = 1;
-        try
-            sp = fetch1(sln_symphony.SpikeTrain & epochs_in_dataset(ep),'spike_indices');
-        catch
-            error('Failed to find a spike train.');
-        end
+
         all_points = [epochs_in_dataset(ep).cx', epochs_in_dataset(ep).cy'];
         all_dist = round(pdist2(all_points,[0,0]));
         all_ang = round(cart2pol(all_points(:,1),all_points(:,2)),4);
@@ -84,18 +77,16 @@ for d=1:N_datasets
             end_sample = start_sample + spot_period_samples - 1;
 
             baseline = mean(epochs_in_dataset(ep).raw_data(start_sample:start_sample+pre_samples-1));
-            trace = movmedian(epochs_in_dataset(ep).raw_data(start_sample:end_sample), filter_length, 'Endpoints', baseline);
+            %trace = movmedian(epochs_in_dataset(ep).raw_data(start_sample:end_sample), filter_length, 'Endpoints', baseline);
+            trace = epochs_in_dataset(ep).raw_data(start_sample:end_sample);
             trace_tensor{ind_ang, ind_dist, ep} = trace - baseline;
-            peak_tensor(ind_ang, ind_dist, ep) = max(trace - baseline);
-            spike_count_tensor(ind_ang, ind_dist, ep) = sum(sp >= start_sample & sp <= end_sample);
+            peak_tensor(ind_ang, ind_dist, ep) = abs(min(trace - baseline)); %negative (inward) currents
 
             ind = ind + spot_period_samples;
         end
     end
-    spike_count_matrix_mean = mean(spike_count_tensor,3);
     peak_matrix_mean = mean(peak_tensor,3);
     if N_epochs>1
-        spike_count_matrix_sem = std(spike_count_tensor,[],3) ./ sqrt(N_epochs-1);
         peak_matrix_sem = std(peak_tensor,[],3) ./ sqrt(N_epochs-1);
         for i=1:N_ang
             for j=1:N_dist
@@ -115,8 +106,6 @@ for d=1:N_datasets
     R.sample_rate(d) = sample_rate;
     R.trace_matrix_mean{d} = trace_matrix_mean;
     R.trace_matrix_sem{d} = trace_matrix_sem;
-    R.spike_count_matrix_mean{d} = spike_count_matrix_mean;
-    R.spike_count_matrix_sem{d} = spike_count_matrix_sem;
     R.peak_matrix_mean{d} = peak_matrix_mean;
     R.peak_matrix_sem{d} = peak_matrix_sem;
     R.spot_dist{d} = all_dist_unique;
