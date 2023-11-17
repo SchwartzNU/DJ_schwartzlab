@@ -30,7 +30,13 @@ classdef BreedingPair < dj.Manual
             female_ev = (sln_animal.Animal & 'sex="Female"') * sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"');
             female_status = aggr(female, female_ev, 'substring(max(concat(date, entry_time, project_name)), 30)->project_name', 'animal_id->female_id'); %"scalar-aggregate reduction"
             
-            q = q - (proj(deceased,'animal_id->male_id') & proj(female_status & 'project_name="Former breeder"'));
+            male = (sln_animal.Animal & 'sex="Male"') & (sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"'));
+            male_ev = (sln_animal.Animal & 'sex="Male"') * sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"');
+            male_status = aggr(male, male_ev, 'substring(max(concat(date, entry_time, project_name)), 30)->project_name', 'animal_id->male_id'); %"scalar-aggregate reduction"
+         
+            %q = q - (proj(deceased,'animal_id->male_id') & proj(female_status & 'project_name="Former breeder"'));
+            q = q - (proj(female_status & 'project_name="Former breeder"'));
+            q = q- proj(male_status & 'project_name = "Former breeder"') ;
             
             % Remove cages where the male is absent and the female is
             % retired
@@ -46,15 +52,15 @@ classdef BreedingPair < dj.Manual
             
             %remove cages where the female is deceased
             deceased = sln_animal.Animal * sln_animal.AnimalEvent * sln_animal.Deceased;
-            
-            q = cage - proj(deceased,'animal_id->female_id');
+            deceased_female = (sln_animal.Animal & 'sex = "Female"') * sln_animal.AnimalEvent * sln_animal.Deceased;
+            q = cage - proj(deceased_female,'animal_id->female_id');
             
             %remove cages where the female is retired and the male is deceased
             female = (sln_animal.Animal & 'sex="Female"') & (sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"'));
             female_ev = (sln_animal.Animal & 'sex="Female"') * sln_animal.AnimalEvent * (sln_animal.ReservedForProject & 'project_name="Breeding" OR project_name="Former breeder"');
             female_status = aggr(female, female_ev, 'substring(max(concat(date, entry_time, project_name)), 30)->project_name', 'animal_id->female_id'); %"scalar-aggregate reduction"
             
-            q = q - (proj(deceased,'animal_id->male_id') & proj(female_status & 'project_name="Former breeder"'));
+            q = q - proj(female_status & 'project_name="Former breeder"');
             
             % Remove cages where the male is absent and the female is
             % retired
@@ -95,23 +101,29 @@ classdef BreedingPair < dj.Manual
             q = proj(sln_animal.BreedingPair,'strain_name','male_id','female_id') * aggr(sln_animal.BreedingPair, cc, 'any_value(cage_number) -> cage_number', 'any_value(pair_date) -> pair_date', 'any_value(litter_count)->litter_count', 'any_value(litter_dates)->litter_dates', 'any_value(wean_counts)->wean_counts', 'any_value(next_wean)->next_wean') * rn;
             
             %remove cages where the female is deceased
-            deceased = sln_animal.Animal * sln_animal.AnimalEvent * sln_animal.Deceased;
+            deceased_female = (sln_animal.Animal & 'sex = "Female"') * sln_animal.AnimalEvent * sln_animal.Deceased;
+
             
-            q = q - proj(deceased,'animal_id->female_id');
+            q = q - proj(deceased_female,'animal_id->female_id');
             
-            q = q - (proj(deceased,'animal_id->male_id') & proj(female_status & 'project_name="Former breeder"'));
+            q = q - proj(female_status & 'project_name="Former breeder"') ;
             
             % Remove cages where the male is absent and the female is
             % retired
             q = q & (proj(female_status & 'project_name="Breeding"') & proj(sln_animal.AssignCage.current,'animal_id->male_id','cage_number'));
-
-            missing_male = q - proj(sln_animal.AssignCage.current,'animal_id->male_id','cage_number');
-            if missing_male.exists
-                missing_male_ids = fetchn(missing_male, 'source_id');
+            
+            deceased_male = proj(sln_animal.Animal * sln_animal.AnimalEvent * sln_animal.Deceased & 'sex = "Male"', 'animal_id -> male_id')
+            missing_male_not_same_cage= q - proj(sln_animal.AssignCage.current,'animal_id->male_id','cage_number');
+            missing_male_decease = q & deceased_male;
+            if missing_male_not_same_cage.exists
+                missing_male_ids = fetchn(missing_male_not_same_cage, 'source_id');
             else
                 missing_male_ids = [];
             end
-
+            
+            if missing_male_decease.count
+                missing_male_ids = vertcat(missing_male_ids, fetchn(missing_male_decease, 'source_id'));
+            end
             % add ages, strains, genotypes
             D = q * proj(sln_animal.Animal * sln_animal.GenotypeString,'animal_id->male_id','round(datediff(now(), dob)/7, 0)->male_age','strain_name->male_strain','genotype_string->male_genotype') *  proj(sln_animal.Animal * sln_animal.GenotypeString,'animal_id->female_id','round(datediff(now(), dob)/7, 0)->female_age','strain_name->female_strain','genotype_string->female_genotype');
 
