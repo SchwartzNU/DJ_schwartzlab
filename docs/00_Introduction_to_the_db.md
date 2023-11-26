@@ -7,6 +7,7 @@ To give you a quick and dirty look into the file, as well as what to look for in
 The file name is automatically set as `MMDDYYrigName`. For example, `101323A.h5` is the recording data from October 13, 2023, on rig A. 
 
 The `Source` panels shows all data sources for one experiment file.
+
 ![Symphony_1_pic](assets/symphony_1.png)
 
 
