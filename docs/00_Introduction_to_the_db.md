@@ -1,5 +1,23 @@
 # (very brief) Introductions to Schwartz lab database for physiology
 
+## Symphony ephys experiment struture (short version)
+Each experiment day is saved in a `.h5` file. Read more about the Symphony `.h5` file from the [Symphony documentation](https://cafarm.gitbooks.io/symphony/content/File-Format.html).
+To give you a quick and dirty look into the file, as well as what to look for in the database, this document describes some of the most essential key points to look at.
+
+The file name is automatically set as `MMDDYYrigName`. For example, `101323A.h5` is the recording data from October 13, 2023, on rig A. 
+
+The `Source` panels shows all data sources for one experiment file.
+![Symphony_1_pic](assets/symphony_1.png)
+
+
+Each file contains none or one to a few retinas as source. These retinas are described in `experiment_retina`, as well as `experiment_source`. The retinas are strictly linked to animal IDs in the [animal database](), and have an experimenter linked to it.
+
+Each file also contains cell(s). Cells are described under `experiment_source` and `experiment_cell`.Cells can be children of the retina (Cell), or non retinal cell (**Not working as of Nov 26, 2023*).
+Retinas can also be parent of Cell Pairs. Contact @zfj1 for more information.
+
+![symphony_2](assets/symphony_2.png)
+Each source can have one or many experiment epoch group. Epoch groups are initiated by `Begin Epoch Group` and closed by `End Epoch Group` on Symphony.
+Epoch groups contain Epoch blocks. In most cases, epoch blocks map to each time you start an experiment protocol (e.g Spot Multi Size). Each epoch block has many epochs (aka. one step in your experiment).
 
 ## Important columns in schemas
 
