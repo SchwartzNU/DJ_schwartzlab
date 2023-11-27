@@ -89,7 +89,7 @@ for d=1:N_datasets
             peak_tensor(ind_ang, ind_dist, ep) = max(trace - baseline);
             spike_count_tensor(ind_ang, ind_dist, ep) = sum(sp >= start_sample & sp <= end_sample);
 
-            ind = ind + spot_period_samples*1.5
+            ind = ind + spot_period_samples;
             s
             peak_tensor(ind_ang, ind_dist, ep)   
             trace_raw = epochs_in_dataset(ep).raw_data(start_sample:end_sample);
