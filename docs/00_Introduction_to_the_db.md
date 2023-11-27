@@ -27,7 +27,7 @@ This section shows columns that are important for understanding and querying ele
 
 *Side note: Due to cameCase, querying through DataGrouper / Datajoint uses one single underscrore `_`, but if you query though SQL, sometimes there will be two underscores `__` instead*
 
-The descriptions are shown as `column_name` -> `database.table`: details. The bold **`column_names`** are the important and useful columns to know.
+The descriptions are shown as `column_name` -> `database.table`: details. The bold **`column_names`** are the important and useful columns to know. Clicking on [database_name.table_name] links to the ERD of the corresponding table.
 
 General naming conventions:
 - Cells are named with date, rig, and cell numbers. For example `101323Ac3` means cell (`c`) number 3, recorded on Rig A, Octorber 13, 2023.
