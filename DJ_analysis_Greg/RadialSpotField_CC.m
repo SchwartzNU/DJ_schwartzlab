@@ -90,14 +90,14 @@ for d=1:N_datasets
             spike_count_tensor(ind_ang, ind_dist, ep) = sum(sp >= start_sample & sp <= end_sample);
 
             ind = ind + spot_period_samples;
-            s
-            peak_tensor(ind_ang, ind_dist, ep)   
-            trace_raw = epochs_in_dataset(ep).raw_data(start_sample:end_sample);
-            plot(trace_raw);
-            hold on;
-            plot(trace,'r');
-            hold off;
-            pause;
+            % s
+            % peak_tensor(ind_ang, ind_dist, ep)   
+            % trace_raw = epochs_in_dataset(ep).raw_data(start_sample:end_sample);
+            % plot(trace_raw);
+            % hold on;
+            % plot(trace,'r');
+            % hold off;
+            % pause;
         end
     end
     spike_count_matrix_mean = mean(spike_count_tensor,3);
