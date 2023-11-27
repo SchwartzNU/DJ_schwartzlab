@@ -13,7 +13,9 @@ x = round(x);
 y = round(y);
 vals = zeros(size(x));
 
-[N_ang, N_dist] = size(R.peak_matrix_mean);
+[N_ang, N_dist] = size(R.charge_matrix);
+R.charge_matrix(R.charge_matrix==0) = nan;
+
 for t=1:N_ang
     for r=1:N_dist
         ind = find(theta == R.spot_ang(t) & rho == R.spot_dist(r));

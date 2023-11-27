@@ -15,6 +15,9 @@ vals = zeros(size(x));
 vals_err = zeros(size(x));
 
 [N_ang, N_dist] = size(R.peak_matrix_mean);
+
+R.peak_matrix_mean(R.peak_matrix_mean==0) = nan;
+
 for t=1:N_ang
     for r=1:N_dist
         ind = find(theta == R.spot_ang(t) & rho == R.spot_dist(r));
