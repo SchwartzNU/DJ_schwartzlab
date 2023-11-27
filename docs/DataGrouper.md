@@ -45,7 +45,14 @@ SIKE. It's pretty slow. Be patient. Don't click too fast.
 3. Change View level to the level of analysis result.
 4. Select the Dataset / Cell you want to see the results. Results should show up in the `Results in database` on the right. Plotters which are suitable for the correct kind of results will also be automatically available for use.
 
-
+### Run analysis
+1. If you changed anything in the `DJ_schwartzlab` folder, [commit](https://docs.github.com/en/desktop/making-changes-in-a-branch/committing-and-reviewing-changes-to-your-project-in-github-desktop)or [stash your changes](https://docs.github.com/en/desktop/making-changes-in-a-branch/stashing-changes-in-github-desktop) in github. DO NOT MERGE BRANCH IF YOU ARE NOT SURE WHAT YOU ARE DOING!!!! 
+2. Choose the Datasets (most common) or Cells you want to analyse.
+3. Choose analysis function (`.m` file) by clicking the `Choose analysis` button. Browse for the file and hit Open.
+    If you analysis file is on PATH, you can type the function name in the box instead of browsing for the file. For example, type in `SMS_CA` will run the analysis for Spot Multi Size cell attached.
+4. Change the switch to `Database` instead of Command Line.
+5. Choose replace `All` if you want to replace your old analysis with new ones.
+6. Hit `Run Analysis`. Look at your MATLAB Command Window for details.
 
 ## Appendix
 ### Curator mode
@@ -59,7 +66,7 @@ In Curator mode, the `To Curator` will appear. At `Cell` view level, the `To Cur
 
 You can not query for datasets and analysis results from Curator mode, as well as running Dataset analysis on Curator mode.
 
-### Viewlevel
+### View level
 Experiment -> Animal -> Eye -> Cell -> Dataset -> Epoch.
 
 At Experiment level, the **Details** panels shows the file name, number of cells in the experiment, number of epoch blocks, number of epochs, number of datasets and number of spike trains.
