@@ -58,7 +58,7 @@ for d=1:N_datasets
     peak_matrix_mean = zeros(N_ang, N_dist);
     peak_matrix_sem = zeros(N_ang, N_dist);
    
-    spot_period_samples = (spot_pre_frames+spot_stim_frames+spot_tail_frames) / frame_rate * sample_rate;
+    spot_period_samples = (spot_pre_frames+spot_stim_frames+spot_tail_frames) / frame_rate * sample_rate
     pre_samples = spot_pre_frames / frame_rate * sample_rate;
     stim_samples = spot_stim_frames / frame_rate * sample_rate;
     tail_samples = spot_tail_frames / frame_rate * sample_rate;
@@ -89,7 +89,15 @@ for d=1:N_datasets
             peak_tensor(ind_ang, ind_dist, ep) = max(trace - baseline);
             spike_count_tensor(ind_ang, ind_dist, ep) = sum(sp >= start_sample & sp <= end_sample);
 
-            ind = ind + spot_period_samples;
+            ind = ind + spot_period_samples*1.5
+            s
+            peak_tensor(ind_ang, ind_dist, ep)   
+            trace_raw = epochs_in_dataset(ep).raw_data(start_sample:end_sample);
+            plot(trace_raw);
+            hold on;
+            plot(trace,'r');
+            hold off;
+            pause;
         end
     end
     spike_count_matrix_mean = mean(spike_count_tensor,3);
