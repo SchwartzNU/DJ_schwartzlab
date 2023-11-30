@@ -60,9 +60,9 @@ classdef Experiment < dj.Manual
 
             self.schema.conn.startTransaction;
             try
-                channels = unique({key.channels(:).channel_name});
+                channels = unique(upper({key.channels(:).channel_name}));
                 existing_channels = fetch(sln_symphony.Channel & struct('channel_name',channels));
-                missing_channels = setdiff(channels, {existing_channels(:).channel_name});
+                missing_channels = setdiff(channels, upper({existing_channels(:).channel_name}));
                 if ~isempty(missing_channels)
                     missing_text = sprintf('\n\t> %s',missing_channels{:});
                     names_text = sprintf('''%s'',',missing_channels{:});
