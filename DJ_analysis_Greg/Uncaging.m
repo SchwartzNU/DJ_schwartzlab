@@ -3,7 +3,7 @@ datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
-N_trig_types = 3;
+N_trig_types = 2;
 N_sets = 5;
 
 post_time_ms = 100;
