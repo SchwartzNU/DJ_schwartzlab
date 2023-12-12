@@ -3,7 +3,7 @@ datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
-N_trig_types = 3;
+N_trig_types = 2;
 N_sets = 5;
 
 post_time_ms = 100;
@@ -41,7 +41,7 @@ for d=1:N_datasets
     all_traces = cell(N_trig_types,N_sets,N_epochs);
 
     for i=1:N_epochs
-        i
+        fprintf('Epoch: %d\n', i);
         s.file_name = epochs_in_dataset(i).file_name;
         s.source_id = epochs_in_dataset(i).source_id;
         s.epoch_id = epochs_in_dataset(i).epoch_id;
@@ -75,7 +75,9 @@ for d=1:N_datasets
 
             while t <= N_trig
                 interval = trig_UP(t)-pre_samples:trig_DOWN(t)+post_samples;
-                trace = amp_data(interval);
+                trace = amp_data(interval);              
+                baseline = mean(trace(1:pre_samples-1));
+                trace = trace - baseline;
                 
                 if set_id==1
                     mean_traces{z} = trace;
@@ -83,10 +85,17 @@ for d=1:N_datasets
                     time_axis{z} = ((1:L) - pre_samples) ./ sample_rate;
                 else
                     L = min([length(mean_traces{z}), length(trace)]);
-                    mean_traces{z} = mean_traces{z}(1:L)+trace(1:L);
+                    trace = trace(1:L);
+                    mean_traces{z} = mean_traces{z}(1:L)+trace;
                     time_axis{z} = time_axis{z}(1:L);
                 end                
-                all_traces{z,set_id,i} = trace(1:L);
+                all_traces{z,set_id,i} = trace;
+
+                %set_id
+                z                
+                plot(time_axis{z}, trace);
+                pause;
+
 
                 t=t+1;
                 if z==N_trig_types
@@ -99,9 +108,15 @@ for d=1:N_datasets
         end
     end
 
+    figure(2);
     for z=1:N_trig_types
+        disp('mean');
         mean_traces{z} = mean_traces{z}./N_sets./N_epochs;
+        hold('on');
+        plot(time_axis{z}, mean_traces{z},'k');
     end
+    hold('off');
+
 
     resting_potential_mean = mean(resting_vector);
 
