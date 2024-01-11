@@ -4,7 +4,7 @@
 -> sln_animal.SocialBehaviorSession
 ---
 time_axis : longblob            # vector with units of seconds 
-n_frames : int unsigned         $number of frames
+n_frames : int unsigned         # number of frames
 dlc_raw : longblob              # struct with dlc positions and confidence data
 %}
 
@@ -28,7 +28,7 @@ classdef TrackingData2D < dj.Imported
             ind = find(startsWith(session_folders,[num2str(key.event_id) '_']));
 
             if length(ind)==1
-                folder_name = [animal_folder filesep session_folders{ind}]
+                folder_name = [animal_folder filesep session_folders{ind}];
             else
                 fprintf('Folder for session %d not found.\n', key.event_id);
                 return;
@@ -55,7 +55,7 @@ classdef TrackingData2D < dj.Imported
                 return;
             end
 
-            csv_fname = dlc_filenames{ind}            
+            csv_fname = dlc_filenames{ind};    
             fname = [folder_name filesep 'DLC_new' filesep csv_fname];
             fid = fopen(fname,'r');
             for i=1:3
@@ -85,9 +85,9 @@ classdef TrackingData2D < dj.Imported
             
             key.time_axis = linspace(0,key.n_frames/frameRate,key.n_frames);            
             key.dlc_raw.top = M(:,2:end);
-            key.dlc_raw.top_parts = varNames;            
-         
-                
+            key.dlc_raw.top_parts = varNames;   
+
+            disp('Insert success');             
             self.insert(key, 'REPLACE');
         end
     end
