@@ -1,3 +1,6 @@
 [submodule "matGeom"]
 	path = matGeom
 	url = https://github.com/mattools/matGeom.git
+[submodule "external_libraries/matGeom"]
+	path = external_libraries/matGeom
+	url = https://github.com/mattools/matGeom.git
