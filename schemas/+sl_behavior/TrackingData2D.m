@@ -35,7 +35,6 @@ classdef TrackingData2D < dj.Imported
             end
                         
             frameRate = 15; %Hz, TODO, read this in from calibration;
-            scoreThreshold = 0.9; %for DLC tracking from top camera, TODO, read this in from calibration;
             %todo: find the right camera correctly!
             
             camera_serial_number = '17391304';
