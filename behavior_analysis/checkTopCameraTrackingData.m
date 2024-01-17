@@ -61,18 +61,18 @@ while hasFrame(vidObj)
     line([calibration.window_b_start(1), calibration.window_b_end(1)],[calibration.window_b_start(2), calibration.window_b_end(2)], 'Color', 'y', 'LineWidth', 4);
     line([calibration.window_c_start(1), calibration.window_c_end(1)],[calibration.window_c_start(2), calibration.window_c_end(2)], 'Color', 'm', 'LineWidth', 4);
     viscircles([calibration.center_x, calibration.center_y], calibration.inner_wall_radius, 'Color','w','LineWidth',4);
-    viscircles([calibration.center_x, calibration.center_y], 500, 'Color','w','LineWidth',4);
+    viscircles([calibration.center_x, calibration.center_y], 335, 'Color','w','LineWidth',4);
 
-    [x, y] = pol2cart(gaze_data.bino_gaze_outer_wall(i), 500);
+    [x, y] = pol2cart(gaze_data.bino_gaze_outer_wall(i), 335);
     x = x+calibration.center_x;
     y = y+calibration.center_y;
     plot(x,y, 'go','MarkerSize',10,'LineWidth',4,'MarkerFaceColor','g');
-    if ismember(gaze_data.win_a_gaze_frames,i)
-        text(50,120,'Gaze@A','FontSize',18','Color','c')
-    elseif ismember(gaze_data.win_b_gaze_frames,i)
-        text(50,120,'Gaze@B','FontSize',18','Color','y')
-    elseif ismember(gaze_data.win_c_gaze_frames,i)
-        text(50,120,'Gaze@C','FontSize',18','Color','m')
+    if ismember(i,gaze_data.win_a_gaze_frames)
+        text(50,80,'Gaze@A','FontSize',18','Color','c')
+    elseif ismember(i,gaze_data.win_b_gaze_frames)
+        text(50,80,'Gaze@B','FontSize',18','Color','y')
+    elseif ismember(i,gaze_data.win_c_gaze_frames)
+        text(50,80,'Gaze@C','FontSize',18','Color','m')
     end
 
     if nose_data.closest_window(i) == 1
