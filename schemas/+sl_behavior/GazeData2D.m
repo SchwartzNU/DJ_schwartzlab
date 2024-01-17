@@ -2,16 +2,22 @@
 # Gaze data for a social behavior session (computed from top camera)
 
 -> sl_behavior.TrackingData2D
+-> sl_behavior.TopCameraCalibration
 ---
 bino_gaze_outer_wall : longblob #vector of gaze outer wall gaze angle in radians. Nan for frames blocked by inner wall or undefined
 inner_wall_gaze : longblob #vector of 1 for frames where mouse is looking at inner wall and 0 for when it is not. NaN for undefined ones          
+win_a_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window A
+win_b_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window B
+win_c_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window C
 %}
 
 classdef GazeData2D < dj.Imported
      methods(Access=protected)
         function makeTuples(self, key)  
-            arena_center = [633 510];
-            inner_wall_radius = 185;
+            calibration = fetch(sl_behavior.TopCameraCalibration & key, '*');    
+
+            arena_center = [calibration.center_x calibration.center_y];            
+            inner_wall_radius = calibration.inner_wall_radius;
             scoreThreshold = 0.9; %for DLC tracking from top camera, TODO, read this in from calibration;
 
             inner_wall = createCircle([0, 0], [0 inner_wall_radius]);
@@ -86,6 +92,10 @@ classdef GazeData2D < dj.Imported
                 
             key.bino_gaze_outer_wall = theta;
             key.inner_wall_gaze = inner_wall_gaze;
+
+            key.win_a_gaze_frames = find(theta >= calibration.window_a_start_ang & theta < calibration.window_a_end_ang);
+            key.win_b_gaze_frames = find(theta >= calibration.window_b_start_ang & theta < calibration.window_b_end_ang);
+            key.win_c_gaze_frames = find(theta >= calibration.window_c_start_ang & theta < calibration.window_c_end_ang);
 
             disp('Insert success');             
             self.insert(key, 'REPLACE');
