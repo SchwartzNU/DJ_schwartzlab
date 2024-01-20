@@ -6,9 +6,9 @@
 ---
 bino_gaze_outer_wall : longblob #vector of gaze outer wall gaze angle in radians. Nan for frames blocked by inner wall or undefined
 inner_wall_gaze : longblob #vector of 1 for frames where mouse is looking at inner wall and 0 for when it is not. NaN for undefined ones          
-win_a_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window A
-win_b_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window B
-win_c_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window C
+win_a_gaze_frames = NULL : longblob #vector of frames in which animal aims binocular gaze at window A
+win_b_gaze_frames = NULL : longblob #vector of frames in which animal aims binocular gaze at window B
+win_c_gaze_frames = NULL : longblob #vector of frames in which animal aims binocular gaze at window C
 %}
 
 classdef GazeData2D < dj.Imported
