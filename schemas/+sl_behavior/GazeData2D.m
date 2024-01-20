@@ -6,9 +6,9 @@
 ---
 bino_gaze_outer_wall : longblob #vector of gaze outer wall gaze angle in radians. Nan for frames blocked by inner wall or undefined
 inner_wall_gaze : longblob #vector of 1 for frames where mouse is looking at inner wall and 0 for when it is not. NaN for undefined ones          
-win_a_gaze_frames = NULL : longblob #vector of frames in which animal aims binocular gaze at window A
-win_b_gaze_frames = NULL : longblob #vector of frames in which animal aims binocular gaze at window B
-win_c_gaze_frames = NULL : longblob #vector of frames in which animal aims binocular gaze at window C
+win_a_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window A
+win_b_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window B
+win_c_gaze_frames : longblob #vector of frames in which animal aims binocular gaze at window C
 %}
 
 classdef GazeData2D < dj.Imported
@@ -103,6 +103,10 @@ classdef GazeData2D < dj.Imported
             key.win_b_gaze_frames = find(theta >= calibration.window_b_start_ang & theta <= calibration.window_b_end_ang);
             key.win_c_gaze_frames = find(theta >= calibration.window_c_start_ang & theta <= calibration.window_c_end_ang);
 
+            if isempty(key.win_a_gaze_frames), key.win_a_gaze_frames = 0; end %can't be NULL
+            if isempty(key.win_b_gaze_frames), key.win_b_gaze_frames = 0; end %can't be NULL
+            if isempty(key.win_c_gaze_frames), key.win_c_gaze_frames = 0; end %can't be NULL
+            
             disp('Insert success');             
             self.insert(key, 'REPLACE');
         end
