@@ -72,12 +72,12 @@ for i=1:L
                 if length(unique(window_order)) ~= 3 %duplicated window
                     fprintf('designated windows not found for session %d, skipping\n', session_ids(i).event_id);
                     doAnalysis = false;
-                    keyboard;
+                    %keyboard;
                 end
             catch
                 fprintf('designated windows not found for session %d, skipping\n', session_ids(i).event_id);
                 doAnalysis = false;
-                keyboard;
+                %keyboard;
             end
             
         end
@@ -97,6 +97,8 @@ for i=1:L
                 end
             end
             s=s+1;
+        else
+            R = struct;
         end
         R
         pause;

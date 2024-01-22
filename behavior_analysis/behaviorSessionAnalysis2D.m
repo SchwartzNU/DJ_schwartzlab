@@ -9,11 +9,12 @@ window_order = P.window_order; %3 element vector specifying how to order the win
 frameRate = 15; %Hz, TODO, load from calibration
 cm_per_pixel = .056; %TODO, load from calibration
 
-nose_data = fetch(sl_behavior.NoseData2D & sprintf('event_id=%d',session_id),'*');
+session_id
+nose_data = fetch(sl_behavior.NoseData2D & sprintf('event_id=%d',session_id),'*')
 gaze_data = fetch(sl_behavior.GazeData2D & sprintf('event_id=%d',session_id),'*');
 calibration = fetch(sl_behavior.TopCameraCalibration & sprintf('event_id=%d',session_id),'*');
 
-Nframes = size(nose_data.nose_position_from_center,1);
+Nframes = size(nose_data.nose_position_from_center,1)
 speed = zeros(Nframes,1);
 for i=2:Nframes
     speed(i) = pdist2(nose_data.nose_position_from_center(i,:),nose_data.nose_position_from_center(i-1,:));    
