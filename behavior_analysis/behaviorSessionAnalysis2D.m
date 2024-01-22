@@ -1,5 +1,5 @@
 function R = behaviorSessionAnalysis2D(session_id, P)
-
+R = struct;
 %analysis parameters
 analysis_end = P.analysis_end; %time in seconds after mouse exist chamber to stop analysis
 nose_contact_thres = P.nose_contact_thres; %threshold (pixels) for counting a nose contact
@@ -9,12 +9,15 @@ window_order = P.window_order; %3 element vector specifying how to order the win
 frameRate = 15; %Hz, TODO, load from calibration
 cm_per_pixel = .056; %TODO, load from calibration
 
-session_id
 nose_data = fetch(sl_behavior.NoseData2D & sprintf('event_id=%d',session_id),'*')
 gaze_data = fetch(sl_behavior.GazeData2D & sprintf('event_id=%d',session_id),'*');
 calibration = fetch(sl_behavior.TopCameraCalibration & sprintf('event_id=%d',session_id),'*');
 
 Nframes = size(nose_data.nose_position_from_center,1)
+if isempty(nose_data)
+    fprintf('No data found for session %d. Skipping.\n', session_id);
+    return;
+end
 speed = zeros(Nframes,1);
 for i=2:Nframes
     speed(i) = pdist2(nose_data.nose_position_from_center(i,:),nose_data.nose_position_from_center(i-1,:));    
