@@ -23,8 +23,9 @@ for v=1:length(vectorized_columns)
     curVals = T.(curVarName);
     for i=1:L
         temp = curVals{i};
-        temp = strrep(temp,'.',','); %TEMP HACK for raph's csvs with periods separating values
+        %temp = strrep(temp,'.',','); %TEMP HACK for raph's csvs with periods separating values
         temp = regexprep(temp,'\s+',' '); %remove linebreaks
+        temp = ['[' temp ']']; %make it an array
         curVals{i} = eval(temp);
     end
     T.(curVarName) = curVals;
