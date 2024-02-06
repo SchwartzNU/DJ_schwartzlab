@@ -1,10 +1,21 @@
 function traces = getImageTracesForEpochWithROIs(ep, ROIs, baseline_ms)
-fname_prefix = '_region2_hyperpol-Pulse_CC_set3_ch1'; %TODO: get this automatically
-
 cellName = fetch1(ep,'cell_name');
+dataset_name = fetch1(ep,'dataset_name');
+base_dir = [getenv('Func_imaging_folder') filesep cellName filesep 'deinterleaved_and_drift_corrected'];
+D = dir(base_dir);
+imaging_folder = [];
+for i=1:length(D)
+    if contains(D(i).name, dataset_name) && contains(D(i).name, '_epochAligned')
+        imaging_folder = D(i).name;
+        break;
+    end
+end
+
+%fname_prefix = '_region2_hyperpol-Pulse_CC_set3_ch1'; %TODO: get this automatically
+
 imaging_dir = [getenv('Func_imaging_folder') filesep cellName ...
     filesep 'deinterleaved_and_drift_corrected' ...
-    filesep cellName fname_prefix '_epochAligned'];
+    filesep imaging_folder];
 
 ms_shifts = readmatrix([imaging_dir filesep 'ms_shifts.txt']);
 epoch_id = fetch1(ep,'epoch_id');
