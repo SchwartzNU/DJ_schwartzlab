@@ -11,8 +11,6 @@ for i=1:length(D)
     end
 end
 
-%fname_prefix = '_region2_hyperpol-Pulse_CC_set3_ch1'; %TODO: get this automatically
-
 imaging_dir = [getenv('Func_imaging_folder') filesep cellName ...
     filesep 'deinterleaved_and_drift_corrected' ...
     filesep imaging_folder];
