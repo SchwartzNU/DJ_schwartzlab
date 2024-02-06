@@ -2,7 +2,7 @@ from calciumImaging import timePropsToJSON
 import os
 
 
-def writeFrameTimesForDir(FILE_DIR : str)
+def writeFrameTimesForDir(FILE_DIR : str) -> None:
     #FILE_DIR = '/Users/gregschwartz/working/vid_alignment_test/020124Bc2'
     img_files = os.listdir(FILE_DIR)
     [timePropsToJSON(os.path.join(FILE_DIR, x)) for x in img_files]
