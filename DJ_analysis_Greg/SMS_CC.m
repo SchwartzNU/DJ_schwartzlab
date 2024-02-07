@@ -91,9 +91,6 @@ for d=1:N_datasets
             trace = epochs_in_dataset(ind(i)).raw_data;
             baseline = mean(trace(1:pre_samples));
             trace_baseline_subtraced = trace - baseline;
-            % figure(2);
-            % plot(trace_baseline_subtraced);
-            % keyboard;
             
             peak_stim(i,1) = min(trace_baseline_subtraced(pre_samples+1:pre_samples+stim_samples));
             peak_stim(i,2) = max(trace_baseline_subtraced(pre_samples+1:pre_samples+stim_samples));
