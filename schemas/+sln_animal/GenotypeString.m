@@ -10,7 +10,7 @@ function q = GenotypeString()
             ),'IF(temp1 is null, concat(locus_name, "(?/?)"),IF(temp1 LIKE "%/%",concat(locus_name, "(",temp1,")"),concat(locus_name, "(", temp1, "/?)")))->temp2'... %add the locus and a trailing "/?" if only one known allele
         ),'group_concat(temp2 separator ",")->genotype_string',... %join the loci with a comma
         'strain_name'),...
-    'IF(genotype_string is null, IF(strain_name="WT", "WT", "?"), genotype_string) -> genotype_string'); %for WT animals, fill in with "WT"; for ungenotyped animals, fill in with "?"
+    'IF(genotype_string is null, IF(strain_name like "%WT%", "WT", "?"), genotype_string) -> genotype_string'); %for WT animals, fill in with "WT"; for ungenotyped animals, fill in with "?"
 
 %% example output:
 % ANIMAL_ID                                    genotype_string                                
