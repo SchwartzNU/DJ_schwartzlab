@@ -2,7 +2,7 @@ function alignFunctionalImagingDataForDataset(ds, Nchannels, useChannel)
 %this assumes that the .json files extracting the epoch times are already
 %in the folder
 %ds is a dataset with the cellName in there from sln_cell.cellName
-constant_offset_ms = 900;
+constant_offset_ms = 300;
 
 cellName = fetch1(ds,'cell_name');
 dataset_name = fetch1(ds,'dataset_name');
