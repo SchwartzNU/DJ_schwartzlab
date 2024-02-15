@@ -45,6 +45,20 @@ gaze_frames = gaze_frames(window_order);
 R.gaze_bino_s = gaze_frames / frameRate;
 R.gaze_bino_frac = R.gaze_bino_s / analysis_end;
 
+gaze_frames_bino_range = [length(gaze_data.win_a_gaze_frames_in_bino), ...
+    length(gaze_data.win_b_gaze_frames_in_bino), ...
+    length(gaze_data.win_c_gaze_frames_in_bino)];
+gaze_frames_bino_range = gaze_frames_bino_range(window_order);
+R.gaze_bino_range_s = gaze_frames_bino_range / frameRate;
+R.gaze_bino_range_frac = R.gaze_bino_range_s / analysis_end;
+
+gaze_frames_full_range = [length(gaze_data.win_a_gaze_frames_visible), ...
+    length(gaze_data.win_b_gaze_frames_visible), ...
+    length(gaze_data.win_c_gaze_frames_visible)];
+gaze_frames_full_range = gaze_frames_full_range(window_order);
+R.gaze_full_range_s = gaze_frames_full_range / frameRate;
+R.gaze_full_range_frac = R.gaze_full_range_s / analysis_end;
+
 body_sector = [sum(nose_data.closest_window(trialStart:trialEnd)==1), ...
     sum(nose_data.closest_window(trialStart:trialEnd)==2), ...
     sum(nose_data.closest_window(trialStart:trialEnd)==3)];
