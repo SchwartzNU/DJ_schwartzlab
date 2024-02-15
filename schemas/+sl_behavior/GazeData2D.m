@@ -12,9 +12,9 @@ win_c_gaze_frames : longblob #vector of frames in which animal aims binocular ga
 win_a_gaze_frames_in_bino : longblob #vector of frames in which animal aims central 40 degrees gaze at window A
 win_b_gaze_frames_in_bino : longblob #vector of frames in which animal aims central 40 degrees gaze at window B
 win_c_gaze_frames_in_bino : longblob #vector of frames in which animal aims central 40 degrees gaze at window C
-win_a_gaze_frames_visible : longblob #vector of frames in which animal aims entire 200 degree FOV at window A
-win_b_gaze_frames_visible : longblob #vector of frames in which animal aims entire 200 degree FOV at window B
-win_c_gaze_frames_visible : longblob #vector of frames in which animal aims entire 200 degree FOV at window C
+win_a_gaze_frames_visible : longblob #vector of frames in which animal aims entire 220 degree FOV at window A
+win_b_gaze_frames_visible : longblob #vector of frames in which animal aims entire 220 degree FOV at window B
+win_c_gaze_frames_visible : longblob #vector of frames in which animal aims entire 220 degree FOV at window C
 %}
 
 classdef GazeData2D < dj.Imported
@@ -280,9 +280,12 @@ classdef GazeData2D < dj.Imported
             if isempty(key.win_a_gaze_frames), key.win_a_gaze_frames = 0; end %can't be NULL
             if isempty(key.win_b_gaze_frames), key.win_b_gaze_frames = 0; end %can't be NULL
             if isempty(key.win_c_gaze_frames), key.win_c_gaze_frames = 0; end %can't be NULL
-            if isempty(key.win_a_gaze_frames_in_bino), key.win_a_gaze_frames = 0; end %can't be NULL
-            if isempty(key.win_b_gaze_frames_in_bino), key.win_b_gaze_frames = 0; end %can't be NULL
-            if isempty(key.win_c_gaze_frames_in_bino), key.win_c_gaze_frames = 0; end %can't be NULL
+            if isempty(key.win_a_gaze_frames_in_bino), key.win_a_gaze_frames_in_bino = 0; end %can't be NULL
+            if isempty(key.win_b_gaze_frames_in_bino), key.win_b_gaze_frames_in_bino = 0; end %can't be NULL
+            if isempty(key.win_c_gaze_frames_in_bino), key.win_c_gaze_frames_in_bino = 0; end %can't be NULL
+            if isempty(key.win_a_gaze_frames_visible), key.win_a_gaze_frames_visible = 0; end %can't be NULL
+            if isempty(key.win_b_gaze_frames_visible), key.win_b_gaze_frames_visible = 0; end %can't be NULL
+            if isempty(key.win_c_gaze_frames_visible), key.win_c_gaze_frames_visible = 0; end %can't be NULL
             
             disp('Insert success');             
             self.insert(key, 'REPLACE');
