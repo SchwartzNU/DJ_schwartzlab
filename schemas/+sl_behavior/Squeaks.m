@@ -51,9 +51,9 @@ classdef Squeaks < dj.Imported
 
             load(fname,'Calls');
             key.n_calls = height(Calls);
-            key.call_times = [];
-            key.call_frames = [];
-            key.call_types = [];
+            key.call_times = [0];
+            key.call_frames = [0];
+            key.call_types = [0];
             key.n_adult_calls = 0;
             key.n_pup_calls = 0;
             if key.n_calls > 0                
