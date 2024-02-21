@@ -58,7 +58,7 @@ classdef Squeaks < dj.Imported
             key.n_pup_calls = 0;
             if key.n_calls > 0                
                 key.call_times = Calls.Box(:,1);
-                key.call_frames = round(key.call_times / frameRate);
+                key.call_frames = round(key.call_times * frameRate);
                 types = string(Calls.Type);
                 types(strcmp(types,'USV')) = '0';
                 types_int = str2num(char(types));
