@@ -112,6 +112,7 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Cage.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageAssignRoom.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageRoom.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageRoomActive.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Collaborator.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CollaboratorActive.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Deceased.m</file>
@@ -247,7 +248,7 @@
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>13.4.1</osver>
+      <osver>14.2.1</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>
