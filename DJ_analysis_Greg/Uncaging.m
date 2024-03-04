@@ -22,6 +22,11 @@ for d=1:N_datasets
 
     N_sets = epochs_in_dataset(1).number_of_sequences;
     N_stim_groups = epochs_in_dataset(1).number_of_stim_groups;
+    if epochs_in_dataset(1).shutter_open
+        shutter_open = 'T';
+    else
+        shutter_open = 'F';
+    end
         
     N_epochs = length(epochs_in_dataset);
     
@@ -130,6 +135,7 @@ for d=1:N_datasets
     R.resting_potential_mean(d) = resting_potential_mean;
     R.laser_power(d) = epochs_in_dataset(1).laser_power;
     R.laser_wavelength(d) = epochs_in_dataset(1).laser_wavelength;
+    R.shutter_open{d} = shutter_open;
     R.number_of_sequences(d) = epochs_in_dataset(1).number_of_sequences;
     R.number_of_stim_groups(d) = epochs_in_dataset(1).number_of_stim_groups;
     R.group_names{d} = epochs_in_dataset(1).group_names;
