@@ -1,28 +1,27 @@
 function required_fields = plot_Uncaging_CC_traces(R,ax)
 if nargin < 1
-    required_fields = {'example_traces', 'spot_sizes', 'sample_rate', 'pre_time_ms'};
+    required_fields = {'time_axis', 'traces_mean', 'number_of_stim_groups', 'drug_condition'};
     return;
 end
 
 set(ax, 'XLim',[-inf inf]);
-traces = R.example_traces;
-spot_sizes = R.spot_sizes;
+traces = R.traces_mean;
+t = R.time_axis;
 cmap = colormap(ax,'parula');
-Nspots = length(spot_sizes);
-ind = round(linspace(1,256,Nspots));
+N_loc = R.number_of_stim_groups;
+ind = round(linspace(1,256,N_loc));
 
-Nsamples = size(traces,2);
-time_axis = (0:Nsamples-1) / R.sample_rate - R.pre_time_ms / 1E3;
 hold(ax,'on');
 set(ax, 'XtickMode','auto');
 set(ax, 'YtickMode','auto');
+title(ax,R.drug_condition);
 
-for i=1:Nspots
-    plot(ax, time_axis, traces(i,:),'Color',cmap(ind(i),:));
+for i=1:N_loc
+    plot(ax, t{i}, traces{i},'Color',cmap(ind(i),:));
 end
 xlabel(ax, 'Time (s)')
 ylabel(ax, 'mV');
 
-lgd = legend(ax, num2str(spot_sizes));
-title(lgd, 'Spot size (µm)');   
+lgd = legend(ax, num2str([1:N_loc]'));
+title(lgd, 'Location');   
 hold(ax,'off');
