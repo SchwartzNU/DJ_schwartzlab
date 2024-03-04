@@ -110,6 +110,9 @@ for d=1:N_datasets
                     z=z+1;
                 end
             end
+            for g=1:N_stim_groups
+                mean_traces{g} = mean_traces{g}./N_sets;
+            end
         end
     end
 
