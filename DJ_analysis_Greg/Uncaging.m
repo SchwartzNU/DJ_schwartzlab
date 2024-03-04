@@ -92,9 +92,9 @@ for d=1:N_datasets
                 all_traces{z,set_id,i} = trace;
 
                 %set_id
-                z                
-                plot(time_axis{z}, trace);
-                pause;
+                % z                
+                % plot(time_axis{z}, trace);
+                % pause;
 
 
                 t=t+1;
@@ -108,15 +108,14 @@ for d=1:N_datasets
         end
     end
 
-    figure(2);
-    for z=1:N_stim_groups
-        disp('mean');
-        mean_traces{z} = mean_traces{z}./N_sets./N_epochs;
-        hold('on');
-        plot(time_axis{z}, mean_traces{z},'k');
-    end
-    hold('off');
-
+    % figure(2);
+    % for z=1:N_stim_groups
+    %     disp('mean');
+    %     mean_traces{z} = mean_traces{z}./N_sets./N_epochs;
+    %     hold('on');
+    %     plot(time_axis{z}, mean_traces{z},'k');
+    % end
+    % hold('off');
 
     resting_potential_mean = mean(resting_vector);
 
