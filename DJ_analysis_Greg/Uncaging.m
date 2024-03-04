@@ -3,9 +3,6 @@ datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
 
-N_trig_types = 2;
-N_sets = 5;
-
 post_time_ms = 100;
 pre_time_ms = 50;
 
@@ -18,11 +15,14 @@ for d=1:N_datasets
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         sln_symphony.ExperimentChannel * ...
         sln_symphony.ExperimentEpochChannel * ...
-        aka.EpochParams('Pulse') * ...
-        aka.BlockParams('Pulse') & ...
+        aka.EpochParams('Uncaging') * ...
+        aka.BlockParams('Uncaging') & ...
         'channel_name="Amp1"' & ...
         datasets_struct(d),'*');
 
+    N_sets = epochs_in_dataset(1).number_of_sequences;
+    N_stim_groups = epochs_in_dataset(1).number_of_stim_groups;
+        
     N_epochs = length(epochs_in_dataset);
     
     if N_epochs == 0
@@ -37,8 +37,8 @@ for d=1:N_datasets
    
     resting_vector = zeros(N_epochs,1);
 
-    mean_traces = cell(N_trig_types,1);
-    all_traces = cell(N_trig_types,N_sets,N_epochs);
+    mean_traces = cell(N_stim_groups,1);
+    all_traces = cell(N_stim_groups,N_sets,N_epochs);
 
     for i=1:N_epochs
         fprintf('Epoch: %d\n', i);
@@ -66,7 +66,7 @@ for d=1:N_datasets
             disp('Skipping epochs with no trigger pulses');
         else
             N_trig = length(trig_UP);
-            %N_sets = floor(N_trig/N_trig_types);
+            %N_sets = floor(N_trig/N_stim_groups);
 
             t=1;
             z=1;
@@ -98,7 +98,7 @@ for d=1:N_datasets
 
 
                 t=t+1;
-                if z==N_trig_types
+                if z==N_stim_groups
                     z=1;
                     set_id = set_id+1;
                 else
@@ -109,7 +109,7 @@ for d=1:N_datasets
     end
 
     figure(2);
-    for z=1:N_trig_types
+    for z=1:N_stim_groups
         disp('mean');
         mean_traces{z} = mean_traces{z}./N_sets./N_epochs;
         hold('on');
@@ -129,6 +129,12 @@ for d=1:N_datasets
     R.traces_mean{d} = mean_traces;
     R.traces_all{d} = all_traces;
     R.resting_potential_mean(d) = resting_potential_mean;
+    R.laser_power(d) = epochs_in_dataset(1).laser_power;
+    R.laser_wavelength(d) = epochs_in_dataset(1).laser_wavelength;
+    R.number_of_sequences(d) = epochs_in_dataset(1).number_of_sequences;
+    R.number_of_stim_groups(d) = epochs_in_dataset(1).number_of_stim_groups;
+    R.group_names{d} = epochs_in_dataset(1).group_names;
+    R.drug_condition{d} = epochs_in_dataset(1).drug_condition;
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 end
