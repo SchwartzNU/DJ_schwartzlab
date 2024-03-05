@@ -58,22 +58,34 @@ classdef Squeaks < dj.Imported
 
             frameRate = 15; %Hz, TODO, read this in from calibration;
 
+            tracking_query = sl_behavior.TrackingData2D & sprintf('event_id=%d',key.event_id);
+            if ~tracking_query.exists
+                disp('TrackingData2D table entry not found for this session');
+                return;
+            end
+            Nframes = fetch1(tracking_query, 'n_frames');
+
             load(fname,'Calls');
-            key.n_calls = height(Calls);
+            n_calls = height(Calls);
+            key.n_calls = 0;
             key.call_times = [0];
             key.call_frames = [0];
             key.call_types = [0];
             key.n_adult_calls = 0;
             key.n_pup_calls = 0;
-            if key.n_calls > 0                
-                key.call_times = Calls.Box(:,1) + offset;
-                key.call_frames = round(key.call_times * frameRate);
+            if n_calls > 0                
+                call_times = Calls.Box(:,1) + offset;
+                call_frames = round(call_times * frameRate);
+                good_ind = call_frames<=Nframes;
                 types = string(Calls.Type);
                 types(strcmp(types,'USV')) = '0';
                 types_int = str2num(char(types));
-                key.call_types = types_int;
+                key.call_frames = call_frames(good_ind);
+                key.call_types = types_int(good_ind);
+                key.call_times = call_times(good_ind);
                 key.n_adult_calls = sum(key.call_types>4);
                 key.n_pup_calls = sum(key.call_types<=4);
+                key.n_calls = key.n_adult_calls + key.n_pup_calls
             end
             
             disp('Insert success');             
