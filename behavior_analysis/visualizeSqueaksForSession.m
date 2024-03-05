@@ -97,7 +97,7 @@ for i=1:N_call_types
         end
     end
 end
-cbar = colorbar(ax,'Ticks',linspace(0,1,10),'TickLabels',strsplit(num2str(1:10)));
+cbar = colorbar(ax,'Ticks',linspace(0,1,10),'TickLabels',strsplit(num2str(0:9)));
 cbar.Label.String = 'Call type';
 
 
