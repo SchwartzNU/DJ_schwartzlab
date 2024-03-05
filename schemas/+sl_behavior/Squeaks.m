@@ -47,6 +47,15 @@ classdef Squeaks < dj.Imported
                 return;
             end
 
+            %load file to get offset
+            offset_table = readtable([getenv('DJ_ROOT') 'behavior_analysis' filesep 'USV_Audio_Video_OFFSET.xlsx']);
+            ind = find(offset_table.SESSION_ID==key.event_id);
+            if isempty(ind)
+                fprintf('Offset for session %d not found.\n', key.event_id);
+                return;
+            end
+            offset = offset_table.OFFSET(ind);
+
             frameRate = 15; %Hz, TODO, read this in from calibration;
 
             load(fname,'Calls');
@@ -57,7 +66,7 @@ classdef Squeaks < dj.Imported
             key.n_adult_calls = 0;
             key.n_pup_calls = 0;
             if key.n_calls > 0                
-                key.call_times = Calls.Box(:,1);
+                key.call_times = Calls.Box(:,1) + offset;
                 key.call_frames = round(key.call_times * frameRate);
                 types = string(Calls.Type);
                 types(strcmp(types,'USV')) = '0';
