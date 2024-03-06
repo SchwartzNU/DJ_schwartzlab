@@ -8,6 +8,10 @@ pre_time_ms = 50;
 
 R = sln_results.table_definition_from_template('Uncaging',N_datasets);
 
+if nargin<2 || isempty(params)
+    integration_time = 60; %ms
+end
+
 for d=1:N_datasets
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
@@ -42,7 +46,6 @@ for d=1:N_datasets
    
     resting_vector = zeros(N_epochs,1);
 
-    mean_traces = cell(N_stim_groups,1);
     all_traces = cell(N_stim_groups,N_sets,N_epochs);
 
     for i=1:N_epochs
@@ -83,24 +86,8 @@ for d=1:N_datasets
                 trace = amp_data(interval);              
                 baseline = mean(trace(1:pre_samples-1));
                 trace = trace - baseline;
-                
-                if set_id==1
-                    mean_traces{z} = trace;
-                    L = length(mean_traces{z});
-                    time_axis{z} = ((1:L) - pre_samples) ./ sample_rate;
-                else
-                    L = min([length(mean_traces{z}), length(trace)]);
-                    trace = trace(1:L);
-                    mean_traces{z} = mean_traces{z}(1:L)+trace;
-                    time_axis{z} = time_axis{z}(1:L);
-                end                
+               
                 all_traces{z,set_id,i} = trace;
-
-                %set_id
-                % z                
-                % plot(time_axis{z}, trace);
-                % pause;
-
 
                 t=t+1;
                 if z==N_stim_groups
@@ -110,20 +97,36 @@ for d=1:N_datasets
                     z=z+1;
                 end
             end
-            for g=1:N_stim_groups
-                mean_traces{g} = mean_traces{g}./N_sets;
-            end
         end
     end
-
-    % figure(2);
-    % for z=1:N_stim_groups
-    %     disp('mean');
-    %     mean_traces{z} = mean_traces{z}./N_sets./N_epochs;
-    %     hold('on');
-    %     plot(time_axis{z}, mean_traces{z},'k');
-    % end
-    % hold('off');
+    N_trials = N_sets*N_epochs;
+    all_traces_flattened = reshape(all_traces,[N_stim_groups,N_trials]);
+    %fix tiny size mismatches
+    for i=1:N_stim_groups
+        for j=1:N_trials
+            L_mat(i,j) = length(all_traces_flattened{i,j});
+        end
+    end
+    L = min(L_mat,[],2);
+    for i=1:N_stim_groups
+        for j=1:N_trials
+            all_traces_flattened{i,j} = all_traces_flattened{i,j}(1:L(i));
+        end
+    end
+    for i=1:N_stim_groups
+        time_axis{i} = ((1:L(i)) - pre_samples) ./ sample_rate;
+        time_ind = time_axis{i} >=0 & time_axis{i} <= integration_time/1E3;
+        response_matrix = cell2mat(all_traces_flattened(i,:)');
+        traces_mean{i} = mean(response_matrix,1);
+        peak_by_trial = max(response_matrix(:,time_ind),[],2);
+        integral_by_trial = sum(response_matrix(:,time_ind),2) / sample_rate / (integration_time/1E3);        
+        trial_integrated_resp_mean(i) = mean(integral_by_trial);
+        trial_integrated_resp_sem(i) = std(integral_by_trial) ./ sqrt(N_trials-1);
+        trial_peak_resp_mean(i) = mean(peak_by_trial);
+        trial_peak_resp_sem(i) = std(peak_by_trial) ./ sqrt(N_trials-1);
+        peak_resp(i) = max(traces_mean{i}(time_ind));
+        integrated_resp(i) = sum(traces_mean{i}(time_ind)) / sample_rate / (integration_time/1E3);        
+    end
 
     resting_potential_mean = mean(resting_vector);
 
@@ -133,7 +136,7 @@ for d=1:N_datasets
     R.source_id(d) = datasets_struct(d).source_id;    
     R.n_epochs(d) = N_epochs;
     R.time_axis{d} = time_axis;
-    R.traces_mean{d} = mean_traces;
+    R.traces_mean{d} = traces_mean;
     R.traces_all{d} = all_traces;
     R.resting_potential_mean(d) = resting_potential_mean;
     R.laser_power(d) = epochs_in_dataset(1).laser_power;
@@ -143,6 +146,12 @@ for d=1:N_datasets
     R.number_of_stim_groups(d) = epochs_in_dataset(1).number_of_stim_groups;
     R.group_names{d} = epochs_in_dataset(1).group_names;
     R.drug_condition{d} = epochs_in_dataset(1).drug_condition;
+    R.trial_peak_resp_mean{d} = trial_peak_resp_mean;
+    R.trial_peak_resp_sem{d} = trial_peak_resp_sem;
+    R.peak_resp{d} = peak_resp;
+    R.trial_integrated_resp_mean{d} = trial_integrated_resp_mean;
+    R.trial_integrated_resp_sem{d} = trial_integrated_resp_sem;
+    R.integrated_resp{d} = integrated_resp;
 
     fprintf('Elapsed time = %d seconds\n', round(toc));
 end
