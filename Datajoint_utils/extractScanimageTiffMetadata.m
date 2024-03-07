@@ -8,14 +8,16 @@ if ~endsWith(fname,'.tif')
 end
 reader = ScanImageTiffReader.ScanImageTiffReader(fname);
 mdata = reader.metadata;
+SI_struct_part = extractBefore(mdata,"SI.warnMsg = ''");
+eval(SI_struct_part); %creates SI struct
 json_part = extractAfter(mdata,"SI.warnMsg = ''");
 mdata_struct = jsondecode(json_part);
-
 fname_mat = strrep(fname,'.tif','_meta.mat');
-save(fname_mat,'mdata_struct');
+save(fname_mat,'mdata_struct', 'SI');
 
 Pstim_ROI_groups = struct;
 %extract photostim ROI information
+N_groups = 0;
 if isfield(mdata_struct,'RoiGroups')
     N_groups = length(mdata_struct.RoiGroups.photostimRoiGroups);
     for i=1:N_groups
@@ -40,6 +42,8 @@ if isfield(mdata_struct,'RoiGroups')
     end
 end
 
+if N_groups>0
 fname_mat = strrep(fname,'.tif','_pstim_rois.mat');
 save(fname_mat,'Pstim_ROI_groups');
+end
 
