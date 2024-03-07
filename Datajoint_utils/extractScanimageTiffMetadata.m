@@ -1,4 +1,8 @@
 function [] = extractScanimageTiffMetadata(fname)
+if nargin<1
+    [fname, fpath] = uigetfile('*.tif','Open ScaneImage Tif...');
+    fname = [fpath fname]
+end
 if ~endsWith(fname,'.tif')
     fname = [fname '.tif'];
 end
