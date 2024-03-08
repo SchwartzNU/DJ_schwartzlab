@@ -50,8 +50,8 @@ classdef Alignment < dj.Computed
             offsets_ms = offsets / image_props.frame_rate * 1E3;            
             dlmwrite([epoch_aligned_dir, filesep, 'ms_shifts.txt'], [epoch_ids, offsets_ms]);
 
-            info = imfinfo([basedir image_fname]);
-            
+            info = imfinfo([basedir image_props.image_fname]);
+
             disp('Writing aligned images');
             for i=1:N_epochs
                 end_frame = start_frames(i) + ceil((epoch_durations_ms(i)/1E3)*image_props.frame_rate);
@@ -61,11 +61,11 @@ classdef Alignment < dj.Computed
                 setTag(t,'Photometric',Tiff.Photometric.MinIsBlack);
                 setTag(t,'Compression',Tiff.Compression.None);
                 setTag(t,'BitsPerSample',info(1).BitDepth);
-                setTag(t,'SamplesPerPixel',end_frame(i) - start_frame(i) + 1);
+                setTag(t,'SamplesPerPixel',end_frame - start_frames(i) + 1);
                 setTag(t,'SampleFormat',Tiff.SampleFormat.UInt);
                 setTag(t,'ExtraSamples',Tiff.ExtraSamples.Unspecified);
-                setTag(t,'ImageLength',h);
-                setTag(t,'ImageWidth',w);
+                setTag(t,'ImageLength',image_props.height);
+                setTag(t,'ImageWidth',image_props.width);
                 planarConfig = info(1).PlanarConfiguration;
                 setTag(t,'PlanarConfiguration',Tiff.PlanarConfiguration.(planarConfig));
                 write(t, func_volume(:,:,start_frames(i):end_frame));
