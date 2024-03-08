@@ -9,7 +9,7 @@ if ~sp_train.exists %no spike train found
 end
 
 sp = fetch1(sp_train, 'spike_indices');
-sample_rate = fetch1(sln_symphony.ExperimentChannel & epoch, 'sample_rate');
+sample_rate = fetch1(sln_symphony.ExperimentChannel & 'channel_name="Amp1"' & epoch, 'sample_rate');
 
 screenMidPoint = bar_distance/2;
 barMidPoint = bar_length/2;
