@@ -4,7 +4,6 @@
 -> sln_symphony.ExperimentChannel
 ---
 raw_data : blob@raw #the actual raw data for this epoch
-
 %}
 classdef ExperimentEpochChannel < sln_symphony.ExperimentPart
     properties(SetAccess=protected)

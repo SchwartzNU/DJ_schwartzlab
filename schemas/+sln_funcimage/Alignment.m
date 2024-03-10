@@ -21,6 +21,7 @@ classdef Alignment < dj.Computed
             end
 
             epochs = sln_symphony.DatasetEpoch * sln_symphony.ExperimentEpoch & key;
+            epochs_struct = fetch(epochs);
             epoch_ids = fetchn(epochs,'epoch_id');
             epoch_durations_ms = fetchn(epochs,'epoch_duration');
             N_epochs = length(epoch_ids);
@@ -31,7 +32,7 @@ classdef Alignment < dj.Computed
             for i=1:image_props.n_frames
                 frame = imread([basedir image_props.alignment_fname],i);
                 V(:,i) = mean(frame,2);
-                func_volume(:,:,i) = imread([basedir image_props.image_fname]);
+                func_volume(:,:,i) = imread([basedir image_props.image_fname],i);
             end
             V_flat = reshape(V,[image_props.height*image_props.n_frames, 1]);
 
@@ -52,27 +53,34 @@ classdef Alignment < dj.Computed
 
             info = imfinfo([basedir image_props.image_fname]);
 
-            disp('Writing aligned images');
+            disp('Writing aligned images to database');    
+            
+            self.insert(key)
             for i=1:N_epochs
                 end_frame = start_frames(i) + ceil((epoch_durations_ms(i)/1E3)*image_props.frame_rate);
 
-                t = Tiff(sprintf('%s%sepoch_%d.tif', epoch_aligned_dir, filesep, epoch_ids(i)), 'w');
+                % t = Tiff(sprintf('%s%sepoch_%d.tif', epoch_aligned_dir, filesep, epoch_ids(i)), 'w');
+                % setTag(t,'Photometric',Tiff.Photometric.MinIsBlack);
+                % setTag(t,'Compression',Tiff.Compression.None);
+                % setTag(t,'BitsPerSample',info(1).BitDepth);
+                % setTag(t,'SamplesPerPixel',end_frame - start_frames(i) + 1);
+                % setTag(t,'SampleFormat',Tiff.SampleFormat.UInt);
+                % setTag(t,'ExtraSamples',Tiff.ExtraSamples.Unspecified);
+                % setTag(t,'ImageLength',image_props.height);
+                % setTag(t,'ImageWidth',image_props.width);
+                % planarConfig = info(1).PlanarConfiguration;
+                % setTag(t,'PlanarConfiguration',Tiff.PlanarConfiguration.(planarConfig));
+                % write(t, func_volume(:,:,start_frames(i):end_frame));
+                % close(t);
 
-                setTag(t,'Photometric',Tiff.Photometric.MinIsBlack);
-                setTag(t,'Compression',Tiff.Compression.None);
-                setTag(t,'BitsPerSample',info(1).BitDepth);
-                setTag(t,'SamplesPerPixel',end_frame - start_frames(i) + 1);
-                setTag(t,'SampleFormat',Tiff.SampleFormat.UInt);
-                setTag(t,'ExtraSamples',Tiff.ExtraSamples.Unspecified);
-                setTag(t,'ImageLength',image_props.height);
-                setTag(t,'ImageWidth',image_props.width);
-                planarConfig = info(1).PlanarConfiguration;
-                setTag(t,'PlanarConfiguration',Tiff.PlanarConfiguration.(planarConfig));
-                write(t, func_volume(:,:,start_frames(i):end_frame));
-                close(t);
+                key_epoch_movie = key;
+                key_epoch_movie = mergeStruct(key_epoch_movie, epochs_struct(i));
+                key_epoch_movie.offset_ms = round(offsets_ms(i));
+                key_epoch_movie.raw_movie = func_volume(:,:,start_frames(i):end_frame);
+                insert(sln_funcimage.EpochMovie,key_epoch_movie);
             end   
-            self.insert(key)
             disp('Insert successful.');
+
         end
     end
 

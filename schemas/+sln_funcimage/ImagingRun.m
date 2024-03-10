@@ -10,7 +10,7 @@ height                      : int unsigned    #number of pixels
 res_x                       : float           # microns per pixel x
 res_y                       : float           # microns per pixel y
 alignment_fname = null      : varchar(128) #file with alignment pulses, in same folder as image_fname
-preprocessing_steps = null   : varchar(512) # comma separated list of (FIJI) preprocessing steps 
+preprocessing_steps = null  : varchar(512) # comma separated list of (FIJI) preprocessing steps 
 %}
 
 classdef ImagingRun < dj.Manual
@@ -19,9 +19,13 @@ classdef ImagingRun < dj.Manual
             %key will be the primary key of the associated dataset
             cellname = fetch1(sln_cell.CellName & key, 'cell_name');
             basedir = [getenv('Func_imaging_folder') filesep 'SingleOrPairedCell' filesep cellname filesep];
+            disp('Select functional imaging data tif stack.');
             image_fname = uigetfile('*.tif','Select functional imaging data tif stack.',basedir);
+            disp('Select associated alignment pulses tif stack.');
             alignment_fname = uigetfile('*.tif','Select associated alignment pulses tif stack.',basedir);
+            disp('Select associated metadata .mat file.');
             meta_data_fname = uigetfile('*.mat','Select associated metadata .mat file.',basedir);
+
             if all(meta_data_fname == false)
                 disp('Nothing inserted. Metadata required.');
                 return;
