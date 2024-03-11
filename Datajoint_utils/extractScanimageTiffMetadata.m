@@ -9,6 +9,7 @@ end
 reader = ScanImageTiffReader.ScanImageTiffReader(fname);
 mdata = reader.metadata;
 SI_struct_part = extractBefore(mdata,"SI.warnMsg = ''");
+SI_struct_part = strrep(SI_struct_part,'scanimage.types.BeamAdjustTypes.Exponential','"exponential"');
 eval(SI_struct_part); %creates SI struct
 json_part = extractAfter(mdata,"SI.warnMsg = ''");
 mdata_struct = jsondecode(json_part);
