@@ -15,5 +15,5 @@ trace_sem = std(trace_matrix,[],1)./sqrt(n_epochs-1);
 if isfield(example_epoch_params,'pre_time')
     time_axis = (1:time_points) - example_epoch_params.pre_time;
 else
-     time_axis = 1:time_points;
+    time_axis = 1:time_points;
 end
