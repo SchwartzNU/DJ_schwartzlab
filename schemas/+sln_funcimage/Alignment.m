@@ -11,6 +11,9 @@ classdef Alignment < dj.Computed
 
     methods(Access=protected)
         function makeTuples(self, key)
+            pulse_on_stim = true;
+            
+
             cellname = fetch1(sln_cell.CellName & key, 'cell_name');
             basedir = [getenv('Func_imaging_folder') filesep 'SingleOrPairedCell' filesep cellname filesep];
             image_props = fetch(sln_funcimage.ImagingRun & key, '*');
@@ -22,6 +25,13 @@ classdef Alignment < dj.Computed
 
             epochs = sln_symphony.DatasetEpoch * sln_symphony.ExperimentEpoch & key;
             epochs_struct = fetch(epochs);
+            if pulse_on_stim % need to add pre time
+                prot_name = fetch1(sln_symphony.ExperimentEpochBlock & epochs_struct(1),'protocol_name');
+                prot_name = sqlProtName2ProtName(prot_name);
+                example_epoch_params = fetch(aka.EpochParams(prot_name) * aka.BlockParams(prot_name) & epochs_struct(1), '*');
+                pre_time = example_epoch_params(1).pre_time;
+            end
+
             epoch_ids = fetchn(epochs,'epoch_id');
             epoch_durations_ms = fetchn(epochs,'epoch_duration');
             N_epochs = length(epoch_ids);
@@ -29,7 +39,11 @@ classdef Alignment < dj.Computed
             V = zeros(image_props.height, image_props.n_frames);
             func_volume = uint16(zeros(image_props.height, image_props.width, image_props.n_frames));
             disp('Loading images');
+            fprintf('%d frames to load.\n', image_props.n_frames);
             for i=1:image_props.n_frames
+                if rem(i,100)==0
+                    fprintf('%d of %d frames loaded.\n', i, image_props.n_frames);
+                end
                 frame = imread([basedir image_props.alignment_fname],i);
                 V(:,i) = mean(frame,2);
                 func_volume(:,:,i) = imread([basedir image_props.image_fname],i);
@@ -46,6 +60,9 @@ classdef Alignment < dj.Computed
                 return;
             end
             decimal_frames = pulses_up / image_props.height;
+            if pulse_on_stim
+                decimal_frames = decimal_frames - (pre_time/1E3) * frame_rate;
+            end
             start_frames = round(decimal_frames);
             offsets = decimal_frames - start_frames;
             offsets_ms = offsets / image_props.frame_rate * 1E3;            
