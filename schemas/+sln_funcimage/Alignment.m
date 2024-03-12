@@ -61,7 +61,7 @@ classdef Alignment < dj.Computed
             end
             decimal_frames = pulses_up / image_props.height;
             if pulse_on_stim
-                decimal_frames = decimal_frames - (pre_time/1E3) * frame_rate;
+                decimal_frames = decimal_frames - (pre_time/1E3) * image_props.frame_rate;
             end
             start_frames = round(decimal_frames);
             offsets = decimal_frames - start_frames;
