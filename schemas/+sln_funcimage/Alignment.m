@@ -37,7 +37,7 @@ classdef Alignment < dj.Computed
             N_epochs = length(epoch_ids);
 
             V = zeros(image_props.height, image_props.n_frames);
-            func_volume = uint16(zeros(image_props.height, image_props.width, image_props.n_frames));
+            %func_volume = uint16(zeros(image_props.height, image_props.width, image_props.n_frames));
             disp('Loading images');
             fprintf('%d frames to load.\n', image_props.n_frames);
             for i=1:image_props.n_frames
@@ -48,6 +48,7 @@ classdef Alignment < dj.Computed
                 V(:,i) = mean(frame,2);
                 func_volume(:,:,i) = imread([basedir image_props.image_fname],i);
             end
+            func_volume = func_volume - 2^15; %OFFSET when you save from FIJI for some reason
             V_flat = reshape(V,[image_props.height*image_props.n_frames, 1]);
 
             disp('Locating alignment pulses');

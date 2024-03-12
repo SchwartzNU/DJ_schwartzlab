@@ -22,7 +22,7 @@ classdef ROITraces < dj.Computed
             trace_x = 1:dur_ms;
             for i=1:roi_field.n_rois
                 [xvals, yvals] = ind2sub([rows, cols],roi_field.pixels_in_roi{i});
-                trace = squeeze(mean(movie.raw_movie(xvals,yvals,:),[1 2]));
+                trace = squeeze(mean(double(movie.raw_movie(xvals,yvals,:)),[1 2]));
                 trace = interp1(linspace(1,1E3*frames/frame_rate,frames),trace,trace_x);
                 key.traces(i,:) = circshift(trace,movie.offset_ms);
             end
