@@ -37,10 +37,8 @@ for d=1:N_datasets
     all_points = [epochs_in_dataset(1).cx', epochs_in_dataset(1).cy'];
     all_points_unique = unique(all_points,'rows');
    
-    all_dist = round(pdist2(all_points,[0,0]));
     all_dist_unique = unique(round(pdist2(all_points_unique,[0,0])));
     
-    all_ang = round(cart2pol(all_points(:,1),all_points(:,2)),4);
     all_ang_unique = unique(round(cart2pol(all_points_unique(:,1),all_points_unique(:,2)),4));
     
     N_ang = length(all_ang_unique);
@@ -53,13 +51,13 @@ for d=1:N_datasets
     trace_matrix_mean = cell(N_ang, N_dist);
     trace_matrix_sem = cell(N_ang, N_dist);
 
-    spike_count_matrix_mean = zeros(N_ang, N_dist);
+    %spike_count_matrix_mean = zeros(N_ang, N_dist);
     spike_count_matrix_sem = zeros(N_ang, N_dist);
 
-    peak_matrix_mean = zeros(N_ang, N_dist);
+    %peak_matrix_mean = zeros(N_ang, N_dist);
     peak_matrix_sem = zeros(N_ang, N_dist);
    
-    spot_period_samples = (spot_pre_frames+spot_stim_frames+spot_tail_frames) / frame_rate * sample_rate
+    spot_period_samples = (spot_pre_frames+spot_stim_frames+spot_tail_frames) / frame_rate * sample_rate;
     pre_samples = spot_pre_frames / frame_rate * sample_rate;
     stim_samples = spot_stim_frames / frame_rate * sample_rate;
     tail_samples = spot_tail_frames / frame_rate * sample_rate;
