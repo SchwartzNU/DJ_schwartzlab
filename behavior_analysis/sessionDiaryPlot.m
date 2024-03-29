@@ -70,5 +70,7 @@ for i=1:N_call_types
     end
 end
 
+cbar = colorbar(ax,'Ticks',linspace(0,1,N_call_types),'TickLabels',strsplit(num2str(call_ids)));
+cbar.Label.String = 'Call type';
 hold('off');
 
