@@ -65,7 +65,7 @@ for i=1:N_call_types
     ind = find(squeak_data.call_types == call_ids(i));
     for c=1:length(ind)
         call_time = squeak_data.call_times(ind(c));
-        plot(call_time, i./N_call_types,'x',...
+        plot(call_time, 0.9 * i./N_call_types,'x',...
             'Color',cmap(color_ind(i),:),'LineWidth',2);        
     end
 end
