@@ -1,4 +1,8 @@
-function visualizeSqueaksForSession(session_id)
+function visualizeSqueaksForSession(session_id, which_calls)
+if nargin<2
+    which_calls = 'all';
+end
+
 C = dj.conn;
 if strcmp(C.host, '127.0.0.1:3306')
     rootFolder = '/mnt/fsmresfiles/behavior';
@@ -76,28 +80,41 @@ imshow(frame);
 hold('on');
 ax = gca;
 
+if strcmp(which_calls, 'all')
+    N_call_types = 10;
+    call_ids = 0:9;
+elseif strcmp(which_calls, 'adult')
+    N_call_types = 5;
+    call_ids = 5:9;
+elseif strcmp(which_calls, 'pup')
+    N_call_types = 5;
+    call_ids = 0:4;
+end
+
+    
+
 cmap = colormap(ax,'parula');
-N_call_types = 10;
 color_ind = round(linspace(1,256,N_call_types));
 vector_len = 30;
 
 for i=1:N_call_types
-    ind = find(squeak_data.call_types == i-1);
+    ind = find(squeak_data.call_types == call_ids(i));
     for c=1:length(ind)
         curFrame = squeak_data.call_frames(ind(c));
         if curFrame <= length(gaze_data.bino_gaze_outer_wall)
             plot(DLC_raw_table_top.nose_x(curFrame), DLC_raw_table_top.nose_y(curFrame),'x',...
-                'Color',cmap(color_ind(i),:),'LineWidth',2)
+                'Color',cmap(color_ind(i),:),'LineWidth',10)
             gaze_ang = gaze_data.bino_gaze_outer_wall(curFrame);
             if ~isnan(gaze_ang)
                 [x,y] = pol2cart(gaze_ang,vector_len);
                 quiver(DLC_raw_table_top.nose_x(curFrame), DLC_raw_table_top.nose_y(curFrame), x, y, ...
-                    'Color',cmap(color_ind(i),:),'LineWidth',1,'AutoScale','off','MaxHeadSize',1.5)
+                    'Color',cmap(color_ind(i),:),'LineWidth',2,'AutoScale','off','MaxHeadSize',1.5)
             end
         end
     end
 end
-cbar = colorbar(ax,'Ticks',linspace(0,1,10),'TickLabels',strsplit(num2str(0:9)));
+
+cbar = colorbar(ax,'Ticks',linspace(0,1,N_call_types),'TickLabels',strsplit(num2str(call_ids)));
 cbar.Label.String = 'Call type';
 
 
