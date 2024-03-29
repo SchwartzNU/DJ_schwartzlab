@@ -87,9 +87,7 @@ classdef Squeaks < dj.Imported
                 key.n_pup_calls = sum(key.call_types<=4);
                 key.n_calls = key.n_adult_calls + key.n_pup_calls
             end
-            if key.event_id == 23138
-                keyboard;
-            end
+            
             disp('Insert success');             
             self.insert(key, 'REPLACE');
         end
