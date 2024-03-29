@@ -369,67 +369,66 @@ class Parser {
     }
 
     void mapCellPairs() {
-        StructArray cells = std::move(key[0]["cells"]);
-        StructArray pairs = std::move(key[0]["cell_pairs"]);
-        StructArray electrodes = std::move(key[0]["electrodes"]);
+        if (key[0]["cell_pairs"].getNumberOfElements()) {
+            StructArray cells = std::move(key[0]["cells"]);
+            StructArray electrodes = std::move(key[0]["electrodes"]);
+            StructArray pairs = std::move(key[0]["cell_pairs"]);
+        
+            for (Reference<Struct> pair : pairs) {
 
-        // we need to check the electrodes against cell pairs
+                DEBUGPRINT("Testing pair...");
+                size_t cell_1 = pair["cell_1_id"][0];
+                size_t cell_2 = pair["cell_2_id"][0];
 
-        // if the source_id for an electrode is a cell pair, replace source_id with the correct cell id?
+                size_t src = pair["source_id"][0];
 
-        for (Reference<Struct> pair : pairs) {
+                size_t matches = 0;
 
-            DEBUGPRINT("Testing pair...");
-            size_t cell_1 = pair["cell_1_id"][0];
-            size_t cell_2 = pair["cell_2_id"][0];
+                for (auto elem : cells) {
+                    // matlab::data::Array cell_i = elem["cell_number"];
+                    size_t cell_i = elem["cell_number"][0];
+                    if (cell_i == cell_1) {
+                        TypedArray<uint64_t> s_id = elem["source_id"];
+                        // pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                        pair["cell_1_id"] = s_id;
+                        matches++;
 
-            size_t src = pair["source_id"][0];
-
-            size_t matches = 0;
-
-            for (auto elem : cells) {
-                // matlab::data::Array cell_i = elem["cell_number"];
-                size_t cell_i = elem["cell_number"][0];
-                if (cell_i == cell_1) {
-                    TypedArray<uint64_t> s_id = elem["source_id"];
-                    // pair["cell_1_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                    pair["cell_1_id"] = s_id;
-                    matches++;
-
-                    
-                    DEBUGPRINT("Matched cell 1 ("  << (size_t) s_id[0]<< ")");
-                    for (Reference<Struct> electrode : electrodes) {
-                        if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
-                            DEBUGPRINT("Fixing response");
-                            // electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
-                            electrode["cell_id"] = s_id;                            
+                        
+                        DEBUGPRINT("Matched cell 1 ("  << (size_t) s_id[0]<< ")");
+                        for (Reference<Struct> electrode : electrodes) {
+                            if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 1)){ // this electrode recorded from this cell...
+                                DEBUGPRINT("Fixing response");
+                                // electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                                electrode["cell_id"] = s_id;                            
+                            }
                         }
+                        DEBUGPRINT("Fixed cell 1 responses");
                     }
-                    DEBUGPRINT("Fixed cell 1 responses");
-                }
-                if (cell_i == cell_2) {
-                    TypedArray<uint64_t> s_id = elem["source_id"];
-                    // pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
-                    pair["cell_2_id"] = s_id;
-                    matches++;
+                    if (cell_i == cell_2) {
+                        TypedArray<uint64_t> s_id = elem["source_id"];
+                        // pair["cell_2_id"] = factory.createScalar<uint64_t>(s_id[0]);
+                        pair["cell_2_id"] = s_id;
+                        matches++;
 
-                    DEBUGPRINT("Matched cell 2 ("  << (size_t) s_id[0]<< ")");
-                    for (Reference<Struct> electrode : electrodes) {
-                        if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
-                            DEBUGPRINT("Fixing response");
-                            // electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
-                            electrode["cell_id"] = s_id;
+                        DEBUGPRINT("Matched cell 2 ("  << (size_t) s_id[0]<< ")");
+                        for (Reference<Struct> electrode : electrodes) {
+                            if (((size_t)electrode["source_id"][0] == src) && ((size_t)electrode["cell_id"][0] == 2)){ // this electrode recorded from this cell...
+                                DEBUGPRINT("Fixing response");
+                                // electrode["cell_id"][0] = factory.createScalar<uint64_t>(s_id[0]);
+                                electrode["cell_id"] = s_id;
+                            }
                         }
+                        DEBUGPRINT("Fixed cell 2 responses");
                     }
-                    DEBUGPRINT("Fixed cell 2 responses");
                 }
+                if (matches != 2) throwError("Failed to match cell pairs!"); // should never happen?
             }
-            if (matches != 2) throwError("Failed to match cell pairs!"); // should never happen?
-        }
 
-        key[0]["cells"] = std::move(cells);
-        key[0]["cell_pairs"] = std::move(pairs);
-        key[0]["electrodes"] = std::move(electrodes);
+            key[0]["cell_pairs"] = std::move(pairs);
+            key[0]["electrodes"] = std::move(electrodes);
+            key[0]["cells"] = std::move(cells);
+        
+        }
     }
     
     void parseEpochGroups(H5::Group epochGroups) {
