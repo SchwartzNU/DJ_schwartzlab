@@ -46,6 +46,7 @@ end
 dlc_filenames{ind}
 
 squeak_query = sl_behavior.Squeaks & sprintf('event_id=%d',session_id);
+body_query = sl_behavior.Squeaks & sprintf('event_id=%d',session_id);
 if ~squeak_query.exists
     disp('Squeak table entry not found for this session');
     return;
