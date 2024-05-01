@@ -156,7 +156,7 @@ for d=1:N_datasets
             warning('Resting Membrane Potential fluctuates within trial %d', trial)
         end
         %resistance fit
-        stable_Vm = mean(hyper_Vm(floor(mean(start_time,end_time)):end_time,:));
+        stable_Vm = mean(hyper_Vm(floor(mean([start_time,end_time])):end_time,:));
         R_linear = fitlm(hyper_current_level_pA, stable_Vm');
         
         resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
@@ -168,7 +168,7 @@ for d=1:N_datasets
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
 
-        ft = fittype('a + b*exp(-x*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
+        ft = fittype("a + b*exp(-x*c)", 'independent', 'x'); %One parameter exp fit with asymt to Vinf
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
          
         for i=1:length(hyper_epoch_less_than_minus50)
