@@ -167,7 +167,6 @@ for d=1:N_datasets
             warning('Resistance fit of trial %d is bad. Check if Ih kicked in!', trial)
         end
         
-        resistance_array_MOhm(trial)
         % Calculate Tau (ms)
         
 
@@ -211,7 +210,7 @@ for d=1:N_datasets
         [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
         plateau_value = hyper_Vm(stim_samples + pre_samples,I);
         peak_value = min(hyper_Vm(:,I)); %peak value
-        sag_amplitude = plateau_value - peak_value;
+        sag_amplitude = plateau_value - peak_value
         %min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
         %fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
         %sag_array(trial) = table2array(fit_sag_peak_vs_stable.Coefficients(2,1));
