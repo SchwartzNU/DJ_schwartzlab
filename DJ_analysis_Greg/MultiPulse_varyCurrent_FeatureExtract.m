@@ -6,7 +6,7 @@ R = sln_results.table_definition_from_template('MultiPulse_varyCurrent_FeatureEx
 for d=1:N_datasets
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
-    try
+    
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         sln_symphony.ExperimentChannel * ...
         sln_symphony.ExperimentEpochChannel * ...
@@ -467,5 +467,5 @@ for d=1:N_datasets
     
     fprintf('Elapsed time = %d seconds\n', round(toc));
     
-    end
+    
 end
