@@ -11,7 +11,7 @@ for d=1:N_datasets
         sln_symphony.ExperimentChannel * ...
         sln_symphony.ExperimentEpochChannel * ...
         aka.MultiPulseParams & ...
-        datasets_struct(d),'*');
+        datasets_struct(d) & 'channel_name LIKE "Amp_"','*');
     N_epochs = length(epochs_in_dataset);
     
     if N_epochs == 0
@@ -156,7 +156,7 @@ for d=1:N_datasets
             warning('Resting Membrane Potential fluctuates within trial %d', trial)
         end
         %resistance fit
-        stable_Vm = mean(hyper_Vm(start_time:end_time,:));
+        stable_Vm = mean(hyper_Vm(floor(mean([start_time,end_time])):end_time,:));
         R_linear = fitlm(hyper_current_level_pA, stable_Vm');
         
         resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
@@ -168,7 +168,7 @@ for d=1:N_datasets
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
 
-        ft = fittype('a + b*exp(-x*c)', 'independent', 'x'); %One parameter exp fit with asymt to Vinf
+        ft = fittype("a + b*exp(-x*c)", 'independent', 'x'); %One parameter exp fit with asymt to Vinf
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
          
         for i=1:length(hyper_epoch_less_than_minus50)
@@ -205,9 +205,9 @@ for d=1:N_datasets
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
         
         %% Sag
-        [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)))
-        plateau_value = hyper_Vm(stim_samples + pre_samples,I)
-        peak_value = min(hyper_Vm(:,I)) %peak value
+        [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
+        plateau_value = hyper_Vm(stim_samples + pre_samples,I);
+        peak_value = min(hyper_Vm(:,I)); %peak value
         sag_amplitude = plateau_value - peak_value
         %min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
         %fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
@@ -216,10 +216,10 @@ for d=1:N_datasets
         %% Max Depol Overshoot
         depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
 
-        for i=1:length(depol_epoch_greater_than_minus50);
+        for i=1:length(depol_epoch_greater_than_minus50)
             [M,I] = max(depol_Vm(:,depol_current_level_pA > -50));
-            stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50)
-            depol_overshoot = M - stable_Vm_depol 
+            stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50);
+            depol_overshoot = M - stable_Vm_depol; 
             max_depol_overshoot = max(depol_overshoot);
         end
 
@@ -380,10 +380,10 @@ for d=1:N_datasets
         ISI_CV_at_max_spikes = ISI_cv(epoch_max_loc);
         spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
         
-        horizontal_line_half_max_x = [0:1:depol_current_level_pA(epoch_max_loc)];
+        horizontal_line_half_max_x = 0:1:depol_current_level_pA(epoch_max_loc);
         horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
         
-        [xi yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
+        [xi, yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
             horizontal_line_half_max_x, horizontal_line_half_max_y);
         
         if ~isempty(xi) || ~isempty(yi)

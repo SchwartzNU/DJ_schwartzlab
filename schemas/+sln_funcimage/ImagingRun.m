@@ -24,13 +24,13 @@ classdef ImagingRun < dj.Manual
             disp('Select associated alignment pulses tif stack.');
             alignment_fname = uigetfile('*.tif','Select associated alignment pulses tif stack.',basedir);
             disp('Select associated metadata .mat file.');
-            meta_data_fname = uigetfile('*.mat','Select associated metadata .mat file.',basedir);
+            [meta_data_fname, meta_data_path] = uigetfile('*.mat','Select associated metadata .mat file.',basedir);
 
             if all(meta_data_fname == false)
                 disp('Nothing inserted. Metadata required.');
                 return;
             end
-            load([basedir meta_data_fname],'SI');
+            load([meta_data_path filesep meta_data_fname],'SI');
             key.frame_rate = SI.hRoiManager.scanFrameRate;
 
             preprocessing_steps = inputdlg('List preprocessing steps (e.g. motion correction) (comma separated) or leave blank.',...
