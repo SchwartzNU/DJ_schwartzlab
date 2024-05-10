@@ -1,4 +1,4 @@
-function [time_axis, trace_mean, trace_sem] = meanForROI(roi_traces,id,asDFoverF)
+function [time_axis, trace_mean, trace_sem, trace_matrix] = meanForROI(roi_traces,id,asDFoverF)
 if nargin < 3
     asDFoverF = true;
 end
