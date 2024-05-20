@@ -24,6 +24,7 @@ Pstim_ROI_groups = struct;
 %extract photostim ROI information
 N_groups = 0;
 if isfield(mdata_struct,'RoiGroups')
+    if isfield(mdata_struct.RoiGroups, 'photostimRoiGroups')
     N_groups = length(mdata_struct.RoiGroups.photostimRoiGroups);
     for i=1:N_groups
         Pstim_ROI_groups(i).name = mdata_struct.RoiGroups.photostimRoiGroups(i).name;
@@ -44,6 +45,7 @@ if isfield(mdata_struct,'RoiGroups')
                 park_ind = park_ind+1;
             end
         end
+    end
     end
 end
 
