@@ -7,7 +7,7 @@ function R = Transporter_AUC(data_group, params)
     datasets_struct = fetch(datasets,'cell_number');
     N_datasets = datasets.count;
     
-    R = sln_results.table_definition_from_template('Transporter_AUC',N_datasets);
+    R = sln_results.table_definition_from_template('SAHP',N_datasets);
     
     for d=1:N_datasets
         %% 
