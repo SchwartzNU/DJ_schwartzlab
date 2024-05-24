@@ -147,7 +147,7 @@ function R = Transporter_AUC(data_group, params)
         R.example_sp{d} = example_sp; 
         R.example_spike_count(d) = example_spike_count;
         %R.example_segment(d) = example_segment; 
-        R.example_diff{d} = example_diff; 
+        R.example_diff{d} = 0; 
         R.example_ahp{d} = example_ahp;
         R.stim_end_time = stim_end_time;
     
