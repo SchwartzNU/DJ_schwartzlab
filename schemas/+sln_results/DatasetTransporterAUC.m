@@ -1,5 +1,5 @@
 %{
-# DatasetPulseLong
+# DatasetTransporterAUC
 file_name : varchar(128) # file name from symphony
 dataset_name : varchar(128) # dataset name
 source_id : float # source id used to identify the cell to which the dataset belongs
