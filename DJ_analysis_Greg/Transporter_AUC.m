@@ -82,6 +82,7 @@ function R = Transporter_AUC(data_group, params)
             example_diff(s,1:length(example_segment)) = example_segment(s,:) - vrest_example(s,:);
             example_diff(example_diff > 0) = 0;
             example_ahp(s) = sum(example_diff(s,:))/sample_rate;
+            example_diff = 1;
             for i = 1:N_epochs_per_current(s)
                 %i=1
             %if N_epochs_per_current(s) > 1
