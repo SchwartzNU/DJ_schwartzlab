@@ -76,7 +76,7 @@ function R = Transporter_AUC(data_group, params)
             vrest_example(s,:) = mean(example_traces(1:pre_samples));
             example_sp(s,1:length(epochs_in_dataset(ind(example)).spike_indices)) = epochs_in_dataset(ind(example)).spike_indices;
             example_spike_count(s,:) = length(find(example_sp>pre_samples & example_sp<pre_samples+stim_samples));
-            example_segment(s,1:length(example_traces(s,stim_end_idx:end))) = example_traces(s,stim_end_idx:end);
+            example_segment{s,1:length(example_traces(s,stim_end_idx:end))} = example_traces(s,stim_end_idx:end);
             %size(example_segment);
             %size(vrest_example)
             example_diff(s,1:length(example_segment)) = example_segment(s,:) - vrest_example(s,:);
