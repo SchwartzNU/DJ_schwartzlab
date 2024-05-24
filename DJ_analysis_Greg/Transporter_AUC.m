@@ -7,7 +7,7 @@ function R = Transporter_AUC(data_group, params)
     datasets_struct = fetch(datasets,'cell_number');
     N_datasets = datasets.count;
     
-    R = sln_results.table_definition_from_template('SAHP',N_datasets);
+    R = sln_results.table_definition_from_template('SAHPCC',N_datasets);
     
     for d=1:N_datasets
         %% 
@@ -145,7 +145,7 @@ function R = Transporter_AUC(data_group, params)
         R.example_traces{d} = example_traces;
         R.vrest_example(d) = vrest_example; 
         R.example_sp{d} = example_sp; 
-        R.example_spike_count(d) = example_spike_count;
+        R.example_spike_count{d} = example_spike_count;
         %R.example_segment(d) = example_segment; 
         R.example_diff{d} = 0; 
         R.example_ahp{d} = example_ahp;

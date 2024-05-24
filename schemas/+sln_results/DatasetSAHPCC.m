@@ -1,5 +1,5 @@
 %{
-# DatasetSAHP
+# DatasetSAHPCC
 file_name : varchar(128) # file name from symphony
 dataset_name : varchar(128) # dataset name
 source_id : float # source id used to identify the cell to which the dataset belongs
@@ -26,5 +26,5 @@ stim_end_time=NULL : float # stim end time
 stim_time_ms=NULL : float # stim time (ms)
 vrest_example=NULL : float # vrest of the example trace
 %}
-classdef DatasetSAHP < dj.Manual
+classdef DatasetSAHPCC < dj.Manual
 end
