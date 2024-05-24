@@ -1,0 +1,9 @@
+{
+  "BioformatsImage.BioformatsImage":
+  {
+     "inputs":
+     [
+        {"name":"filename", "kind":"ordered", "type":[["file=*.txt"], ["char"]]}
+     ]
+  }
+}
