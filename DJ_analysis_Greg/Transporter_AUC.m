@@ -50,6 +50,8 @@ function R = Transporter_AUC(data_group, params)
         ahp_decay_tau2 = zeros(N_currents,1);
         ahp_tau1_coeff = zeros(N_currents,1);
         mean_traces = zeros(N_currents, total_samples);
+        example_traces = zeros(N_currents, total_samples);
+        %example_segment = zertosN_currents, 
         %example_traces = zeros(N_currents, total_samples);
         spike_count_all = cell(N_currents,1);
         vrest_by_epoch = cell(N_currents,1);
@@ -76,13 +78,12 @@ function R = Transporter_AUC(data_group, params)
             vrest_example(s,:) = mean(example_traces(1:pre_samples));
             example_sp(s,1:length(epochs_in_dataset(ind(example)).spike_indices)) = epochs_in_dataset(ind(example)).spike_indices;
             example_spike_count(s,:) = length(find(example_sp>pre_samples & example_sp<pre_samples+stim_samples));
-            example_segment{s,1:length(example_traces(s,stim_end_idx:end))} = example_traces(s,stim_end_idx:end);
+            example_segment(s,1:length(example_traces(s,stim_end_idx:end))) = example_traces(s,stim_end_idx:end);
             %size(example_segment);
             %size(vrest_example)
             example_diff(s,1:length(example_segment)) = example_segment(s,:) - vrest_example(s,:);
             example_diff(example_diff > 0) = 0;
             example_ahp(s) = sum(example_diff(s,:))/sample_rate;
-            example_diff = 1;
             for i = 1:N_epochs_per_current(s)
                 %i=1
             %if N_epochs_per_current(s) > 1
@@ -141,13 +142,13 @@ function R = Transporter_AUC(data_group, params)
         R.stim_end_idx{d} = stim_end_idx;
     
         R.sample_rate(d) = sample_rate;
-        R.example_traces = example_traces;
-        R.vrest_example = vrest_example; 
-        R.example_sp = example_sp; 
-        R.example_spike_count = example_spike_count;
-        R.example_segment = example_segment; 
-        R.example_diff = example_diff; 
-        R.example_ahp = example_ahp;
+        R.example_traces{d} = example_traces;
+        R.vrest_example(d) = vrest_example; 
+        R.example_sp{d} = example_sp; 
+        R.example_spike_count(d) = example_spike_count;
+        %R.example_segment(d) = example_segment; 
+        R.example_diff{d} = example_diff; 
+        R.example_ahp{d} = example_ahp;
         R.stim_end_time = stim_end_time;
     
         %R.vrest(d) = vrest; %will set up for the example trace for the plotter
