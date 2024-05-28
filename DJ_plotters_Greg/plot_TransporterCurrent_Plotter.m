@@ -55,7 +55,8 @@ function required_fields = plot_TransporterCurrent_Plotter(R, ax)
         title(ax, ['sAHP, Current: ' num2str(current, '%.2f pA') ', Spikes: ' num2str(spike_count)]);
         v_line = xline(ax, x(stim_end_idx), 'g-', 'LineWidth', 2);
         h_line = yline(ax, vrest(s), 'r-', 'LineWidth', 2);
-        legend(ax, [h_trace, h_fill, v_line, h_line], {'Trace', ['Shaded AHP Area: ' num2str(ahp_area, '%.2f')], 'Stimulus End', ['Resting Voltage: ' num2str(vrest(s), '%.2f') ' mV']}, 'Location', 'best');
+        lgd = legend(ax, [h_trace, h_fill, v_line, h_line], {'Trace', ['Shaded AHP Area: ' num2str(ahp_area, '%.2f')], 'Stimulus End', ['Resting Voltage: ' num2str(vrest(s), '%.2f') ' mV']}, 'Location', 'northeast');
+        lgd.FontSize = 8;
 
         %% Inset for zoomed-in view
         inset_ax = axes('Position', [0.51, 0.33, 0.45, 0.25], 'Parent', fig);  % Adjust the position and size as needed
