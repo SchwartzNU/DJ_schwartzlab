@@ -30,17 +30,37 @@ for i=1:length(D)
         fprintf('Loading %s\n', file_info.name);
         fname = [file_info.folder filesep file_info.name];
         if strcmp(loaderPrefs.ch2, ' ')
-            sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
-                loaderPrefs.ch1);
+            if contains(file_info.name, '_stitched')
+                sln_image.Image.loadFromStitchedFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1);
+            else
+                sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1);
+            end
         elseif strcmp(loaderPrefs.ch3, ' ')
-            sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
-                loaderPrefs.ch1, loaderPrefs.ch2);
+            if contains(file_info.name, '_stitched')
+                sln_image.Image.loadFromStitchedFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1, loaderPrefs.ch2);
+            else
+                sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1, loaderPrefs.ch2);
+            end
         elseif strcmp(loaderPrefs.ch4, ' ')
-             sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
-                loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3);
+            if contains(file_info.name, '_stitched')
+                sln_image.Image.loadFromStitchedFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3);
+            else
+                sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3);
+            end
         else
-            sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
-                loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3, loaderPrefs.ch4);
+            if contains(file_info.name, '_stitched')
+                sln_image.Image.loadFromStitchedFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3, loaderPrefs.ch4);
+            else
+                sln_image.Image.loadFromFile(fname, loaderPrefs.scope, loaderPrefs.user, loaderPrefs.z_scale, ...
+                    loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3, loaderPrefs.ch4);
+            end
         end
     end
 end
