@@ -63,4 +63,10 @@ for i=1:length(D)
             end
         end
     end
+
+    match = get_db_match(file_info);
+    if match.exists
+        match.assignToTissue(loaderPrefs.animal_id, loaderPrefs.tissue_type);
+    end
+
 end

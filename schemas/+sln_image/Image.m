@@ -24,9 +24,52 @@ zoom_factor : float #read in from image metadata
 %}
 classdef Image < dj.Manual
     methods
-        % function insert(self, key)
-        %     self.insert(key)
-        % end
+        function assignToTissue(self, animal_id, tissue_type)
+            switch tissue_type
+                case 'L eye'
+                    thisEye = sln_animal.Eye & sprintf('animal_id=%d', animal_id) & 'side="Left"';
+                case 'R eye'
+                    thisEye = sln_animal.Eye & sprintf('animal_id=%d', animal_id) & 'side="Right"';
+                case 'Brain'
+                    disp('Not implemeted yet.');
+            end
+            
+            if ~thisEye.exists
+                fprintf('Inserting eyes for animal %d\n',animal_id);
+                key = struct;
+                key.animal_id = animal_id;
+                key.side = 'Left';
+                insert(sln_animal.Eye,key);
+                key.side = 'Right';
+                insert(sln_animal.Eye,key);
+                switch tissue_type
+                    case 'L eye'
+                        thisEye = sln_animal.Eye & sprintf('animal_id=%d', animal_id) & 'side="Left"';
+                    case 'R eye'
+                        thisEye = sln_animal.Eye & sprintf('animal_id=%d', animal_id) & 'side="Right"';
+                end
+            end
+            cells_for_this_eye = sln_cell.RetinalCell & thisEye;
+            q = sln_cell.RetinalCell * proj(sln_cell.RetinaQuadrant) * sln_cell.CellName & proj(cells_for_this_eye)
+            if q.exists
+                fname = fetch1(self,'image_filename');
+                q_struct = fetch(q,'cell_name');
+                for i=1:length(q_struct)
+                    if contains(fname, q_struct(i).cell_name)
+                        fprintf('matched image %s to cell %s\n', fname, q_struct(i).cell_name)
+                        key = struct;
+                        key.cell_unid = q_struct(i).cell_unid;
+                        key.image_id = fetch1(self,'image_id');
+                        insert(sln_image.RetinalCellImage,key);
+                    end
+                end
+            else
+
+
+            end
+
+
+        end
     end
 
     methods(Static)
@@ -264,6 +307,14 @@ classdef Image < dj.Manual
             fprintf('Inserting.\n');
             insert(sln_image.Image,key);
             fprintf('Done.\n');
+        end
+
+        function match = get_db_match(file_info)
+            %file_info is a struct from the 'dir' command
+            match = sln_image.Image & ...
+                sprintf('image_filename="%s"', file_info.name) & ...
+                sprintf('creation_date="%s"', datestr(file_info.datenum,'yyyy-mm-dd')) & ...
+                sprintf('size_in_bytes=%d', file_info.bytes);            
         end
 
         function is_in_db = inDB(file_info)
