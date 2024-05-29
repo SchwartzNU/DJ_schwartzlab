@@ -25,7 +25,7 @@ switch loaderPrefs.image_type
 end
 
 for i=1:length(D)
-    file_info = D(i);
+    file_info = D(i);    
     if ~sln_image.Image.inDB(file_info)
         fprintf('Loading %s\n', file_info.name);
         fname = [file_info.folder filesep file_info.name];
@@ -62,11 +62,11 @@ for i=1:length(D)
                     loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3, loaderPrefs.ch4);
             end
         end
+        match = get_db_match(file_info); %get image we just loaded
+        if match.exists
+            match.assignToTissue(loaderPrefs.animal_id, loaderPrefs.tissue_type);
+        end
+    else
+        fprintf('Skipping %s. Already in database.\n', file_info.name);
     end
-
-    match = get_db_match(file_info);
-    if match.exists
-        match.assignToTissue(loaderPrefs.animal_id, loaderPrefs.tissue_type);
-    end
-
 end

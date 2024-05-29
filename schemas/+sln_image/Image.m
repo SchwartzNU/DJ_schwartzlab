@@ -51,7 +51,8 @@ classdef Image < dj.Manual
             end
             cells_for_this_eye = sln_cell.RetinalCell & thisEye;
             q = sln_cell.RetinalCell * proj(sln_cell.RetinaQuadrant) * sln_cell.CellName & proj(cells_for_this_eye)
-            if q.exists
+            match_found = false;
+            if q.exists %try to associate with existing cell                
                 fname = fetch1(self,'image_filename');
                 q_struct = fetch(q,'cell_name');
                 for i=1:length(q_struct)
@@ -60,15 +61,28 @@ classdef Image < dj.Manual
                         key = struct;
                         key.cell_unid = q_struct(i).cell_unid;
                         key.image_id = fetch1(self,'image_id');
-                        insert(sln_image.RetinalCellImage,key);
+                        match_found = true;
+                        insert(sln_image.RetinalCellImage,key);                        
                     end
                 end
-            else
-
-
             end
-
-
+            if ~match_found %we make a new cell
+                key = struct;
+                key.animal_id = animal_id;
+                disp('inserting new Cell');
+                insert(sln_cell.Cell, key);
+                thisCell_struct = fetch(sln_cell.Cell & sprintf('animal_id=%d', animal_id) & 'LIMIT 1 PER animal_id ORDER BY cell_unid DESC');
+                key.cell_unid = thisCell_struct.cell_unid;
+                key.side = fetch1(thisEye,'side');
+                disp('inserting new RetinalCell');
+                %TODO add x and y position
+                insert(sln_cell.RetinalCell,key);
+                key = struct;
+                key.cell_unid = thisCell_struct.cell_unid;
+                key.image_id = fetch1(self,'image_id');
+                disp('inserting image match to RetinalCell');
+                insert(sln_image.RetinalCellImage,key);
+            end
         end
     end
 
