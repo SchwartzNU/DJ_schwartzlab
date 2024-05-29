@@ -50,7 +50,7 @@ classdef Image < dj.Manual
                 end
             end
             cells_for_this_eye = sln_cell.RetinalCell & thisEye;
-            q = sln_cell.RetinalCell * proj(sln_cell.RetinaQuadrant) * sln_cell.CellName & proj(cells_for_this_eye)
+            q = sln_cell.RetinalCell * proj(sln_cell.RetinaQuadrant) * sln_cell.CellName & proj(cells_for_this_eye);
             match_found = false;
             if q.exists %try to associate with existing cell                
                 fname = fetch1(self,'image_filename');
