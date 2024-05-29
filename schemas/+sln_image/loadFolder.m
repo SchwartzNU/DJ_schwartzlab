@@ -62,7 +62,7 @@ for i=1:length(D)
                     loaderPrefs.ch1, loaderPrefs.ch2, loaderPrefs.ch3, loaderPrefs.ch4);
             end
         end
-        match = get_db_match(file_info); %get image we just loaded
+        match = sln_image.Image.get_db_match(file_info); %get image we just loaded
         if match.exists
             match.assignToTissue(loaderPrefs.animal_id, loaderPrefs.tissue_type);
         end
