@@ -24,6 +24,19 @@ switch loaderPrefs.image_type
         D = [D_tif; D_nd2];
 end
 
+%get rid of some files we don't want to try to import
+names = {D.name};
+folders = {D.folder};
+excluded = contains(names,'_cell.tif') | ...
+    contains(names,'_skel.tif') | ...
+    contains(names,'_maxProj.tif') | ...
+    contains(names,'_chat.tif') |  ...
+    contains(names,'_mask.tif') |  ...
+    contains(names,'Composite') | ...
+    containts(folders,'parts');
+
+D = D(~excluded);
+
 for i=1:length(D)
     file_info = D(i);    
     if ~sln_image.Image.inDB(file_info)
