@@ -75,7 +75,7 @@ if match.count == 1
             %genetic_or_viral en face
             nexttile([2 2]);
             axis('image');
-            imagesc(log(double(genetic_or_viral_enface)));
+            imagesc(genetic_or_viral_enface);
             title('Genetic or viral label');
         end
 
