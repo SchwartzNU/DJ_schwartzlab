@@ -21,7 +21,7 @@ if match.count == 1
 
     image_data_found = false;
     if ~morph_only
-        image_match = sln_image.Image * sln_image.RetinalCellImage & sprintf('cell_unid=%d',cell_identifier);
+        image_match = sln_image.Image * sln_image.RetinalCellImage & sprintf('cell_unid=%d',cell_unid);
         if image_match.count > 1
             fprintf('Multiple matching images found for cell %d\n',cell_unid);
             fprintf('Image chooser needs to be implemented.\n');
