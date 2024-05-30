@@ -10,7 +10,7 @@ end
 
 if match.count == 1
     cell_unid = fetch1(match,'cell_unid');
-    morph_data = sln_image.RetinalCellMorphology & sprintf('cell_unid=%d',cell_identifier);
+    morph_data = sln_image.RetinalCellMorphology & sprintf('cell_unid=%d',cell_unid);
     if morph_data.count == 1
         morph_data_struct = fetch(morph_data,'nodes_flattened','strat_x','strat_y_norm','lower_surface_z','upper_surface_z');
         morph_data_found = true;
