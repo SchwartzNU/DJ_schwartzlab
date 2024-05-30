@@ -90,6 +90,7 @@ classdef Image < dj.Manual
         function loadFromFile(filename, varargin)
             key = struct;
             forceZ = false;
+            n_input_channels = 0;
 
             if nargin>=2
                 key.scope_name = varargin{1};
@@ -106,18 +107,22 @@ classdef Image < dj.Manual
             if nargin>=5
                 ch1 = varargin{4};
                 key.ch1_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch1), 'channel_type_id');
+                n_input_channels = 1;
             end
             if nargin>=6
                 ch2 = varargin{5};
                 key.ch2_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch2), 'channel_type_id');
+                n_input_channels = 2;
             end
             if nargin>=7
                 ch3 = varargin{6};
                 key.ch3_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch3), 'channel_type_id');
+                n_input_channels = 3;
             end
             if nargin>=8
                 ch4 = varargin{7};
                 key.ch4_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch4), 'channel_type_id');
+                n_input_channels = 4;
             end
 
             file_info = dir(filename);
@@ -136,6 +141,9 @@ classdef Image < dj.Manual
 
                 key.zoom_factor = SI.hRoiManager.scanZoomFactor;
                 N_channels = length(SI.hChannels.channelSave);
+                if N_channels ~= n_input_channels
+                    error('Number of channels mismatch: %d provided but %d found in file.\n', n_input_channels, N_channels);
+                end
                 key.n_channels = N_channels;
                 rows = SI.hRoiManager.linesPerFrame;
                 cols = SI.hRoiManager.pixelsPerLine;
@@ -179,6 +187,9 @@ classdef Image < dj.Manual
                 im = BioformatsImage(filename);
                 key.zoom_factor = 1; %we will just call it zoom factor 1 for .nd2 images
                 N_channels = im.sizeC;
+                if N_channels ~= n_input_channels
+                    error('Number of channels mismatch: %d provided but %d found in file.\n', n_input_channels, N_channels);
+                end
                 key.n_channels = N_channels;
                 rows = im.height;
                 cols = im.width;
@@ -213,6 +224,7 @@ classdef Image < dj.Manual
         function loadFromStitchedFile(filename, varargin)
             key = struct;
             forceZ = false;
+            n_input_channels = 0;
 
             if nargin>=2
                 key.scope_name = varargin{1};
@@ -229,20 +241,28 @@ classdef Image < dj.Manual
             if nargin>=5
                 ch1 = varargin{4};
                 key.ch1_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch1), 'channel_type_id');
+                n_input_channels = 1;
             end
             if nargin>=6
                 ch2 = varargin{5};
                 key.ch2_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch2), 'channel_type_id');
+                n_input_channels = 2;
             end
             if nargin>=7
                 ch3 = varargin{6};
                 key.ch3_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch3), 'channel_type_id');
+                n_input_channels = 3;
             end
             if nargin>=8
                 ch4 = varargin{7};
                 key.ch4_type = fetch1(sln_image.ChannelType & sprintf('channel_content="%s"', ch4), 'channel_type_id');
+                n_input_channels = 4;
             end
 
+            file_info = dir(filename);
+            key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
+            key.size_in_bytes = file_info.bytes;
+            key.folder = file_info.folder;
             [~, name, ext] = fileparts(filename);
             key.image_filename = [name ext];  
 
@@ -250,12 +270,15 @@ classdef Image < dj.Manual
                 meta_fname = strrep(filename,'.tif','_meta.mat');
                 SI_meta = true;
                 if ~exist(meta_fname, 'file')
-                    fprintf("Metadata file not found. Trying to find _part.nd2 instead\n");                    
-                    SI_meta = false;
-                    nd2_part_fname = strrep(filename,'_stitched','_part');
-                    nd2_part_fname = strrep(nd2_part_fname,'.tif','.nd2');
-                    if ~exist(nd2_part_fname,'file')
-                        error('.nd2 part file not found.');
+                    meta_fname = strrep(filename,'_stitched.tif','_part_meta.mat');
+                    if ~exist(meta_fname, 'file')
+                        fprintf("Metadata file not found. Trying to find _part.nd2 instead\n");
+                        SI_meta = false;
+                        nd2_part_fname = strrep(filename,'_stitched','_part');
+                        nd2_part_fname = strrep(nd2_part_fname,'.tif','.nd2');
+                        if ~exist(nd2_part_fname,'file')
+                            error('.nd2 part file not found.');
+                        end
                     end
                 end
                 info = imfinfo(filename);
@@ -268,9 +291,13 @@ classdef Image < dj.Manual
                     load(meta_fname,'SI');
                     key.zoom_factor = SI.hRoiManager.scanZoomFactor;
                     N_channels = length(SI.hChannels.channelSave);
+                    if N_channels ~= n_input_channels
+                        fprintf('Number of channels mismatch in part image: %d provided but %d found in file.\n', n_input_channels, N_channels);
+                        fprintf('Forcing to match input for stitched image\n');
+                        N_channels = n_input_channels;
+                    end
                     part_rows = SI.hRoiManager.linesPerFrame;
                     part_cols = SI.hRoiManager.pixelsPerLine;
-                    key.n_channels = N_channels;
 
                     if isfield(SI,'hStackManager')
                         if ~forceZ
@@ -283,8 +310,6 @@ classdef Image < dj.Manual
                             key.z_scale = str2num(entry{1});
                         end
                     end
-                    N_slices = length(info)/N_channels;
-                    key.n_slices = N_slices;
                     x_range = abs(SI.hRoiManager.imagingFovUm(1,1) - SI.hRoiManager.imagingFovUm(2,1));
                     y_range = abs(SI.hRoiManager.imagingFovUm(2,1) - SI.hRoiManager.imagingFovUm(2,2));
                     key.x_scale = x_range / part_cols; %µm / pixel
@@ -297,13 +322,19 @@ classdef Image < dj.Manual
                     im = BioformatsImage(nd2_part_fname);
                     key.zoom_factor = 1; %we will just call it zoom factor 1 for .nd2 images
                     N_channels = im.sizeC;
-                    key.n_channels = N_channels;
+                    if N_channels ~= n_input_channels
+                        fprintf('Number of channels mismatch in part image: %d provided but %d found in file.\n', n_input_channels, N_channels);
+                        fprintf('Forcing to match input for stitched image\n');
+                        N_channels = n_input_channels;
+                    end
                     key.x_scale = im.pxSize(1);
                     key.y_scale = im.pxSize(2);
                     N_slices = im.sizeZ;
                     key.n_slices = N_slices;
                 end
-
+                N_slices = length(info)/N_channels;
+                key.n_slices = N_slices;
+                key.n_channels = N_channels;
                 key.raw_image = uint16(zeros(rows, cols, N_slices, N_channels));
                 raw_image_interleaved = uint16(zeros(rows, cols, N_slices*N_channels));
 
@@ -319,6 +350,7 @@ classdef Image < dj.Manual
                 error("Image load error: unknown file type");
             end
             fprintf('Inserting.\n');
+            key
             insert(sln_image.Image,key);
             fprintf('Done.\n');
         end

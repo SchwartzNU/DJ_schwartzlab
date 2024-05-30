@@ -24,6 +24,7 @@ for i=1:length(D)
         if temp_match.exists
             match_count = match_count+1;
             match = temp_match;
+            match_name = cur_im.name;
         end
     end
     if match_count == 0
@@ -31,7 +32,7 @@ for i=1:length(D)
     else
         matched_cell = sln_cell.RetinalCell * sln_image.RetinalCellImage & match;
         if matched_cell.count == 1
-            fprintf('Matched arborData for image %s to cell %d\n', cur_im.name, fetch1(matched_cell,'cell_unid'));
+            fprintf('Matched arborData for image %s to cell %d\n', match_name, fetch1(matched_cell,'cell_unid'));
             load([cur_folder filesep 'arborData.mat'],'appdata');
             key = struct;
             key.cell_unid = fetch1(matched_cell,'cell_unid');
