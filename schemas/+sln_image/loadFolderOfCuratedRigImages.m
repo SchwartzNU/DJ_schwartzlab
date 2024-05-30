@@ -13,7 +13,7 @@ if isempty(loaderPrefs)
     return;
 end
 D_base = dir(folder_name);
-cell_names = {D_base.names};
+cell_names = {D_base.name};
 cell_names = cell_names(~startsWith(cell_names,'.'));
 fprintf('Attempting to load %d cell images.\n', length(cell_names));
 for i=1:length(cell_names)
@@ -48,14 +48,18 @@ for i=1:length(cell_names)
         z_scale = []; %should be read automatically from images
 
         if ~err
-            D = dir([folder_name filesep cur_cellname]);
+            D = dir([folder_name filesep cur_cellname filesep '*.tif']);
+            %get rid of some files we don't want to try to import
+            names = {D.name};
+            folders = {D.folder};
             excluded = contains(names,'_cell.tif') | ...
                 contains(names,'_skel.tif') | ...
                 contains(names,'_maxProj.tif') | ...
                 contains(names,'_chat.tif') |  ...
+                contains(names,'_part.tif') |  ...
                 contains(names,'_mask.tif') |  ...
                 contains(names,'Composite') | ...
-                containts(folders,'parts');
+                contains(folders,'parts');
 
             D = D(~excluded);
 
@@ -77,7 +81,7 @@ for i=1:length(cell_names)
                             sln_image.Image.loadFromStitchedFile(fname, scope, user, z_scale, ...
                                 loaderPrefs.ch1, loaderPrefs.ch2);
                         else
-                            sln_image.Image.loadFromFile(fname, scope, user, .z_scale, ...
+                            sln_image.Image.loadFromFile(fname, scope, user, z_scale, ...
                                 loaderPrefs.ch1, loaderPrefs.ch2);
                         end
                     elseif strcmp(loaderPrefs.ch4, ' ')
