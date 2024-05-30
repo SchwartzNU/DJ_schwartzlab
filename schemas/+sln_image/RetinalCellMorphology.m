@@ -13,6 +13,8 @@ strat_x : longblob
 strat_density : longblob
 strat_y_norm : longblob
 n_branches : smallint unsigned
+lower_surface_z : float
+upper_surface_z : float
 arbor_length : float
 arbor_complexity : float
 arbor_density : float
