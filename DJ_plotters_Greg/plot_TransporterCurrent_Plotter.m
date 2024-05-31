@@ -70,7 +70,7 @@ function required_fields = plot_TransporterCurrent_Plotter(R, ax)
         ylim(inset_ax, [min(y_fill) - 5, max(y_fill) + 5]);  % Adjust padding as needed
 
         xlabel(inset_ax, 'Time (s)');
-        ylabel(inset_ax, 'Voltage (mV)');
+        %ylabel(inset_ax, 'Voltage (mV)');
         title(inset_ax, 'Zoomed View of AHP');
         hold(inset_ax, 'off');
     end
