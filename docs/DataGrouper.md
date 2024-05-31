@@ -66,7 +66,46 @@ In Curator mode, the `To Curator` will appear. At `Cell` view level, the `To Cur
 
 You can not query for datasets and analysis results from Curator mode, as well as running Dataset analysis on Curator mode.
 
-### View level
+## To Curator: 
+Once you have querried your experiments for curation and are at the `Cell` view level. Press the `To Curator`. A new GUI will pop up.
+
+![Curator](assets/DataGrouper/curator.png)
+1. Be sure you are working on the desired cell. Sometimes delays in DataGrouper can make you select To Curator on the wrong cell. 
+2. Select the desired `epoch group`: These are the protocols ran in Symphony (spotmultisize, moving bar, Multipulse). 
+3. Go through the epochs and find if there are particular epochs you want to exclude before saving your data set. 
+   - These can be epochs with a lot of noise, breaking of the seal in cell attached data. 
+   - Or, maybe you are interested only to save particular parts of the epoch group (spots of certain size for the SMS, applied currents of a defined amplitude, etc.)
+1. To select a particular epoch. 
+    - param: `epoch_id` or the desired parameter by which you want to filter your data. 
+    - operator: (= or !=, < or >, <= or >=) or between [epoch number_1 epoch number_2]
+    - Filter parameter string structure:
+        - && --> logical AND
+        - &! --> logical NOT 
+        - @ --> Parameter numbers.
+
+    - **For example:**  the string structure for the following image would be: **@1 && @2 && @3 && @4 && @5** (params 1 to 4 are automatically selected by the curator). **This would select all epochs before epoch 145.**
+
+    In contrast, if you want to select all epochs **but** those before epoch 145, then the string would be **@1 && @2 && @3 && @4 &! @5**
+
+
+
+    ![CuratorMode](assets/DataGrouper/filter_params.png)
+
+
+10. Save Dataset (3 in the picture) (saved epochs turn green)
+
+## Spike Detection
+1. ` To spike detector` . The spike detector GUI will pop up.
+
+2. Select the spike threshold (-9 is usually good enough but this depend on your spike size) 
+![SpikeDetector](assets/DataGrouper/SpikeDetector.png)
+2. Apply to all.
+3. Go through epochs. Check that spikes are correctly selected and that noise or perfussion events are not regarded as spikes. You can further edit this by  Selectign valid regions/delete invalid in the GUI. 
+4. The spike detection is saved automatically. 
+
+
+**Note**: Current clamp spike detection is done automatically in Matlab's command window  `parpopulate(sln_results.SpikeDetectCC)`
+## View level
 Experiment -> Animal -> Eye -> Cell -> Dataset -> Epoch.
 
 At Experiment level, the **Details** panels shows the file name, number of cells in the experiment, number of epoch blocks, number of epochs, number of datasets and number of spike trains.
