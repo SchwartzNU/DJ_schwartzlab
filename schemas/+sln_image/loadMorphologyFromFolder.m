@@ -11,26 +11,42 @@ fprintf('%d arborData.mat files found.\n', length(D));
 for i=1:length(D)
     file_info = D(i);
     cur_folder = file_info.folder;
-    D_tif = dir([cur_folder filesep '*.tif']);
-    D_nd2 = dir([cur_folder filesep '*.nd2']);
-    D_thisFolderImages = [D_tif; D_nd2];
-    match_count = 0;
-    for j=1:length(D_thisFolderImages)
-        cur_im = D_thisFolderImages(j);
-        temp_match = sln_image.Image.get_db_match(cur_im);
-        if temp_match.exists %make sure it matches a cell already
-            temp_match = temp_match & sln_image.RetinalCellImage;
-        end
-        if temp_match.exists
-            match_count = match_count+1;
-            match = temp_match;
-            match_name = cur_im.name;
+    id_match = false;
+
+    D_cell_id = dir([cur_folder filesep 'cell_id_*.txt']);
+    if ~isempty(D_cell_id)
+        id_part = extractBetween(D_cell_id(1).name, 'id_', '.txt');
+        matched_cell = sln_cell.RetinalCell * sln_image.RetinalCellImage & ...
+            sprintf('cell_unid=%s',id_part{1});
+        id_match = true;
+        q = sln_image.RetinalCellImage & sprintf('cell_unid=%s',id_part{1});
+        image_id = unique(fetchn(q,'image_id'));
+        match_name = fetch1(sln_image.Image & sprintf('image_id=%d',image_id),'image_filename');
+        match_count = 1;
+    else
+        D_tif = dir([cur_folder filesep '*.tif']);
+        D_nd2 = dir([cur_folder filesep '*.nd2']);
+        D_thisFolderImages = [D_tif; D_nd2];
+        match_count = 0;
+        for j=1:length(D_thisFolderImages)
+            cur_im = D_thisFolderImages(j);
+            temp_match = sln_image.Image.get_db_match(cur_im);
+            if temp_match.exists %make sure it matches a cell already
+                temp_match = temp_match & sln_image.RetinalCellImage;
+            end
+            if temp_match.exists
+                match_count = match_count+1;
+                match = temp_match;
+                match_name = cur_im.name;
+            end
         end
     end
     if match_count == 0
         fprintf('Error: could not match arborData for folder %s\n', cur_folder);
     else
-        matched_cell = sln_cell.RetinalCell * sln_image.RetinalCellImage & match;
+        if ~id_match
+            matched_cell = sln_cell.RetinalCell * sln_image.RetinalCellImage & match;
+        end
         if matched_cell.count == 1
             %check if entry is already there
             morph_match = sln_image.RetinalCellMorphology & sprintf('cell_unid=%d',fetch1(matched_cell,'cell_unid'));

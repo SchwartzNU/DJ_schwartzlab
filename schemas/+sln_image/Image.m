@@ -24,7 +24,7 @@ zoom_factor : float #read in from image metadata
 %}
 classdef Image < dj.Manual
     methods
-        function assignToTissue(self, animal_id, tissue_type)
+        function [match_found, this_unid] = assignToTissue(self, animal_id, tissue_type)
             switch tissue_type
                 case 'L eye'
                     thisEye = sln_animal.Eye & sprintf('animal_id=%d', animal_id) & 'side="Left"';
@@ -62,7 +62,8 @@ classdef Image < dj.Manual
                         key.cell_unid = q_struct(i).cell_unid;
                         key.image_id = fetch1(self,'image_id');
                         match_found = true;
-                        insert(sln_image.RetinalCellImage,key);                        
+                        insert(sln_image.RetinalCellImage,key);  
+                        this_unid = key.cell_unid;
                     end
                 end
             end
@@ -79,6 +80,7 @@ classdef Image < dj.Manual
                 insert(sln_cell.RetinalCell,key);
                 key = struct;
                 key.cell_unid = thisCell_struct.cell_unid;
+                this_unid = key.cell_unid;
                 key.image_id = fetch1(self,'image_id');
                 disp('inserting image match to RetinalCell');
                 insert(sln_image.RetinalCellImage,key);
