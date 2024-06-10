@@ -102,15 +102,23 @@ for d=1:N_datasets
     N_trials = N_sets*N_epochs;
     all_traces_flattened = reshape(all_traces,[N_stim_groups,N_trials]);
     %fix tiny size mismatches
+    
     for i=1:N_stim_groups
         for j=1:N_trials
-            L_mat(i,j) = length(all_traces_flattened{i,j});
+            if length(all_traces_flattened{i,j}) == 0;
+                L_mat(i,j) = nan;
+            else
+                L_mat(i,j) = length(all_traces_flattened{i,j});
+            end
         end
     end
+    
     L = min(L_mat,[],2);
     for i=1:N_stim_groups
         for j=1:N_trials
-            all_traces_flattened{i,j} = all_traces_flattened{i,j}(1:L(i));
+            if ~isempty(all_traces_flattened{i,j})
+                all_traces_flattened{i,j} = all_traces_flattened{i,j}(1:L(i));
+            end
         end
     end
     for i=1:N_stim_groups

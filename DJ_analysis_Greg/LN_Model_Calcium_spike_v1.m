@@ -38,7 +38,7 @@ for d=1:N_datasets
     MIN_PEAK_DISTANCE = 0.001 * sample_rate;
     MIN_PEAK_HEIGHT = -5;
     for i=1:size(raw_data,1)
-        [~, locs] = findpeaks(raw_data(i,:),"MinPeakHeight", -5, 'MinPeakProminence', 5, 'MinPeakDistance', MIN_PEAK_DISTANCE);
+        [~, locs] = findpeaks(raw_data(i,:),"MinPeakHeight", -10, 'MinPeakProminence', 6, 'MinPeakDistance', MIN_PEAK_DISTANCE);
         spikes(i, locs) = 1;
         spike_pre_stim = findpeaks(raw_data(i,1:pre_samples),"MinPeakHeight", MIN_PEAK_HEIGHT, 'MinPeakProminence', 5, 'MinPeakDistance', MIN_PEAK_DISTANCE);
         spike_stim = findpeaks(raw_data(i,pre_samples: (pre_samples + stim_samples)),"MinPeakHeight", MIN_PEAK_HEIGHT, 'MinPeakProminence', 5, 'MinPeakDistance', MIN_PEAK_DISTANCE);
@@ -55,6 +55,8 @@ for d=1:N_datasets
         baseline = mean(calcium_signal(i,pre_pts));
         trace_matrix(i,:) = (calcium_signal(i,:) - baseline) ./ baseline;
     end
+    lp = LP_filter_32_6point4;
+    trace_matrix = filtfilt(lp.sosMatrix, lp.ScaleValues, trace_matrix);
     max_calcium_signal = max(trace_matrix');
     %% resampling to 100Hz;
     spike_time_array = [0:size(raw_data,2)-1] / sample_rate ; % second
@@ -86,12 +88,12 @@ for d=1:N_datasets
         spike_training_temp = spike_training(i,:);
         L = length(cal_training_temp);
         freq = 100*(0:(L/2))/L;
-        filt_f(i,:) = fft(spike_training_temp) .* conj(fft(cal_training_temp));
+        filt_f(i,:) = (fft(spike_training_temp) .* conj(fft(cal_training_temp))) ./ (fft(cal_training_temp) .* conj(fft(cal_training_temp)));
     end
     filt_t = real(ifft(mean(filt_f,1)));
     L = size(filt_t,2);
     filt_t = [filt_t, filt_t];
-    filt_t = filt_t(L/2 : (L/2 + L)); %FINAL FILTER PLOT THIS
+    filt_t = filt_t(L/2 : (L/2 + L-1)); %FINAL FILTER PLOT THIS
     filt_t = filt_t  / abs(max(filt_t));
 
     nl_train_pred_array = nan(size(spike_training_nl));
@@ -174,6 +176,7 @@ for d=1:N_datasets
     R(d).truth_test = truth;
     R(d).predicted_test = predicted_spline;
     R(d).corr_eff = pearson_coeff(1,2);
+    R(d).cal_test = cal_test;
     fprintf('Elapsed time = %d seconds\n', round(toc));
     set(f2, 'Color', 'w');
     %catch
