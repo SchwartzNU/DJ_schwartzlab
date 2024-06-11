@@ -67,7 +67,11 @@ for d=1:N_datasets
         trig_DOWN = getThresCross(trig_data,2.5,-1);
 
         if length(trig_UP) ~= length(trig_DOWN)
-            error('Trigger upstrokes and downstrokes do not match');
+            disp('Trigger upstrokes and downstrokes do not match');
+            disp('This may be a stupid ScanImage bug');
+            disp('So implementing a crappy hack to fix it for now');
+            first_diff = trig_DOWN(1) - trig_UP(1);
+            trig_DOWN(end+1) = trig_UP(end)+first_diff;
         end
 
         if isempty(trig_UP)
