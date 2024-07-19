@@ -76,6 +76,13 @@ classdef Alignment < dj.Computed
             self.insert(key)
             for i=1:N_epochs
                 end_frame = start_frames(i) + ceil((epoch_durations_ms(i)/1E3)*image_props.frame_rate);
+%                 if end_frame > size(func_volume,3)
+% %                     end_frame = size(func_volume,3); %option 1: cut the epoch short
+%                     continue %option 2: drop the epoch
+%                 end
+                % option 3: figure out why this happened, prevent it from
+                % happening again, decide on option1/2 for this case once
+                % we understand more
 
                 % t = Tiff(sprintf('%s%sepoch_%d.tif', epoch_aligned_dir, filesep, epoch_ids(i)), 'w');
                 % setTag(t,'Photometric',Tiff.Photometric.MinIsBlack);
@@ -95,6 +102,8 @@ classdef Alignment < dj.Computed
                 key_epoch_movie = mergeStruct(key_epoch_movie, epochs_struct(i));
                 key_epoch_movie.offset_ms = round(offsets_ms(i));
                 key_epoch_movie.raw_movie = func_volume(:,:,start_frames(i):end_frame);
+%                 key_epoch_movie.raw_movie = func_volume(:,:,start_frames(i):min(end_frame, size(func_volume,3)));
+               
                 insert(sln_funcimage.EpochMovie,key_epoch_movie);
             end   
             disp('Insert successful.');
