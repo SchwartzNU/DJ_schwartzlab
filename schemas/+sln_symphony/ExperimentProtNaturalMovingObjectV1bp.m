@@ -8,7 +8,6 @@ dt : float
 dz : float
 intensity : float
 mean_level : float
-motion_seed : int
 motion_seed_change_mode : enum('repeat only', 'repeat & increment','increment only')
 motion_trajectory : enum('natural','control')
 num_repeats : smallint
@@ -28,7 +27,7 @@ classdef ExperimentProtNaturalMovingObjectV1bp < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'antialias','rstar_mean'};
+		dropped_attributes = {'antialias','rstar_mean','motion_seed'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>

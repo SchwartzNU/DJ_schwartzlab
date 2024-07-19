@@ -2,8 +2,7 @@
 #e parameters for NaturalMovingObject (1) 
 -> sln_symphony.ExperimentEpoch
 ---
-motion_seed : float
-protocol_version : float
+motion_seed : int
 %}
 classdef ExperimentProtNaturalMovingObjectV1ep < sln_symphony.ExperimentProtocol
 	properties
@@ -12,7 +11,7 @@ classdef ExperimentProtNaturalMovingObjectV1ep < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {};
+		dropped_attributes = {'protocol_version'};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
