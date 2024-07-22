@@ -31,7 +31,7 @@ classdef ExperimentProtMovingObjectV1bp < sln_symphony.ExperimentProtocol
 		%attributes to be removed from the key
 		dropped_attributes = {'diameters','diameter',...
 		'directions','offsets','set_diameters','set_offsets',...
-		'set_speeds','speeds'};
+		'set_speeds','speeds','antialias'};
 	end
 	methods
 		function block_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
