@@ -85,8 +85,14 @@ classdef CCEpochStats < dj.Computed
 
                 %spike waveform stuff
                 if ~isempty(spike_times)
+                    ms_for_spike_waveform = 10;
+                    samples_for_spike_waveform = round(thisEpoch_struct.sample_rate*ms_for_spike_waveform/1E3);
+
                     if ~isempty(pre_spikes)
                         isolated_spike_sample = round(thisEpoch_struct.sample_rate*pre_spikes(1));
+                        if isolated_spike_sample <= samples_for_spike_waveform/2
+                            isolated_spike_sample = round(thisEpoch_struct.sample_rate*pre_spikes(2));
+                        end
                     elseif ~isempty(post_spikes)
                         post_spike_time = diff([thisEpoch_struct.pre_time/1E3 + stim_time/1E3, spike_times]);
                         [~, ind] = min(post_spike_time);
@@ -96,8 +102,7 @@ classdef CCEpochStats < dj.Computed
                     end
 
 
-                    ms_for_spike_waveform = 10;
-                    samples_for_spike_waveform = round(thisEpoch_struct.sample_rate*ms_for_spike_waveform/1E3);
+                    
                     waveform = thisEpoch_struct.raw_data(round(isolated_spike_sample-samples_for_spike_waveform/2):...
                         round(isolated_spike_sample+samples_for_spike_waveform/2));
 
@@ -147,8 +152,10 @@ classdef CCEpochStats < dj.Computed
                     up_ind = getThresCross(upstroke,half_max_val,1);
                     up_ind = up_ind(end);
                     down_ind = getThresCross(downstroke,half_max_val,-1);
-                    down_ind = down_ind(1);
-                    key.spike_fwhm = ((middle_ind-up_ind) + down_ind)./thisEpoch_struct.sample_rate.*1E3; %ms
+                    if ~isempty(down_ind)
+                        down_ind = down_ind(1);
+                        key.spike_fwhm = ((middle_ind-up_ind) + down_ind)./thisEpoch_struct.sample_rate.*1E3; %ms
+                    end
                 end
 
                 self.insert(key);
