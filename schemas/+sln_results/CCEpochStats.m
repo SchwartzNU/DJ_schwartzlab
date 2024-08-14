@@ -27,7 +27,6 @@ classdef CCEpochStats < dj.Computed
             sln_symphony.ExperimentElectrode & ...
             'amp_mode="Whole cell" or amp_mode LIKE "Perforated%"' & ...
             'recording_mode="Voltage clamp"' & ...
-            'epoch_id=1725' & ...
             'file_name="081224B"')            %temporary
     end
 
@@ -115,8 +114,9 @@ classdef CCEpochStats < dj.Computed
                     first_deriv_up = diff(upstroke);
                     ms_for_slope_search = 3;
                     samples_for_slope_search = round(thisEpoch_struct.sample_rate*ms_for_slope_search/1E3);
-                    [~, rising_slope_ind] = max(upstroke(end-samples_for_slope_search:end));
-                    key.spike_rising_slope = 1E-3*first_deriv_up(rising_slope_ind).*thisEpoch_struct.sample_rate;
+                    [rising_slope_val, rising_slope_ind] = max(first_deriv_up(end-samples_for_slope_search:end));
+                    rising_slope_ind = rising_slope_ind+length(first_deriv_up)-samples_for_slope_search;
+                    key.spike_rising_slope = 1E-3*rising_slope_val.*thisEpoch_struct.sample_rate;
                     first_deriv_down = diff(downstroke);
                     key.spike_falling_slope = 1E-3*min(first_deriv_down).*thisEpoch_struct.sample_rate;
 
