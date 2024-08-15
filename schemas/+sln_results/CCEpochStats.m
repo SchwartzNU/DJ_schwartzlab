@@ -147,7 +147,7 @@ classdef CCEpochStats < dj.Computed
                     thres_ind = rising_slope_ind-samples_for_thres_search+thres_ind-2; %-2 is for second deriv.
                     key.spike_thres = waveform(thres_ind);
                     key.spike_height = key.spike_max - key.spike_thres;
-                    key.spike_ahp = -(min(downstroke) - key.spike_thres);
+                    key.spike_ahp = -(min(downstroke) - min(upstroke));
                     half_max_val = key.spike_thres + key.spike_height/2;
                     up_ind = getThresCross(upstroke,half_max_val,1);
                     up_ind = up_ind(end);
