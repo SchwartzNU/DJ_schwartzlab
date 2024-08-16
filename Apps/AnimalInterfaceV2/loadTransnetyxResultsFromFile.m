@@ -1,7 +1,7 @@
 function [] = loadTransnetyxResultsFromFile(fname)
 if nargin < 1
     [fname,path] = uigetfile('*.csv','Load .csv file from Transnetyx', ...
-        [getenv('SERVER') filesep 'AnimalLogs' filesep 'Genotyping Results' filesep 'Transnetyx results']);
+        [getenv('SERVER_ROOT') filesep 'AnimalLogs' filesep 'Genotyping Results' filesep 'Transnetyx results']);
 else
     path = [];
 end
