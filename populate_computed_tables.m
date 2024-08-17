@@ -92,15 +92,18 @@ for s=1:N_schemas
                         error_exp = sln_symphony.ExperimentSource * ...
                             proj(sln_symphony.ExperimentRetina,'source_id->retina_id','*') * ...
                             sln_symphony.ExperimentCell & fail_keys(f);
-                        sln_symphony.Experiment * sln_symphony.ExperimentSource * sln_symphony.ExperimentRetina & rmfield(fail_keys(f),'source_id');
-                        cell_name = fetch1(sln_cell.CellName & fail_keys(f),'cell_name');
-                        dataset_name = fail_keys(f).dataset_name;
-                        user = fetch1(error_exp,'experimenter');                        
-                        animal_id = fetch1(error_exp,'animal_id');
+                        if error_exp.exists
+                            sln_symphony.Experiment * sln_symphony.ExperimentSource * sln_symphony.ExperimentRetina & rmfield(fail_keys(f),'source_id');
+                            cell_name = fetch1(sln_cell.CellName & fail_keys(f),'cell_name');
+                            dataset_name = fail_keys(f).dataset_name;
+                            user = fetch1(error_exp,'experimenter');
+                            animal_id = fetch1(error_exp,'animal_id');
+
+                            error_table.DJID(f) = animal_id;
+                            error_table.experimenter(f) = user;
+                        end
                         error_table.cell_name(f) = cell_name;
                         error_table.dataset(f) = dataset_name;
-                        error_table.DJID(f) = animal_id;                        
-                        error_table.experimenter(f) = user;                                               
                     end
                     error_table_dir = [getenv('SERVER_ROOT'), filesep, ...
                         'DJ_computed_logs', filesep, ...
