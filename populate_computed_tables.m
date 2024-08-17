@@ -1,0 +1,100 @@
+function [] = populate_computed_tables(skip_errors, parallel)
+if nargin<2
+    parallel = false;
+end
+if nargin<1
+    skip_errors = true;
+end
+
+run_first = {'sln_results.SpikeDetectCC','sln_funcimage.Alignment'};
+
+%schemas we want to check for computed tables
+%schemas = {'sln_results','sln_funcimage'}; 
+schemas = {'sln_results'};
+
+current_time = datetime;
+time_str = datestr(current_time,'yyyy-mm-dd_HH-MM-SS');
+log_fname = sprintf('%scompute_log_%s.txt', ...
+    [getenv('SERVER_ROOT'), filesep, 'DJ_computed_logs', filesep],time_str);
+
+C = dj.conn;
+fid = fopen(log_fname,'w');
+fprintf(fid,'Beginning computation. Logged in user is %s.\n\n',C.user);
+
+N_schemas = length(schemas);
+for s=1:N_schemas
+    sc_name = schemas{s};    
+    eval(sprintf('s=%s.getSchema;',sc_name))
+    class_names = s.classNames;
+    computed_ind = cellfun(@(c)any(ismember(superclasses(c),'dj.Computed')),class_names);
+    computed_classes = class_names(computed_ind)';
+    N_classes = length(computed_classes);
+    for i=1:length(run_first)
+        ind = find(strcmp(run_first{i},computed_classes));
+        if ~isempty(ind)
+            computed_classes = computed_classes([ind, setdiff(1:N_classes,ind)]);
+        end
+    end
+    fprintf(fid,'Schema %s:\n',sc_name);
+    fprintf(fid,'Computed classes (in order):\n');
+    for i=1:N_classes
+        fprintf(fid,'%s\n',computed_classes{i});
+    end
+    fprintf(fid,'\n');
+    for i=1:N_classes
+        fprintf(fid,'----------------------------------------.\n');
+        fprintf(fid,'Working on %s.\n',computed_classes{i});
+        eval(sprintf('obj=%s;',computed_classes{i}));
+        unpopulated = obj.keySource - obj;
+        unpop_count = unpopulated.count;
+        fprintf(fid,'Found %d unpopulated keys.\n',unpop_count);       
+        restriction = '';
+        N_fail_keys = 0;
+        if skip_errors
+            fail_keys_name = [getenv('SERVER_ROOT'), filesep, ...
+                    'DJ_computed_logs', filesep, ...
+                    'error_keys', filesep, ...
+                    computed_classes{i}, '.mat'];
+            fail_keys = [];
+            if isfile(fail_keys_name)
+                load(fail_keys_name);
+            end
+            if ~isempty(fail_keys)
+                N_fail_keys = length(fail_keys);
+                fprintf(fid,'Skipping %d error entries.\n',N_fail_keys);                
+                restriction = ',obj.keySource-fail_keys';
+            end
+        end
+        if unpop_count > 0 && unpop_count < 1000
+            if parallel
+                fprintf(fid,'Running parpopulate so no error tracking.\n');
+                eval(sprintf('parpopulate(%s%s);',computed_classes{i},restriction));
+                %error tracking does not work with parpopulate
+                %but it does not stop on exceptions
+            else
+                tic;
+                eval(sprintf('[fail_keys, errs] = populate(%s%s);',computed_classes{i},restriction));
+                save([getenv('SERVER_ROOT'), filesep, ...
+                    'DJ_computed_logs', filesep, ...
+                    'error_keys', filesep, ...
+                    computed_classes{i}, '.mat'], 'fail_keys');
+                save([getenv('SERVER_ROOT'), filesep, ...
+                    'DJ_computed_logs', filesep, ...
+                    'exceptions', filesep, ...
+                    computed_classes{i}, '.mat'], 'errs');
+                elapsed = toc;
+                N_err = length(fail_keys);
+                fprintf(fid,'%d entries added. %d errors logged.\n',unpop_count-N_err-N_fail_keys,N_err);
+                fprintf(fid,'Elapsed time = %f seconds (%f seconds per entry).\n',...
+                    elapsed,elapsed./unpop_count);
+            end
+
+            fprintf(fid,'\n');
+        end
+    end
+
+    fprintf(fid,'\n');
+    
+end
+
+fclose(fid);
