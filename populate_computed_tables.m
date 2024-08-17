@@ -89,10 +89,9 @@ for s=1:N_schemas
                         'VariableTypes',{'string','string','uint32','string'}, ...
                         'VariableNames',{'cell_name','dataset','DJID','experimenter'});
                     for f=1:length(fail_keys)
-                        fail_keys(f)
                         error_exp = sln_symphony.ExperimentSource * ...
                             proj(sln_symphony.ExperimentRetina,'source_id->retina_id','*') * ...
-                            sln_symphony.ExperimentCell & s;
+                            sln_symphony.ExperimentCell & fail_keys(f);
                         sln_symphony.Experiment * sln_symphony.ExperimentSource * sln_symphony.ExperimentRetina & rmfield(fail_keys(f),'source_id');
                         cell_name = fetch1(sln_cell.CellName & fail_keys(f),'cell_name');
                         dataset_name = fail_keys(f).dataset_name;
