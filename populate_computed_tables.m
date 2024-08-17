@@ -96,7 +96,7 @@ for s=1:N_schemas
                         animal_id = fetch1(error_exp,'animal_id');
                         error_table.cell_name(f) = cell_name;
                         error_table.dataset(f) = dataset_name;
-                        error_table.animal_id(f) = animal_id;
+                        error_table.DJID(f) = animal_id;
                         error_table.experimenter(f) = user;                                               
                     end
                     error_table_dir = [getenv('SERVER_ROOT'), filesep, ...
