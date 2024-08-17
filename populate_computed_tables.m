@@ -3,7 +3,7 @@ if nargin<2
     parallel = false;
 end
 if nargin<1
-    skip_errors = true;
+    skip_errors = false;
 end
 
 run_first = {'sln_results.SpikeDetectCC','sln_funcimage.Alignment'};
