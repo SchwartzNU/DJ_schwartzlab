@@ -85,7 +85,25 @@ for s=1:N_schemas
                         'DJ_computed_logs', filesep, ...
                         'exceptions', filesep, ...
                         computed_classes{i}, '.mat'], 'errs');
-                    
+                    error_table = table('Size',[N_err,4],...
+                        'VariableTypes',{'string','string','uint32','string'}, ...
+                        'VariableNames',{'cell_name','dataset','DJID','experimenter'});
+                    for f=1:length(fail_keys)
+                        error_exp = sln_symphony.Experiment * sln_symphony.ExperimentSource * sln_symphony.ExperimentRetina & rmfield(fail_keys(f),'source_id');
+                        cell_name = fetch1(sln_cell.CellName & fail_keys(f),'cell_name');
+                        dataset_name = fail_keys(f).dataset_name;
+                        user = fetch1(error_exp,'experimenter');
+                        animal_id = fetch1(error_exp,'animal_id');
+                        error_table.cell_name(f) = cell_name;
+                        error_table.dataset(f) = dataset_name;
+                        error_table.animal_id(f) = animal_id;
+                        error_table.experimenter(f) = user;                                               
+                    end
+                    error_table_dir = [getenv('SERVER_ROOT'), filesep, ...
+                        'DJ_computed_logs', filesep, ...
+                        'error_tables', filesep];
+                    error_table_name = sprintf('%s%s.xls',error_table_dir,strrep(computed_classes{i},'.','_'));
+                    writetable(error_table,error_table_name);
                 end
                 fprintf(fid,'%d entries added. %d errors logged.\n',unpop_count-N_err-N_fail_keys,N_err);
                 fprintf(fid,'Elapsed time = %f seconds (%f seconds per entry).\n',...
