@@ -58,7 +58,7 @@ classdef Alignment < dj.Computed
 
                 if epochs.count ~= length(pulses_up)
                     fprintf('Alignment error: number of alignment pulses (%d) did not match number of epochs (%d). \n', length(pulses_up), epochs.count);
-                    return;
+                    error('Alignment error');
                 end
                 decimal_frames = pulses_up / image_props.height;
                 if pulse_on_stim
