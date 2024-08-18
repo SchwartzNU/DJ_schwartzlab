@@ -101,6 +101,7 @@ classdef Alignment < dj.Computed
             catch ME
                 disp('Alignment insert failed because of error:');
                 disp(ME.message);
+                rethrow(ME);
             end
         end
     end
