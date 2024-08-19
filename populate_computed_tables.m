@@ -97,13 +97,13 @@ for s=1:N_schemas
                             error_table.DJID(f) = fetch1(error_exp,'animal_id');
                             error_table.experimenter(f) = fetch1(error_exp,'experimenter');
                         end
+                        if isfield(fail_keys(f),'dataset_name')
+                            error_table.dataset(f) = fail_keys(f).dataset_name;
+                        elseif isfield(fail_keys(f),'epoch_id')
+                            error_table.dataset(f) = sprintf('epoch_%d',fail_keys(f).epoch_id);
+                        end
+                        error_table.cell_name(f) = fetch1(sln_cell.CellName & fail_keys(f),'cell_name');
                     end
-                    if isfield(fail_keys(f),'dataset_name')
-                        error_table.dataset(f) = fail_keys(f).dataset_name;
-                    elseif isfield(fail_keys(f),'epoch_id')
-                        error_table.dataset(f) = sprintf('epoch_%d',fail_keys(f).epoch_id);
-                    end
-                    error_table.cell_name(f) = fetch1(sln_cell.CellName & fail_keys(f),'cell_name');
 
                     error_table_dir = [getenv('SERVER_ROOT'), filesep, ...
                         'DJ_computed_logs', filesep, ...
