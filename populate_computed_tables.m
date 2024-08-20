@@ -65,7 +65,7 @@ for s=1:N_schemas
                 restriction = ',obj.keySource-fail_keys';
             end
         end
-        if unpop_count > 0 && unpop_count < 1000
+        if unpop_count > 0
             if parallel
                 fprintf(fid,'Running parpopulate so no error tracking.\n');
                 eval(sprintf('parpopulate(%s%s);',computed_classes{i},restriction));
