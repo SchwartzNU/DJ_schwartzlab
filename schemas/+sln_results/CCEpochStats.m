@@ -32,7 +32,6 @@ classdef CCEpochStats < dj.Computed
     methods(Access=protected)
         function makeTuples(self, key)
             try
-
                 thisEpoch = sln_symphony.ExperimentEpochBlock * ...
                     sln_symphony.ExperimentEpochGroup * ...
                     sln_symphony.ExperimentEpochChannel * ...
@@ -49,6 +48,7 @@ classdef CCEpochStats < dj.Computed
                 end
 
                 thisEpoch_struct = fetch(thisEpoch,'*');
+
                 spike_times = [];
                 sp = sln_symphony.SpikeTrain & thisEpoch;
                 if sp.exists
