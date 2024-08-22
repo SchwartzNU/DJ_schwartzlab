@@ -26,7 +26,7 @@ classdef CCEpochStats < dj.Computed
             (sln_symphony.ExperimentEpochBlock * ...
             sln_symphony.ExperimentElectrode & ...
             'amp_mode="Whole cell" or amp_mode LIKE "Perforated%"' & ...
-            'recording_mode="Voltage clamp"'); 
+            'recording_mode="Voltage clamp"');
     end
 
     methods(Access=protected)
@@ -84,76 +84,81 @@ classdef CCEpochStats < dj.Computed
 
                 %spike waveform stuff
                 if ~isempty(spike_times)
+                    waveform = [];
                     ms_for_spike_waveform = 10;
                     samples_for_spike_waveform = round(thisEpoch_struct.sample_rate*ms_for_spike_waveform/1E3);
 
-                    if ~isempty(pre_spikes)
-                        isolated_spike_sample = round(thisEpoch_struct.sample_rate*pre_spikes(1));
-                        if isolated_spike_sample <= samples_for_spike_waveform/2
-                            isolated_spike_sample = round(thisEpoch_struct.sample_rate*pre_spikes(2));
+                    try
+                        if ~isempty(pre_spikes)
+                            isolated_spike_sample = round(thisEpoch_struct.sample_rate*pre_spikes(1));
+                            if isolated_spike_sample <= samples_for_spike_waveform/2
+                                isolated_spike_sample = round(thisEpoch_struct.sample_rate*pre_spikes(2));
+                            end
+                        elseif ~isempty(post_spikes)
+                            post_spike_time = diff([thisEpoch_struct.pre_time/1E3 + stim_time/1E3, spike_times]);
+                            [~, ind] = min(post_spike_time);
+                            isolated_spike_sample = round(thisEpoch_struct.sample_rate*post_spikes(ind));
+                        else
+                            isolated_spike_sample = round(thisEpoch_struct.sample_rate*stim_spikes(1));
                         end
-                    elseif ~isempty(post_spikes)
-                        post_spike_time = diff([thisEpoch_struct.pre_time/1E3 + stim_time/1E3, spike_times]);
-                        [~, ind] = min(post_spike_time);
-                        isolated_spike_sample = round(thisEpoch_struct.sample_rate*post_spikes(ind));
-                    else
-                        isolated_spike_sample = round(thisEpoch_struct.sample_rate*stim_spikes(1));
+                        waveform = thisEpoch_struct.raw_data(round(isolated_spike_sample-samples_for_spike_waveform/2):...
+                            round(isolated_spike_sample+samples_for_spike_waveform/2));
+                    catch
+                        disp('Error finding isolated spike waveform. Stats not computed.')
                     end
+                    if ~isempty(waveform)
 
+                        middle_ind = round(samples_for_spike_waveform/2+1);
 
-                    
-                    waveform = thisEpoch_struct.raw_data(round(isolated_spike_sample-samples_for_spike_waveform/2):...
-                        round(isolated_spike_sample+samples_for_spike_waveform/2));
+                        %plot(waveform);
 
-                    middle_ind = round(samples_for_spike_waveform/2+1);
+                        key.isolated_spike_shape = waveform;
+                        key.spike_max = waveform(middle_ind);
+                        first_deriv = diff(waveform);
+                        second_deriv = diff(first_deriv);
+                        upstroke = waveform(1:middle_ind);
+                        downstroke = waveform(middle_ind+1:end);
+                        first_deriv_up = diff(upstroke);
+                        ms_for_slope_search = 3;
+                        samples_for_slope_search = round(thisEpoch_struct.sample_rate*ms_for_slope_search/1E3);
+                        [rising_slope_val, rising_slope_ind] = max(first_deriv_up(end-samples_for_slope_search:end));
+                        rising_slope_ind = rising_slope_ind+length(first_deriv_up)-samples_for_slope_search;
+                        key.spike_rising_slope = 1E-3*rising_slope_val.*thisEpoch_struct.sample_rate;
+                        first_deriv_down = diff(downstroke);
+                        key.spike_falling_slope = 1E-3*min(first_deriv_down).*thisEpoch_struct.sample_rate;
 
-                    %plot(waveform);
+                        ms_for_thres_search = 3;
+                        samples_for_thres_search = round(thisEpoch_struct.sample_rate*ms_for_thres_search/1E3);
 
-                    key.isolated_spike_shape = waveform;
-                    key.spike_max = waveform(middle_ind);
-                    first_deriv = diff(waveform);
-                    second_deriv = diff(first_deriv);
-                    upstroke = waveform(1:middle_ind);
-                    downstroke = waveform(middle_ind+1:end);
-                    first_deriv_up = diff(upstroke);
-                    ms_for_slope_search = 3;
-                    samples_for_slope_search = round(thisEpoch_struct.sample_rate*ms_for_slope_search/1E3);
-                    [rising_slope_val, rising_slope_ind] = max(first_deriv_up(end-samples_for_slope_search:end));
-                    rising_slope_ind = rising_slope_ind+length(first_deriv_up)-samples_for_slope_search;
-                    key.spike_rising_slope = 1E-3*rising_slope_val.*thisEpoch_struct.sample_rate;
-                    first_deriv_down = diff(downstroke);
-                    key.spike_falling_slope = 1E-3*min(first_deriv_down).*thisEpoch_struct.sample_rate;
-
-                    ms_for_thres_search = 3;
-                    samples_for_thres_search = round(thisEpoch_struct.sample_rate*ms_for_thres_search/1E3);
-
-                    thres_search_part = rising_slope_ind - samples_for_thres_search:rising_slope_ind;
-                    %find where second derivative crosses 3 std
-                    thres_val = 3*std(second_deriv(thres_search_part));
-                    thres_ind = getThresCross(second_deriv(thres_search_part),thres_val,1);
-                    if ~isempty(thres_ind)
-                        thres_ind = thres_ind(1);
-                    else
-                        thres_val = 2*std(second_deriv(thres_search_part));
+                        thres_search_part = rising_slope_ind - samples_for_thres_search:rising_slope_ind;
+                        %find where second derivative crosses 3 std
+                        thres_val = 3*std(second_deriv(thres_search_part));
                         thres_ind = getThresCross(second_deriv(thres_search_part),thres_val,1);
                         if ~isempty(thres_ind)
                             thres_ind = thres_ind(1);
+                        else
+                            thres_val = 2*std(second_deriv(thres_search_part));
+                            thres_ind = getThresCross(second_deriv(thres_search_part),thres_val,1);
+                            if ~isempty(thres_ind)
+                                thres_ind = thres_ind(1);
+                            end
                         end
-                    end
-                    if isempty(thres_ind)
-                        error('Spike threshold detection error');
-                    end
-                    thres_ind = rising_slope_ind-samples_for_thres_search+thres_ind-2; %-2 is for second deriv.
-                    key.spike_thres = waveform(thres_ind);
-                    key.spike_height = key.spike_max - key.spike_thres;
-                    key.spike_ahp = -(min(downstroke) - min(upstroke));
-                    half_max_val = key.spike_thres + key.spike_height/2;
-                    up_ind = getThresCross(upstroke,half_max_val,1);
-                    up_ind = up_ind(end);
-                    down_ind = getThresCross(downstroke,half_max_val,-1);
-                    if ~isempty(down_ind)
-                        down_ind = down_ind(1);
-                        key.spike_fwhm = ((middle_ind-up_ind) + down_ind)./thisEpoch_struct.sample_rate.*1E3; %ms
+                        if isempty(thres_ind)
+                            disp('Spike threshold detection error: spike stats not recorded');
+                        else
+                            thres_ind = rising_slope_ind-samples_for_thres_search+thres_ind-2; %-2 is for second deriv.
+                            key.spike_thres = waveform(thres_ind);
+                            key.spike_height = key.spike_max - key.spike_thres;
+                            key.spike_ahp = -(min(downstroke) - min(upstroke));
+                            half_max_val = key.spike_thres + key.spike_height/2;
+                            up_ind = getThresCross(upstroke,half_max_val,1);
+                            up_ind = up_ind(end);
+                            down_ind = getThresCross(downstroke,half_max_val,-1);
+                            if ~isempty(down_ind)
+                                down_ind = down_ind(1);
+                                key.spike_fwhm = ((middle_ind-up_ind) + down_ind)./thisEpoch_struct.sample_rate.*1E3; %ms
+                            end
+                        end
                     end
                 end
 
