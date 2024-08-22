@@ -43,6 +43,7 @@ classdef CCEpochStats < dj.Computed
                         aka.BlockParams(sqlProtName2ProtName(prot_name));
                 elseif contains(prot_name,'random_motion') || ...
                         contains(prot_name,'offset_moving_bar') || ...
+                        contains(prot_name,'object_motion_sensitivity') || ...
                         contains(prot_name,'spot_field') %error joining epoch and block params
                      thisEpoch =  thisEpoch * ...
                         aka.BlockParams(sqlProtName2ProtName(prot_name));
@@ -53,6 +54,12 @@ classdef CCEpochStats < dj.Computed
                 end
 
                 thisEpoch_struct = fetch(thisEpoch,'*');
+
+                %HACK: 100 ms pre_time if there is none
+                if thisEpoch_struct.pre_time == 0 
+                    thisEpoch_struct.pre_time = 100;
+                    thisEpoch_struct.stim_time = thisEpoch_struct.stim_time - 100;
+                end                  
 
                 spike_times = [];
                 sp = sln_symphony.SpikeTrain & thisEpoch;
