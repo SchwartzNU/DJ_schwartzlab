@@ -133,20 +133,25 @@ classdef CCEpochStats < dj.Computed
                         key.spike_falling_slope = 1E-3*min(first_deriv_down).*thisEpoch_struct.sample_rate;
 
                         ms_for_thres_search = 3;
-                        samples_for_thres_search = round(thisEpoch_struct.sample_rate*ms_for_thres_search/1E3);
+                        thres_ind = [];
+                        try
+                            samples_for_thres_search = round(thisEpoch_struct.sample_rate*ms_for_thres_search/1E3);
 
-                        thres_search_part = rising_slope_ind - samples_for_thres_search:rising_slope_ind;
-                        %find where second derivative crosses 3 std
-                        thres_val = 3*std(second_deriv(thres_search_part));
-                        thres_ind = getThresCross(second_deriv(thres_search_part),thres_val,1);
-                        if ~isempty(thres_ind)
-                            thres_ind = thres_ind(1);
-                        else
-                            thres_val = 2*std(second_deriv(thres_search_part));
+                            thres_search_part = rising_slope_ind - samples_for_thres_search:rising_slope_ind;
+                            %find where second derivative crosses 3 std
+                            thres_val = 3*std(second_deriv(thres_search_part));
                             thres_ind = getThresCross(second_deriv(thres_search_part),thres_val,1);
                             if ~isempty(thres_ind)
                                 thres_ind = thres_ind(1);
+                            else
+                                thres_val = 2*std(second_deriv(thres_search_part));
+                                thres_ind = getThresCross(second_deriv(thres_search_part),thres_val,1);
+                                if ~isempty(thres_ind)
+                                    thres_ind = thres_ind(1);
+                                end
                             end
+                        catch
+                            disp('Spike threshold detection error: spike stats not recorded');
                         end
                         if isempty(thres_ind)
                             disp('Spike threshold detection error: spike stats not recorded');
