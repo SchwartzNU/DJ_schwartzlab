@@ -39,9 +39,14 @@ classdef CCEpochStats < dj.Computed
                     sln_symphony.ExperimentChannel & key;
 
                 prot_name = fetch1(thisEpoch,'protocol_name');
-                thisEpoch =  thisEpoch * ...
-                    aka.BlockParams(sqlProtName2ProtName(prot_name)) * ...
-                    aka.EpochParams(sqlProtName2ProtName(prot_name));
+                if contains(prot_name,'dynamic_clamp') %%no idea why this is happening. hacked around it
+                    thisEpoch =  thisEpoch * ...
+                        aka.BlockParams(sqlProtName2ProtName(prot_name));
+                else
+                    thisEpoch =  thisEpoch * ...
+                        aka.BlockParams(sqlProtName2ProtName(prot_name)) * ...
+                        aka.EpochParams(sqlProtName2ProtName(prot_name));
+                end
 
                 thisEpoch_struct = fetch(thisEpoch,'*');
                 spike_times = [];
