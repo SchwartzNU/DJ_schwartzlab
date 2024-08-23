@@ -53,8 +53,11 @@ classdef CCEpochStats < dj.Computed
                         aka.EpochParams(sqlProtName2ProtName(prot_name));
                 end
 
+                if ~thisEpoch.exists
+                    error('Epoch query error');
+                end
                 thisEpoch_struct = fetch(thisEpoch,'*');
-
+                
                 %HACK: 100 ms pre_time if there is none
                 if thisEpoch_struct.pre_time == 0 
                     thisEpoch_struct.pre_time = 100;
