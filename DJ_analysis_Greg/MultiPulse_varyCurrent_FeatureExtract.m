@@ -170,16 +170,19 @@ for d=1:N_datasets
         if resting_Vm_range > 5
             warning('Resting Membrane Potential fluctuates within trial %d', trial)
         end
-        %resistance fit
-        stable_Vm = mean(hyper_Vm(floor(mean([start_time,end_time])):end_time,:));
-        R_linear = fitlm(hyper_current_level_pA, stable_Vm');
         
-        resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
-        resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
-        if R_linear.Rsquared.Adjusted < 0.90
-            warning('Resistance fit of trial %d is bad. Check if Ih kicked in!', trial)
+        if ~onlyPos
+            %resistance fit
+            stable_Vm = mean(hyper_Vm(floor(mean([start_time,end_time])):end_time,:));
+            R_linear = fitlm(hyper_current_level_pA, stable_Vm');
+
+            resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
+            resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
+            if R_linear.Rsquared.Adjusted < 0.90
+                warning('Resistance fit of trial %d is bad. Check if Ih kicked in!', trial)
+            end
         end
-        
+
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
 
@@ -220,6 +223,7 @@ for d=1:N_datasets
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
         
         %% Sag
+        sag_amplitude = nan;
         if ~onlyPos
             [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
             plateau_value = hyper_Vm(stim_samples + pre_samples,I);
