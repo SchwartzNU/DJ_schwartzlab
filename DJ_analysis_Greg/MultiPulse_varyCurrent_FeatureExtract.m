@@ -393,36 +393,42 @@ for d=1:N_datasets
         else
             blocked_current_level = depol_current_level_pA(blocked_epoch(1));
         end
-        
-        [max_number_of_spikes(trial), epoch_max_loc] = max(spike_numbers);
-        current_where_max_spikes(trial) = depol_current_level_pA(epoch_max_loc);
-        max_latency_of_spike(trial) = max(latency_to_first_spike);
-        max_adaptation_index(trial) = max(adaptation_index);
-        max_ISI_CV(trial) = max(ISI_cv);
-        first_current_level_to_block(trial) = blocked_current_level;
-        max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
-        ISI_CV_at_max_spikes = ISI_cv(epoch_max_loc);
-        spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
-        
-        horizontal_line_half_max_x = 0:1:depol_current_level_pA(epoch_max_loc);
-        horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
-        
-        [xi, yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
-            horizontal_line_half_max_x, horizontal_line_half_max_y);
-        
-        if ~isempty(xi) || ~isempty(yi)
-            
-            half_max_spike_number(trial) = yi(1);
-            half_max_spike_current(trial) = xi(1);
-        else
-            half_max_spike_current(trial) = NaN;
-            half_max_spike_number(trial) = NaN;
+
+        ISI_CV_at_max_spikes = nan;
+        spike_number_at_0_pA = 0;
+        horizontal_line_half_max_x = nan;
+        horizontal_line_half_max_y = nan;
+        if ~isempty(spike_numbers)
+            [max_number_of_spikes(trial), epoch_max_loc] = max(spike_numbers);
+            current_where_max_spikes(trial) = depol_current_level_pA(epoch_max_loc);
+            max_latency_of_spike(trial) = max(latency_to_first_spike);
+            max_adaptation_index(trial) = max(adaptation_index);
+            max_ISI_CV(trial) = max(ISI_cv);
+            first_current_level_to_block(trial) = blocked_current_level;
+            max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
+            ISI_CV_at_max_spikes = ISI_cv(epoch_max_loc);
+            spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
+
+            horizontal_line_half_max_x = 0:1:depol_current_level_pA(epoch_max_loc);
+            horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
+
+            [xi, yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
+                horizontal_line_half_max_x, horizontal_line_half_max_y);
+
+            if ~isempty(xi) || ~isempty(yi)
+
+                half_max_spike_number(trial) = yi(1);
+                half_max_spike_current(trial) = xi(1);
+            else
+                half_max_spike_current(trial) = NaN;
+                half_max_spike_number(trial) = NaN;
+            end
+
+            Nspike_max_vs_last_epoch_ratio(trial) = spike_numbers(end) / max_number_of_spikes(trial);
+            max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:))) - resting_Vm(trial);
+            max_63_percent_decay_time(trial) = max(decay_to_63_percent);
+            min_63_percent_decay_time(trial) = min(decay_to_63_percent);
         end
-        
-        Nspike_max_vs_last_epoch_ratio(trial) = spike_numbers(end) / max_number_of_spikes(trial);
-        max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:))) - resting_Vm(trial);
-        max_63_percent_decay_time(trial) = max(decay_to_63_percent);
-        min_63_percent_decay_time(trial) = min(decay_to_63_percent);
     end % Feature Extraction end. Don't paste things outside of this loop.
     
     
