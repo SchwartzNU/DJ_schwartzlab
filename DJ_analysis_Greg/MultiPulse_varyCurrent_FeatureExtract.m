@@ -157,8 +157,16 @@ for d=1:N_datasets
         %plot(hyper_Vm);
         %plot(depol_Vm);
 
-        resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
-        resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+        if onlyNeg
+            resting_Vm(trial) = mean(mean(hyper_Vm(1:start_time, :)));
+            resting_Vm_range(trial) = range(mean(hyper_Vm(1:start_time, :)));
+        elseif onlyPos
+           resting_Vm(trial) = mean(mean(depol_Vm(1:start_time, :)));
+            resting_Vm_range(trial) = range(mean(depol_Vm(1:start_time, :)));
+        else
+            resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+            resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+        end
         if resting_Vm_range > 5
             warning('Resting Membrane Potential fluctuates within trial %d', trial)
         end
