@@ -31,6 +31,14 @@ for d=1:N_datasets
     
     all_currents = [epochs_in_dataset.pulse_1_curr];
     currents  = sort(unique(all_currents));
+    onlyPos = false;
+    onlyNeg = false;
+    if min(currents)>0 
+        onlyPos = true;
+    elseif max(currents)<0
+        onlyNeg = true;
+    end
+
     N_currents = length(currents);
     
     N_epochs_per_current = zeros(N_currents,1);
@@ -64,8 +72,7 @@ for d=1:N_datasets
         mean_traces(s,:) = trace;
         example_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
         
-        for j = 1:number_of_trials
-            
+        for j = 1:number_of_trials            
             all_traces{s, j} = [epochs_in_dataset(ind(j)).raw_data];
         end
         
@@ -205,22 +212,31 @@ for d=1:N_datasets
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
         
         %% Sag
-        [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
-        plateau_value = hyper_Vm(stim_samples + pre_samples,I);
-        peak_value = min(hyper_Vm(:,I)); %peak value
-        sag_amplitude = plateau_value - peak_value
+        if ~onlyPos
+            [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
+            plateau_value = hyper_Vm(stim_samples + pre_samples,I);
+            peak_value = min(hyper_Vm(:,I)); %peak value
+            sag_amplitude = plateau_value - peak_value;
+        end
         %min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
         %fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
         %sag_array(trial) = table2array(fit_sag_peak_vs_stable.Coefficients(2,1));
 
         %% Max Depol Overshoot
-        depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
+        depol_overshoot = nan;
+        if ~onlyNeg
+            try
+            depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
 
-        for i=1:length(depol_epoch_greater_than_minus50)
-            [M,I] = max(depol_Vm(:,depol_current_level_pA > -50));
-            stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50);
-            depol_overshoot = M - stable_Vm_depol; 
-            max_depol_overshoot = max(depol_overshoot);
+            for i=1:length(depol_epoch_greater_than_minus50)
+                [M,I] = max(depol_Vm(:,depol_current_level_pA > -50));
+                stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50);
+                depol_overshoot = M - stable_Vm_depol;
+                %max_depol_overshoot = max(depol_overshoot);
+            end
+            catch
+                disp('Error calculating max. depolarizing overshoot');
+            end
         end
 
         %% Does it spike spontaneously
