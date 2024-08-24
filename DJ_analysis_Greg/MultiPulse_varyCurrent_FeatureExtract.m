@@ -185,7 +185,7 @@ for d=1:N_datasets
 
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
-
+        
         ft = fittype("a + b*exp(-x*c)", 'independent', 'x'); %One parameter exp fit with asymt to Vinf
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
          
