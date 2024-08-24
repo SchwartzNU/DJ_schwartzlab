@@ -33,9 +33,9 @@ for d=1:N_datasets
     currents  = sort(unique(all_currents));
     onlyPos = false;
     onlyNeg = false;
-    if min(currents)>0 
+    if min(currents)>=0 
         onlyPos = true;
-    elseif max(currents)<0
+    elseif max(currents)<=0
         onlyNeg = true;
     end
 
