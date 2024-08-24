@@ -68,8 +68,12 @@ for d=1:N_datasets
     for s=1:N_currents
         ind = find(all_currents == currents(s));
         N_epochs_per_current(s) = length(ind);
-        trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
-        mean_traces(s,:) = trace;
+        if N_epochs_per_current(s)>1
+            trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
+            mean_traces(s,:) = trace;
+        else
+            mean_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
+        end
         example_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
         
         for j = 1:number_of_trials            
