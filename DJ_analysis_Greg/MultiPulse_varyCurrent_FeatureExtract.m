@@ -144,7 +144,7 @@ for d=1:N_datasets
     resting_Vm_range = nan(number_of_trials, 1);
 
     warning('off', 'signal:findpeaks:largeMinPeakHeight')
-    warning('off', 'backtrace') %IMPORTANT: TURN THIS OFF TO DEBUG AND BACKTRACE!!!!
+    %warning('off', 'backtrace') %IMPORTANT: TURN THIS OFF TO DEBUG AND BACKTRACE!!!!
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
