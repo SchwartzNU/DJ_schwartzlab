@@ -205,14 +205,18 @@ for d=1:N_datasets
             %xval = [time_in_s(start_time:end_time)]';
             %yval = hyper_Vm(start_time:end_time, hyper_epoch_less_than_minus50(i));
             %plot(time_in_s,hyper_Vm(:,hyper_epoch_less_than_minus50(i)))%
-            [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
-            tau_array(i) =  f.c;
-            
+            try
+                [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
+                tau_array(i) =  f.c;
+            catch
+                disp('tau fit error');
+                tau_array(i) =  nan;
+            end           
         end
         
         
         %Return tau
-        
+        tau_array = tau_array(~isnan(tau_array));
         B = rmoutliers(tau_array,"median");
         B = B(B>=0);
         tau_array_ms(trial) = mean(1./B)*1000;
