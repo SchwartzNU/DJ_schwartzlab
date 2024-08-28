@@ -13,14 +13,19 @@ try
     load(sprintf('%sarborData.mat',cell_dir), 'appdata');
 
     f = figure;
+    %skeleton tracing on face
     subplot(2,2,1);
-    scatter(appdata.nodes_flattened(:,1),appdata.nodes_flattened(:,2),'ko','filled');
+    scatter(appdata.nodes_flattened(:,1),appdata.nodes_flattened(:,2),1, '.', c = 'black');
     axis('equal');
     xlabel('X (µm)')
     ylabel('Y (µm)')
+    
+    %image max Z stack projection
     subplot(2,2,2);
     imagesc(flipud(proj_image));
     colormap('gray');
+
+    %side view
     subplot(2,2,3);
     hold('on');
     scatter(appdata.nodes_flattened(:,1),appdata.nodes_flattened(:,3),'ko','filled')
@@ -30,6 +35,8 @@ try
     ylabel('Depth (µm)')
     ylim([0, appdata.upper_surface_z * 1.5])
     hold('off');
+
+    %normalized dendritic density
     subplot(2,2,4);
     hold('on');
     plot(appdata.strat_x,appdata.strat_y_norm,'k-','LineWidth',2);
@@ -41,7 +48,7 @@ try
     hold('off');
 
     if save_plot
-        saveas(f,sprintf('%smorph_summary.png',cell_dir));
+        saveas(f,sprintf('%smorph_summary.svg',cell_dir));
         close(f);
     end
 catch ME
