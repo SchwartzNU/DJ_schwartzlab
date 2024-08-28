@@ -35,6 +35,7 @@ classdef MultiPulseFeatureExtractRunner < dj.Computed
                     self.insert(key);
                 catch ME
                     disp(ME.message);
+                    rethrow(ME);
                 end
             end
         end
