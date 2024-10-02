@@ -69,20 +69,20 @@ for i=1:L
         if ~isnan(Tpart.Length_um(c))
             key.cell_length = Tpart.Length_um(c);
         end
-        if ~isnan(Tpart.GluT1_Top_Surface_Integral(c))
-            key.glut1_top_surf = Tpart.GluT1_Top_Surface_Integral(c);
+        if ~isnan(Tpart.GluT1_Top_Integral(c))
+            key.glut1_top_surf = Tpart.GluT1_Top_Integral(c);
         end
-        if ~isnan(Tpart.GluT1_Bot_Surface_Integral(c))
-            key.glut1_bot_surf = Tpart.GluT1_Bot_Surface_Integral(c);
+        if ~isnan(Tpart.GluT1_Bottom_Integral(c))
+            key.glut1_bot_surf = Tpart.GluT1_Bottom_Integral(c);
         end
         if ~isnan(Tpart.GluT1_Middle_Integral(c))
             key.glut1_mid = Tpart.GluT1_Middle_Integral(c);
         end
-        if ~isnan(Tpart.WGA_Top_Surface_Integral(c))
-            key.membrane_top_surf = Tpart.WGA_Top_Surface_Integral(c);
+        if ~isnan(Tpart.WGA_Top_Integral(c))
+            key.membrane_top_surf = Tpart.WGA_Top_Integral(c);
         end
-        if ~isnan(Tpart.WGA_Bot_Surface_Integral(c))
-            key.membrane_bot_surf = Tpart.WGA_Bot_Surface_Integral(c);
+        if ~isnan(Tpart.WGA_Bottom_Integral(c))
+            key.membrane_bot_surf = Tpart.WGA_Bottom_Integral(c);
         end
         if ~isnan(Tpart.WGA_Middle_Integral(c))
             key.membrane_mid = Tpart.WGA_Middle_Integral(c);

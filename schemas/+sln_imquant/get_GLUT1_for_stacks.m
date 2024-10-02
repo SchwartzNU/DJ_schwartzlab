@@ -1,4 +1,4 @@
-function conditions_table = plot_GLUT1_for_stacks(stack_query,vars,label_vars)
+function conditions_table = get_GLUT1_for_stacks(stack_query,vars,label_vars)
 %vars is a cell array of variable names on which to split 
 %label vars is a cell array of variable names to list (for marking points)
 %but not use to split
