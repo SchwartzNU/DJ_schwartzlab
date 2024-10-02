@@ -1,4 +1,7 @@
-function [] = loadGLUT1csv(fname, drug_cond)
+function [] = loadGLUT1csv(fname, drug_cond, in_vivo_flag)
+if nargin < 3
+    in_vivo_flag = false;
+end
 if nargin < 2
     drug_cond = '';
 end
@@ -18,10 +21,18 @@ for i=1:L
     %stuff for whole stack extracted from first cell
     stack_key.animal_id = Tpart.DJID(1);
     stack_key.age_at_exp = Tpart.Age_Months(1);
-    if strcmp(Tpart.Experimental_Condition{1},'Light Flicker')
-        stack_key.light_condition_name = 'checkerboard flicker';
+    if in_vivo_flag
+        if strcmp(Tpart.Experimental_Condition{1},'Light Flicker')
+            stack_key.light_condition_name = 'in vivo full-field flicker';
+        else
+            stack_key.light_condition_name = 'in vivo eye sutured';
+        end
     else
-        stack_key.light_condition_name = 'dark';
+        if strcmp(Tpart.Experimental_Condition{1},'Light Flicker')
+            stack_key.light_condition_name = 'checkerboard flicker';
+        else
+            stack_key.light_condition_name = 'dark';
+        end
     end
     if startsWith(Tpart.Eye{1},'L')
         stack_key.side = 'Left';
