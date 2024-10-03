@@ -46,7 +46,13 @@ for i=1:L
     end
     stack_key.stim_on_time = Tpart.Time_Condition(1);
 
-    insert(sln_imquant.GLUT1Stack,stack_key);
+    try
+        insert(sln_imquant.GLUT1Stack,stack_key);
+    catch
+        %HACK for duplicate file names
+        stack_key.image_fname = [stack_key.image_fname '_duplicate'];
+        insert(sln_imquant.GLUT1Stack,stack_key);
+    end
     fprintf('%s stack inserted\n', cur_fname);
 
     %load each cell
