@@ -33,7 +33,6 @@ sp = [sp{:}]; %concatenate all spikes together
 
 bins = 0:binSize:duration;
 
-
 if isempty(sp)
     spCount = zeros(1,length(bins));
 else

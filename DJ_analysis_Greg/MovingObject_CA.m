@@ -116,22 +116,24 @@ for d=1:N_datasets
             ind = find(all_speeds == speeds(s) & all_directions == directions(dir));
 
             N_epochs_per_condition(c) = length(ind);
-            ep = epochs_in_dataset & ep_ids(ind);
-            sample_ep = fetch(epochs_in_dataset & ep_ids(ind(1)), '*');
-            duration_ms(c) = double(sample_ep.epoch_duration);
-            center_time_ms(c) = duration_ms(c) / 2 + double(sample_ep.center_time_shift);
+            if N_epochs_per_condition(c) > 0
+                ep = epochs_in_dataset & ep_ids(ind);
+                sample_ep = fetch(epochs_in_dataset & ep_ids(ind(1)), '*');
+                duration_ms(c) = double(sample_ep.epoch_duration);
+                center_time_ms(c) = duration_ms(c) / 2 + double(sample_ep.center_time_shift);
 
-            [psth_x, psth_y] = psth_for_epochs(ep,bin_size);
-            [peak_rate, ind] = max(psth_y);
-            peak_firing_rate(c) = peak_rate;
-            peak_firing_time(c) = psth_x(ind);
+                [psth_x, psth_y] = psth_for_epochs(ep,bin_size);
+                [peak_rate, ind] = max(psth_y);
+                peak_firing_rate(c) = peak_rate;
+                peak_firing_time(c) = psth_x(ind);
 
-            psth_x_from_center = psth_x - (center_time_ms(c) / 1E3);
-            peak_firing_time_from_center(c) = psth_x_from_center(ind);
+                psth_x_from_center = psth_x - (center_time_ms(c) / 1E3);
+                peak_firing_time_from_center(c) = psth_x_from_center(ind);
 
-            psth_x_by_condition.(condition_name_x) = psth_x;
-            psth_y_by_condition.(condition_name_y) = psth_y;   
-            psth_x_from_center_by_condition.(condition_name_x_centered) = psth_x_from_center;
+                psth_x_by_condition.(condition_name_x) = psth_x;
+                psth_y_by_condition.(condition_name_y) = psth_y;
+                psth_x_from_center_by_condition.(condition_name_x_centered) = psth_x_from_center;
+            end
             c=c+1;
         end
     end

@@ -31,6 +31,14 @@ for d=1:N_datasets
     
     all_currents = [epochs_in_dataset.pulse_1_curr];
     currents  = sort(unique(all_currents));
+    onlyPos = false;
+    onlyNeg = false;
+    if min(currents)>=0 
+        onlyPos = true;
+    elseif max(currents)<=0
+        onlyNeg = true;
+    end
+
     N_currents = length(currents);
     
     N_epochs_per_current = zeros(N_currents,1);
@@ -60,12 +68,15 @@ for d=1:N_datasets
     for s=1:N_currents
         ind = find(all_currents == currents(s));
         N_epochs_per_current(s) = length(ind);
-        trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
-        mean_traces(s,:) = trace;
+        if N_epochs_per_current(s)>1
+            trace = mean(reshape([epochs_in_dataset(ind).raw_data], [], length(ind)), 2)';
+            mean_traces(s,:) = trace;
+        else
+            mean_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
+        end
         example_traces(s,:) = epochs_in_dataset(ind(1)).raw_data;
         
-        for j = 1:number_of_trials
-            
+        for j = 1:number_of_trials            
             all_traces{s, j} = [epochs_in_dataset(ind(j)).raw_data];
         end
         
@@ -137,7 +148,7 @@ for d=1:N_datasets
     resting_Vm_range = nan(number_of_trials, 1);
 
     warning('off', 'signal:findpeaks:largeMinPeakHeight')
-    warning('off', 'backtrace') %IMPORTANT: TURN THIS OFF TO DEBUG AND BACKTRACE!!!!
+    %warning('off', 'backtrace') %IMPORTANT: TURN THIS OFF TO DEBUG AND BACKTRACE!!!!
     %start of the FE loop
     for trial = 1:number_of_trials
         %get voltage trace into matrix of time x current
@@ -150,24 +161,35 @@ for d=1:N_datasets
         %plot(hyper_Vm);
         %plot(depol_Vm);
 
-        resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
-        resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+        if onlyNeg
+            resting_Vm(trial) = mean(mean(hyper_Vm(1:start_time, :)));
+            resting_Vm_range(trial) = range(mean(hyper_Vm(1:start_time, :)));
+        elseif onlyPos
+           resting_Vm(trial) = mean(mean(depol_Vm(1:start_time, :)));
+            resting_Vm_range(trial) = range(mean(depol_Vm(1:start_time, :)));
+        else
+            resting_Vm(trial) = mean([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+            resting_Vm_range(trial) = range([mean(hyper_Vm(1:start_time, :)) mean(depol_Vm(1:start_time, :))]);
+        end
         if resting_Vm_range > 5
             warning('Resting Membrane Potential fluctuates within trial %d', trial)
         end
-        %resistance fit
-        stable_Vm = mean(hyper_Vm(floor(mean([start_time,end_time])):end_time,:));
-        R_linear = fitlm(hyper_current_level_pA, stable_Vm');
         
-        resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
-        resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
-        if R_linear.Rsquared.Adjusted < 0.90
-            warning('Resistance fit of trial %d is bad. Check if Ih kicked in!', trial)
+        if ~onlyPos
+            %resistance fit
+            stable_Vm = mean(hyper_Vm(floor(mean([start_time,end_time])):end_time,:));
+            R_linear = fitlm(hyper_current_level_pA, stable_Vm');
+
+            resistance_array_MOhm(trial) = R_linear.Coefficients.Estimate('x1') * 1000; % V/I = mV/pA = 10^9(Giga) => Convert to 10^6 (Mega)Ohm
+            resistance_Adjusted_RSquare(trial) = R_linear.Rsquared.Adjusted;
+            if R_linear.Rsquared.Adjusted < 0.90
+                warning('Resistance fit of trial %d is bad. Check if Ih kicked in!', trial)
+            end
         end
-        
+
         % Calculate Tau (ms)
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
-
+        
         ft = fittype("a + b*exp(-x*c)", 'independent', 'x'); %One parameter exp fit with asymt to Vinf
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
          
@@ -187,14 +209,18 @@ for d=1:N_datasets
             %xval = [time_in_s(start_time:end_time)]';
             %yval = hyper_Vm(start_time:end_time, hyper_epoch_less_than_minus50(i));
             %plot(time_in_s,hyper_Vm(:,hyper_epoch_less_than_minus50(i)))%
-            [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
-            tau_array(i) =  f.c;
-            
+            try
+                [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
+                tau_array(i) =  f.c;
+            catch
+                disp('tau fit error');
+                tau_array(i) =  nan;
+            end           
         end
         
         
         %Return tau
-        
+        tau_array = tau_array(~isnan(tau_array));
         B = rmoutliers(tau_array,"median");
         B = B(B>=0);
         tau_array_ms(trial) = mean(1./B)*1000;
@@ -205,22 +231,32 @@ for d=1:N_datasets
         capacitance_array_pF(trial) = tau_array_ms(trial) / resistance_array_MOhm(trial) * 100;
         
         %% Sag
-        [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
-        plateau_value = hyper_Vm(stim_samples + pre_samples,I);
-        peak_value = min(hyper_Vm(:,I)); %peak value
-        sag_amplitude = plateau_value - peak_value
+        sag_amplitude = nan;
+        if ~onlyPos
+            [M,I]= min(abs(-80-hyper_Vm(stim_samples + pre_samples,:)));
+            plateau_value = hyper_Vm(stim_samples + pre_samples,I);
+            peak_value = min(hyper_Vm(:,I)); %peak value
+            sag_amplitude = plateau_value - peak_value;
+        end
         %min_Vm = min(hyper_Vm(:,hyper_current_level_pA <= -50), [], 1);
         %fit_sag_peak_vs_stable = fitlm(min_Vm, stable_Vm(hyper_current_level_pA <= -50));
         %sag_array(trial) = table2array(fit_sag_peak_vs_stable.Coefficients(2,1));
 
         %% Max Depol Overshoot
-        depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
+        depol_overshoot = nan;
+        if ~onlyNeg
+            try
+            depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
 
-        for i=1:length(depol_epoch_greater_than_minus50)
-            [M,I] = max(depol_Vm(:,depol_current_level_pA > -50));
-            stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50);
-            depol_overshoot = M - stable_Vm_depol; 
-            max_depol_overshoot = max(depol_overshoot);
+            for i=1:length(depol_epoch_greater_than_minus50)
+                [M,I] = max(depol_Vm(:,depol_current_level_pA > -50));
+                stable_Vm_depol = depol_Vm(tail_samples-5000, depol_current_level_pA > -50);
+                depol_overshoot = M - stable_Vm_depol;
+                %max_depol_overshoot = max(depol_overshoot);
+            end
+            catch
+                disp('Error calculating max. depolarizing overshoot');
+            end
         end
 
         %% Does it spike spontaneously
@@ -369,36 +405,42 @@ for d=1:N_datasets
         else
             blocked_current_level = depol_current_level_pA(blocked_epoch(1));
         end
-        
-        [max_number_of_spikes(trial), epoch_max_loc] = max(spike_numbers);
-        current_where_max_spikes(trial) = depol_current_level_pA(epoch_max_loc);
-        max_latency_of_spike(trial) = max(latency_to_first_spike);
-        max_adaptation_index(trial) = max(adaptation_index);
-        max_ISI_CV(trial) = max(ISI_cv);
-        first_current_level_to_block(trial) = blocked_current_level;
-        max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
-        ISI_CV_at_max_spikes = ISI_cv(epoch_max_loc);
-        spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
-        
-        horizontal_line_half_max_x = 0:1:depol_current_level_pA(epoch_max_loc);
-        horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
-        
-        [xi, yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
-            horizontal_line_half_max_x, horizontal_line_half_max_y);
-        
-        if ~isempty(xi) || ~isempty(yi)
-            
-            half_max_spike_number(trial) = yi(1);
-            half_max_spike_current(trial) = xi(1);
-        else
-            half_max_spike_current(trial) = NaN;
-            half_max_spike_number(trial) = NaN;
+
+        ISI_CV_at_max_spikes = nan;
+        spike_number_at_0_pA = 0;
+        horizontal_line_half_max_x = nan;
+        horizontal_line_half_max_y = nan;
+        if ~isempty(spike_numbers)
+            [max_number_of_spikes(trial), epoch_max_loc] = max(spike_numbers);
+            current_where_max_spikes(trial) = depol_current_level_pA(epoch_max_loc);
+            max_latency_of_spike(trial) = max(latency_to_first_spike);
+            max_adaptation_index(trial) = max(adaptation_index);
+            max_ISI_CV(trial) = max(ISI_cv);
+            first_current_level_to_block(trial) = blocked_current_level;
+            max_slope_array_mV(trial) = max(Vm_diff_2) * sample_rate / 1e3;
+            ISI_CV_at_max_spikes = ISI_cv(epoch_max_loc);
+            spike_number_at_0_pA = spontaneous_firing_rate_Hz(trial) * pre_stim_tail.stim_time / 1E3;
+
+            horizontal_line_half_max_x = 0:1:depol_current_level_pA(epoch_max_loc);
+            horizontal_line_half_max_y = repelem((max_number_of_spikes(trial) + spike_number_at_0_pA)/2, length(horizontal_line_half_max_x));
+
+            [xi, yi] = polyxpoly([0;depol_current_level_pA(1: epoch_max_loc)], [spike_number_at_0_pA; spike_numbers(1:epoch_max_loc)], ...
+                horizontal_line_half_max_x, horizontal_line_half_max_y);
+
+            if ~isempty(xi) || ~isempty(yi)
+
+                half_max_spike_number(trial) = yi(1);
+                half_max_spike_current(trial) = xi(1);
+            else
+                half_max_spike_current(trial) = NaN;
+                half_max_spike_number(trial) = NaN;
+            end
+
+            Nspike_max_vs_last_epoch_ratio(trial) = spike_numbers(end) / max_number_of_spikes(trial);
+            max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:))) - resting_Vm(trial);
+            max_63_percent_decay_time(trial) = max(decay_to_63_percent);
+            min_63_percent_decay_time(trial) = min(decay_to_63_percent);
         end
-        
-        Nspike_max_vs_last_epoch_ratio(trial) = spike_numbers(end) / max_number_of_spikes(trial);
-        max_AHP_after_depol_injection(trial) = min(min(depol_Vm(end_time : (end_time + AHP_FIND_WINDOWS * sample_rate / 1e3),:))) - resting_Vm(trial);
-        max_63_percent_decay_time(trial) = max(decay_to_63_percent);
-        min_63_percent_decay_time(trial) = min(decay_to_63_percent);
     end % Feature Extraction end. Don't paste things outside of this loop.
     
     
