@@ -23,7 +23,11 @@ end
 fNames = fieldnames(s);
 
 for i = 1:length(fNames)
-    if isstruct(s.(fNames{i}))
+    if isstruct(s.(fNames{i})) && length(s.(fNames{i})) > 1 %%struct array
+        for j=1:length(s.(fNames{i}))
+            exportStructToHDF5(s.(fNames{i})(j), fileName, strcat(dataRoot, '/', fNames{i}, '_', num2str(j)));
+        end
+    elseif isstruct(s.(fNames{i}))
         exportStructToHDF5(s.(fNames{i}), fileName, strcat(dataRoot, '/', fNames{i}));
     else
         if ~isempty(s.(fNames{i}))
