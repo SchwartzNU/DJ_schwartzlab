@@ -103,7 +103,6 @@ classdef Alignment < dj.Computed
                 disp(ME.message);
                 rethrow(ME);
             end
-<<<<<<< HEAD
             func_volume = func_volume - 2^15; %OFFSET when you save from FIJI for some reason
             V_flat = reshape(V,[image_props.height*image_props.n_frames, 1]);
 
@@ -164,8 +163,7 @@ classdef Alignment < dj.Computed
             end   
             disp('Insert successful.');
 
-=======
->>>>>>> e44937e4f37f179b697013c5623f6022110fa274
+
         end
     end
 
