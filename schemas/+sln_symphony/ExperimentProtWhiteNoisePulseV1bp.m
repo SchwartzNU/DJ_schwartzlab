@@ -11,7 +11,7 @@ std : float
 frequency : float
 number_of_epochs : tinyint unsigned
 seed_start_value : smallint unsigned
-seed_change_mode : enum('repeat only', 'repeat & increment', 'increment only');
+seed_change_mode : enum('repeat only', 'repeat & increment', 'increment only')
 %}
 classdef ExperimentProtWhiteNoisePulseV1bp < sln_symphony.ExperimentProtocol
 	properties
