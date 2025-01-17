@@ -7,7 +7,7 @@ aperture : float
 color_noise_distribution : varchar(64)
 color_noise_mode : varchar(64)
 contrast : float
-frame_dwell : float
+frame_dwell_block : float
 mean_level : float
 number_of_epochs : smallint unsigned
 pre_time : float
