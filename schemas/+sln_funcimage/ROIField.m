@@ -1,11 +1,12 @@
 %{
 # ROI field
-->sln_funcimage.ROIMethod
-->sln_funcimage.ImagingRun
+-> sln_funcimage.ROIMethod
+-> sln_funcimage.ImagingRun
 ---
-mask    : longblob # binary mask image
-n_rois  : int unsigned 
-pixels_in_roi : longblob #cell array with indices of the pixels in each ROI
+mask                        : longblob                      # binary mask image
+n_rois                      : int unsigned                  # 
+pixels_in_roi               : longblob                      # cell array with indices of the pixels in each ROI
+type=null                   : enum('ROI','background')      # 
 %}
 
 classdef ROIField < dj.Manual
@@ -39,7 +40,7 @@ classdef ROIField < dj.Manual
                     thisMethod = sln_funcimage.ROIMethod & sprintf('method_name="%s"',app.method_name);
                     delete(app);
 
-                    key.method_id = fetch1(thisMethod,'method_id');
+                    key.method_id = fetch1(thisMethod,'method_id'); 
                     disp('Select binary mask image.');
                     mask_fname = uigetfile('*.tif','Select binary mask image.',basedir);
                     if all(mask_fname == false)
