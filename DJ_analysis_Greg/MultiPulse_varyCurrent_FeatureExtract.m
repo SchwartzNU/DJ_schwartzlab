@@ -98,8 +98,6 @@ for d=1:N_datasets
         [vmin_rebound(s), t] = min(trace(pre_samples+stim_samples+1:end) - vrest_vector(s));
         tmin_rebound(s) = 1E3 * t / sample_rate;
         
-        
-        
     end
     
     %% Feature Extraction Part
