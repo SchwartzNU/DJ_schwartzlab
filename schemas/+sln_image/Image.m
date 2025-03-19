@@ -56,7 +56,8 @@ classdef Image < dj.Manual
                 fname = fetch1(self,'image_filename');
                 q_struct = fetch(q,'cell_name');
                 for i=1:length(q_struct)
-                    if contains(fname, q_struct(i).cell_name)
+                    pattern = sprintf('%s_', q_struct(i).cell_name);
+                    if regexp(fname, pattern)%contains(fname, q_struct(i).cell_name)
                         fprintf('matched image %s to cell %s\n', fname, q_struct(i).cell_name)
                         key = struct;
                         key.cell_unid = q_struct(i).cell_unid;
