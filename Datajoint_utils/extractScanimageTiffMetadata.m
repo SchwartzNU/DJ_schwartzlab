@@ -11,11 +11,25 @@ if ~endsWith(fname,'.tif')
 end
 reader = ScanImageTiffReader.ScanImageTiffReader(fname);
 mdata = reader.metadata;
-SI_struct_part = extractBefore(mdata,"SI.warnMsg = ''");
+
+% json_part = extractAfter(mdata,"SI.warnMsg = ''");
+mdata_lines = splitlines(mdata);
+%find problem line
+probInd =  find(startsWith(mdata_lines,'SI.hBeams.calibrationMaxCalVoltage'));
+if ~isempty(probInd)
+    prob = split(mdata_lines(probInd),'=');
+    %fix the syntax
+    mdata_lines{probInd} = strjoin({prob{1},strjoin({'[',prob{2},']'})}, '=');
+end
+
+lastSIindex = find(startsWith(mdata_lines,'SI'),1,'last');
+% SI_struct_part = extractBefore(mdata,"SI.warnMsg = ''");
+SI_struct_part = strjoin(mdata_lines(1:lastSIindex),'\n');
 SI_struct_part = strrep(SI_struct_part,'scanimage.types.BeamAdjustTypes.Exponential','"exponential"');
 SI_struct_part = strrep(SI_struct_part, 'scanimage.types.BeamAdjustTypes.None', "'none'");
+
 eval(SI_struct_part); %creates SI struct
-json_part = extractAfter(mdata,"SI.warnMsg = ''");
+json_part = strjoin(mdata_lines(lastSIindex+1:end),'\n');
 mdata_struct = jsondecode(json_part);
 fname_mat = strrep(fname,'.tif','_meta.mat');
 save(fname_mat,'mdata_struct', 'SI');
