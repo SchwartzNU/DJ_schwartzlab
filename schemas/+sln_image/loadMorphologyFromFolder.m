@@ -72,16 +72,18 @@ for i=1:length(D)
                 key.n_branches = appdata.arborStats.Nbranches;
                 key.arbor_length = appdata.arborStats.totalLen;
                 key.arbor_complexity = appdata.arborStats.arborComplexity;
-                key.arbor_density = appdata.arborStats.arborDensity;
                 key.bistratified = appdata.arborStats.bistratified;
                 if key.bistratified
                     key.polygon_area_lower = appdata.arborStats.polygonArea_lower;
                     key.convexity_index_lower = appdata.arborStats.convexityIndex_lower;
                     key.polygon_area_upper = appdata.arborStats.polygonArea_upper;
                     key.convexity_index_upper = appdata.arborStats.convexityIndex_upper;
+                    key.arbor_density_upper = appdata.arborStats.arborDensity_upper;
+                    key.arbor_density_lower = appdata.arborStats.arborDensity_lower;
                 else
                     key.polygon_area = appdata.arborStats.polygonArea;
                     key.convexity_index = appdata.arborStats.convexityIndex;
+                    key.arbor_density = appdata.arborStats.arborDensity;
                 end
                 disp('Inserting sln_image.RetinalCellMorphology');
                 insert(sln_image.RetinalCellMorphology,key);
