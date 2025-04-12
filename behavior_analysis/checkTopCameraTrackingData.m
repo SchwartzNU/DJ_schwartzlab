@@ -38,6 +38,16 @@ if exist([folder_name filesep 'DLC_new'], 'dir')
 
     ind = find(startsWith(dlc_filenames, ['camera_' camera_serial_number]) ...
         & endsWith(dlc_filenames, '.mp4'));
+    vidObj = VideoReader([folder_name filesep 'DLC_new' filesep dlc_filenames{ind}]);
+
+elseif exist([folder_name filesep 'DLC_new_'], 'dir')
+    dlc_files = dir([folder_name filesep 'DLC_new_']);
+    dlc_filenames = {dlc_files.name};
+
+    ind = find(startsWith(dlc_filenames, ['camera_' camera_serial_number]) ...
+        & endsWith(dlc_filenames, '.mp4'));
+    vidObj = VideoReader([folder_name filesep 'DLC_new_' filesep dlc_filenames{ind}]);
+
 else
     disp('DLC_new folder not found');
     return;
@@ -49,7 +59,6 @@ if isempty(ind)
 end
 
 contact_threshold = 50; %pixels
-vidObj = VideoReader([folder_name filesep 'DLC_new' filesep dlc_filenames{ind}]);
 figure(1);
 i=1;
 while hasFrame(vidObj)

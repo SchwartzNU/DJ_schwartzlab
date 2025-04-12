@@ -83,7 +83,7 @@ for i=1:L
         end
         curP = P;
         curP.window_order = window_order;
-        
+        window_order
         doAnalysis
         if doAnalysis
             R.animal_id(s) = animal_id;
@@ -100,7 +100,7 @@ for i=1:L
         else
             R = struct;
         end
-        R
+        R.body_s(i,:)        
         pause;
     end
 end
