@@ -9,8 +9,8 @@ traces_path: varchar(512) #file path of the trace, external?
 maskTIF: longblob@raw #where should I store the mask.tif file
 bakgroundRoi: blob@raw # coordinates of the 4 corners of the background
 backroundColor: longblob@raw #extracted  average color of the background of each z slice and each channel
-medial_lateral: float
-->sln_cell: 
+medial_lateral_relative: float
+->sln_tissue.BrainSliceBatch
 %}
 
 classdef AxonImage < dj.Manual
