@@ -5,6 +5,7 @@
 recon_folder:  varchar(512) #where the reconstruction is stored
 recon_coord_sphe: blob@raw #coordinates of the RGC after reconstruction in spehrical
 recon_coord_carte = null: blob@raw #coordinates of RGC in cartesian
+recon_cell_id = null:blob@raw 
 %}
 
 classdef RetinaReconstruction < dj.Manual

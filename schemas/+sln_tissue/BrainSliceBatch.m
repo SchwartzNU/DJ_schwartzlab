@@ -1,8 +1,8 @@
 %{
 #describe the brain slice 
 -> sln_tissue.Tissue
----
 ->sln_animal.Animal
+---
 slicing_orientation: enum('Coronal', 'Saggital', 'Horizontal')
 thickness: smallint unsigned
 %}
@@ -18,12 +18,23 @@ methods
             query
             return;
         end
-        %know try inserting
+        %try insert, first into sln_tissue.Tissue to get and id
         try
             C = dj.conn;
             C.startTransaction;
+            tissuestruct.owner = keys.owner;
+            if isfield(keys, tissue_info)
+                tissuestruct.tissue_info = keys.tissue_info;
+            end
+            %create an entry in sln_tissue.Tissue
+            insert(sln_tissue.Tissue, tissuestruct);
+
+            %now get the newest id and insert into the BrainSliceBatch
+            %table
+            newTissueid  = fetch1(sln_tissue.Tissue & tissuestruct, tissue_id);
+            keys.tissue_id = newTissueid;
             insert(sln_tissue.BrainSliceBatch, keys);
-            slicebatchid = fetch1(sln_tissue.BrainSliceBatch, 'tissue_id');
+            
             C.commitTransaction;
         catch ME
             C.cancelTransaction;
