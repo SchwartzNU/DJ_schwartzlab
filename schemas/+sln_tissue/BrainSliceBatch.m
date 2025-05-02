@@ -9,7 +9,7 @@ thickness: smallint unsigned
 
 classdef BrainSliceBatch < dj.Manual
 methods
-    function slicebatchid = addBrainSliceBatch(keys)
+    function slicebatchid = AddNewBrainSliceBatch(keys)
         checkanimal = "animal_id = " + keys.animal_id;
         query = sln_tissue.BrainSliceBatch & checkanimal;
         %check if the batch already exisits in datajoint
