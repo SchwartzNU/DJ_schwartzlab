@@ -10,19 +10,21 @@ if exists(query)
 end
 %try insert, first into sln_tissue.Tissue to get and id
 try
-    C = dj.conn;
-    C.startTransaction;
+    
+    
     tissuestruct.owner = keys.owner;
     if isfield(keys, 'tissue_info')
         tissuestruct.tissue_info = keys.tissue_info;
         keys = rmfield(keys, 'tissue_info');
     end
     %create an entry in sln_tissue.Tissue
+    C = dj.conn;
+    C.startTransaction;
     insert(sln_tissue.Tissue, tissuestruct);
     C.commitTransaction;
+    print('Inserting into tissue....')
 
     %now get the newest id and insert into the BrainSliceBatch
-    %table
     
     allTissueIds  = fetchn(sln_tissue.BrainSliceBatch, 'tissue_id');
     keys.tissue_id = max(allTissueIds);
