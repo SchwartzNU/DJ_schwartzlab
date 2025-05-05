@@ -19,6 +19,7 @@ try
     end
     %create an entry in sln_tissue.Tissue
     insert(sln_tissue.Tissue, tissuestruct);
+    C.commitTransaction;
 
     %now get the newest id and insert into the BrainSliceBatch
     %table
@@ -33,6 +34,8 @@ try
 
     C.commitTransaction;
 catch ME
+    deletestring = append('tissue_id = ', int2str(keys.tissue_id));
+    del (sln_tissue.Tissue & deletestring);
     C.cancelTransaction;
     rethrow(ME)
 end
