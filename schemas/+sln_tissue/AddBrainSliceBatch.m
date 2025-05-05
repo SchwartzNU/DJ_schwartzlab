@@ -22,9 +22,9 @@ try
 
     %now get the newest id and insert into the BrainSliceBatch
     %table
-    query = sln_tissue.Tissue & tissuestruct;
-    newTissueid  = fetch1(query, 'tissue_id');
-    keys.tissue_id = newTissueid;
+    
+    allTissueIds  = fetchn(sln_tissue.BrainSliceBatch, 'tissue_id');
+    keys.tissue_id = max(allTissueIds);
 
     %delete the fields that are not in the BrainSliceBatch table
     keys = rmfield(keys, 'owner');
