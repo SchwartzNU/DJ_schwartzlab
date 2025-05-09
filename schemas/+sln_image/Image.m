@@ -194,7 +194,7 @@ classdef Image < dj.Manual
                 end
                 fprintf('Inserting.\n');
                 insert(sln_image.Image,key);
-                insertingfinish = 1;
+                %insertingfinish = 1;
                 fprintf('Done.\n');
             catch ME
                 fprintf('Uploaded failed!')
