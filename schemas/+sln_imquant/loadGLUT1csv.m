@@ -22,7 +22,7 @@ for i=1:L
     stack_key.animal_id = Tpart.DJID(1);
     stack_key.age_at_exp = Tpart.Age_Months(1);
     if in_vivo_flag
-        if strcmp(Tpart.Experimental_Condition{1},'Light Flicker')
+        if strcmp(Tpart.Experimental_Condition{1},'Light Flicker') || strcmp(Tpart.Experimental_Condition{1},'Light Flicker (mouse disco)')
             stack_key.light_condition_name = 'in vivo full-field flicker';
         else
             stack_key.light_condition_name = 'in vivo eye sutured';
