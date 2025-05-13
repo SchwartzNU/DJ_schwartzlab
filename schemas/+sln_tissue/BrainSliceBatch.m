@@ -41,6 +41,7 @@ classdef BrainSliceBatch < dj.Manual
                 tissueids = fetchn(sln_tissue.Tissue, 'tissue_id');
 
                 key.tissue_id = max(tissueids);
+                tissue_id = key.tissue_id;
                 insert(sln_tissue.BrainSliceBatch, key);
                 C.commitTransaction;
 

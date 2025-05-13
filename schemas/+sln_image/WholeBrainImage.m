@@ -38,7 +38,7 @@ classdef WholeBrainImage < dj.Manual
                 key.brain_num = brain_n;
 
                 %calculate the midline linear function
-                if ~isnan(mdp1) AND (~isnan(mdp2))
+                if ~(any(isnan(mdp1))||any(isnan(mdp2)))
                     key.midline_slope = (mdp1(2)-mdp2(2))/(mdp1(1)-mdp2(1));
                     key.midline_intercept = mdp1(2)-(key.midline_slope*mdp1(1));
                 end
@@ -49,12 +49,20 @@ classdef WholeBrainImage < dj.Manual
                 insert(sln_image.WholeBrainImage, key);
                 C.commitTransaction;
 
+                fprintf('Inserting success!\n');
+                disp(key);
+
+
                 %return the inserted ref_id
                 ids = fetchn(sln_image.WholeBrainImage, 'ref_image_id');
                 ref_image_id = max(ids);
+                %Warning: usually this safe to do, unless there are more than 1
+                %process insert this database at the same time
 
             catch ME
-                C.cancelTransaction;
+                if (exist('C', 'var'))
+                    C.cancelTransaction;
+                end              
                 rethrow(ME)
 
             end
