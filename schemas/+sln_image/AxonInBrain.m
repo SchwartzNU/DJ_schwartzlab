@@ -6,35 +6,40 @@
 centroid_x: double
 centroid_y: double
 centroid_radius: double
-background_roi: tinyblob@raw #2 vertical and 2 horizontal lines that defines the region
-mask_image: longblob@raw
+mask_image: blob@raw
+background_roi: blob@raw #2 vertical and 2 horizontal lines that defines
+the region, PIXEL VALUE
 pixel_color: blob@raw
 %}
 
-classdef AxonInBrain
+classdef AxonInBrain < dj.Manual
 methods (Static)
     %todo: need to add the extract background function.... 
     function pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)
-        [col, row] = find(mask_frame~=0);
+        [row, col] = find(mask_frame~=0);
+        indx = sub2ind(size(image_frame), row, col);
 
         dim = size(image_frame);
         channel_N = dim(end);
 
-        total_nonzero = sum(find(mask_frame~=0));
-        pixel_color = unit16(zeros(total_nonzero, channel_N));
+        total_nonzero =nnz(mask_frame);
+        pixel_color = uint16(zeros(total_nonzero, channel_N));
 
         for c = 1: channel_N
             channelFrame = reshape(image_frame(:, :, :, c), dim(1), dim(2));
             background = channelFrame(bg_line(1):bg_line(2), bg_line(3):bg_line(4));
             background = mean(background, 'all');
-            pixel_color(:, c) = channelFrame(col, row)-background;
+            filteredframe = channelFrame(indx);
+            pixel_color(:, c) = filteredframe-background;
         end
     end
-    function assign_axon_in_brain(imageid, cx, cy, background, maskpath, color)
+    function assign_axon_in_brain(imageid, wholebrainid, cx, cy, r, background, maskpath, color)
         arguments
             imageid
+            wholebrainid
             cx
             cy
+            r
             background
             maskpath
             color = NaN;
@@ -42,19 +47,25 @@ methods (Static)
         try
             %basic check to eliminate double insert or no image inserting
             key.image_id = imageid;
+           
             query1 = sln_image.Image & key;
-            query2 = sln_image.AxonInBrain;
+            
             if (~exists(query1))
                 error('Image not found in the sln_image.Image');
             end
+            key.whole_brain = wholebrainid;
+            query2 = sln_image.AxonInBrain & key;
+            
             if (exists(query2))
-                error('Image already annotated!');
+                fprintf('Image already annotated!');
+                return
             end
 
             %build other parts of the key
             key.centroid_x = cx;
             key.centroid_y = cy;
-            if (numel(background)~= 8)
+            key.centroid_radius = r;
+            if (numel(background)~= 4)
                 error('Wrong format of the background roi!');
             end
             key.background_roi = background;
@@ -66,7 +77,7 @@ methods (Static)
             im_h = infopack(1).Height;
             im_w = infopack(1).Width;
             mask_ar = uint8(zeros(im_h, im_w, slice_total));
-
+        
             if (isnan(color))
                 query.image_id = imageid;
                 fprintf('No exisiting pixel value input, extracting now....');
@@ -78,7 +89,8 @@ methods (Static)
                     %idea but only once
                     %get mask into numeric array and pixel colors
                     mask_ar(:, :, s) = imread(maskpath, index = s);
-                    color{end+1} = extract_single_frame(data.raw_image(:, :, s,:), background, mask_ar(:, :, s));
+                    fprintf('filtering slice %d, total %d\n', s, slice_total);
+                    color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), background, mask_ar(:, :, s));
                 end
             else
                 for s = 1:slice_total
@@ -87,7 +99,7 @@ methods (Static)
             end
 
             key.mask_image = mask_ar;
-            key.color = color;
+            key.pixel_color = color;
             C = dj.conn;
             C.startTransaction;
             insert(sln_image.AxonInBrain, key);
