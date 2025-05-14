@@ -2,6 +2,7 @@
 #e parameters for PairedSpotField (2) 
 -> sln_symphony.ExperimentEpoch
 ---
+intensity : blob
 cx : blob
 cy : blob
 %}
@@ -12,7 +13,7 @@ classdef ExperimentProtPairedSpotFieldV2ep < sln_symphony.ExperimentProtocol
 		renamed_attributes = struct();
 
 		%attributes to be removed from the key
-		dropped_attributes = {'protocol_version','intensity'};
+		dropped_attributes = {'protocol_version'};
 	end
 	methods
 		function epoch_key = add_attributes(self, block_key, epoch_key) %#ok<INUSL,INUSD>
