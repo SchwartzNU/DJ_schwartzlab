@@ -1,10 +1,11 @@
 %{
-# A terminal of a retinal ganglion cell
+#Entity of RGC axon in the brain, one axon could be associated with multiple axon image. 
 axon_id: int unsigned AUTO_INCREMENT
 ---
-AP_breg = NULL:float #the coordinates of axon in respective towards bregma
-ML_breg = NULL:float #same but medial-lateral
-DV_breg = NULL: float # same but dorsal ventral
+medial_lateral: double #temporary number drawn by hand not brain
+registered, for now
+anterior_posterial: double
+
 ->[nullable] sln_cell.Cell
 ->[nullable] sln_animal.BrainArea
 side: enum('Ipsilateral', 'Contralateral', 'Unknown')

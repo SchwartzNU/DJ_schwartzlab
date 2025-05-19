@@ -105,7 +105,24 @@ classdef Image < dj.Manual
                 end
                 for c = 1:numel(channel_arr)
                     fieldName = sprintf('ch%d_type', c);
-                    key.(fieldName) = channel_arr{c};
+                    channel = channel_arr{c};
+                    if (isa(channel, "double") || isa(channel, "int16") || isa(channel, "unit8"))
+                        q = append('channel_type_id=', num2str(channel));
+                    elseif (isa(channel, 'string'))
+                        q = append('channel_type_id=', channel);
+                        channel = str2double(channel);
+                    elseif (isa(channel, "char"))
+                        q = append('channel_type_id=', convertCharsToStrings(channel));
+                        channel = str2num(channel);
+                    else
+                        error('Channel %d cannot be recognized: type %s!\n', c, class(channel))
+                    end
+
+                    if (~exists(sln_image.ChannelType & q))
+                        error('Channel type not existed yet! please check or fill out sln_image.ChannelType!\n');
+                    end
+
+                    key.(fieldName) = channel;
                 end
                 key.user_name = user_name;
                 key.scope_name = scope_name;

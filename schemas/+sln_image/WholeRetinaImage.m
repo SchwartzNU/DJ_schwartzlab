@@ -3,7 +3,7 @@
 ->sln_image.Image
 -----
 ->sln_tissue.Retina
-cut_orientation: enum('Dorsal', 'Ventral', 'Nasal', 'Temporal')
+cut_orientation: enum('Dorsal', 'Ventral', 'Nasal', 'Temporal', 'Unknwon')
 %}
 
 
