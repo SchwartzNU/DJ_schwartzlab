@@ -3,13 +3,25 @@
 axon_id: int unsigned AUTO_INCREMENT
 ---
 medial_lateral: double #temporary number drawn by hand not brain
-registered, for now
 anterior_posterial: double
 
 ->[nullable] sln_cell.Cell
-->[nullable] sln_animal.BrainArea
+ (brain_region)->[nullable]sln_animal.BrainArea
 side: enum('Ipsilateral', 'Contralateral', 'Unknown')
 
 %}
 classdef Axon < dj.Manual
+    methods (Static)
+        function axon_id = add_axon(key)
+            try
+                C = dj.conn;
+                C.startTransaction;
+                insert(sln_cell.Axon, key);
+                ids = fetch(sln_cell.Axon, 'axon_id');
+                axon_id = max([ids.axon_id]);
+            catch ME
+                rethrow (ME)
+            end
+        end
+    end
 end
