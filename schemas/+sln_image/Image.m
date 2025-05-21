@@ -90,6 +90,136 @@ classdef Image < dj.Manual
     end
 
     methods(Static)
+        function LoadFromFilewithStructuralInput(filename, user_name, scope_name, channel_arr, z_scale)%input struct should contain: scope, user, each type of the 4 channels, z scale
+            arguments
+                filename 
+                user_name 
+                scope_name 
+                channel_arr
+                z_scale = NaN
+            end
+            %checking keys
+            try
+                n_input_channels = numel(channel_arr);
+                if (n_input_channels==0)
+                    error("No channel information input!");
+                end
+                for c = 1:numel(channel_arr)
+                    fieldName = sprintf('ch%d_type', c);
+                    channel = channel_arr{c};
+                    if (isa(channel, "double") || isa(channel, "int16") || isa(channel, "unit8"))
+                        q = append('channel_type_id=', num2str(channel));
+                    elseif (isa(channel, 'string'))
+                        q = append('channel_type_id=', channel);
+                        channel = str2double(channel);
+                    elseif (isa(channel, "char"))
+                        q = append('channel_type_id=', convertCharsToStrings(channel));
+                        channel = str2num(channel);
+                    else
+                        error('Channel %d cannot be recognized: type %s!\n', c, class(channel))
+                    end
+
+                    if (~exists(sln_image.ChannelType & q))
+                        error('Channel type not existed yet! please check or fill out sln_image.ChannelType!\n');
+                    end
+
+                    key.(fieldName) = channel;
+                end
+                key.user_name = user_name;
+                key.scope_name = scope_name;
+                if (~isnan(z_scale))
+                    key.z_scale = z_scale;
+                end
+                file_info = dir(filename);
+                key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
+                key.size_in_bytes = file_info.bytes;
+                key.folder = file_info.folder;
+                [~, name, ext] = fileparts(filename);
+                key.image_filename = [name ext];
+
+                if endsWith(filename,'.tif')
+                    meta_fname = strrep(filename,'.tif','_meta.mat');
+                    if ~exist(meta_fname, 'file')
+                        error("Metadata file not found");
+                    end
+                    load(meta_fname,'SI');
+
+                    key.zoom_factor = SI.hRoiManager.scanZoomFactor;
+                    N_channels = length(SI.hChannels.channelSave);
+                    if N_channels ~= n_input_channels
+                        error('Number of channels mismatch: %d provided but %d found in file.\n', n_input_channels, N_channels);
+                    end
+                    key.n_channels = N_channels;
+                    rows = SI.hRoiManager.linesPerFrame;
+                    cols = SI.hRoiManager.pixelsPerLine;
+                    key.width = cols;
+                    key.height = rows;
+                    if isfield(SI,'hStackManager')
+                        if ~forceZ
+                            key.z_scale = abs(SI.hStackManager.actualStackZStepSize);
+                        end
+                        N_slices = SI.hStackManager.actualNumSlices;
+                    else
+                        N_slices = 1;
+                    end
+
+                    key.n_slices = N_slices;
+                    key.raw_image = uint16(zeros(rows, cols, N_slices, N_channels));
+                    raw_image_interleaved = uint16(zeros(rows, cols, N_slices*N_channels));
+                    fprintf('Loading %d slices * %d channels\n', N_slices, N_channels);
+                    for i=1:N_slices*N_channels
+                        raw_image_interleaved(:,:,i) = imread(filename,i);
+                    end
+                    for i=1:N_channels
+                        key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:N_slices*N_channels);
+                    end
+                    fprintf('Done loading.\n');
+                    x_range = abs(SI.hRoiManager.imagingFovUm(1,1) - SI.hRoiManager.imagingFovUm(2,1));
+                    y_range = abs(SI.hRoiManager.imagingFovUm(2,1) - SI.hRoiManager.imagingFovUm(2,2));
+                    key.x_scale = x_range / cols; %µm / pixel
+                    key.y_scale = y_range / rows; %µm / pixel
+                elseif endsWith(filename,'.nd2')
+                    temp = which('BioformatsImage');
+                    if isempty(temp)
+                        error("BioformatsImage not on MATLAB path. Please install toolbox first.");
+                    end
+                    im = BioformatsImage(filename);
+                    key.zoom_factor = 1; %we will just call it zoom factor 1 for .nd2 images
+                    N_channels = im.sizeC;
+                    if N_channels ~= n_input_channels
+                        error('Number of channels mismatch: %d provided but %d found in file.\n', n_input_channels, N_channels);
+                    end
+                    key.n_channels = N_channels;
+                    rows = im.height;
+                    cols = im.width;
+                    key.width = cols;
+                    key.height = rows;
+                    key.x_scale = im.pxSize(1);
+                    key.y_scale = im.pxSize(2);
+                    N_slices = im.sizeZ;
+                    key.n_slices = N_slices;
+
+                    key.raw_image = uint16(zeros(rows, cols, N_slices, N_channels));
+                    fprintf('Loading %d slices * %d channels\n', N_slices, N_channels);
+                    for c=1:N_channels
+                        for z=1:N_slices
+                            key.raw_image(:,:,z,c) = im.getPlane(z,c,1);
+                        end
+                    end
+                    fprintf('Done loading.\n');
+                else
+                    error("Image load error: unknown file type");
+                end
+                fprintf('Inserting.\n');
+                insert(sln_image.Image,key);
+                %insertingfinish = 1;
+                fprintf('Done.\n');
+            catch ME
+                fprintf('Uploaded failed!')
+                rethrow(ME);
+            end
+        end
+
         function loadFromFile(filename, varargin)
             key = struct;
             forceZ = false;
@@ -288,7 +418,7 @@ classdef Image < dj.Manual
                 rows = info(1).Height;
                 cols = info(1).Width;
                 key.width = cols;
-                key.height = rows;
+                key.height = rows;varchar(512)
 
                 if SI_meta
                     load(meta_fname,'SI');
