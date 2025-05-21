@@ -30,6 +30,9 @@ for d = 1: N_dataset
     stim_time = epochs_in_dataset.scale_stim_time;
     amplitude = epochs_in_dataset.scaled_amplitude;
 
+    firing_frequency = nan(N_epochs,1);
+    number_of_spikes = nan(N_epochs, 1);
+    
 
 
 end
