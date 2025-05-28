@@ -7,8 +7,6 @@ file_name: varchar(128)
 folder: varchar(512)
 slide_num: tinyint unsigned #which slide is the image taken from
 brain_num: tinyint unsigned #same, but brain number of the slice
-midline_slope=Null: float
-midline_intercept = Null: float
 %}
 
 

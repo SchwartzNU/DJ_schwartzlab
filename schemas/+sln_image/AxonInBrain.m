@@ -3,12 +3,13 @@
 -> sln_image.Image
 ---
 (whole_brain)->sln_image.WholeBrainImage
+midline_slope: double #midline of the brain in the whole brain slice image
+midline_intercept: double 
 centroid_x: double
 centroid_y: double
 centroid_radius: double
 mask_image: blob@raw
-background_roi: blob@raw #2 vertical and 2 horizontal lines that defines
-the region, PIXEL VALUE
+background_roi: blob@raw #2 vertical and 2 horizontal lines that defines the region, PIXEL VALUE
 pixel_color: blob@raw
 %}
 
