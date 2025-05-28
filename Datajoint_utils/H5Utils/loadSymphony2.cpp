@@ -942,7 +942,7 @@ class Parser {
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brains"]), std::move(s)});
             key[0]["brains"] = std::move(result);
             DEBUGPRINT("Brain parsed");
-        } else if (~props.attrExists("genotype") && ~props.attrExists("type") && ~props.attrExists("number")){
+        } else if (!props.attrExists("genotype") && !props.attrExists("type") && !props.attrExists("number")){
             //case Brain slice
             DEBUGPRINT("Parsing Brain slice");
             s = factory.createStructArray({1},
