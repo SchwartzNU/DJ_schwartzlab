@@ -911,7 +911,7 @@ class Parser {
         key[0]["sources"] = std::move(result);
 
         auto props = source.openGroup("properties");
-        if (props.attrExists("DataJoint Identifier")) {
+        if (props.attrExists("DataJoint Identifier") && props.attrExists("side")) {
             //case new-style retina
             s = factory.createStructArray({1},
             {"source_id","animal_id", "side", "orientation", "experimenter", "file_name"});
@@ -924,6 +924,28 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["retinas"]), std::move(s)});
             key[0]["retinas"] = std::move(result);
+        } else if (props.attrExists("slice_thickness")) {
+            //case Brain
+            s = factory.createStructArray({1},
+            {"source_id","animal_id", "thickness", "experimenter", "file_name"});
+            s[0]["animal_id"] = parseStr2IntAttr(props, "DataJoint Identifier");
+            s[0]["thickness"] = parseStr2IntAttr(props, "slice_thickness");
+            s[0]["experimenter"] = parseStrAttr(props, "recordingBy");
+            s[0]["source_id"] = factory.createScalar(ind);
+            s[0]["file_name"] = factory.createCharArray(fname);
+            
+            StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brains"]), std::move(s)});
+            key[0]["brains"] = std::move(result);
+        } else if (~props.attrExists("genotype") && ~props.attrExists("type") && ~props.attrExists("number")){
+            //case Brain slice
+            s = factory.createStructArray({1},
+            {"source_id", "file_name", "brain_id"});
+            s[0]["source_id"] = factory.createScalar(ind);
+            s[0]["file_name"] = factory.createCharArray(fname);
+            s[0]["brain_id"] = factory.createScalar(parent_ind);
+            
+            StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brain_slices"]), std::move(s)});
+            key[0]["brain_slices"] = std::move(result);
         } else if (props.attrExists("genotype")) {
             //case old-style retina
             s = factory.createStructArray({1},
@@ -940,6 +962,21 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["retinas"]), std::move(s)});
             key[0]["retinas"] = std::move(result);
+          } else if (props.attrExists("brain_region")) {
+            //case Brain cell
+            s = factory.createStructArray({1},
+            {"file_name","source_id","brain_slice_id","cell_number",
+            "brain_region", "notes"});
+
+            s[0]["cell_number"] = parseNumericAttr(props,"number");
+            s[0]["brain_region"] = parseStrAttr(props, "brain_region");
+            s[0]["notes"] = parseStrAttr(props, "notes");
+            s[0]["brain_slice_id"] = factory.createScalar(parent_ind);
+            s[0]["source_id"] = factory.createScalar(ind);
+            s[0]["file_name"] = factory.createCharArray(fname);
+            
+            StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cells"]), std::move(s)});
+            key[0]["brain_cells"] = std::move(result);    
         } else if (props.attrExists("confirmedType")) {
             //case cell
             s = factory.createStructArray({1},
