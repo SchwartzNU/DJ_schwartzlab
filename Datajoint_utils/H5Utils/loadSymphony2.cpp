@@ -947,10 +947,14 @@ class Parser {
             DEBUGPRINT("Parsing Brain slice");
             s = factory.createStructArray({1},
             {"source_id", "file_name", "brain_id"});
-            s[0]["source_id"] = factory.createScalar(ind);
+            DEBUGPRINT("Source ID");  
+            s[0]["source_id"] = factory.createScalar(ind);     
+            DEBUGPRINT("FIle name");       
             s[0]["file_name"] = factory.createCharArray(fname);
+            DEBUGPRINT("Brain ID");
             s[0]["brain_id"] = factory.createScalar(parent_ind);
             
+            DEBUGPRINT("Params parsed");
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brain_slices"]), std::move(s)});
             key[0]["brain_slices"] = std::move(result);
             DEBUGPRINT("Brain slice parsed");
