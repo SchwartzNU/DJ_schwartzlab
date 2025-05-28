@@ -83,6 +83,7 @@ class Parser {
         {"experiment","calibration","epoch_groups","epoch_blocks","epochs",
         "channels","electrodes","epoch_channels",
         "sources","retinas","cells","cell_pairs",
+        "brains","brain_slices","brain_cells",
         "experiment_notes","source_notes",
         "epoch_group_notes","epoch_block_notes","epoch_notes"}
         );
@@ -982,7 +983,6 @@ class Parser {
             s[0]["brain_slice_id"] = factory.createScalar(parent_ind);
             s[0]["source_id"] = factory.createScalar(ind);
             s[0]["file_name"] = factory.createCharArray(fname);
-            
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cells"]), std::move(s)});
             key[0]["brain_cells"] = std::move(result);    
             DEBUGPRINT("Brain cell parsed");
