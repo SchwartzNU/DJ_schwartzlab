@@ -926,13 +926,17 @@ class Parser {
             key[0]["retinas"] = std::move(result);
         } else if (props.attrExists("slice_thickness")) {
             //case Brain
+            DEBUGPRINT("Parsing Brain");
             s = factory.createStructArray({1},
             {"source_id","animal_id", "thickness", "experimenter", "file_name"});
             s[0]["animal_id"] = parseStr2IntAttr(props, "DataJoint Identifier");
             s[0]["thickness"] = parseNumericAttr(props, "slice_thickness");
+            DEBUGPRINT("Thickness done");
             s[0]["experimenter"] = parseStrAttr(props, "recordingBy");
+            DEBUGPRINT("Experimenter done");           
             s[0]["source_id"] = factory.createScalar(ind);
             s[0]["file_name"] = factory.createCharArray(fname);
+            DEBUGPRINT("File name done");
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brains"]), std::move(s)});
             key[0]["brains"] = std::move(result);
