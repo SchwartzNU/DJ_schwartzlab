@@ -929,7 +929,7 @@ class Parser {
             s = factory.createStructArray({1},
             {"source_id","animal_id", "thickness", "experimenter", "file_name"});
             s[0]["animal_id"] = parseStr2IntAttr(props, "DataJoint Identifier");
-            s[0]["thickness"] = parseStr2DoubleAttr(props, "slice_thickness");
+            s[0]["thickness"] = parseNumericAttr(props, "slice_thickness");
             s[0]["experimenter"] = parseStrAttr(props, "recordingBy");
             s[0]["source_id"] = factory.createScalar(ind);
             s[0]["file_name"] = factory.createCharArray(fname);
