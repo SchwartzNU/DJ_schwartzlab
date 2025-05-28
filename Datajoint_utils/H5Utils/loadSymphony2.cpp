@@ -940,8 +940,10 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brains"]), std::move(s)});
             key[0]["brains"] = std::move(result);
+            DEBUGPRINT("Brain parsed");
         } else if (~props.attrExists("genotype") && ~props.attrExists("type") && ~props.attrExists("number")){
             //case Brain slice
+            DEBUGPRINT("Parsing Brain slice");
             s = factory.createStructArray({1},
             {"source_id", "file_name", "brain_id"});
             s[0]["source_id"] = factory.createScalar(ind);
@@ -950,6 +952,7 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brain_slices"]), std::move(s)});
             key[0]["brain_slices"] = std::move(result);
+            DEBUGPRINT("Brain slice parsed");
         } else if (props.attrExists("genotype")) {
             //case old-style retina
             s = factory.createStructArray({1},
@@ -968,6 +971,7 @@ class Parser {
             key[0]["retinas"] = std::move(result);
           } else if (props.attrExists("brain_region")) {
             //case Brain cell
+            DEBUGPRINT("Parsing Brain cell");  
             s = factory.createStructArray({1},
             {"file_name","source_id","brain_slice_id","cell_number",
             "brain_region", "notes"});
@@ -981,6 +985,7 @@ class Parser {
             
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["cells"]), std::move(s)});
             key[0]["brain_cells"] = std::move(result);    
+            DEBUGPRINT("Brain cell parsed");
         } else if (props.attrExists("confirmedType")) {
             //case cell
             s = factory.createStructArray({1},
