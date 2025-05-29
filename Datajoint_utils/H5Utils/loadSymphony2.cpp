@@ -921,7 +921,7 @@ class Parser {
 
         auto props = source.openGroup("properties");
         DEBUGPRINT(props.getNumAttrs() << " properties found");
-        if (props.attrExists("DataJoint Identifier") && props.attrExists("side")) {
+        if (props.attrExists("DataJoint Identifier") && props.attrExists("eye")) {
             //case new-style retina
             DEBUGPRINT("Parsing Retina");
             s = factory.createStructArray({1},
