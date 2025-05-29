@@ -918,6 +918,7 @@ class Parser {
         DEBUGPRINT(props.getNumAttrs() << " properties found");
         if (props.attrExists("DataJoint Identifier") && props.attrExists("side")) {
             //case new-style retina
+            DEBUGPRINT("Parsing Retina");
             s = factory.createStructArray({1},
             {"source_id","animal_id", "side", "orientation", "experimenter", "file_name"});
             s[0]["animal_id"] = parseStr2IntAttr(props, "DataJoint Identifier");
@@ -948,6 +949,7 @@ class Parser {
             DEBUGPRINT("Brain parsed");
             } else if (props.attrExists("genotype")) {
             //case old-style retina
+            DEBUGPRINT("Parsing old-style Retina");
             s = factory.createStructArray({1},
             {"source_id","animal_id", "side", "orientation", "experimenter", "file_name"});
             s[0]["animal_id"] = parseStrAttr(props, "genotype");
@@ -980,6 +982,7 @@ class Parser {
             DEBUGPRINT("Brain cell parsed");
         } else if (props.attrExists("confirmedType")) {
             //case cell
+            DEBUGPRINT("Parsing retinal cell");
             s = factory.createStructArray({1},
             {"file_name","source_id","retina_id","cell_number",
             "online_type", "x", "y"});
@@ -996,6 +999,7 @@ class Parser {
             key[0]["cells"] = std::move(result);
         } else if (props.attrExists("type")) {
             //non-retinal cell
+            DEBUGPRINT("Parsing non-retinal cell");
             s = factory.createStructArray({1},
             {"file_name","source_id","retina_id","cell_number",
             "online_type", "x", "y"});
@@ -1076,8 +1080,9 @@ class Parser {
             key[0]["cell_pairs"] = std::move(result);
 
         } else if (props.attrExists("Description")){
+           DEBUGPRINT("Ading description");
             //TODO: add a note with the description of this cell!
-        } else {
+     } else {
             //case Brain slice
             DEBUGPRINT("Parsing Brain slice");
             s = factory.createStructArray({1},
