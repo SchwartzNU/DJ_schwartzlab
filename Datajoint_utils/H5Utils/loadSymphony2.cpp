@@ -84,7 +84,7 @@ class Parser {
         {"experiment","calibration","epoch_groups","epoch_blocks","epochs",
         "channels","electrodes","epoch_channels",
         "sources","retinas","cells","cell_pairs",
-        "brains","brain_slices","brain_cells",
+        "brains","brain_slices","brain_cells","brain_electrodes",
         "experiment_notes","source_notes",
         "epoch_group_notes","epoch_block_notes","epoch_notes"}
         );
@@ -835,7 +835,7 @@ class Parser {
                 // }
                 if (props.attrExists("type") || props.attrExists("brain_region")) { //|| props.attrExists("Amplifier 1 cell number")){
                     //case cell or brain cell
-                    electrode_s[0]["cell_id"] = source_id;  
+                    electrode_s[0]["cell_id"] = source_id; 
                 } else if (props.attrExists("Amplifier 1 cell number")) {
                     electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(electrode_number);                    
                 } else if (props.attrExists("Description")){
@@ -848,8 +848,13 @@ class Parser {
                     //"brain_slice" source, do nothing
                 } else throwError("Unknown source type!");
 
-                result = matlabPtr->feval(u"vertcat",{std::move(key[0]["electrodes"]), std::move(electrode_s)});
-                key[0]["electrodes"] = std::move(result);
+                if (props.attrExists("brain_region")){
+                    result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brain_electrodes"]), std::move(electrode_s)});
+                    key[0]["brain_electrodes"] = std::move(result);
+                } else { 
+                    result = matlabPtr->feval(u"vertcat",{std::move(key[0]["electrodes"]), std::move(electrode_s)});
+                    key[0]["electrodes"] = std::move(result);
+                }
 
                 props.close();
                 source.close();
