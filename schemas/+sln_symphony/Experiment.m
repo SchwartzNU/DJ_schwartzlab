@@ -201,9 +201,7 @@ classdef Experiment < dj.Manual
                 end
 
                 %null out the brain_regions for now
-                for g=1:length(key.brain_cells)
-                    key.brain_cells(g).brain_region = '';
-                end
+                key.brain_cells = rmfield(key.brain_cells,"brain_region");
 
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
@@ -223,6 +221,7 @@ classdef Experiment < dj.Manual
                 warning('off','MATLAB:MKDIR:DirectoryExists');
                 insertIfNotEmpty(sln_symphony.ExperimentEpochChannel(),key.epoch_channels);
                 insertIfNotEmpty(sln_symphony.ExperimentElectrode(),key.electrodes);
+                insertIfNotEmpty(sln_symphony.ExperimentBrainElectrode(),key.brain_electrodes);
 
                 insertIfNotEmpty(sln_symphony.ExperimentNote(),key.experiment_notes);
                 insertIfNotEmpty(sln_symphony.ExperimentSourceNote(),key.source_notes);
