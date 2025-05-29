@@ -909,10 +909,13 @@ class Parser {
         s[0]["source_id"] = factory.createScalar(ind);
         s[0]["file_name"] = factory.createCharArray(fname);
  
+        DEBUGPRINT("Adding to sources array");
         StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["sources"]), std::move(s)});
         key[0]["sources"] = std::move(result);
+        DEBUGPRINT("Source added to sources array. Getting ready to parse source properties");
 
         auto props = source.openGroup("properties");
+        DEBUGPRINT(props.getNumAttrs() << " properties found");
         if (props.attrExists("DataJoint Identifier") && props.attrExists("side")) {
             //case new-style retina
             s = factory.createStructArray({1},
