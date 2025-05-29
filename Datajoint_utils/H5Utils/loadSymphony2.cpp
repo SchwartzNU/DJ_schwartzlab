@@ -1082,7 +1082,7 @@ class Parser {
         } else if (props.attrExists("Description")){
            DEBUGPRINT("Ading description");
             //TODO: add a note with the description of this cell!
-     } else {
+      } else if (props.attrExists("slice_notes")) {
             //case Brain slice
             DEBUGPRINT("Parsing Brain slice");
             s = factory.createStructArray({1},
@@ -1093,16 +1093,17 @@ class Parser {
             s[0]["file_name"] = factory.createCharArray(fname);
             DEBUGPRINT("Brain ID");
             s[0]["brain_id"] = factory.createScalar(parent_ind);
-            
+            DEBUGPRINT("Slice notes");     
+             s[0]["slice_notes"] = parseStrAttr(props, "slice_notes");
+
             DEBUGPRINT("Params parsed");
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brain_slices"]), std::move(s)});
             key[0]["brain_slices"] = std::move(result);
             DEBUGPRINT("Brain slice parsed");
-
-            //unparsed
-        //    CharArray result = matlabPtr->feval(u"strcat",{factory.createCharArray("Unparseable source: "), parseStrAttr(source,"label")});
-         //   matlabPtr->feval(u"error", 0, std::vector<Array>({result}));
-        //}
+        } else {
+                //unparsed
+            CharArray result = matlabPtr->feval(u"strcat",{factory.createCharArray("Unparseable source: "), parseStrAttr(source,"label")});
+           matlabPtr->feval(u"error", 0, std::vector<Array>({result}));
         }
         if (source.exists("notes")) {
             auto notes = source.openDataSet("notes");
