@@ -1,9 +1,9 @@
 %{
-# A brain nslice object (primary 'source') in a symphony hdf5 file
+# A brain slice object in a symphony hdf5 file
 -> sln_symphony.ExperimentSource
 ---
-->sln_tissue.BrainSliceBatch
-(experimenter) -> [nullable] sln_lab.User #redundant already in sln_tissue.BrainSliceBatch 
+(brain_id) -> [nullable] sln_symphony.ExperimentBrain(source_id)
+slice_notes : varchar(256)
 %}
 classdef ExperimentBrainSlice < sln_symphony.ExperimentPart
 properties(SetAccess=protected)

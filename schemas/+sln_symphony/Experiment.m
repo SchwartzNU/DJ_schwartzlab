@@ -200,9 +200,17 @@ classdef Experiment < dj.Manual
                     end
                 end
 
+                %null out the brain_regions for now
+                for g=1:length(key.brain_cells)
+                    key.brain_cells(g).brain_region = '';
+                end
+
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
+                insertIfNotEmpty(sln_symphony.ExperimentBrain(),key.brains);
+                insertIfNotEmpty(sln_symphony.ExperimentBrainSlice(),key.brain_slices);
+                insertIfNotEmpty(sln_symphony.ExperimentBrainCell(),key.brain_cells);
                 insertIfNotEmpty(sln_symphony.ExperimentCell(),key.cells);
                 insertIfNotEmpty(sln_symphony.ExperimentCellPair(),key.cell_pairs);
                 insertIfNotEmpty(sln_symphony.ExperimentEpochGroup(),key.epoch_groups);

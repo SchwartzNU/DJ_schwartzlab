@@ -5,7 +5,7 @@
 (brain_slice_id) -> [nullable] sln_symphony.ExperimentBrainSlice(source_id)
 cell_number=null            : tinyint unsigned              # sometimes different from source label
 (brain_region) ->[nullable] sln_animal.BrainArea
-note = null:varchar(50)
+notes = null:varchar(128)
 %}
 classdef ExperimentBrainCell < sln_symphony.ExperimentPart
 properties(SetAccess=protected)
