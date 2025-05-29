@@ -833,8 +833,8 @@ class Parser {
                 //     key[0]["cell_pairs"] = std::move(pairs);
                     
                 // }
-                if (props.attrExists("type")) { //|| props.attrExists("Amplifier 1 cell number")){
-                    //case cell
+                if (props.attrExists("type") || props.attrExists("brain_region")) { //|| props.attrExists("Amplifier 1 cell number")){
+                    //case cell or brain cell
                     electrode_s[0]["cell_id"] = source_id;  
                 } else if (props.attrExists("Amplifier 1 cell number")) {
                     electrode_s[0]["cell_id"] = factory.createScalar<uint64_t>(electrode_number);                    
@@ -842,6 +842,10 @@ class Parser {
                     //"other" source, do nothing
                 } else if (props.attrExists("orientation")) {
                     //"retina" source, do nothing
+                } else if (props.attrExists("slice_thickness")) {
+                    //"brain" source, do nothing
+                } else if (props.attrExists("slice_notes")) {
+                    //"brain_slice" source, do nothing
                 } else throwError("Unknown source type!");
 
                 result = matlabPtr->feval(u"vertcat",{std::move(key[0]["electrodes"]), std::move(electrode_s)});
