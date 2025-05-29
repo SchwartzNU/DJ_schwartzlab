@@ -1086,7 +1086,7 @@ class Parser {
             //case Brain slice
             DEBUGPRINT("Parsing Brain slice");
             s = factory.createStructArray({1},
-            {"source_id", "file_name", "brain_id"});
+            {"source_id", "file_name", "brain_id", "slice_notes"});
             DEBUGPRINT("Source ID");  
             s[0]["source_id"] = factory.createScalar(ind);     
             DEBUGPRINT("FIle name");       
@@ -1094,7 +1094,7 @@ class Parser {
             DEBUGPRINT("Brain ID");
             s[0]["brain_id"] = factory.createScalar(parent_ind);
             DEBUGPRINT("Slice notes");     
-             s[0]["slice_notes"] = parseStrAttr(props, "slice_notes");
+            s[0]["slice_notes"] = parseStrAttr(props, "slice_notes");
 
             DEBUGPRINT("Params parsed");
             StructArray result = matlabPtr->feval(u"vertcat",{std::move(key[0]["brain_slices"]), std::move(s)});
