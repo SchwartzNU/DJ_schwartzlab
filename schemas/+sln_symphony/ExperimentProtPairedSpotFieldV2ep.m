@@ -2,7 +2,7 @@
 #e parameters for PairedSpotField (2) 
 -> sln_symphony.ExperimentEpoch
 ---
-intensity : blob
+epoch_intensity : blob
 cx : blob
 cy : blob
 %}
