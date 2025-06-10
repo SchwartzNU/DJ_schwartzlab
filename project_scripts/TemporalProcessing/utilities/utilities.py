@@ -39,3 +39,26 @@ def compute_psd_stats(row, fs=60, nperseg=None, eps=1e-10):
         'H_f_mag': H_mag,
         'H_f_pxx': H_pxx
     })
+
+def convert_stringified_arrays(df):
+    converted_cols = []
+    for col in df.columns:
+        try:
+            sample = df[col].dropna().iloc[0]
+            if isinstance(sample, str):
+                # Remove surrounding quotes and newlines
+                sample_clean = sample.strip().strip('"').replace('\n', ' ')
+                if re.match(r'^\[.*\]$', sample_clean):
+                    df[col] = df[col].apply(lambda s: np.fromstring(s.strip().strip('"').strip('[]').replace('\n', ' '), sep=' '))
+                    converted_cols.append(col)
+        except Exception as e:
+            print(f"Skipping column {col} due to error: {e}")
+    if converted_cols:
+        print("Converted the following columns to NumPy arrays:")
+        for col in converted_cols:
+            print(f"  - {col}")
+    else:
+        print("No stringified array columns found.")
+    return df
+
+
