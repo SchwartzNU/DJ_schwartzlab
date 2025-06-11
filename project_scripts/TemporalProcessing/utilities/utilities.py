@@ -22,7 +22,7 @@ def compute_psd_stats(row, fs=60, nperseg=None, eps=1e-10):
     spikes = np.asarray(row['spike_train'])
 
     if nperseg is None:
-        nperseg = fs * 2  # default: 2s window
+        nperseg = fs * 2  
 
     f_stim, Pxx_stim = welch(stim, fs=fs, nperseg=nperseg)
     f_spikes, Pxx_spikes = welch(spikes, fs=fs, nperseg=nperseg)

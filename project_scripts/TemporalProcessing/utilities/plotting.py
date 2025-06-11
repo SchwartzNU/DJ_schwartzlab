@@ -49,15 +49,15 @@ def plot_example_cell(cell_name, df_celltype):
             ax.set_ylabel('Correltation \n Coefficient', fontsize=22)        
             ax.set_xlim(0, 600)
 
-        axes[0].loglog(freqs[1:], stim_psd[1:] / np.trapz(stim_psd[1:], freqs[1:]),
+        axes[0].loglog(freqs, stim_psd / np.trapz(stim_psd, freqs),
                     label=fr"$\beta={beta_value}$", c=color)
 
         # Spike PSD (normalized)
-        axes[1].loglog(freqs[1:], rs_spikes_psd[1:] / np.trapz(rs_spikes_psd[1:], freqs[1:]),
+        axes[1].loglog(freqs, rs_spikes_psd / np.trapz(rs_spikes_psd, freqs),
                     label=fr"$\beta={beta_value}$", c=color)
 
         # Gain |H(f)|² (already squared in this context)
-        axes[2].loglog(freqs[1:], H_f_power_rs[1:], label=fr"$\beta={beta_value}$", c=color)
+        axes[2].loglog(freqs, H_f_power_rs, label=fr"$\beta={beta_value}$", c=color)
 
     # Labeling
     titles = ["Stimulus", "Spikes Power Spectrum", r"Estimated Filter $|H(f)|^2$"]
