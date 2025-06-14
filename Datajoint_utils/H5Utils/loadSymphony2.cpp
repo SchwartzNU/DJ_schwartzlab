@@ -1351,6 +1351,7 @@ class Parser {
         reorder("epoch_blocks","epoch_block_id", eb_i);
         reorder("channels","epoch_block_id", eb_i);
         reorder("electrodes","epoch_block_id", eb_i);
+        reorder("brain_electrodes","epoch_block_id", eb_i);
         reorder("epoch_channels","epoch_block_id", eb_i);
         reorder("epoch_notes","epoch_block_id", eb_i);
         reorder("epoch_block_notes","epoch_block_id", eb_i);
@@ -1362,6 +1363,7 @@ class Parser {
         reorder("epoch_groups","epoch_group_id", eg_i);
         reorder("channels","epoch_group_id", eg_i);
         reorder("electrodes","epoch_group_id", eg_i);
+        reorder("brain_electrodes","epoch_group_id", eg_i);
         reorder("epoch_channels","epoch_group_id", eg_i);
         reorder("epoch_notes","epoch_group_id", eg_i);
         reorder("epoch_block_notes","epoch_group_id", eg_i);
