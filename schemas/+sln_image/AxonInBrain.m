@@ -3,8 +3,8 @@
 -> sln_image.Image
 ---
 (whole_brain)->sln_image.WholeBrainImage
-midline_slope: double #midline of the brain in the whole brain slice image
-midline_intercept: double 
+medial_lateral: double
+distance_from_fist_slice:double
 centroid_x: double
 centroid_y: double
 centroid_radius: double
@@ -93,10 +93,16 @@ methods (Static)
                     fprintf('filtering slice %d, total %d\n', s, slice_total);
                     color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), background, mask_ar(:, :, s));
                 end
-            else
-                for s = 1:slice_total
-                    mask_ar(:, :, s) = imread(maskpath, index = s);
+                 %directly load color
+            elseif (endsWith(color, 'mat'))
+                buffer = load(color);
+                if (isvector(buffer))
+                    color = buffer;
+                else
+                    error ('color .mat file content not a vector');
                 end
+            else
+                error('Cannot recognize the format of the color file!')
             end
 
             key.mask_image = mask_ar;

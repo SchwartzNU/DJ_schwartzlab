@@ -135,49 +135,59 @@ classdef Image < dj.Manual
                 key.size_in_bytes = file_info.bytes;
                 key.folder = file_info.folder;
                 [~, name, ext] = fileparts(filename);
-                key.image_filename = [name ext];
+                key.image_filename = strcat(name, ext);
 
                 if endsWith(filename,'.tif')
                     meta_fname = strrep(filename,'.tif','_meta.mat');
                     if ~exist(meta_fname, 'file')
                         error("Metadata file not found");
                     end
-                    load(meta_fname,'SI');
 
-                    key.zoom_factor = SI.hRoiManager.scanZoomFactor;
-                    N_channels = length(SI.hChannels.channelSave);
+                    mdloading = load(meta_fname);
+                    SI = mdloading.meta;
+                    
+                    if (~isprop(SI, 'hRoiManager'))
+                        key.zoom_factor = 1;
+                    else
+                        key.zoom_factor = SI.hRoiManager.scanZoomFactor;
+                    end
+                    
+                    N_channels = SI.sizeC;
                     if N_channels ~= n_input_channels
                         error('Number of channels mismatch: %d provided but %d found in file.\n', n_input_channels, N_channels);
                     end
                     key.n_channels = N_channels;
-                    rows = SI.hRoiManager.linesPerFrame;
-                    cols = SI.hRoiManager.pixelsPerLine;
-                    key.width = cols;
-                    key.height = rows;
-                    if isfield(SI,'hStackManager')
-                        if ~forceZ
-                            key.z_scale = abs(SI.hStackManager.actualStackZStepSize);
-                        end
-                        N_slices = SI.hStackManager.actualNumSlices;
+                    key.width = SI.width;
+                    key.height = SI.height;
+                    
+                    if (isprop(SI, 'sizeZ'))
+                         key.n_slices = SI.sizeZ;
                     else
-                        N_slices = 1;
+                        key.n_slices = 1;
                     end
-
-                    key.n_slices = N_slices;
-                    key.raw_image = uint16(zeros(rows, cols, N_slices, N_channels));
-                    raw_image_interleaved = uint16(zeros(rows, cols, N_slices*N_channels));
-                    fprintf('Loading %d slices * %d channels\n', N_slices, N_channels);
-                    for i=1:N_slices*N_channels
+                   
+                    key.raw_image = uint16(zeros(key.height, key.width, key.n_slices, N_channels));
+                    raw_image_interleaved = uint16(zeros(key.height, key.width, key.n_slices*N_channels));
+                    fprintf('Loading %d slices * %d channels\n', key.n_slices, N_channels);
+                    for i=1:key.n_slices*N_channels
                         raw_image_interleaved(:,:,i) = imread(filename,i);
                     end
                     for i=1:N_channels
-                        key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:N_slices*N_channels);
+                        key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:key.n_slices*N_channels);
                     end
                     fprintf('Done loading.\n');
-                    x_range = abs(SI.hRoiManager.imagingFovUm(1,1) - SI.hRoiManager.imagingFovUm(2,1));
-                    y_range = abs(SI.hRoiManager.imagingFovUm(2,1) - SI.hRoiManager.imagingFovUm(2,2));
-                    key.x_scale = x_range / cols; %µm / pixel
-                    key.y_scale = y_range / rows; %µm / pixel
+                    if (isprop(SI, 'hRoiManager') || isfield(SI, 'hRoiManager'))
+                        x_range = abs(SI.hRoiManager.imagingFovUm(1,1) - SI.hRoiManager.imagingFovUm(2,1));
+                        y_range = abs(SI.hRoiManager.imagingFovUm(2,1) - SI.hRoiManager.imagingFovUm(2,2));
+                        key.x_scale = x_range / key.height; %µm / pixel
+                        key.y_scale = y_range / key.width; %µm / pixel
+                    else
+                        key.x_scale = SI.pxSize(1);
+                        key.y_scale = SI.pxSize(2);
+                    end
+
+
+
                 elseif endsWith(filename,'.nd2')
                     temp = which('BioformatsImage');
                     if isempty(temp)
