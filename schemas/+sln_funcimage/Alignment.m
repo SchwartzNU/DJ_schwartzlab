@@ -57,10 +57,13 @@ classdef Alignment < dj.Computed
                 pulses_up = getThresCross(alignment_pulse_trace, 0.5, 1);
 
                 if epochs.count ~= length(pulses_up)
-                    fprintf('Alignment error: number of alignment pulses (%d) did not match number of epochs (%d). \n', length(pulses_up), epochs.count);
-                    error('Alignment error');
+                    warning('Alignment error: number of alignment pulses (%d) did not match number of epochs (%d). \n', length(pulses_up), epochs.count);
+                    N_epochs = min([epochs.count, length(pulses_up)]);
+                    warning('Aligning %d epochs based on assumption', N_epochs)
+                    
+                    %error('Alignment error');
                 end
-                decimal_frames = pulses_up / image_props.height;
+                decimal_frames = pulses_up(1:N_epochs) / image_props.height;
                 if pulse_on_stim
                     decimal_frames = decimal_frames - (pre_time/1E3) * image_props.frame_rate;
                 end
