@@ -1,4 +1,4 @@
-function results_table = get_GLUT1_for_stacks(stack_query,vars,label_vars,fixed_vars)
+function results_table = get_GLUT3_for_stacks(stack_query,vars,label_vars,fixed_vars)
 %vars is a cell array of variable names on which to split 
 %label vars is a cell array of variable names to list (for marking points)
 %but not use to split
@@ -10,7 +10,7 @@ if nargin<3
 end
 Nvars = length(vars);
 
-all_cells_struct = fetch(sln_imquant.GLUT1Cell * stack_query,'*');
+all_cells_struct = fetch(sln_imquant.GLUT3Cell * stack_query,'*');
 all_cells_table = struct2table(all_cells_struct,'AsArray',true);
 for i=1:Nvars
     if ischar(all_cells_struct(1).(vars{i}))
@@ -26,14 +26,13 @@ results_table = conditions_table;
 for i=1:height(conditions_table)
     fprintf('Condition %d of %d\n', i, height(conditions_table))
     T = innerjoin(all_cells_table,conditions_table(i,:));    
-    T = T(~isnan(T.glut1_top_surf),:);         
-    %glut1_vec = T.glut1_top_surf ./ T.membrane_top_surf;
-    glut1_vec = (T.glut1_top_surf + T.glut1_bot_surf) ./ (T.membrane_top_surf + T.membrane_bot_surf);
-    results_table.glut1_ratio_all{i} = glut1_vec;
-    results_table.N(i) = length(glut1_vec);
-    results_table.glut1_ratio_mean(i) = mean(glut1_vec(~isnan(glut1_vec)));
-    results_table.glut1_ratio_sd(i) = std(glut1_vec(~isnan(glut1_vec)));
-    results_table.glut1_ratio_sem(i) = std(glut1_vec(~isnan(glut1_vec)))./(length(glut1_vec(~isnan(glut1_vec)))-1);
+    T = T(~isnan(T.glut3_top_surf),:);         
+    glut3_vec = T.glut3_top_surf ./ T.membrane_top_surf;
+    results_table.glut3_ratio_all{i} = glut3_vec;
+    results_table.N(i) = length(glut3_vec);
+    results_table.glut3_ratio_mean(i) = mean(glut3_vec(~isnan(glut3_vec)));
+    results_table.glut3_ratio_sd(i) = std(glut3_vec(~isnan(glut3_vec)));
+    results_table.glut3_ratio_sem(i) = std(glut3_vec(~isnan(glut3_vec)))./(length(glut3_vec(~isnan(glut3_vec)))-1);
     for v=1:length(label_vars)
         vals = categorical(T.(label_vars{v}));
         cats = categories(vals);
@@ -51,7 +50,4 @@ for i=1:height(conditions_table)
     end
 end
 results_table = results_table(results_table.N>0,:);
-
-
-
 
