@@ -64,17 +64,32 @@ methods (Static)
             key.centroid_x = centroid.x;
             key.centroid_y = centroid.y;
             key.radius = centroid.r;
-            if (numel(background)~= 4)
-                error('Wrong format of the background roi!');
+           
+            if (endsWith(background, '.roi'))
+                roi = ReadImageJROI(background);
+                if (iscell(roi))
+                    roi = roi{1};
+                end
+                bg_reformt = zeros([1,4]);
+                bg_reformt(1) = roi.vnRectBounds(2);
+                bg_reformt(2) = roi.vnRectBounds(4);
+                bg_reformt(3) = roi.vnRectBounds(1);
+                bg_reformt(4) = roi.vnRectBounds(3);
+                key.background_roi = bg_reformt;
+            elseif (endsWith(background, '.mat'))
+                if (numel(background)~= 4)
+                    error('Wrong format of the background roi!');
+                end
+                key.background_roi = background;
             end
-            key.background_roi = background;
+          
 
             %load the tif mask image
             infopack = imfinfo(maskpath);
             slice_total = numel(infopack);
 
-            im_h = infopack(1).Height;
-            im_w = infopack(1).Width;
+            %im_h = infopack(1).Height;
+           % im_w = infopack(1).Width;
 
             %reduce the value of true pixel in mask to 1
             %mask_ar = mask_ar/max(mask_ar, [], 'all');
@@ -92,7 +107,7 @@ methods (Static)
 
                     maskframe = imread(maskpath, s);                                     
                     fprintf('filtering slice %d, total %d\n', s, slice_total);
-                    color{end+1} = sln_image.RGCinRetina.extract_single_frame(data.raw_image(:, :, s, :), background, maskframe);
+                    color{end+1} = sln_image.RGCinRetina.extract_single_frame(data.raw_image(:, :, s, :), key.background_roi, maskframe);
                     %pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)
                 end
 

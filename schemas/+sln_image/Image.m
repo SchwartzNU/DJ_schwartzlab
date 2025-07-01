@@ -193,6 +193,9 @@ classdef Image < dj.Manual
                     if isempty(temp)
                         error("BioformatsImage not on MATLAB path. Please install toolbox first.");
                     end
+                    if (~ischar(filename))
+                        filename = char(filename);
+                    end
                     im = BioformatsImage(filename);
                     key.zoom_factor = 1; %we will just call it zoom factor 1 for .nd2 images
                     N_channels = im.sizeC;
