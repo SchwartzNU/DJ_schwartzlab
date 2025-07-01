@@ -66,13 +66,22 @@ for d=1:N_datasets
         trig_UP = getThresCross(trig_data,2.5,1);
         trig_DOWN = getThresCross(trig_data,2.5,-1);
 
-        if length(trig_UP) ~= length(trig_DOWN)
+        if length(trig_UP) ~= length(trig_DOWN) || trig_DOWN(1) < trig_UP(1)
             disp('Trigger upstrokes and downstrokes do not match');
             disp('This may be a stupid ScanImage bug');
             disp('So implementing a crappy hack to fix it for now');
             first_diff = trig_DOWN(1) - trig_UP(1);
-            trig_DOWN(end+1) = trig_UP(end)+first_diff;
+            N_up = length(trig_UP);
+            if first_diff>0
+                trig_DOWN(end+1) = trig_UP(end)+first_diff;
+            else
+                first_diff = trig_DOWN(2) - trig_UP(1);
+                trig_DOWN = trig_DOWN(2:N_up);
+                trig_DOWN(end+1) = trig_UP(end)+first_diff;
+            end
         end
+
+        %keyboard;
 
         if isempty(trig_UP)
             disp('Skipping epochs with no trigger pulses');
@@ -109,7 +118,7 @@ for d=1:N_datasets
     
     for i=1:N_stim_groups
         for j=1:N_trials
-            if length(all_traces_flattened{i,j}) == 0;
+            if isempty(all_traces_flattened{i,j})
                 L_mat(i,j) = nan;
             else
                 L_mat(i,j) = length(all_traces_flattened{i,j});
@@ -130,6 +139,7 @@ for d=1:N_datasets
         time_ind = time_axis{i} >=0 & time_axis{i} <= integration_time/1E3;
         response_matrix = cell2mat(all_traces_flattened(i,:)');
         traces_mean{i} = mean(response_matrix,1);
+        traces_sem{i} = std(response_matrix,[],1)./sqrt(size(response_matrix,1)-1);
         peak_by_trial = max(response_matrix(:,time_ind),[],2);
         integral_by_trial = sum(response_matrix(:,time_ind),2) / sample_rate / (integration_time/1E3);        
         trial_integrated_resp_mean(i) = mean(integral_by_trial);
@@ -137,7 +147,7 @@ for d=1:N_datasets
         trial_peak_resp_mean(i) = mean(peak_by_trial);
         trial_peak_resp_sem(i) = std(peak_by_trial) ./ sqrt(N_trials-1);
         peak_resp(i) = max(traces_mean{i}(time_ind));
-        integrated_resp(i) = sum(traces_mean{i}(time_ind)) / sample_rate / (integration_time/1E3);        
+        integrated_resp(i) = sum(traces_mean{i}(time_ind)) / sample_rate / (integration_time/1E3); 
     end
 
     resting_potential_mean = mean(resting_vector);
@@ -149,6 +159,7 @@ for d=1:N_datasets
     R.n_epochs(d) = N_epochs;
     R.time_axis{d} = time_axis;
     R.traces_mean{d} = traces_mean;
+    R.traces_sem{d} = traces_sem;
     R.traces_all{d} = all_traces;
     R.resting_potential_mean(d) = resting_potential_mean;
     R.laser_power(d) = epochs_in_dataset(1).laser_power;

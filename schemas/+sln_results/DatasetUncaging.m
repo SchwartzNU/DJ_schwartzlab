@@ -21,6 +21,7 @@ shutter_open : varchar(128) # T or F for shutter open
 time_axis=NULL : longblob # time axis for each trace
 traces_all=NULL : longblob # every trace aligned to each uncaging item
 traces_mean=NULL : longblob # mean trace aligned to each uncaging item
+traces_sem=NULL : longblob # sem of trace aligned to each uncaging item
 trial_integrated_resp_mean=NULL : longblob # sum response (mV*s) within time period (a parameter which defaults to 50 ms), mean across trials
 trial_integrated_resp_sem=NULL : longblob # sum response (mV*s) within time period (a parameter which defaults to 50 ms), sem across trials
 trial_peak_resp_mean=NULL : longblob # mean of peak resp (mV) for each trial at each location
