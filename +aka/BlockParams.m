@@ -54,9 +54,10 @@ classdef BlockParams < dj.internal.GeneralRelvar
                 if length(utype) == 1
                     % all the tables that use this field have the same type
                     fattrs(i).type = attrs(find(fi,1)).type;
-                    fattrs(i).sqlType = attrs(find(fi,1)).type;
-                    fattrs(i).isNumeric = attrs(find(fi,1)).type;
-                    fattrs(i).isString = attrs(find(fi,1)).type;
+                    fattrs(i).sqlType = attrs(find(fi,1)).sqlType;
+                    fattrs(i).isNumeric = attrs(find(fi,1)).isNumeric;
+                    fattrs(i).isString = attrs(find(fi,1)).isString;
+                    fattrs(i).isBlob = attrs(find(fi,1)).isBlob;
                 else
                     % there are different types for this field in the table
                     % list
