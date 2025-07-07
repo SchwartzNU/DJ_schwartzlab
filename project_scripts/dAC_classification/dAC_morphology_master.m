@@ -34,6 +34,6 @@ for i=1:length(types)
     Tpart = T(ic==i,:);
     s = table2struct(Tpart);
     for j=1:length(s)
-        exportStructToHDF5(s(j),'dAC_morphology_master.h5',['/' types{i} '/' s(j).cell_name]);
+        exportStructToHDF5(s(j),'dAC_morphology_master.h5',['/' types{i} '/c' s(j).cell_name]);
     end
 end
