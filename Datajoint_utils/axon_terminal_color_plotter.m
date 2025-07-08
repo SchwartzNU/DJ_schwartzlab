@@ -15,14 +15,15 @@ end
 
 max_RGB(:,:,1) = squeeze(max(M_RGB(:,:,:,1),[],3));
 max_RGB(:,:,2) = squeeze(max(M_RGB(:,:,:,2),[],3));
-max_RGB(:,:,3) = squeeze(max(M_RGB(:,:,:,3),[],3));
+max_RGB(:,:,3) = squeeze(max(M_RGB(:,:,:,3),[],3))*5;
 
-max_RGB = log(max_RGB+1);
+max_RGB = log(max_RGB+1).^2;
+%max_RGB = sqrt(max_RGB);
 max_val = max(max_RGB,[],'all');
 max_RGB = max_RGB./max_val;
 zero_pix = sum(max_RGB,3)==0;
 
-
+figure;
 h = imshow(max_RGB);
 set(gca, 'Color', [1 1 1]) 
 set(h, 'AlphaData', ~zero_pix) 
