@@ -46,15 +46,15 @@ for c = cells'
                         [~,~,~,~,~,~,x,y,~,~] ...
                             = sa_labs.util.BMARGSMv2(obj.tau, obj.sigma, obj.tauz,obj.sigmaz, 1/60, ...
                             total_time,t_hex ,obj.mosaic_spacing/sqrt(3)+obj.leeway,obj.tburn,obj.motion_seed);
-                       
+
                 end
-                        results(i).(prot)(j).cx = results(i).(prot)(j).cx + x(1:end-1);
-                        results(i).(prot)(j).cy = results(i).(prot)(j).cy + y(1:end-1);
+                results(i).(prot)(j).cx = x(1:end-1); %results(i).(prot)(j).cx + x(1:end-1);
+                results(i).(prot)(j).cy = y(1:end-1); %results(i).(prot)(j).cy + y(1:end-1);
             end
         end
         i = i+1;
     end
 end
-    %%
-    save(out_file,'results', '-v7.3');
+%%
+save(out_file,'results', '-v7.3');
 
