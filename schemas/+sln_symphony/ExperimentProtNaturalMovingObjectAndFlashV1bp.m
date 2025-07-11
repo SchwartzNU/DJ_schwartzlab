@@ -1,10 +1,11 @@
 %{
-#b parameters for NaturalMovingObject (2) 
+#b parameters for NaturalMovingObjectAndFlash (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
 pre_frames : smallint unsigned
 stim_frames : smallint unsigned
 tail_frames : smallint unsigned
+mean_level : float
 intensity : float
 tau : float
 tauz : float
