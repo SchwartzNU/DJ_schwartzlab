@@ -455,10 +455,22 @@ for f=1:length(D)
     fprintf(1, 'Done with file %d of %d\n', f, length(D));
     fprintf(1, 'Writing to binary file.\n');
 
-    fid_out = fopen([path filesep 'raw_data_' num2str(f) '.bin'],'w');
-    fwrite(fid_out,int16(amplifier_data'),'int16');    
-    fclose(fid_out);
+    if f==1
+        for c=1:size(amplifier_data,1) %for each channel
+            fid_out(c) = fopen([path filesep 'raw_data_ch_' num2str(c) '.bin'],'w');
+        end
+        fid_out_dig = fopen([path filesep 'dig_data.bin'],'w');
+    end
+    for c=1:size(amplifier_data,1) %for each channel
+        fwrite(fid_out(c),int16(amplifier_data(c,:)'),'int16');   
+    end
+    fwrite(fid_out_dig,logical(board_dig_in_data'),'ubit1');
 end
+for c=1:size(amplifier_data,1) %for each channel
+    fclose(fid_out(c));
+end
+fclose(fid_out_dig);
+
 fprintf(1, 'Done! Elapsed time: %0.1f seconds\n', toc);
 return
 
