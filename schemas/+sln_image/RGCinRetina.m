@@ -15,6 +15,40 @@ maskpath: varchar(512)
 
 classdef RGCinRetina < dj.Manual
 methods (Static)
+    function upload_rgc_in_retina(filename, user, scope, channel, z_scale, wholeretina_imid, centroid, cellid)
+        try
+            sln_image.Image.LoadFromFilewithStructuralInput(filename, user, scope, channel, z_scale);
+            [folderPath, filepre, fileext] = fileparts(filePath);
+            query = {};
+            query.image_filename = append(filepre, fileext);
+            query.folder = folderPath;
+            result = fetch(sln_image.Image & query, 'image_id');
+
+            mask = fullfile(folderPath, 'mask.tif');
+            if (~isfile(mask))
+                fprintf('Upload failed, see error message');
+                error('Cannot find mask file in the folder');
+            end
+            %back ground could be either .roi or .mat
+            background = fullfile(folderPath, 'background.roi');
+            if (~isfile(background))
+                background = fullfile(folderPath, 'background.mat');
+                if (~isfile(background))
+                    error('Cannot find background file in the same folder as image!');
+                end
+            end
+
+            %start uploading sln_image.WholeRetinaImage
+            assign_rgc_in_retina(result.image_id, wholeretina_imid, centroid, mask, cellid, background);
+            fprintf('RGC image uploaded, image id: %d', result.image_id);
+ 
+        catch ME
+            fprintf('uploading rgc image failed!')
+            rethrow(ME);
+        end
+
+
+    end
     function pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)
         [row, col] = find(mask_frame~=0);
         indx = sub2ind(size(image_frame), row, col);
@@ -100,13 +134,13 @@ methods (Static)
                 fprintf('No exisiting pixel value input, extracting now....');
                 data = fetch(sln_image.Image & query, 'raw_image');
                 color = {};
+                fprintf( 'total slice to filter: %d\n', slice_total);
                 for s = 1:slice_total
                     %loop through all the slices of the z stack image, not
                     %idea but only once
                     %get mask into numeric array and pixel colors
-
                     maskframe = imread(maskpath, s);                                     
-                    fprintf('filtering slice %d, total %d\n', s, slice_total);
+                    
                     color{end+1} = sln_image.RGCinRetina.extract_single_frame(data.raw_image(:, :, s, :), key.background_roi, maskframe);
                     %pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)
                 end
