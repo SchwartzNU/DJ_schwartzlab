@@ -71,8 +71,9 @@ MP_data_RGCs = (sln_results.DatasetMultiPulsevaryCurrentFeatureExtract * ...
     sln_cell.Cell * ...
     proj(sln_cell.AssignType.current,'*','entry_time->type_assignment_entry_time','user_name->type_assignment_user_name') & ...
     'cell_class="RGC"' & ...
-    'cc_quality="high"') - ...
-    sln_symphony.UserParamDatasetExtraMp;
+    'cc_quality="high"')  - ...
+    (sln_symphony.UserParamDatasetExtraMp & 'extra_mp = "T"') - proj(sln_results.DatasetMultiPulsevaryCurrentFeatureExtract & ...
+    (sln_symphony.ExperimentElectrode * sln_symphony.DatasetEpoch & 'amp_mode LIKE "%Perforated%"'))  & 'NOT strain_name = "Tusc5-eGFP"'
 
 
 %% Get matching ones and extract them
@@ -85,6 +86,7 @@ for i=1:length(ids)
     q_MP = MP_data_RGCs & sprintf('cell_unid=%d',ids(i));
     if q_MP.count == 1
         q_SMS = SMS_CA_RGCs & sprintf('cell_unid=%d',ids(i));
+        q_SMS.count
         if q_SMS.count == 1
             data(z).current_injections = fetch(q_MP,'*');
             epochs = sln_symphony.DatasetEpoch * ...
@@ -99,7 +101,39 @@ for i=1:length(ids)
             save(sprintf('Cell_%d',ids(i)), 'data_for_cell');
             exportStructToHDF5(data_for_cell,sprintf('Cell_%d.h5',ids(i)),'/');
             z=z+1;
+        elseif q_SMS.count == 0
+            data(z).current_injections = fetch(q_MP,'*');
+            epochs = sln_symphony.DatasetEpoch * ...
+                sln_symphony.ExperimentChannel * ...
+                sln_symphony.ExperimentEpochChannel * ...
+                aka.MultiPulseParams & ...
+                'channel_name LIKE "Amp_"' & ...
+                proj(q_MP);
+            data(z).current_injections.epoch_traces = fetch(epochs,'*');
+            data(z).light_responses_spikes = [];
+            data_for_cell = data(z);
+            save(sprintf('Cell_%d',ids(i)), 'data_for_cell');
+            exportStructToHDF5(data_for_cell,sprintf('Cell_%d.h5',ids(i)),'/');
+            z=z+1;
+        else
+            data(z).current_injections = fetch(q_MP,'*');
+            epochs = sln_symphony.DatasetEpoch * ...
+                sln_symphony.ExperimentChannel * ...
+                sln_symphony.ExperimentEpochChannel * ...
+                aka.MultiPulseParams & ...
+                'channel_name LIKE "Amp_"' & ...
+                proj(q_MP);
+            data(z).current_injections.epoch_traces = fetch(epochs,'*');
+            data(z).light_responses_spikes = fetch(q_SMS,'*');
+            data_for_cell = data(z);
+            save(sprintf('Cell_%d',ids(i)), 'data_for_cell');
+            exportStructToHDF5(data_for_cell,sprintf('Cell_%d.h5',ids(i)),'/');
+            z=z+1;
         end
+
+    else
+        disp('something fishy happening');
+        q_MP
     end
 end
 
