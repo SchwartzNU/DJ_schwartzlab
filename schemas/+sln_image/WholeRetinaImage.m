@@ -14,7 +14,6 @@ classdef WholeRetinaImage < dj.Manual
                 z_scale = 0;
                 sln_image.Image.LoadFromFilewithStructuralInput(filename, user, scope, channelarr, z_scale);
 
-
                 %search the newly added image id
                 [folderPath, filepre, fileext] = fileparts(filename);
                 query = {};

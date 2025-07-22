@@ -16,6 +16,7 @@ classdef Axon < dj.Manual
                 insert(sln_cell.Axon, key);
                 ids = fetch(sln_cell.Axon, 'axon_id');
                 axon_id = max([ids.axon_id]);
+                fpritnf('New axon added: %d\n', axon_id);
             catch ME
                 rethrow (ME)
             end
