@@ -50,8 +50,11 @@ methods (Static)
             key.folder = convertStringsToChars(folder);
             key.spherical = sph_arr;
             if (isnan(reproj_arr))
-                reproj_arr = sln_tissue.RetinaRecon.retistruct_azimuth(sph_arr(:, 1), sph_arr(:, 2));
+                [x,y] = sln_tissue.RetinaRecon.retistruct_azimuth(sph_arr(:, 1), sph_arr(:, 2));
             end
+            reproj_arr = zeros(size(sph_arr));
+            reproj_arr(:, 1) = x;
+            reproj_arr(:, 2) = y;
             key.reproj = reproj_arr;
 
             C = dj.conn;
