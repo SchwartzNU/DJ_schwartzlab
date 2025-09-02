@@ -7,28 +7,38 @@ anterior_posterior: double
 %}
 
 classdef AxonCoordinate < dj.Computed
-properties (Constant)
-    keySource = aggr( proj(sln_cell.Axon, 'axon_id') * sln_image.AxonImageAssociation * proj(sln_image.AxonInBrain, 'medial_lateral', 'distance_from_fist_slice'),...
-        proj(proj(sln_cell.Axon, 'axon_id') * sln_image.AxonImageAssociation * proj(sln_image.AxonInBrain, 'medial_lateral', 'distance_from_fist_slice'), 'axon_id'),...
-        'AVG(medial_lateral)->mean_ml', 'AVG(distance_from_fist_slice)->mean_ap ');
-end
+    properties (Constant)
+        keySource = sln_cell.Axon;
+    end
 
-methods (Access=protected)
-    function makeTuples(self, key)
+    methods (Access=protected)
+        function makeTuples(self, key)
+            try
+                qstruct.axon_id = key.axon_id;
+                association = fetch( sln_image.AxonImageAssociation & qstruct, 'image_id');
+                ap_all = zeros([numel(association), 1]);
+                ml_all = zeros([numel(association),1]);
+                for i = 1:numel(association)
+                    im.image_id = association(i).image_id;
+                    result = fetch(sln_image.AxonInBrain & im, 'medial_lateral', 'distance_from_fist_slice');
+                    ap_all(i) = result.distance_from_fist_slice;
+                    ml_all(i) = result.medial_lateral;
+                end
 
-        data = fetch(self.keySource & key, '*');
-        % result  = key;
-        result.axon_id = key.axon_id;
-        result.medial_lateral = data.mean_ml;
-        result.anterior_posterior = data.mean_ap;
-        
-        %testing codes don't use
-        % key.medial_lateral = 0;
-        % key.anterior_posterior = 0;
+                key.medial_lateral = mean(ml_all);
+                key.anterior_posterior = mean(ap_all);
 
-        %try insert
-        %key = rmfield(key, 'image_id');
-        self.insert(result);
+                % testing codes don't use
+                % key.medial_lateral = 0;
+                % key.anterior_posterior = 0;
+
+                %try insert
+                self.insert(key);
+                fprintf('Axon coordinate added:\n');
+                disp(key);
+            catch ME
+                rethrow(ME);
+            end
 
     end
 end
