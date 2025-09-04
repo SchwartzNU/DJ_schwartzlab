@@ -345,10 +345,32 @@ classdef Query2Table < matlab.apps.AppBase
                     S = fetch(app.Query, fetchAttrs{:});
                 end
                 if isempty(S)
-                    % Create an empty table with selected variable names so headers show
-                    varTypes = repmat({'string'}, 1, numel(attrs));
-                    T = table('Size',[0 numel(attrs)], ...
-                        'VariableTypes',varTypes, 'VariableNames',attrs);
+                    % Create an empty table with expected output names in selector order
+                    outNames = {};
+                    for iSel = 1:numel(app.Selectors)
+                        if ~isvalid(app.Selectors(iSel)), continue; end
+                        nm = app.Selectors(iSel).Value;
+                        if any(strcmp(nm, app.BlobAttrNames))
+                            lbl = app.aggregatorLabelForIndex(iSel);
+                            if ~isempty(lbl)
+                                nm2 = matlab.lang.makeValidName([nm '_' lbl]);
+                            else
+                                nm2 = nm;
+                            end
+                        else
+                            nm2 = nm;
+                        end
+                        if any(strcmp(nm2, outNames))
+                            nm2 = matlab.lang.makeUniqueStrings(nm2, outNames);
+                        end
+                        outNames{end+1} = nm2; %#ok<AGROW>
+                    end
+                    if isempty(outNames)
+                        outNames = attrs; % fallback
+                    end
+                    varTypes = repmat({'string'}, 1, numel(outNames));
+                    T = table('Size',[0 numel(outNames)], ...
+                        'VariableTypes',varTypes, 'VariableNames',outNames);
                 else
                     T = struct2table(S);
                     % Stash full struct rows for custom aggregators (tuple support)
@@ -406,96 +428,104 @@ classdef Query2Table < matlab.apps.AppBase
         end
 
         function T = applyAggregations(app, T)
-            % For any selected attribute that is a blob, reduce to a scalar
-            vn = T.Properties.VariableNames;
-            visibleNames = vn; % used to strip non-key fields from tuple
-            renameOld = {};
-            renameNew = {};
-            for k = 1:numel(vn)
-                name = vn{k};
-                if any(strcmp(name, app.BlobAttrNames))
-                    % find first selector picking this name
-                    idx = find(arrayfun(@(d)strcmp(d.Value,name), app.Selectors), 1, 'first');
-                    fh = app.aggregatorForIndex(idx);
-                    if ~isempty(fh)
+            % Build the output table in selector order, allowing duplicates
+            % of the same attribute with different reducers.
+            if isempty(T)
+                return
+            end
+
+            Tout = table();
+            nrows = height(T);
+            for iSel = 1:numel(app.Selectors)
+                if ~isvalid(app.Selectors(iSel)), continue; end
+                name = app.Selectors(iSel).Value;
+                isBlob = any(strcmp(name, app.BlobAttrNames));
+                if isBlob
+                    fh = app.aggregatorForIndex(iSel);
+                    if isempty(fh)
+                        % If no aggregator available, skip this selector
+                        continue
+                    end
+                    out = nan(nrows,1);
+                    % Pre-fetch column if present to use as last resort
+                    col = [];
+                    if ismember(name, T.Properties.VariableNames)
                         col = T.(name);
-                        out = nan(height(T),1);
-                        for r = 1:height(T)
-                            % Build tuple with only primary keys when known; else pass full row
-                            tuple = struct();
-                            try
-                                if ~isempty(app.LastStruct)
-                                    src = app.LastStruct(r);
-                                    pkn = app.primaryKeyNames();
-                                    if ~isempty(pkn)
-                                        tuple = struct();
-                                        for kk = 1:numel(pkn)
-                                            nm = pkn{kk};
-                                            if isfield(src, nm)
-                                                tuple.(nm) = src.(nm);
-                                            end
+                    end
+                    for r = 1:nrows
+                        % Build tuple with only primary keys when known; else pass full row
+                        tuple = struct();
+                        try
+                            if ~isempty(app.LastStruct)
+                                src = app.LastStruct(r);
+                                pkn = app.primaryKeyNames();
+                                if ~isempty(pkn)
+                                    tuple = struct();
+                                    for kk = 1:numel(pkn)
+                                        nm = pkn{kk};
+                                        if isfield(src, nm)
+                                            tuple.(nm) = src.(nm);
                                         end
-                                    else
-                                        tuple = src;
-                                    end
-                                end
-                            catch
-                            end
-                            % Always fetch the blob by tuple for row consistency
-                            if app.Debug && r <= app.DebugMaxRows
-                                try
-                                    app.dbg('agg %s row %d tupleFields=%s', ...
-                                        name, r, strjoin(fieldnames(tuple),','));
-                                catch
-                                end
-                            end
-                            xval = [];
-                            try
-                                if exist('fetchn','file') == 2
-                                    tmp = fetchn(app.Query & tuple, name, 'LIMIT', 1);
-                                    if ~isempty(tmp)
-                                        xval = tmp{1};
                                     end
                                 else
-                                    xval = fetch1(app.Query & tuple, name);
+                                    tuple = src;
                                 end
-                            catch
-                                % As a last resort, use the table cell value
-                                try
+                            end
+                        catch
+                        end
+                        % Fetch the blob by tuple for row consistency
+                        xval = [];
+                        try
+                            if exist('fetchn','file') == 2
+                                tmp = fetchn(app.Query & tuple, name, 'LIMIT', 1);
+                                if ~isempty(tmp)
+                                    xval = tmp{1};
+                                end
+                            else
+                                xval = fetch1(app.Query & tuple, name);
+                            end
+                        catch
+                            % As a last resort, use the table cell value
+                            try
+                                if ~isempty(col)
                                     xval = col(r);
                                     if iscell(xval) && ~isempty(xval)
                                         xval = xval{1};
                                     end
-                                catch
                                 end
-                            end
-                            out(r,1) = app.reduceScalar(xval, fh, tuple);
-                            if app.Debug && r <= app.DebugMaxRows
-                                app.dbg('agg %s row %d -> %g', name, r, out(r,1));
+                            catch
                             end
                         end
-                        T.(name) = out;
-                        % rename with suffix
-                        label = app.aggregatorLabelForIndex(idx);
-                        if ~isempty(label)
-                            newName = matlab.lang.makeValidName([name '_' label]);
-                            renameOld{end+1} = name; %#ok<AGROW>
-                            renameNew{end+1} = newName; %#ok<AGROW>
+                        out(r,1) = app.reduceScalar(xval, fh, tuple);
+                        if app.Debug && r <= app.DebugMaxRows
+                            app.dbg('agg %s[%d] row %d -> %g', name, iSel, r, out(r,1));
                         end
                     end
-                end
-            end
-            % Apply renames at once to avoid conflicts
-            if ~isempty(renameOld)
-                vn2 = T.Properties.VariableNames;
-                for i = 1:numel(renameOld)
-                    ix = find(strcmp(vn2, renameOld{i}), 1);
-                    if ~isempty(ix)
-                        vn2{ix} = renameNew{i};
+                    % Name with suffix based on aggregator
+                    label = app.aggregatorLabelForIndex(iSel);
+                    if ~isempty(label)
+                        newName = matlab.lang.makeValidName([name '_' label]);
+                    else
+                        newName = name;
                     end
+                    % Ensure uniqueness if already present
+                    if any(strcmp(newName, Tout.Properties.VariableNames))
+                        newName = matlab.lang.makeUniqueStrings(newName, Tout.Properties.VariableNames);
+                    end
+                    Tout.(newName) = out;
+                else
+                    % Non-blob: copy as-is
+                    if ~ismember(name, T.Properties.VariableNames)
+                        continue
+                    end
+                    newName = name;
+                    if any(strcmp(newName, Tout.Properties.VariableNames))
+                        newName = matlab.lang.makeUniqueStrings(newName, Tout.Properties.VariableNames);
+                    end
+                    Tout.(newName) = T.(name);
                 end
-                T.Properties.VariableNames = vn2;
             end
+            T = Tout;
         end
 
         function label = aggregatorLabelForIndex(app, idx)
@@ -505,7 +535,7 @@ classdef Query2Table < matlab.apps.AppBase
             end
             choice = app.AggSelectors(idx).Value;
             switch choice
-                case {'mean','median'}
+                case {'mean','median','max','min','max_signed'}
                     label = choice;
                 case 'custom…'
                     if idx<=numel(app.CustomAggText) && ~isempty(app.CustomAggText{idx})
@@ -548,6 +578,15 @@ classdef Query2Table < matlab.apps.AppBase
                 case 'median'
                     % Three-arg wrapper; ignores tuple/query
                     fh = @(x,tuple,q)median(x(:),'omitnan');
+                case 'max'
+                    % Three-arg wrapper; ignores tuple/query
+                    fh = @(x,tuple,q)max(x(:),[],'omitnan');
+                case 'min'
+                    % Three-arg wrapper; ignores tuple/query
+                    fh = @(x,tuple,q)min(x(:),[],'omitnan');
+                case 'max_signed'
+                    % Value with largest magnitude, keeping original sign
+                    fh = @(x,tuple,q)app.maxSignedValue(x(:));
                 case 'custom…'
                     if idx<=numel(app.CustomAggFns) && ~isempty(app.CustomAggFns{idx})
                         basefh = app.CustomAggFns{idx};
@@ -663,7 +702,36 @@ classdef Query2Table < matlab.apps.AppBase
 
         function items = aggregationItems(app)
             % Base items plus any library functions
-            items = [{'mean','median','custom…'}, app.AggLibraryNames];
+            items = [{'mean','median','max','min','max_signed','custom…'}, app.AggLibraryNames];
+        end
+
+        function y = maxSignedValue(~, v)
+            % Helper for 'max_signed': select value with largest |v|, keep sign
+            try
+                if iscell(v)
+                    if numel(v)==1, v = v{1}; else, v = cellfun(@double, v); end
+                end
+                if isstring(v)
+                    v = double(str2double(v));
+                elseif ischar(v)
+                    v = double(str2double(v));
+                elseif islogical(v)
+                    v = double(v);
+                end
+                if ~isnumeric(v)
+                    v = double(v);
+                end
+                v = v(:);
+                valid = isfinite(v);
+                if ~any(valid)
+                    y = NaN; return
+                end
+                idxs = find(valid);
+                [~, irel] = max(abs(v(valid)));
+                y = v(idxs(irel));
+            catch
+                y = NaN;
+            end
         end
 
         function loadReducerLibrary(app)
