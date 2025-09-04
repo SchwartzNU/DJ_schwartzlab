@@ -441,31 +441,32 @@ classdef Query2Table < matlab.apps.AppBase
                                 end
                             catch
                             end
-                            % Probe input value summary for first rows
+                            % Always fetch the blob by tuple for row consistency
                             if app.Debug && r <= app.DebugMaxRows
                                 try
-                                    xv = col(r);
-                                    if iscell(xv), xv0 = xv{1}; else, xv0 = xv; end
-                                    app.dbg('agg %s row %d xclass=%s xlen=%d tupleFields=%s', ...
-                                        name, r, class(xv0), numel(xv0), strjoin(fieldnames(tuple),','));
+                                    app.dbg('agg %s row %d tupleFields=%s', ...
+                                        name, r, strjoin(fieldnames(tuple),','));
                                 catch
                                 end
                             end
-                            % x value for this row; if empty, fall back to fetchn by key
-                            xval = col(r);
-                            if isempty(xval) || (iscell(xval) && (isempty(xval{1})))
+                            xval = [];
+                            try
+                                if exist('fetchn','file') == 2
+                                    tmp = fetchn(app.Query & tuple, name, 'LIMIT', 1);
+                                    if ~isempty(tmp)
+                                        xval = tmp{1};
+                                    end
+                                else
+                                    xval = fetch1(app.Query & tuple, name);
+                                end
+                            catch
+                                % As a last resort, use the table cell value
                                 try
-                                    % Prefer fetchn with LIMIT 1
-                                    if exist('fetchn','file') == 2
-                                        tmp = fetchn(app.Query & tuple, name, 'LIMIT', 1);
-                                        if ~isempty(tmp)
-                                            xval = tmp{1};
-                                        end
-                                    else
-                                        xval = fetch1(app.Query & tuple, name);
+                                    xval = col(r);
+                                    if iscell(xval) && ~isempty(xval)
+                                        xval = xval{1};
                                     end
                                 catch
-                                    % leave xval as-is (likely empty)
                                 end
                             end
                             out(r,1) = app.reduceScalar(xval, fh, tuple);
