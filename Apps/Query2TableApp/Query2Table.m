@@ -1003,38 +1003,52 @@ classdef Query2Table < matlab.apps.AppBase
         end
 
         function units = getUnitsForAttributes(app, attrs)
-            % Build units list corresponding to attrs, using the first
-            % occurrence of each attribute in the selectors.
+            % Map selector units to output attribute names.
+            % Handles duplicate attributes and reducer labels (even with underscores).
             units = repmat({''}, 1, numel(attrs));
-            seen = containers.Map('KeyType','char','ValueType','logical');
-            for i = 1:numel(app.Selectors)
-                name = app.Selectors(i).Value;
-                if ~isKey(seen, name)
-                    seen(name) = true;
-                    idx = find(strcmp(attrs, name), 1, 'first');
-                    if ~isempty(idx)
-                        if i <= numel(app.UnitEditors) && isvalid(app.UnitEditors(i))
-                            units{idx} = app.UnitEditors(i).Value;
-                        end
+            filled = false(1, numel(attrs));
+
+            % Build expected output names using the same logic as applyAggregations
+            outNames = {};
+            baseNames = {};
+            for iSel = 1:numel(app.Selectors)
+                if ~isvalid(app.Selectors(iSel)), continue; end
+                nm = app.Selectors(iSel).Value;
+                baseNames{end+1} = nm; %#ok<AGROW>
+                if any(strcmp(nm, app.BlobAttrNames))
+                    lbl = app.aggregatorLabelForIndex(iSel);
+                    if ~isempty(lbl)
+                        nm2 = matlab.lang.makeValidName([nm '_' lbl]);
+                    else
+                        nm2 = nm;
                     end
+                else
+                    nm2 = nm;
+                end
+                if any(strcmp(nm2, outNames))
+                    nm2 = matlab.lang.makeUniqueStrings(nm2, outNames);
+                end
+                outNames{end+1} = nm2; %#ok<AGROW>
+            end
+
+            % First pass: exact match to outNames
+            for iSel = 1:numel(outNames)
+                if iSel > numel(app.UnitEditors) || ~isvalid(app.UnitEditors(iSel)), continue; end
+                u = app.UnitEditors(iSel).Value;
+                % exact match position in attrs
+                idx = find(strcmp(attrs, outNames{iSel}) & ~filled, 1, 'first');
+                if ~isempty(idx)
+                    units{idx} = u; filled(idx) = true; continue;
                 end
             end
-            % Fallback: if some attrs were not matched due to renaming with
-            % aggregation suffixes, try stripping the suffix after the last '_'
-            for k = 1:numel(attrs)
-                if units{k} == "" || (iscell(units) && isempty(units{k}))
-                    nm = attrs{k};
-                    us = strfind(nm,'_');
-                    if ~isempty(us)
-                        base = nm(1:us(end)-1);
-                        if isKey(seen, base)
-                            % find the selector index for base
-                            ii = find(arrayfun(@(d)strcmp(d.Value,base), app.Selectors), 1, 'first');
-                            if ~isempty(ii) && ii <= numel(app.UnitEditors) && isvalid(app.UnitEditors(ii))
-                                units{k} = app.UnitEditors(ii).Value;
-                            end
-                        end
-                    end
+
+            % Second pass: match by baseNames for callers that pass raw attrs
+            for iSel = 1:numel(baseNames)
+                if iSel > numel(app.UnitEditors) || ~isvalid(app.UnitEditors(iSel)), continue; end
+                u = app.UnitEditors(iSel).Value;
+                idx = find(strcmp(attrs, baseNames{iSel}) & ~filled, 1, 'first');
+                if ~isempty(idx)
+                    units{idx} = u; filled(idx) = true; continue;
                 end
             end
         end
