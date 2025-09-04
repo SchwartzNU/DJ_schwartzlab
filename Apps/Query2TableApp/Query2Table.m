@@ -35,12 +35,21 @@ classdef Query2Table < matlab.apps.AppBase
         AggLibMap containers.Map = containers.Map('KeyType','char','ValueType','any')
         UnitEditors matlab.ui.control.EditField = matlab.ui.control.EditField.empty
         CurrentTable table = table()
+        LastStruct struct = struct([])
+        Debug logical = false
+        DebugMaxRows double = 5
     end
 
     methods (Access = public)
         function app = Query2Table(q)
             if nargin < 1, q = []; end
             app.Query = q;
+            % Initialize debug from env var Q2T_DEBUG
+            try
+                dbg = getenv('Q2T_DEBUG');
+                app.Debug = ~isempty(dbg) && any(strcmpi(strtrim(dbg), {'1','true','on'}));
+            catch
+            end
 
             % Get attribute names
             try
@@ -68,6 +77,36 @@ classdef Query2Table < matlab.apps.AppBase
     end
 
     methods (Access = private)
+        function pk = primaryKeyNames(app)
+            % Try to obtain primary key attribute names from DataJoint header
+            pk = {};
+            try
+                h = app.Query.header;
+                % Common possibilities for MATLAB DataJoint
+                if isstruct(h)
+                    if isfield(h,'primaryKey')
+                        pk = h.primaryKey;
+                    elseif isfield(h,'primaryKeyNames')
+                        pk = h.primaryKeyNames;
+                    elseif isfield(h,'primary_key')
+                        pk = h.primary_key;
+                    end
+                else
+                    % handle object with properties
+                    if isprop(h,'primaryKey')
+                        pk = h.primaryKey;
+                    elseif isprop(h,'primaryKeyNames')
+                        pk = h.primaryKeyNames;
+                    elseif isprop(h,'primary_key')
+                        pk = h.primary_key;
+                    end
+                end
+                if isstring(pk), pk = cellstr(pk); end
+                if ~iscell(pk), pk = {}; end
+            catch
+                pk = {};
+            end
+        end
         function createUI(app)
             if isempty(app.UIFigure) || ~isvalid(app.UIFigure)
                 app.UIFigure = uifigure('Name','Query → Table','Position',[100 100 1400 640]);
@@ -231,22 +270,28 @@ classdef Query2Table < matlab.apps.AppBase
             idx = find(app.AggSelectors == src, 1);
             if isempty(idx), return; end
             if strcmp(src.Value,'custom…')
-                answer = inputdlg({'Enter function of x (e.g., @mean, @(x)prctile(x,90))'}, ...
-                    'Custom aggregation', [1 50], {'@(x)mean(x, ''omitnan'')'});
-                if isempty(answer), return; end
-                ftxt = strtrim(answer{1});
+                % Open a file chooser rooted at reducer library folder
+                startDir = app.reducerBaseFolder();
+                if ~isfolder(startDir)
+                    startDir = pwd;
+                end
+                [f, p] = uigetfile({'*.m','MATLAB Function (*.m)'}, ...
+                                   'Select Custom Aggregation Function', startDir);
+                if isequal(f,0), return; end
                 try
-                    fh = str2func(ftxt);
-                    % test on sample
-                    testv = [1 2 3 NaN Inf];
-                    y = fh(testv(~isnan(testv) & isfinite(testv)));
-                    if ~isscalar(y)
-                        error('Function must return a scalar.');
-                    end
+                    % Add chosen folder to path (session-only)
+                    addpath(p);
+                catch
+                end
+                try
+                    [~, name, ~] = fileparts(f);
+                    fh = str2func(name);
+                    % Do not execute user function here; just record handle.
+                    % Arity will be adapted at runtime.
                     app.CustomAggFns{idx} = fh;
-                    app.CustomAggText{idx} = ftxt;
+                    app.CustomAggText{idx} = name;
                 catch ME
-                    uialert(app.UIFigure, sprintf('Invalid function:\n%s', ME.message), 'Custom Function Error');
+                    uialert(app.UIFigure, sprintf('Invalid function file:\n%s', ME.message), 'Custom Function Error');
                 end
             end
             refreshPreview(app, true);
@@ -283,10 +328,21 @@ classdef Query2Table < matlab.apps.AppBase
             end
             try
                 % Fast, limited fetch for preview
+                pk = app.primaryKeyNames();
+                % Build fetch list that includes primary keys for tuple support
+                fetchAttrs = attrs;
+                for i = 1:numel(pk)
+                    if ~any(strcmp(fetchAttrs, pk{i})), fetchAttrs{end+1} = pk{i}; end %#ok<AGROW>
+                end
+                % If we couldn't detect PK names, request 'KEY' token so keys are included
+                if isempty(pk)
+                    fetchAttrs{end+1} = 'KEY'; %#ok<AGROW>
+                end
+                % Fast preview: try limited fetch, with fallback for blob payloads
                 if limited
-                    S = limitedFetchStruct(app, attrs, app.MaxPreviewRows);
+                    S = limitedFetchStruct(app, fetchAttrs, app.MaxPreviewRows);
                 else
-                    S = fetch(app.Query, attrs{:});   % full DataJoint fetch
+                    S = fetch(app.Query, fetchAttrs{:});
                 end
                 if isempty(S)
                     % Create an empty table with selected variable names so headers show
@@ -295,6 +351,8 @@ classdef Query2Table < matlab.apps.AppBase
                         'VariableTypes',varTypes, 'VariableNames',attrs);
                 else
                     T = struct2table(S);
+                    % Stash full struct rows for custom aggregators (tuple support)
+                    app.LastStruct = S;
                     % Reorder columns to match selection order
                     keep = intersect(attrs, T.Properties.VariableNames, 'stable');
                     T = T(:, keep);
@@ -309,32 +367,48 @@ classdef Query2Table < matlab.apps.AppBase
         end
 
         function S = limitedFetchStruct(app, attrs, n)
-            % Try several ways to ask DataJoint to limit results; fallback to slicing
+            % Try several ways to limit rows; ensure blob fields are populated.
             S = [];
+            % Helper to verify blobs are present
+            function ok = blobsPresent(SS)
+                ok = ~isempty(SS);
+                if ~ok, return; end
+                try
+                    % If any requested attr is a blob, ensure first row has data
+                    for ii = 1:numel(attrs)
+                        a = attrs{ii};
+                        if any(strcmp(a, app.BlobAttrNames))
+                            if ~isfield(SS, a) || isempty(SS(1).(a))
+                                ok = false; return;
+                            end
+                        end
+                    end
+                catch
+                    % if check fails, treat as not ok
+                    ok = false;
+                end
+            end
+            % Attempt 1: string form 'LIMIT n'
             try
-                % Attempt 1: string form 'LIMIT 10'
                 S = fetch(app.Query, attrs{:}, sprintf('LIMIT %d', n));
-                return
+                if blobsPresent(S), return; end
             catch
             end
+            % Attempt 2: key/value form
             try
-                % Attempt 2: key/value form 'LIMIT', n
                 S = fetch(app.Query, attrs{:}, 'LIMIT', n);
-                return
+                if blobsPresent(S), return; end
             catch
             end
-            try
-                % Attempt 3: fetch all then slice (last resort)
-                S = fetch(app.Query, attrs{:});
-                if numel(S) > n, S = S(1:n); end
-                return
-            catch
-            end
+            % Fallback: fetch all then slice, to guarantee blob payloads
+            S = fetch(app.Query, attrs{:});
+            if numel(S) > n, S = S(1:n); end
         end
 
         function T = applyAggregations(app, T)
             % For any selected attribute that is a blob, reduce to a scalar
             vn = T.Properties.VariableNames;
+            visibleNames = vn; % used to strip non-key fields from tuple
             renameOld = {};
             renameNew = {};
             for k = 1:numel(vn)
@@ -347,7 +421,57 @@ classdef Query2Table < matlab.apps.AppBase
                         col = T.(name);
                         out = nan(height(T),1);
                         for r = 1:height(T)
-                            out(r,1) = app.reduceScalar(col(r), fh);
+                            % Build tuple with only primary keys when known; else pass full row
+                            tuple = struct();
+                            try
+                                if ~isempty(app.LastStruct)
+                                    src = app.LastStruct(r);
+                                    pkn = app.primaryKeyNames();
+                                    if ~isempty(pkn)
+                                        tuple = struct();
+                                        for kk = 1:numel(pkn)
+                                            nm = pkn{kk};
+                                            if isfield(src, nm)
+                                                tuple.(nm) = src.(nm);
+                                            end
+                                        end
+                                    else
+                                        tuple = src;
+                                    end
+                                end
+                            catch
+                            end
+                            % Probe input value summary for first rows
+                            if app.Debug && r <= app.DebugMaxRows
+                                try
+                                    xv = col(r);
+                                    if iscell(xv), xv0 = xv{1}; else, xv0 = xv; end
+                                    app.dbg('agg %s row %d xclass=%s xlen=%d tupleFields=%s', ...
+                                        name, r, class(xv0), numel(xv0), strjoin(fieldnames(tuple),','));
+                                catch
+                                end
+                            end
+                            % x value for this row; if empty, fall back to fetchn by key
+                            xval = col(r);
+                            if isempty(xval) || (iscell(xval) && (isempty(xval{1})))
+                                try
+                                    % Prefer fetchn with LIMIT 1
+                                    if exist('fetchn','file') == 2
+                                        tmp = fetchn(app.Query & tuple, name, 'LIMIT', 1);
+                                        if ~isempty(tmp)
+                                            xval = tmp{1};
+                                        end
+                                    else
+                                        xval = fetch1(app.Query & tuple, name);
+                                    end
+                                catch
+                                    % leave xval as-is (likely empty)
+                                end
+                            end
+                            out(r,1) = app.reduceScalar(xval, fh, tuple);
+                            if app.Debug && r <= app.DebugMaxRows
+                                app.dbg('agg %s row %d -> %g', name, r, out(r,1));
+                            end
                         end
                         T.(name) = out;
                         % rename with suffix
@@ -384,12 +508,23 @@ classdef Query2Table < matlab.apps.AppBase
                     label = choice;
                 case 'custom…'
                     if idx<=numel(app.CustomAggText) && ~isempty(app.CustomAggText{idx})
-                        txt = app.CustomAggText{idx};
+                        txt = string(app.CustomAggText{idx});
+                        % If it's an '@func' or '@(x)...' text, try parse name
                         m = regexp(txt,'@([a-zA-Z_]\w*)','tokens','once');
                         if ~isempty(m)
                             label = m{1};
                         else
-                            label = 'custom';
+                            % Otherwise, use the bare function name or filename
+                            try
+                                [~, nm, ~] = fileparts(char(txt));
+                                if ~isempty(nm)
+                                    label = nm;
+                                else
+                                    label = char(txt);
+                                end
+                            catch
+                                label = 'custom';
+                            end
                         end
                     else
                         label = 'custom';
@@ -407,23 +542,27 @@ classdef Query2Table < matlab.apps.AppBase
             choice = app.AggSelectors(idx).Value;
             switch choice
                 case 'mean'
-                    fh = @(x)mean(x(:),'omitnan');
+                    % Three-arg wrapper; ignores tuple/query
+                    fh = @(x,tuple,q)mean(x(:),'omitnan');
                 case 'median'
-                    fh = @(x)median(x(:),'omitnan');
+                    % Three-arg wrapper; ignores tuple/query
+                    fh = @(x,tuple,q)median(x(:),'omitnan');
                 case 'custom…'
                     if idx<=numel(app.CustomAggFns) && ~isempty(app.CustomAggFns{idx})
-                        fh = @(x)app.CustomAggFns{idx}(x(:));
+                        basefh = app.CustomAggFns{idx};
+                        % Wrapper calls with (x,tuple,q) if supported, else tries (x,q) then (x)
+                        fh = @(x,tuple,q)app.invokeMaybeWithTupleAndQuery(basefh, x(:), tuple, q);
                     end
                 otherwise
                     % Library function name
                     if isKey(app.AggLibMap, choice)
                         libfh = app.AggLibMap(choice);
-                        fh = @(x)libfh(x(:));
+                        fh = @(x,tuple,q)app.invokeMaybeWithTupleAndQuery(libfh, x(:), tuple, q);
                     end
             end
         end
 
-        function y = reduceScalar(~, val, fh)
+        function y = reduceScalar(app, val, fh, tuple)
             % Normalize value to numeric vector then apply fh
             try
                 v = val;
@@ -437,22 +576,87 @@ classdef Query2Table < matlab.apps.AppBase
                 elseif islogical(v)
                     v = double(v);
                 end
-                if isempty(v)
-                    y = NaN; return
-                end
+                % If still non-numeric, try a best-effort cast; otherwise allow empty
                 if ~isnumeric(v)
-                    y = NaN; return
+                    try
+                        v = double(v);
+                    catch
+                        v = [];
+                    end
                 end
-                % Remove NaN/Inf before aggregation
-                v = v(:);
-                v = v(isfinite(v));
-                if isempty(v), y = NaN; return; end
-                y = fh(v);
+                v = v(:);  % vectorize; keep NaN/Inf for first try
+                % First try with original vector to preserve indexing
+                y = app.callAggregator(fh, v, tuple);
+                % If invalid, try again with finite-only values
+                if ~(isnumeric(y) && isscalar(y) && isfinite(y))
+                    vfin = v(isfinite(v));
+                    if isempty(vfin)
+                        y = NaN; return
+                    end
+                    y = app.callAggregator(fh, vfin, tuple);
+                end
+                % Coerce to scalar double if needed
                 if ~isscalar(y) || ~isnumeric(y) || ~isfinite(y)
                     y = double(y(1));
                 end
-            catch
+            catch ME
+                app.dbg('reduce error: %s', ME.message);
                 y = NaN;
+            end
+        end
+
+        function y = callAggregator(app, fh, v, tuple)
+            % Call the aggregator wrapper with (x, tuple, q). The wrapper
+            % adapts to user function arity internally.
+            if nargin < 4
+                tuple = struct();
+            end
+            y = fh(v, tuple, app.Query);
+        end
+
+        function y = invokeMaybeWithTupleAndQuery(app, basefh, x, tuple, q)
+            % Helper to call user/library function with (x,tuple,q) when supported
+            try
+                n = nargin(basefh);
+            catch
+                n = -1; % unknown; assume varargs
+            end
+            try
+                if n < 0 || n >= 3
+                    y = basefh(x, tuple, q);
+                elseif n == 2
+                    % ambiguous: try (x,tuple) then (x,q)
+                    try
+                        y = basefh(x, tuple);
+                    catch
+                        y = basefh(x, q);
+                    end
+                elseif n == 1
+                    y = basefh(x);
+                else
+                    y = basefh(x);
+                end
+            catch ME
+                % Progressive fallbacks
+                try
+                    y = basefh(x, q);
+                catch
+                    try
+                        y = basefh(x);
+                    catch
+                        rethrow(ME);
+                    end
+                end
+            end
+        end
+
+        function dbg(app, fmt, varargin)
+            % Lightweight debug printer controlled by app.Debug
+            try
+                if app.Debug
+                    fprintf(['[Q2T] ' fmt '\n'], varargin{:});
+                end
+            catch
             end
         end
 
@@ -464,6 +668,31 @@ classdef Query2Table < matlab.apps.AppBase
         function loadReducerLibrary(app)
             % Load custom reducer functions from env path or default
             try
+                p = app.reducerBaseFolder();
+                if isfolder(p)
+                    addpath(p);
+                    d = dir(fullfile(p,'*.m'));
+                    names = {d.name};
+                    names = erase(names, '.m');
+                    % Do not execute functions during discovery; accept all .m files
+                    app.AggLibraryNames = names;
+                    fhList = cellfun(@str2func, names, 'UniformOutput', false);
+                    app.AggLibMap = containers.Map(names, fhList);
+                    % Update existing agg dropdowns
+                    for i = 1:numel(app.AggSelectors)
+                        if isvalid(app.AggSelectors(i))
+                            app.AggSelectors(i).Items = aggregationItems(app);
+                        end
+                    end
+                end
+            catch
+                % ignore errors; library optional
+            end
+        end
+
+        function p = reducerBaseFolder(app)
+            % Determine the base folder for reducer functions from env or default
+            try
                 p = getenv('BLOB_REDUCER_PATH');
                 if isempty(p)
                     home = char(java.lang.System.getProperty('user.home'));
@@ -474,37 +703,8 @@ classdef Query2Table < matlab.apps.AppBase
                     home = char(java.lang.System.getProperty('user.home'));
                     p = fullfile(home, p(2:end));
                 end
-                if isfolder(p)
-                    addpath(p);
-                    d = dir(fullfile(p,'*.m'));
-                    names = {d.name};
-                    names = erase(names, '.m');
-                    validNames = {};
-                    validFH = {};
-                    for i = 1:numel(names)
-                        name = names{i};
-                        try
-                            fh = str2func(name);
-                            % Validate on sample
-                            y = fh([1 2 3]);
-                            if isscalar(y)
-                                validNames{end+1} = name; %#ok<AGROW>
-                                validFH{end+1} = fh; %#ok<AGROW>
-                            end
-                        catch
-                        end
-                    end
-                    app.AggLibraryNames = validNames;
-                    app.AggLibMap = containers.Map(validNames, validFH);
-                    % Update existing agg dropdowns
-                    for i = 1:numel(app.AggSelectors)
-                        if isvalid(app.AggSelectors(i))
-                            app.AggSelectors(i).Items = aggregationItems(app);
-                        end
-                    end
-                end
             catch
-                % ignore errors; library optional
+                p = pwd;
             end
         end
 
@@ -535,12 +735,23 @@ classdef Query2Table < matlab.apps.AppBase
 
             % Fetch full dataset (no limit)
             try
-                S = fetch(app.Query, attrs{:});
+                % Include primary keys for tuple support
+                pk = app.primaryKeyNames();
+                fetchAttrs = attrs;
+                for i = 1:numel(pk)
+                    if ~any(strcmp(fetchAttrs, pk{i})), fetchAttrs{end+1} = pk{i}; end %#ok<AGROW>
+                end
+                if isempty(pk)
+                    fetchAttrs{end+1} = 'KEY'; %#ok<AGROW>
+                end
+                S = fetch(app.Query, fetchAttrs{:});
                 if isempty(S)
                     varTypes = repmat({'string'}, 1, numel(attrs));
                     T = table('Size',[0 numel(attrs)], 'VariableTypes',varTypes, 'VariableNames',attrs);
                 else
                     T = struct2table(S);
+                    % Stash struct rows for tuple-aware aggregations
+                    app.LastStruct = S;
                     keep = intersect(attrs, T.Properties.VariableNames, 'stable');
                     T = T(:, keep);
                     % Apply aggregations (so export reflects choices for blob columns)
