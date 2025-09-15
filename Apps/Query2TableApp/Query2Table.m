@@ -844,6 +844,11 @@ classdef Query2Table < matlab.apps.AppBase
                     case 'HDF5'
                         exportToHDF5(app, T, file);
                     otherwise % 'MAT-Table'
+                        % Attach units as table metadata as well
+                        try
+                            T.Properties.VariableUnits = units;
+                        catch
+                        end
                         T = T; %#ok<NASGU>
                         unitsStruct = app.unitsStruct(T.Properties.VariableNames, units); %#ok<NASGU>
                         save(file,'T','unitsStruct');
@@ -1005,6 +1010,9 @@ classdef Query2Table < matlab.apps.AppBase
         function units = getUnitsForAttributes(app, attrs)
             % Map selector units to output attribute names.
             % Handles duplicate attributes and reducer labels (even with underscores).
+            if isstring(attrs)
+                attrs = cellstr(attrs);
+            end
             units = repmat({''}, 1, numel(attrs));
             filled = false(1, numel(attrs));
 
@@ -1049,6 +1057,23 @@ classdef Query2Table < matlab.apps.AppBase
                 idx = find(strcmp(attrs, baseNames{iSel}) & ~filled, 1, 'first');
                 if ~isempty(idx)
                     units{idx} = u; filled(idx) = true; continue;
+                end
+            end
+
+            % Third pass: heuristic split at last underscore to recover base
+            for k = 1:numel(attrs)
+                if filled[k], continue; end %#ok<*NOPTS>
+                nm = attrs{k};
+                us = find(nm == '_');
+                if isempty(us), continue; end
+                base = nm(1:us(end)-1);
+                % Try to find a selector with this base
+                iSel = find(strcmp(baseNames, base), 1, 'first');
+                if ~isempty(iSel)
+                    if iSel <= numel(app.UnitEditors) && isvalid(app.UnitEditors(iSel))
+                        units{k} = app.UnitEditors(iSel).Value;
+                        filled(k) = true;
+                    end
                 end
             end
         end
