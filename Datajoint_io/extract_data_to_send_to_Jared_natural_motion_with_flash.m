@@ -1,7 +1,7 @@
 %% setup
 prots = ["NaturalMovingObjectAndFlash"];
-exp_file = "071125B";
-out_file = "D:\071125B_results.mat";
+exp_file = "091525B";
+out_file = "D:\091525B_results.mat";
 
 %%
 clear results;
