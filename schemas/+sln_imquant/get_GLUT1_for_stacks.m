@@ -27,12 +27,13 @@ for i=1:height(conditions_table)
     fprintf('Condition %d of %d\n', i, height(conditions_table))
     T = innerjoin(all_cells_table,conditions_table(i,:));    
     T = T(~isnan(T.glut1_top_surf),:);         
-    glut1_vec = T.glut1_top_surf ./ T.membrane_top_surf;
+    %glut1_vec = T.glut1_top_surf ./ T.membrane_top_surf;
+    glut1_vec = (T.glut1_top_surf + T.glut1_bot_surf) ./ (T.membrane_top_surf + T.membrane_bot_surf);
     results_table.glut1_ratio_all{i} = glut1_vec;
     results_table.N(i) = length(glut1_vec);
-    results_table.glut1_ratio_mean(i) = mean(glut1_vec);
-    results_table.glut1_ratio_sd(i) = std(glut1_vec);
-    results_table.glut1_ratio_sem(i) = std(glut1_vec)./(length(glut1_vec)-1);
+    results_table.glut1_ratio_mean(i) = mean(glut1_vec(~isnan(glut1_vec)));
+    results_table.glut1_ratio_sd(i) = std(glut1_vec(~isnan(glut1_vec)));
+    results_table.glut1_ratio_sem(i) = std(glut1_vec(~isnan(glut1_vec)))./(length(glut1_vec(~isnan(glut1_vec)))-1);
     for v=1:length(label_vars)
         vals = categorical(T.(label_vars{v}));
         cats = categories(vals);

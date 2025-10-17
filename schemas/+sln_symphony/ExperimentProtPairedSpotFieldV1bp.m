@@ -2,7 +2,7 @@
 #b parameters for PairedSpotField (1) 
 -> sln_symphony.ExperimentEpochBlock
 ---
-intensity : float
+block_intensity : float
 mean_level : float
 num_repeats : smallint unsigned
 num_spots_per_epoch : smallint unsigned

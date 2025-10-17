@@ -62,3 +62,16 @@ def convert_stringified_arrays(df):
     return df
 
 
+from scipy.signal import butter, filtfilt
+
+# --- Define Butterworth low-pass filter ---
+def butter_lowpass_filter(data, cutoff, fs, order=4):
+    nyq = 0.5 * fs
+    norm_cutoff = cutoff / nyq
+    b, a = butter(order, norm_cutoff, btype='low', analog=False)
+    return filtfilt(b, a, data)
+
+def apply_filter(row, cutoff):
+    x = np.array(row['raw_data']).squeeze()
+    fs = row['sample_rate']
+    return butter_lowpass_filter(x, cutoff=cutoff, fs=fs)

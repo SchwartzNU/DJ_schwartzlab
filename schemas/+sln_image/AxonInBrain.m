@@ -34,7 +34,7 @@ methods (Static)
             pixel_color(:, c) = filteredframe-background;
         end
     end
-    function assign_axon_in_brain(imageid, wholebrainid, cx, cy, r, background, maskpath, color)
+    function assign_axon_in_brain(imageid, wholebrainid, cx, cy, r, background, maskpath,ml, ap, color)
         arguments
             imageid
             wholebrainid
@@ -43,6 +43,8 @@ methods (Static)
             r
             background
             maskpath
+            ml
+            ap
             color = NaN;
         end
         try
@@ -66,12 +68,25 @@ methods (Static)
             key.centroid_x = cx;
             key.centroid_y = cy;
             key.centroid_radius = r;
-            if (numel(background)~= 4)
-                error('Wrong format of the background roi!');
+            key.medial_lateral = ml;
+            key.distance_from_fist_slice = ap;
+            if (endsWith(background, '.roi')) %background is an roi file from image J
+                roi = ReadImageJROI(background);
+                if (iscell(roi))
+                    roi = roi{1};
+                end
+                bg_reformt = zeros([1,4]);
+                bg_reformt(1) = roi.vnRectBounds(2);
+                bg_reformt(2) = roi.vnRectBounds(4);
+                bg_reformt(3) = roi.vnRectBounds(1);
+                bg_reformt(4) = roi.vnRectBounds(3);
             end
-            key.background_roi = background;
-
+            key.background_roi = bg_reformt;
+            
             %load the tif mask image
+            if (iscell(maskpath))
+                maskpath = maskpath{1};
+            end
             infopack = imfinfo(maskpath);
             slice_total = numel(infopack);
 
@@ -91,7 +106,7 @@ methods (Static)
                     %get mask into numeric array and pixel colors
                     mask_ar(:, :, s) = imread(maskpath, index = s);
                     fprintf('filtering slice %d, total %d\n', s, slice_total);
-                    color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), background, mask_ar(:, :, s));
+                    color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), key.background_roi, mask_ar(:, :, s));
                 end
                  %directly load color
             elseif (endsWith(color, 'mat'))
