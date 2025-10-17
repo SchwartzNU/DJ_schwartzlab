@@ -15,7 +15,7 @@ maskpath: varchar(512)
 classdef RGCinRetina < dj.Manual
 methods (Static)
     %centroid needs to be a structure with field: x, y, r. 
-    function upload_rgc_in_retina(filename, user, scope, channel, z_scale, wholeretina_imid, centroid, cellid, imageid)
+    function image_id = upload_rgc_in_retina(filename, user, scope, channel, z_scale, wholeretina_imid, centroid, cellid,interleave, imageid)
         arguments
             filename 
             user 
@@ -25,18 +25,23 @@ methods (Static)
             wholeretina_imid 
             centroid 
             cellid = NaN;
+            
+            interleave = false;
             imageid = NaN;
         end
         try
             if (isnan(imageid))
-                sln_image.Image.LoadFromFilewithStructuralInput(filename, user, scope, channel, z_scale);
+                sln_image.Image.LoadFromFilewithStructuralInput(filename, user, scope, channel, z_scale, interleave);
 
                 [folderPath, filepre, fileext] = fileparts(filename);
                 query = {};
                 query.image_filename = append(filepre, fileext);
                 query.folder = folderPath;
+                query.image_filename = convertStringsToChars(query.image_filename);
+                query.folder = convertStringsToChars(query.folder);
                 result = fetch(sln_image.Image & query, 'image_id');
                 fprintf('RGC image uploaded, image id: %d', result.image_id);
+                image_id = result.image_id;
             else
                 fprintf('Image already uploaded %d, creating RGC annotation now...\n', imageid);
                 result.image_id = imageid;
@@ -60,7 +65,7 @@ methods (Static)
             %start uploading sln_image.WholeRetinaImage
             if (~isnan(cellid))
                 fprintf('Inserting spinning disk images for cell: %d', cellid);
-               sln_image.RGCinRetina.assign_rgc_in_retina(result.image_id, wholeretina_imid, centroid, mask, cellid, background);
+                sln_image.RGCinRetina.assign_rgc_in_retina(result.image_id, wholeretina_imid, centroid, mask, cellid, background);
                 fprintf('Sucess!');
             else
                 %creating sln_cell.Cell entries, may cause trouble down the line

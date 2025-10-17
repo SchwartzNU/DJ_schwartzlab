@@ -90,13 +90,14 @@ classdef Image < dj.Manual
     end
 
     methods(Static)
-        function LoadFromFilewithStructuralInput(filename, user_name, scope_name, channel_arr, z_scale)%input struct should contain: scope, user, each type of the 4 channels, z scale
+        function LoadFromFilewithStructuralInput(filename, user_name, scope_name, channel_arr, z_scale, interleaved)%input struct should contain: scope, user, each type of the 4 channels, z scale
             arguments
                 filename 
                 user_name 
                 scope_name 
                 channel_arr
                 z_scale = NaN
+                interleaved = false;
             end
             %checking keys
             try
@@ -141,6 +142,7 @@ classdef Image < dj.Manual
                     meta_fname = strrep(filename,'.tif','_meta.mat');
                     if ~exist(meta_fname, 'file')
                         error("Metadata file not found");
+                        %todo make meta file from .nd2 file in the same folder
                     end
 
                     mdloading = load(meta_fname);
@@ -165,16 +167,25 @@ classdef Image < dj.Manual
                     else
                         key.n_slices = 1;
                     end
-                   
+                    
                     key.raw_image = uint16(zeros(key.height, key.width, key.n_slices, N_channels));
-                    raw_image_interleaved = uint16(zeros(key.height, key.width, key.n_slices*N_channels));
-                    fprintf('Loading %d slices * %d channels\n', key.n_slices, N_channels);
-                    for i=1:key.n_slices*N_channels
-                        raw_image_interleaved(:,:,i) = imread(filename,i);
+
+                    fprintf('Loading %d slices * %d channels\n', key.n_slices, N_channels);             
+                    if (interleaved)
+                        raw_image_interleaved = uint16(zeros(key.height, key.height, key.n_slices*N_channels));
+                        for i=1:key.n_slices*N_channels
+                            raw_image_interleaved(:,:,i) = imread(filename,i);
+                        end
+                        for i=1:N_channels
+                            key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:key.n_slices*N_channels);
+                        end
+
+                    else
+                        for i=1:key.n_slices
+                            key.raw_image(:,:,i,:) = imread(filename, i);
+                        end
                     end
-                    for i=1:N_channels
-                        key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:key.n_slices*N_channels);
-                    end
+
                     fprintf('Done loading.\n');
                     if (isprop(SI, 'hRoiManager') || isfield(SI, 'hRoiManager'))
                         x_range = abs(SI.hRoiManager.imagingFovUm(1,1) - SI.hRoiManager.imagingFovUm(2,1));
