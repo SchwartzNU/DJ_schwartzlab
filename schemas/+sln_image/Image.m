@@ -442,7 +442,7 @@ classdef Image < dj.Manual
                 rows = info(1).Height;
                 cols = info(1).Width;
                 key.width = cols;
-                key.height = rows;varchar(512)
+                key.height = rows;
 
                 if SI_meta
                     load(meta_fname,'SI');
