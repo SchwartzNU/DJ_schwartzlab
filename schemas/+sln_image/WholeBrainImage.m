@@ -65,23 +65,25 @@ classdef WholeBrainImage < dj.Manual
 
             end
         end
-        function new_ref_id = update_midline(ref_id, mdp1, mdp2)
-            get_id = append('ref_image_id = ', int2str(ref_id));
-            data = fetch(sln_image.WholeBrainImage & get_id, '*');
-            data.midline_slope = (mdp1(2)-mdp2(2))/(mdp1(1)-mdp2(1));
-            data.midline_intercept = mdp1(2)-(key.midline_slope*mdp1(1));
-            data = rmfield(data, 'ref_image_id');
-            try
-                C = dj.conn;
-                C.startTransaction;
-                del(sln_image & get_id);
-                insert(sln_image.WholeBrainImage, data);
-                C.commitTransaction;
-                ids = fetchn(sln_image.WholeBrainImage, 'ref_image_id');
-                new_ref_id = max(ids);
-            catch ME
-                rethrow(ME);
-            end
-        end
+
+
+        % function new_ref_id = update_midline(ref_id, mdp1, mdp2)
+        %     get_id = append('ref_image_id = ', int2str(ref_id));
+        %     data = fetch(sln_image.WholeBrainImage & get_id, '*');
+        %     data.midline_slope = (mdp1(2)-mdp2(2))/(mdp1(1)-mdp2(1));
+        %     data.midline_intercept = mdp1(2)-(key.midline_slope*mdp1(1));
+        %     data = rmfield(data, 'ref_image_id');
+        %     try
+        %         C = dj.conn;
+        %         C.startTransaction;
+        %         del(sln_image & get_id);
+        %         insert(sln_image.WholeBrainImage, data);
+        %         C.commitTransaction;
+        %         ids = fetchn(sln_image.WholeBrainImage, 'ref_image_id');
+        %         new_ref_id = max(ids);
+        %     catch ME
+        %         rethrow(ME);
+        %     end
+        % end
     end
 end
