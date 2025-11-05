@@ -200,10 +200,10 @@ classdef Experiment < dj.Manual
                     end
                 end
 
-                %null out the brain_regions for now
-                if isstruct(key.brain_cells)
-                    key.brain_cells = rmfield(key.brain_cells,"brain_region");
-                end %hacky fix Trung 06/05/25
+                %%null out the brain_regions for now
+                %if isstruct(key.brain_cells)
+                %    key.brain_cells = rmfield(key.brain_cells,"brain_region");
+                %end %hacky fix Trung 06/05/25
                 insert@dj.Manual(self, key.experiment);
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
