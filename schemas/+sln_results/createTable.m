@@ -84,7 +84,7 @@ table_header_str{z} = '%}';
 table_def_str{1} = sprintf('classdef %s < dj.Manual', table_name);
 table_def_str{2} = 'end';
 
-fname = fullfile(getenv('DJ_ROOT'),'schemas','+sln_results',sprintf('%s.m',table_name));
+fname = fullfile(getenv('DJ_ROOT'),'schemas','sln_results',sprintf('%s.m',table_name));
 fid = fopen(fname,'w');
 for i=1:length(table_header_str)
     fprintf(fid,'%s\n',table_header_str{i});
