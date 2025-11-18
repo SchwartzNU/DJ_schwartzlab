@@ -1,16 +1,18 @@
-function R = average_trace_single_opto_VC(data_group, params)
+function R = AverageOptoSingleVC(data_group, params)
 
 datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
+datasets_struct.channel_name = 'Amp1';
 
 R = sln_results.table_definition_from_template('AverageOptoSingleVC',N_datasets);
 fprintf('Processing %s _source_id%d:%s for average VC trace\n', datasets_struct.file_name, datasets_struct.source_id);
 
 %this could be wrong
 epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentChannel...
+    *sln_symphony.ExperimentEpochChannel...
     *aka.EpochParams('OptoPulse') * aka.BlockParams('OptoPulse')...
-    & datasets.struct);
+    & datasets_struct, '*');
 
 N_epochs = length(epochs_in_dataset);
 if N_epochs == 0
@@ -40,7 +42,8 @@ for i = 1:N_epochs
 end
 
 %mean trace
-R.average_trace = mean(trace_all_vector, 2);
+R.average_trace = zeros([1, sample_rate * total_samples]);
+R.average_trace = mean(trace_all_vector, 1);
 %happily copy paste things into result table...
 R.file_name = datasets_struct.file_name;
 R.dataset_name = datasets_struct.dataset_name;
@@ -49,6 +52,7 @@ R.pre_time_ms = pre_stim_tail.pre_time;
 R.stim_time_ms = pre_stim_tail.stim_time;
 R.tail_time_ms = pre_stim_tail.tail_time;
 R.sample_rate = sample_rate;
+R.epoch_total = N_epochs;
 fprintf('Average trace analyzed.\n');
 end
 
