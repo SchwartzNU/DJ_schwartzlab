@@ -5,15 +5,19 @@ if nargin < 1
     return;
 end
 
-set(ax, 'XLim', [0, inf]);
 time_total = (R.pre_time_ms + R.stim_time_ms + R.tail_time_ms)/1E3;
-axis_x = linspace(0, time_total, time_total*R.sample_rate);
-plot(axis_x, R.average_trace, 'k');
-hold (ax, 'on');
-xline(R.pre_time_ms*R.sample_rate/1E3, '-', 'b');
-xline((R.pre_time_ms+R.stim_time_ms)*R.sample_rate/1E3, '--', 'b');
-ylabel(ax, 'Synpatic current (pA)');
-xbale(ax, 'Time(ms)');
+%set(ax, 'XLim', [0, time_total + 0.2]);
 
+datapoints = size(R.average_trace);
+axis_x = linspace(0, time_total, datapoints(2));
+hold (ax, 'on');
+plot(ax, axis_x, R.average_trace, 'k');
+set(ax,'XtickMode','auto');
+set(ax,'YtickMode','auto');
+xline(ax, R.pre_time_ms/1E3, '-', 'color', 'blue');
+xline(ax, (R.pre_time_ms+R.stim_time_ms)/1E3, '--', 'color', 'blue');
+ylabel(ax, 'Synpatic current (pA)');
+xlabel(ax, 'Time(ms)');
+hold (ax, 'off');
 
 end
