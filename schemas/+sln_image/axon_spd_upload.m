@@ -1,6 +1,7 @@
 function axon_spd_upload(folder)
 %a function to upload the spinning disk z stack images of RGC axons in the brain
 % upload first into sln_image.Image, then add annotation to sln_image.AxonInBrain
+%see docs-parts/connectome_readme/uploading.docx to make the info.txt file that are required for uploading single axon
 infofile = fullfile(folder, 'info.txt');
 if (~isfile(infofile))
     fprintf('In folder %s ', folder);
@@ -89,13 +90,15 @@ end
             channels{i} = 3;
         end
 
+
+        %upload the image to the sln_image.Image
+        sln_image.Image.LoadFromFilewithStructuralInput(img_path, user, scope, channels, zscale);
         %query for the image id
         imdj.user_name = user;
         imdj.scope = scope;
+
         imlist = fetch(sln_image.Image & imdj);
         new_to_old = sort([imlist.image_id], 'descend');
-        %upload the image to the sln_image.Image
-        sln_image.Image.LoadFromFilewithStructuralInput(img_path, user, scope, channels, zscale);
         this_id = new_to_old(1);
         fid = fopen(infofile, 'a');
         fprintf(fid, 'image_id:%d\n', this_id);
@@ -115,7 +118,11 @@ end
             ml = str2double( img_values{ml_idx});
             ap = str2double( img_values{ap_idx});
             image_idx = find(strcmp(img_keys, 'image_id'));
-            image_id = str2double(img_values(image_idx));
+            if (isempty(image_idx))
+                image_id = this_id;
+            else
+                image_id = str2double(img_values(image_idx));
+            end
             wholebrain_idx = find(strcmp(img_keys, 'ref_image_id'));
             wholebrain_id =str2double(img_values(wholebrain_idx));
             cx_idx = find(strcmp(img_keys, 'centroid_x'));
@@ -124,7 +131,6 @@ end
             cy =str2double( img_values(cy_idx));
             background = fullfile(folder, 'background.roi');
             mask = fullfile(folder, 'mask.tif');
-
             
             sln_image.AxonInBrain.assign_axon_in_brain(image_id, wholebrain_id,cx, cy, 100, background, mask, ml, ap);
         end
