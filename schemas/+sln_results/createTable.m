@@ -49,6 +49,11 @@ switch resultLevel
         end
         secondary_vars = setdiff(var_names, primary_vars);
     case 'Epoch'
+        primary_vars = {'file_name', 'source_id', 'epoch_id'};
+        if ~all(ismember(primary_vars, var_names))
+            error('Epoch analysis must contain file_name, source_id, and epoch_id columns.\n');
+        end
+        secondary_vars = setdiff(var_names, primary_vars);
 
 end
 
