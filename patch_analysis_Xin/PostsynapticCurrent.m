@@ -84,10 +84,10 @@ for j = 1:numel(epoch_set)
             R.psc_risetime_ms(j) = {transpose(filtered_pscs(:, 2))};
 
         else
-            R.psc_amplitude(j) = nan;
-            R.psc_start_ms(j) = nan;
-            R.psc_decay_ms(j) = nan;
-            R.psc_risetime_ms(j) = nan;
+            R.psc_amplitude(j) = {nan};
+            R.psc_start_ms(j) = {nan};
+            R.psc_decay_ms(j) = {nan};
+            R.psc_risetime_ms(j) = {nan};
         end
 
     else
