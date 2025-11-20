@@ -58,7 +58,7 @@ if (detection_success)
     filtered_pscs = psc_params(filter_index, :);
     fprintf('%d PSC detected in epoch %d\n', height(filtered_pscs), epoch_data.epoch_id);
      R.file_name = epoch_struct.file_name;
-     R.souce_id = epoch_struct.source_id;
+     R.source_id = epoch_struct.source_id;
      R.epoch_id = epoch_data.epoch_id;
      R.psc_amplitude = filtered_pscs(:, 1);
      start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
