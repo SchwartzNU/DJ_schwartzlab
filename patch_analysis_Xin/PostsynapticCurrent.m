@@ -56,7 +56,7 @@ end
 
 if (detection_success)
     filtered_pscs = psc_params(filter_index, :);
-    [~, psc_N] = size(filtered_pscs);
+    [psc_N, ~] = size(filtered_pscs);
 
     fprintf('%d PSC detected in epoch %d\n', psc_N, epoch_data.epoch_id);
     R.file_name = epoch_struct.file_name;
