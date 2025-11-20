@@ -18,7 +18,7 @@ epoch = aka.Epoch & data_group;
 epoch_struct = fetch(epoch);
 %note this works for channel 1 only. In the case of channel 2/left electrode, change here to be Amp2
 epoch_struct.channel_name = 'Amp1';
-R = sln_results.table_definition_from_template('PostSynapticCurrent', 1);
+R = sln_results.table_definition_from_template('PostsynapticCurrent', 1);
 
 %only extract the trace data, does not deal with stimulus protocol 
 epoch_data = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentChannel...
