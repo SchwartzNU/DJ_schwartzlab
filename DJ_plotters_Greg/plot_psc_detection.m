@@ -2,7 +2,7 @@ function required_fields = plot_psc_detection(R, ax)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 if nargin < 1
-    required_fields = {'psc_start_ms', 'source_id', 'file_name', 'epoch_id', 'sample_rate'};
+    required_fields = {'psc_start_ms', 'sample_rate'};
     return;
 end
 

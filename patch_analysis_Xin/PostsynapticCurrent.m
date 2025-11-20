@@ -56,17 +56,28 @@ end
 
 if (detection_success)
     filtered_pscs = psc_params(filter_index, :);
-    fprintf('%d PSC detected in epoch %d\n', height(filtered_pscs), epoch_data.epoch_id);
-     R.file_name = epoch_struct.file_name;
-     R.source_id = epoch_struct.source_id;
-     R.epoch_id = epoch_data.epoch_id;
-     R.psc_amplitude = filtered_pscs(:, 1);
+    [~, psc_N] = size(filtered_pscs);
+
+    fprintf('%d PSC detected in epoch %d\n', psc_N, epoch_data.epoch_id);
+    R.file_name = epoch_struct.file_name;
+    R.source_id = epoch_struct.source_id;
+    R.epoch_id = epoch_data.epoch_id;
+    R.psc_total = psc_N;
+    R.sample_rate  = epoch_data.sample_rate;
+    
+     R.psc_amplitude = zeros([1, psc_N]);
+     R.psc_amplitude = filtered_pscs(:, 1).T;
+
+     R.psc_start_ms = zeros( [1, psc_N]);
      start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
-     R.psc_start_ms = start_times;
-     R.psc_decay_ms = filtered_pscs(:, 4)/epoch_data.sample_rate;
-     R.psc_risetime_ms = filtered_pscs(:, 2);
-     R.psc_total = height(filtered_pscs);
-     R.sample_rate  = epoch_data.sample_rate;
+     R.psc_start_ms = start_times.T;
+
+     R.psc_decay_ms = zeros([1, psc_N]);
+     R.psc_decay_ms = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
+    
+     R.psc_risetime_ms = zeros([1, psc_N]);
+     R.psc_risetime_ms = filtered_pscs(:, 2).T;
+
      
 else
     fprintf('Skipping uploading PSC. \n');
