@@ -69,18 +69,20 @@ for j = 1:numel(epoch_set)
         R.sample_rate(j)  = epoch_data.sample_rate;
 
         if (psc_N>0)
-            R.psc_amplitude(j) = zeros([1, psc_N]);
-            R.psc_amplitude(j) = transpose(filtered_pscs(:, 1));
 
-            R.psc_start_ms(j) = zeros( [1, psc_N]);
+            %R.psc_amplitude{end+1} = transpose(filtered_pscs(:, 1));
+            R.psc_amplitude(j) = {transpose(filtered_pscs(:, 1))};
+
+            %R.psc_start_ms(j) = zeros( [1, psc_N]);
             start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
-            R.psc_start_ms(j) = transpose(start_times);
+            R.psc_start_ms(j) = {transpose(start_times)};
 
-            R.psc_decay_ms(j) = zeros([1, psc_N]);
-            R.psc_decay_ms(j) = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
+            %R.psc_decay_ms(j) = zeros([1, psc_N]);
+            R.psc_decay_ms(j) = {transpose(filtered_pscs(:, 4)/epoch_data.sample_rate)};
 
-            R.psc_risetime_ms(j) = zeros([1, psc_N]);
-            R.psc_risetime_ms(j) = transpose(filtered_pscs(:, 2));
+            %R.psc_risetime_ms(j) = zeros([1, psc_N]);
+            R.psc_risetime_ms(j) = {transpose(filtered_pscs(:, 2))};
+
         else
             R.psc_amplitude(j) = nan;
             R.psc_start_ms(j) = nan;
