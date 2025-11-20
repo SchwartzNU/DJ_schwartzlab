@@ -65,20 +65,26 @@ if (detection_success)
     R.psc_total = psc_N;
     R.sample_rate  = epoch_data.sample_rate;
     
-     R.psc_amplitude = zeros([1, psc_N]);
-     R.psc_amplitude = transpose(filtered_pscs(:, 1));
+    if (psc_N>0)
+        R.psc_amplitude = zeros([1, psc_N]);
+        R.psc_amplitude = transpose(filtered_pscs(:, 1));
 
-     R.psc_start_ms = zeros( [1, psc_N]);
-     start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
-     R.psc_start_ms = transpose(start_times);
+        R.psc_start_ms = zeros( [1, psc_N]);
+        start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
+        R.psc_start_ms = transpose(start_times);
 
-     R.psc_decay_ms = zeros([1, psc_N]);
-     R.psc_decay_ms = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
+        R.psc_decay_ms = zeros([1, psc_N]);
+        R.psc_decay_ms = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
+
+        R.psc_risetime_ms = zeros([1, psc_N]);
+        R.psc_risetime_ms = transpose(filtered_pscs(:, 2));
+    else
+        R.psc_amplitude = nan;
+        R.psc_start_ms = nan;
+        R.psc_decay = nan;
+        R.psc_risetime_ms = nan;
+    end
     
-     R.psc_risetime_ms = zeros([1, psc_N]);
-     R.psc_risetime_ms = transpose(filtered_pscs(:, 2));
-
-     
 else
     fprintf('Skipping uploading PSC. \n');
 end
