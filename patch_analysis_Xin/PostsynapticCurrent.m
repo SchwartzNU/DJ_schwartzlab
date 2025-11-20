@@ -81,7 +81,7 @@ if (detection_success)
     else
         R.psc_amplitude = nan;
         R.psc_start_ms = nan;
-        R.psc_decay = nan;
+        R.psc_decay_ms = nan;
         R.psc_risetime_ms = nan;
     end
     
