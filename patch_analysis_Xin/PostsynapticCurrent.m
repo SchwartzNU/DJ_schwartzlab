@@ -7,7 +7,7 @@ function R = PostsynapticCurrent(data_group, params)
 %unit: pA
 if (isempty(params))
     psc_amp_threshold = -20;
-    if_epsc = 1;
+    if_epsc = true;
 else
     psc_amp_threshold = params.psc_amp_threshold;
     if_epsc = params.if_epsc;
@@ -18,16 +18,17 @@ epoch = aka.Epoch & data_group;
 epoch_struct = fetch(epoch);
 %note this works for channel 1 only. In the case of channel 2/left electrode, change here to be Amp2
 epoch_struct.channel_name = 'Amp1';
-R = sln_results.table_definition_from_template('SynapticCurrent', N_datasets);
+R = sln_results.table_definition_from_template('PostSynapticCurrent', 1);
 
 %only extract the trace data, does not deal with stimulus protocol 
 epoch_data = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentChannel...
     *sln_symphony.ExperimentEpochChannel...
-    & datasets_struct, '*');
+    & epoch_struct, '*');
 %N_epoch = length(epochs_in_dataset);
 fprintf('Processing epoch number %d..\n', epoch_data.epoch_id);
 
-trace = epochs_in_dataset(i).raw_data;
+trace = epoch_data.raw_data;
+trace = trace - mean(trace); %subtract the baseline
 detection_success = 0; %a flag to suggest whether PSC detection algorithm succeds
 if (if_epsc)
     %IMPORTANT: the detection parameters are here
