@@ -66,17 +66,17 @@ if (detection_success)
     R.sample_rate  = epoch_data.sample_rate;
     
      R.psc_amplitude = zeros([1, psc_N]);
-     R.psc_amplitude = filtered_pscs(:, 1).T;
+     R.psc_amplitude = transpose(filtered_pscs(:, 1));
 
      R.psc_start_ms = zeros( [1, psc_N]);
      start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
-     R.psc_start_ms = start_times.T;
+     R.psc_start_ms = transpose(start_times);
 
      R.psc_decay_ms = zeros([1, psc_N]);
      R.psc_decay_ms = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
     
      R.psc_risetime_ms = zeros([1, psc_N]);
-     R.psc_risetime_ms = filtered_pscs(:, 2).T;
+     R.psc_risetime_ms = transpose(filtered_pscs(:, 2));
 
      
 else
