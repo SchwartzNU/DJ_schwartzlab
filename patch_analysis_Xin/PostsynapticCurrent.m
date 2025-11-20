@@ -1,7 +1,7 @@
 function R = PostsynapticCurrent(data_group, params)
 %POSTSYNAPTICCURRENT This function detect the EPSC (or IPSC for future) event of a voltage-clamp recording
-% Detected synaptic current events can be saved in table sln_results.EpochPostsynapticCurrent, including their timing, peak amplitude, 
-%and  parameters. 
+% Detected synaptic current events can be saved in table sln_results.EpochPostsynapticCurrent, including their timing, peak amplitude,
+%and  parameters.
 
 %whether this analysis is for EPSC or IPSC and what is the detection threshold of amplitude
 %unit: pA
@@ -52,7 +52,7 @@ for j = 1:numel(epoch_set)
             %filtering for IPSC
             filter_index = psc_params(:, 1)>psc_amp_threshold;
         catch ME
-            fprintf('Failed to detect any PSC in epoch %d\n', epoch_data.epoch_id);
+            fprintf('Detection algorithm failed in epoch %d\n', epoch_data.epoch_id);
         end
 
     end
@@ -91,7 +91,16 @@ for j = 1:numel(epoch_set)
         end
 
     else
-        fprintf('Skipping uploading PSC. \n');
+        R.file_name(j) = epoch_struct.file_name;
+        R.source_id(j) = epoch_struct.source_id;
+        R.epoch_id(j) = epoch_data.epoch_id;
+        R.psc_total(j) = 0;
+        R.sample_rate(j)  = epoch_data.sample_rate;
+        R.psc_amplitude(j) = {nan};
+        R.psc_start_ms(j) = {nan};
+        R.psc_decay_ms(j) = {nan};
+        R.psc_risetime_ms(j) = {nan};
+        fprintf('Inserting empty data now.... \n');
     end
 end
 
