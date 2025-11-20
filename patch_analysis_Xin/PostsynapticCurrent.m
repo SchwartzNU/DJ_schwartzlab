@@ -16,12 +16,12 @@ end
 
 epoch = aka.Epoch & data_group;
 epoch_set = fetch(epoch);
+R = sln_results.table_definition_from_template('PostsynapticCurrent', numel(epoch_set));
 for j = 1:numel(epoch_set)
     fprintf('processing epoch %d of %d....\n', j, numel(epoch_set));
     %note this works for channel 1 only. In the case of channel 2/left electrode, change here to be Amp2
     epoch_struct = epoch_set(j);
     epoch_struct.channel_name = 'Amp1';
-    R = sln_results.table_definition_from_template('PostsynapticCurrent', 1);
 
     %only extract the trace data, does not deal with stimulus protocol
     epoch_data = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentChannel...
@@ -62,30 +62,30 @@ for j = 1:numel(epoch_set)
         [psc_N, ~] = size(filtered_pscs);
 
         fprintf('%d PSC detected in epoch %d\n', psc_N, epoch_data.epoch_id);
-        R.file_name = epoch_struct.file_name;
-        R.source_id = epoch_struct.source_id;
-        R.epoch_id = epoch_data.epoch_id;
-        R.psc_total = psc_N;
-        R.sample_rate  = epoch_data.sample_rate;
+        R.file_name(j) = epoch_struct.file_name;
+        R.source_id(j) = epoch_struct.source_id;
+        R.epoch_id(j) = epoch_data.epoch_id;
+        R.psc_total(j) = psc_N;
+        R.sample_rate(j)  = epoch_data.sample_rate;
 
         if (psc_N>0)
-            R.psc_amplitude = zeros([1, psc_N]);
-            R.psc_amplitude = transpose(filtered_pscs(:, 1));
+            R.psc_amplitude(j) = zeros([1, psc_N]);
+            R.psc_amplitude(j) = transpose(filtered_pscs(:, 1));
 
-            R.psc_start_ms = zeros( [1, psc_N]);
+            R.psc_start_ms(j) = zeros( [1, psc_N]);
             start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
-            R.psc_start_ms = transpose(start_times);
+            R.psc_start_ms(j) = transpose(start_times);
 
-            R.psc_decay_ms = zeros([1, psc_N]);
-            R.psc_decay_ms = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
+            R.psc_decay_ms(j) = zeros([1, psc_N]);
+            R.psc_decay_ms(j) = transpose(filtered_pscs(:, 4)/epoch_data.sample_rate);
 
-            R.psc_risetime_ms = zeros([1, psc_N]);
-            R.psc_risetime_ms = transpose(filtered_pscs(:, 2));
+            R.psc_risetime_ms(j) = zeros([1, psc_N]);
+            R.psc_risetime_ms(j) = transpose(filtered_pscs(:, 2));
         else
-            R.psc_amplitude = nan;
-            R.psc_start_ms = nan;
-            R.psc_decay_ms = nan;
-            R.psc_risetime_ms = nan;
+            R.psc_amplitude(j) = nan;
+            R.psc_start_ms(j) = nan;
+            R.psc_decay_ms(j) = nan;
+            R.psc_risetime_ms(j) = nan;
         end
 
     else
