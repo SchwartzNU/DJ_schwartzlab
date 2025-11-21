@@ -74,14 +74,14 @@ for j = 1:numel(epoch_set)
             R.psc_amplitude(j) = {transpose(filtered_pscs(:, 1))};
 
             %R.psc_start_ms(j) = zeros( [1, psc_N]);
-            start_times = filtered_pscs(:, 3)/epoch_data.sample_rate;
+            start_times = filtered_pscs(:, 3)/epoch_data.sample_rate*1E3;
             R.psc_start_ms(j) = {transpose(start_times)};
 
             %R.psc_decay_ms(j) = zeros([1, psc_N]);
-            R.psc_decay_ms(j) = {transpose(filtered_pscs(:, 4)/epoch_data.sample_rate)};
+            R.psc_decay_ms(j) = {transpose(filtered_pscs(:, 4)/epoch_data.sample_rate*1E3)};
 
             %R.psc_risetime_ms(j) = zeros([1, psc_N]);
-            R.psc_risetime_ms(j) = {transpose(filtered_pscs(:, 2))};
+            R.psc_risetime_ms(j) = {transpose(filtered_pscs(:, 2))/epoch_data.sample_rate*1E3};
 
         else
             R.psc_amplitude(j) = {nan};

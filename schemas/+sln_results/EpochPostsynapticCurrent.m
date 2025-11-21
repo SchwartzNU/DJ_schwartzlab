@@ -8,9 +8,9 @@ epoch_id : int unsigned # epoch id of this recording
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 psc_amplitude=NULL : longblob # the vector denoting the peak amplitude of PSC
-psc_decay_ms=NULL : longblob # decay time of the PSC in SECONDS
-psc_risetime_ms=NULL : longblob # rise time of the PSC in SECONDS
-psc_start_ms=NULL : longblob # the vector denoting the starting time of PSC in SECONDS 
+psc_decay_ms=NULL : longblob # decay time of the PSC in miliseconds
+psc_risetime_ms=NULL : longblob # rise time of the PSC in miliseconds
+psc_start_ms=NULL : longblob # the vector denoting the starting time of PSC in miliseconds
 psc_total : int unsigned # total number of the detected PSC
 sample_rate : int unsigned # sampling rate of this recording
 %}

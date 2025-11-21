@@ -19,16 +19,16 @@ for d = 1:N_datasets
     N_epochs_sg = length(single_pulse_in_dataset);
 
     multi_pulse_in_dataset = fetch(sln_symphony.DatasetEpoch *sln_results.EpochPostsynapticCurrent...
-        *aka.EpochParams('OptoPulseTrain') * aka.BlockParams('OptopulseTrain')... %no idea why p is lower case but here it is
+        *aka.EpochParams('OptopulseTrain') * aka.BlockParams('OptopulseTrain')... %no idea why p is lower case but here it is
         & datasets_struct(d), '*');
     N_epochs_mul = length(multi_pulse_in_dataset);
 
     %the dataset can only be EITHER signle pulse OR multi pulse, but not both. And has to have one of them
-    if (xor(N_epochs_sg, N_epochs_mul))
+    if (~xor(N_epochs_sg, N_epochs_mul))
         if (N_epochs_sg == 0)
             error('No epochs of opto pulse or pulse train found in dataset: %s. Analysis terminating..', datasets_struct(d).dataset_name);
         else
-            error('Found both single and multi opto pulse epochs in the dataset %s, please redo.', dataset_struct(d).dataset_name);
+            error('Found both single and multi opto pulse epochs in the dataset %s, please redo.', datasets_struct(d).dataset_name);
         end
     end
 
@@ -47,11 +47,17 @@ for d = 1:N_datasets
         R.if_multi_pulse = false;
         
         for j = 1:N_epochs_sg
-            psc_total  = psc_total+single_pulse_in_dataset(j).psc_total;
-            peak_amps = [peak_amps, single_pulse_in_dataset(j).psc_amplitude];
-            psc_timediff = single_pulse_in_dataset(j).psc_start_ms*1E3 - single_pulse_in_dataset(j).pre_time;
-            start_latency = [start_latency, psc_timediff];
-            risetime = [risetime, single_pulse_in_dataset(j).psc_risetime_ms];
+            %skipping no psc trial. Otherwise nan will pollute the dataset
+            if (single_pulse_in_dataset(j).psc_total~=0)
+                psc_total  = psc_total+single_pulse_in_dataset(j).psc_total;
+                peak_amps = [peak_amps, single_pulse_in_dataset(j).psc_amplitude];
+                if (sum(isnan(peak_amps)))
+                    error('detected psc has nan peak!, epoch %d \n', single_pulse_in_dataset(j).epoch_id);
+                end
+                psc_timediff = single_pulse_in_dataset(j).psc_start_ms*1E3 - single_pulse_in_dataset(j).pre_time;
+                start_latency = [start_latency, psc_timediff];
+                risetime = [risetime, single_pulse_in_dataset(j).psc_risetime_ms];
+            end
         end
         R.psc_total_dataset(d) = psc_total;
         R.psc_amp_mean(d) = mean(peak_amps);
@@ -72,22 +78,25 @@ for d = 1:N_datasets
             multi_pulse_in_dataset(1).pulse_time;
 
         for j = 1:N_epochs_mul
-            psc_total  = psc_total+multi_pulse_in_dataset(j).psc_total;
-            peak_amps = [peak_amps, multi_pulse_in_dataset(j).psc_amplitude];
-            risetime = [risetime, multi_pulse_in_dataset(j).psc_risetime_ms];
+            
+            if (multi_pulse_in_dataset(j).psc_total~=0)
+                psc_total  = psc_total+multi_pulse_in_dataset(j).psc_total;
+                peak_amps = [peak_amps, multi_pulse_in_dataset(j).psc_amplitude];
+                risetime = [risetime, multi_pulse_in_dataset(j).psc_risetime_ms];
 
-            %special handling of psc timing in multi-pulse senario
-            timediff = zeros([multi_pulse_in_dataset(j).psc_total, 1]);
-            starts = multi_pulse_in_dataset(j).psc_start_ms;
-            for n =1:multi_pulse_in_dataset(j).psc_total
-                if (starts(n) < multi_pulse_in_dataset(j).pre_time/1E3)
-                    %psc happens before any of the opto pulse is on
-                    timediff(n) = starts(n)*1E3-multi_pulse_in_dataset(j).pre_time;
-                else
-                    timediff(n) = rem(starts(n)*1E3, pulse_and_down);
+                %special handling of psc timing in multi-pulse senario
+                timediff = zeros([multi_pulse_in_dataset(j).psc_total, 1]);
+                starts = multi_pulse_in_dataset(j).psc_start_ms;
+                for n =1:multi_pulse_in_dataset(j).psc_total
+                    if (starts(n) < multi_pulse_in_dataset(j).pre_time/1E3)
+                        %psc happens before any of the opto pulse is on
+                        timediff(n) = starts(n)*1E3-multi_pulse_in_dataset(j).pre_time;
+                    else
+                        timediff(n) = rem(starts(n)*1E3, pulse_and_down);
+                    end
                 end
+                start_latency = [start_latency, timediff];
             end
-            start_latency = [start_latency, timediff];
         end
 
         %copy data into R
