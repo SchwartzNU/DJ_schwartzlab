@@ -15,7 +15,9 @@ q.channel_name = 'Amp1';
 data = fetch(sln_symphony.ExperimentEpochChannel&q, 'raw_data');
 
 %plotting the detection
-plot(ax, data.raw_data);
+
+x_axis = linspace(0, numel(data.raw_data)/sample_rate, numel(data.raw_data));
+plot(ax, x_axis, data.raw_data);
 hold(ax, 'on');
 [~, psc_n] = size(R.psc_start_ms);
 for i = 1:psc_n
