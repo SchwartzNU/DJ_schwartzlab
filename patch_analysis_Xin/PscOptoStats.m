@@ -54,7 +54,7 @@ for d = 1:N_datasets
                 if (sum(isnan(peak_amps)))
                     error('detected psc has nan peak!, epoch %d \n', single_pulse_in_dataset(j).epoch_id);
                 end
-                psc_timediff = single_pulse_in_dataset(j).psc_start_ms*1E3 - single_pulse_in_dataset(j).pre_time;
+                psc_timediff = single_pulse_in_dataset(j).psc_start_ms - single_pulse_in_dataset(j).pre_time;
                 start_latency = [start_latency, psc_timediff];
                 risetime = [risetime, single_pulse_in_dataset(j).psc_risetime_ms];
             end
@@ -90,9 +90,9 @@ for d = 1:N_datasets
                 for n =1:multi_pulse_in_dataset(j).psc_total
                     if (starts(n) < multi_pulse_in_dataset(j).pre_time/1E3)
                         %psc happens before any of the opto pulse is on
-                        timediff(n) = starts(n)*1E3-multi_pulse_in_dataset(j).pre_time;
+                        timediff(n) = starts(n)-multi_pulse_in_dataset(j).pre_time;
                     else
-                        timediff(n) = rem(starts(n)*1E3, pulse_and_down);
+                        timediff(n) = rem(starts(n), pulse_and_down);
                     end
                 end
                 start_latency = [start_latency, timediff];
