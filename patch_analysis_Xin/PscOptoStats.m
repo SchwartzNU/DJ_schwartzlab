@@ -88,9 +88,11 @@ for d = 1:N_datasets
                 timediff = zeros([1, multi_pulse_in_dataset(j).psc_total]);
                 starts = multi_pulse_in_dataset(j).psc_start_ms;
                 for n =1:multi_pulse_in_dataset(j).psc_total
-                    if (starts(n) < multi_pulse_in_dataset(j).pre_time/1E3)
+                    if (starts(n) < multi_pulse_in_dataset(j).pre_time)
                         %psc happens before any of the opto pulse is on
                         timediff(n) = starts(n)-multi_pulse_in_dataset(j).pre_time;
+                    elseif (starts(n)>multi_pulse_in_dataset(j).pre_time + multi_pulse_in_dataset(j).stim_time)
+                        timediff(n) = starts(n)-multi_pulse_in_dataset(j).pre_time - multi_pulse_in_dataset(j).stim_time;
                     else
                         timediff(n) = rem(starts(n), pulse_and_down);
                     end
