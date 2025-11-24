@@ -73,7 +73,7 @@ for d = 1:N_datasets
         psc_total = 0;
         start_latency = [];
         risetime = [];
-        R.if_multi_pulse = true;
+        R(d).if_multi_pulse = true;
         pulse_and_down = multi_pulse_in_dataset(1).downtime + ...
             multi_pulse_in_dataset(1).pulse_time;
 
