@@ -23,7 +23,7 @@ plot(ax, x_axis, data.raw_data, 'Color', 'black');
 hold(ax, 'on');
 [~, psc_n] = size(R.psc_start_ms);
 for i = 1:psc_n
-    timing = R.psc_start_ms(i);
+    timing = R.psc_start_ms(i)/1E3;
     %xline(timing, '-', 'Color', 'blue');
     xline(ax, timing, '-', 'Color', 'blue');
 end
