@@ -106,7 +106,7 @@ for d = 1:N_datasets
             +multi_pulse_in_dataset(j).tail_time)/1E3;
         R.psc_frequency(d) = psc_total/epoch_time_total;
         R.latency_opto_ms(d) = {start_latency};
-        R.opto_duration_ms(d) = single_pulse_in_dataset(j).stim_time;
+        R.opto_duration_ms(d) = multi_pulse_in_dataset(j).stim_time;
         R.psc_risetime_mean_s(d) = mean(risetime);
 
     end
