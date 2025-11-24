@@ -3,7 +3,6 @@ function R = PscOptoStats(data_group, params)
 datasets = aka.Dataset & data_group;
 datasets_struct = fetch(datasets);
 N_datasets = datasets.count;
-datasets_struct.channel_name = 'Amp1'; %change this if the recording is from channel 2
 
 %if_pulse_train = params.if_pulse_train;
 
@@ -11,6 +10,7 @@ R = sln_results.table_definition_from_template('PscOptoStats',N_datasets);
 fprintf('Processing %s _source_id%d:%s for PSC stats......\n', datasets_struct(1).file_name, datasets_struct(1).source_id);
 
 for d = 1:N_datasets
+    datasets_struct(d).channel_name = 'Amp1'; %change this if the recording is from channel 2
 
     %try fetching single and multi opto pulse setting and PSC detections for the datasets...
     single_pulse_in_dataset = fetch(sln_symphony.DatasetEpoch * sln_results.EpochPostsynapticCurrent...
@@ -44,7 +44,7 @@ for d = 1:N_datasets
         psc_total = 0;
         start_latency = [];
         risetime = [];
-        R.if_multi_pulse = false;
+        R.if_multi_pulse(d) = false;
         
         for j = 1:N_epochs_sg
             %skipping no psc trial. Otherwise nan will pollute the dataset
