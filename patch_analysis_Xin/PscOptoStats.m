@@ -102,7 +102,7 @@ for d = 1:N_datasets
         %copy data into R
         R.psc_total_dataset(d) = psc_total;
         R.psc_amp_mean(d) = mean(peak_amps);
-        epoch_time_total = (multi_pulse_in_dataset(j).pre_time + multi_pulse_in_dataset(j).stim_time...
+        epoch_time_total = N_epochs_mul*(multi_pulse_in_dataset(j).pre_time + multi_pulse_in_dataset(j).stim_time...
             +multi_pulse_in_dataset(j).tail_time)/1E3;
         R.psc_frequency(d) = psc_total/epoch_time_total;
         R.latency_opto_ms(d) = {start_latency};
