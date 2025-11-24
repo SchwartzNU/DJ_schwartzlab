@@ -85,7 +85,7 @@ for d = 1:N_datasets
                 risetime = [risetime, multi_pulse_in_dataset(j).psc_risetime_ms];
 
                 %special handling of psc timing in multi-pulse senario
-                timediff = zeros([multi_pulse_in_dataset(j).psc_total, 1]);
+                timediff = zeros([1, multi_pulse_in_dataset(j).psc_total]);
                 starts = multi_pulse_in_dataset(j).psc_start_ms;
                 for n =1:multi_pulse_in_dataset(j).psc_total
                     if (starts(n) < multi_pulse_in_dataset(j).pre_time/1E3)
