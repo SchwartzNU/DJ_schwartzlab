@@ -6,7 +6,7 @@ if nargin<1
     skip_errors = false;
 end
 
-run_first = {'sln_results.SpikeDetectCC','sln_funcimage.Alignment'};
+run_first = {'sln_results.SpikeDetectCC','sln_results.SpikeDetectBrainCC','sln_funcimage.Alignment'};
 
 %schemas we want to check for computed tables
 schemas = {'sln_results','sln_funcimage'}; 
