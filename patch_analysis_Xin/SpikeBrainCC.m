@@ -18,7 +18,7 @@ for i = 1:N_datasets
     %prot_q = datasets_struct(i);
     protocol = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentEpochBlock & datasets_struct(i),...
        'protocol_name');
-    prot_types = unique([protocol.epoch_block_id]);
+    %prot_types = unique([protocol.epoch_block_id]);
     protname = unique({protocol.protocol_name});
     if (numel(prot_types)>1)
         error('More than 1 types of protocol is present in this dataset! please redo curating!/n');
