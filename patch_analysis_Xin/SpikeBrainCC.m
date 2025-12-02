@@ -18,11 +18,13 @@ for i = 1:N_datasets
     %prot_q = datasets_struct(i);
     protocol = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentEpochBlock & datasets_struct(i),...
        'protocol_name');
-    tag_ar = strcmp(protocol(i).protocol_name, protocol_list);
-    if (sum(tag_ar)==0)
-        error('Protocol %s cannot be processed with this analysis!/n', protocol.protocol_name);
-    elseif (sum(tag_ar)>1)
+    protname = unique({protocol.protocol_name});
+    if (numel(protname)>1)
         error('More than 1 types of protocol is present in this dataset! please redo curating!/n');
+    end
+    tag_ar = strcmp(protname{1}, protocol_list);
+    if (sum(tag_ar)==0)
+        error('Protocol %s cannot be processed with this analysis!/n', protocol.protocol_name);        
     end
 
     pro_flag = find(tag_ar);
