@@ -98,10 +98,10 @@ for i = 1:N_datasets
      R.total_spike_count(i) = total_spike;
      R.spike_frequency_all(i) = R.total_spike_count(i)/R.total_elapsed_time_s(i);
      R.mean_spike_count_in_stim(i) = spike_instim_sum/N_epochs;
-     R.spike_count_within_stim = spike_instim_sum;
+     R.spike_count_within_stim(i) = spike_instim_sum;
      R.spike_count_out_stim(i) = total_spike-spike_instim_sum;
-     R.baseline_mp_nostim = {baseline_mp};
-     R.mean_baseline_mp_nostim = mean(baseline_mp, "all");
+     R.baseline_mp_nostim(i) = {baseline_mp};
+     R.mean_baseline_mp_nostim(i) = mean(baseline_mp, "all");
 
      fprintf('Processing finished! yay\n');
 
