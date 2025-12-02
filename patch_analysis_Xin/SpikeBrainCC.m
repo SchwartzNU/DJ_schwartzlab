@@ -18,8 +18,9 @@ for i = 1:N_datasets
     %prot_q = datasets_struct(i);
     protocol = fetch(sln_symphony.DatasetEpoch * sln_symphony.ExperimentEpochBlock & datasets_struct(i),...
        'protocol_name');
+    prot_types = unique([protocol.epoch_block_id]);
     protname = unique({protocol.protocol_name});
-    if (numel(protname)>1)
+    if (numel(prot_types)>1)
         error('More than 1 types of protocol is present in this dataset! please redo curating!/n');
     end
     tag_ar = strcmp(protname{1}, protocol_list);
@@ -62,8 +63,8 @@ for i = 1:N_datasets
     R.sample_rate(i) = spikeTrace(1).sample_rate;
      N_epochs = numel(spikeTrace);
      R.total_spike_count(i) = 0;
-     R.total_elapsed_time_s(i) = N_epochs * (prot_data(i).pre_time + ...
-         prot_data(i).stim_time + prot_data(i).tail_time)/1E3;
+     R.total_elapsed_time_s(i) = N_epochs * (prot_data(1).pre_time + ...
+         prot_data(1).stim_time + prot_data(1).tail_time)/1E3;
      spike_instim_sum = 0;
      spike_outstim_sum = 0;
      total_spike = 0;
