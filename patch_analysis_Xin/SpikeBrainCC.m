@@ -20,7 +20,7 @@ for i = 1:N_datasets
        'protocol_name');
     %prot_types = unique([protocol.epoch_block_id]);
     protname = unique({protocol.protocol_name});
-    if (numel(prot_types)>1)
+    if (numel(protname)>1)
         error('More than 1 types of protocol is present in this dataset! please redo curating!/n');
     end
     tag_ar = strcmp(protname{1}, protocol_list);
@@ -75,8 +75,8 @@ for i = 1:N_datasets
          %get the baseline membrane potential
          raw_trace = spikeTrace(j).raw_data;
           
-         stim_start = prot_data(i).pre_time/1E3*R.sample_rate(i);
-         stim_end = (prot_data(i).pre_time + prot_data(i).stim_time)/1E3*R.sample_rate(i);
+         stim_start = prot_data(j).pre_time/1E3*R.sample_rate(i);
+         stim_end = (prot_data(j).pre_time + prot_data(j).stim_time)/1E3*R.sample_rate(i);
          raw_trace(stim_start:stim_end+1) = [];
          
          filter_window_samp = filter_window_ms/1E3*R.sample_rate(i);
@@ -88,7 +88,7 @@ for i = 1:N_datasets
          %select the spike that are within the stimulation period, for current injection epochs block especially
          if (spikeTrace(j).spike_count>0)
             spike_locs_ms = spikeTrace(j).spike_indices/R.sample_rate(i)*1E3;
-            spike_instim_N = sum(spike_locs_ms>prot_data(i).pre_time & spike_locs_ms<(prot_data(i).pre_time + prot_data(i).stim_time));
+            spike_instim_N = sum(spike_locs_ms>prot_data(j).pre_time & spike_locs_ms<(prot_data(j).pre_time + prot_data(j).stim_time));
             spike_instim_sum  = spike_instim_sum + spike_instim_N;
          else
              fprintf('No spike detected in epoch number %d\n', j);
