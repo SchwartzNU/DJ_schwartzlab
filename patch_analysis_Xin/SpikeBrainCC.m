@@ -87,8 +87,10 @@ for i = 1:N_datasets
 
          %select the spike that are within the stimulation period, for current injection epochs block especially
          if (spikeTrace(j).spike_count>0)
-            spike_locs_ms = spikeTrace(j).spike_indices/R.sample_rate(i)*1E3;
-            spike_instim_N = sum(spike_locs_ms>prot_data(j).pre_time & spike_locs_ms<(prot_data(j).pre_time + prot_data(j).stim_time));
+            spike_locs = spikeTrace(j).spike_indices;
+            pre_time_idx = prot_data(j).pre_time/1E3 * R.sample_rate(i);
+            stop_time_idx = (prot_data(j).pre_time + prot_data(j).stim_time)/1E3*R.sample_rate(i);
+            spike_instim_N = sum(spike_locs>pre_time_idx & spike_locs<stop_time_idx);
             spike_instim_sum  = spike_instim_sum + spike_instim_N;
          else
              fprintf('No spike detected in epoch number %d\n', j);
@@ -99,8 +101,8 @@ for i = 1:N_datasets
 
      %filling out the R struct
      R.total_spike_count(i) = total_spike;
-     R.spike_frequency_all(i) = R.total_spike_count(i)/R.total_elapsed_time_s(i);
-     R.mean_spike_count_in_stim(i) = spike_instim_sum/N_epochs;
+     R.spike_frequency_all(i) = double(R.total_spike_count(i))/double(R.total_elapsed_time_s(i));
+     R.mean_spike_count_in_stim(i) = double(spike_instim_sum)/double(N_epochs);
      R.spike_count_within_stim(i) = spike_instim_sum;
      R.spike_count_out_stim(i) = total_spike-spike_instim_sum;
      R.baseline_mp_nostim(i) = {baseline_mp};
