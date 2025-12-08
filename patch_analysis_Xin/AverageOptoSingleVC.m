@@ -18,7 +18,7 @@ for d = 1:N_datasets
     end
     sample_rate = epochs_in_dataset.sample_rate;
 
-    pre_stim_tail = struct('pre_time', epochs_in_dataset(1).pre_time, ...
+    pre_stim_tail = struct('pre_time', epochs_in_dataset(d).pre_time, ...
         'stim_time', epochs_in_dataset(d).stim_time, ...
         'tail_time', epochs_in_dataset(d).tail_time);
     pre_samples = sample_rate * (pre_stim_tail.pre_time / 1E3);
@@ -44,9 +44,9 @@ for d = 1:N_datasets
     R.average_trace(d) ={mean_trace};
 
     %happily copy paste things into result table...
-    R.file_name(d) = datasets_struct.file_name;
-    R.dataset_name(d) = datasets_struct.dataset_name;
-    R.source_id(d) = datasets_struct.source_id;
+    R.file_name(d) = datasets_struct(d).file_name;
+    R.dataset_name(d) = datasets_struct(d).dataset_name;
+    R.source_id(d) = datasets_struct(d).source_id;
     R.pre_time_ms(d) = pre_stim_tail.pre_time;
     R.stim_time_ms(d) = pre_stim_tail.stim_time;
     R.tail_time_ms(d) = pre_stim_tail.tail_time;
