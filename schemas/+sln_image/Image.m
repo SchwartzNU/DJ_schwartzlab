@@ -519,6 +519,12 @@ classdef Image < dj.Manual
                 sprintf('creation_date="%s"', datestr(file_info.datenum,'yyyy-mm-dd')) & ...
                 sprintf('size_in_bytes=%d', file_info.bytes);            
         end
+        function match = get_db_match_nodaterestrict(file_info)
+            %file_info is a struct from the 'dir' command
+            match = sln_image.Image & ...
+                sprintf('image_filename="%s"', file_info.name) & ...
+                sprintf('size_in_bytes=%d', file_info.bytes);
+        end
 
         function is_in_db = inDB(file_info)
             %file_info is a struct from the 'dir' command
