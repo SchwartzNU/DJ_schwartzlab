@@ -22,16 +22,19 @@ classdef WholeBrainImage < dj.Manual
             end
             [key.folder, name, ext] = fileparts(filepath);
             try
-                key.file_name = append(name, ext);
+                key.slide_n = slide_n;
+                key.brain_n = brain_n;
                 key.tissue_id = tissue_id;
                 %see if the row alreay in database
-                query = sln_image.WholeBrainImage & key;
-                if (exists(query))
-                    error('Whole brain image already in the database!');
+                query = fetch(sln_image.WholeBrainImage & key, 'file_name');
+                if (~isempty(query))
+                   warning('Whole brain image already in the database! %s', query.file_name);
+
+                   ref_image_id = query.ref_image_id;
+                   return;
                 end
                 %continue build insert struct if not
-                key.slide_num = slide_n;
-                key.brain_num = brain_n;
+                key.file_name = append(name, ext);
 
                 %try insert
                 C = dj.conn;
@@ -44,8 +47,8 @@ classdef WholeBrainImage < dj.Manual
 
 
                 %return the inserted ref_id
-                ids = fetchn(sln_image.WholeBrainImage, 'ref_image_id');
-                ref_image_id = max(ids);
+                inserted = fetch(sln_image.WholeBrainImage & key);
+                ref_image_id = inserted.ref_image_id;
                 %Warning: usually this safe to do, unless there are more than 1
                 %process insert this database at the same time
 
