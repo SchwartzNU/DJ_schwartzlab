@@ -21,10 +21,10 @@ for d=1:N_datasets
             spot_contrast = (epochs_in_dataset(i).epoch_intensity - meanLevel) / meanLevel;
             contrasts = sort(unique(spot_contrast),'asc');
             Ncontrasts = length(contrasts);
-            %empty_dict_single = configureDictionary('string','struct');
-            %empty_dict_paired = configureDictionary('string','struct');
-            empty_dict_single = containers.Map;
-            empty_dict_paired = containers.Map;
+            empty_dict_single = configureDictionary('string','struct');
+            empty_dict_paired = configureDictionary('string','struct');
+            %empty_dict_single = containers.Map;
+            %empty_dict_paired = containers.Map;
             empty_single_struct = struct('resp', []);
             empty_pair_struct = struct('distance',[], ...
                 'resp',[], ...
@@ -120,6 +120,37 @@ for d=1:N_datasets
 
     end
 
+    %convert dictionaries to structs so they can be stored in the database
+    %will convert them back when we read them
+    for c=1:contrasts
+        d = single_spot_data{c}
+
+        k = d.keys;           % string array (or cellstr)
+        v = d.values;         % struct array
+
+        k = matlab.lang.makeValidName(k);   % sanitize for struct fields
+
+        S = struct();
+        for i = 1:numel(k)
+            S.(k(i)) = v(i);               % store the whole struct value
+        end
+        single_spot_data_struct{c} = S;
+    end
+    for c=1:contrasts
+        d = paired_spot_data{c}
+
+        k = d.keys;           % string array (or cellstr)
+        v = d.values;         % struct array
+
+        k = matlab.lang.makeValidName(k);   % sanitize for struct fields
+
+        S = struct();
+        for i = 1:numel(k)
+            S.(k(i)) = v(i);               % store the whole struct value
+        end
+        paired_spot_data_struct{c} = S;
+    end
+
     %set table variables
     R.file_name{d} = datasets_struct(d).file_name;
     R.dataset_name(d) = datasets_struct(d).dataset_name;
@@ -132,8 +163,8 @@ for d=1:N_datasets
     R.spot_pre_frames(d) = spot_pre_frames;
     R.spot_stim_frames(d) = spot_stim_frames;
     R.spot_tail_frames(d) = spot_tail_frames;
-    R.single_spot_data{d} = single_spot_data;
-    R.paired_spot_data{d} = paired_spot_data;
+    R.single_spot_data{d} = single_spot_data_struct;
+    R.paired_spot_data{d} = paired_spot_data_struct;
 end
 
     function val = response_for_spot(sp, ...
