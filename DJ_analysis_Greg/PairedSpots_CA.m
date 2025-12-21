@@ -21,8 +21,10 @@ for d=1:N_datasets
             spot_contrast = (epochs_in_dataset(i).epoch_intensity - meanLevel) / meanLevel;
             contrasts = sort(unique(spot_contrast),'asc');
             Ncontrasts = length(contrasts);
-            empty_dict_single = configureDictionary('string','struct');
-            empty_dict_paired = configureDictionary('string','struct');
+            %empty_dict_single = configureDictionary('string','struct');
+            %empty_dict_paired = configureDictionary('string','struct');
+            empty_dict_single = containers.Map;
+            empty_dict_paired = containers.Map;
             empty_single_struct = struct('resp', []);
             empty_pair_struct = struct('distance',[], ...
                 'resp',[], ...
