@@ -2,9 +2,11 @@
 # PairedSpotsNLMapCA
 -> sln_symphony.Dataset
 ---
-analysis_name                   : varchar(128) # name of analysis
+single_spots_resp_map : longblob
+paired_spots_nli_map : longblob
+paired_spots_distance : longblob
+paired_spots_nli : longblob
 analysis_entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
-git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 %}
 classdef PairedSpotsNLMapCA < dj.Computed
     properties
@@ -13,7 +15,11 @@ classdef PairedSpotsNLMapCA < dj.Computed
      methods(Access=protected)
         function makeTuples(self, key)
             disp('populing NL map')
-            key
+            R = fetch(sln_results.DatasetPairedSpotsCA & key, '*');
+            Ncontrasts = length(R.contrast);
+            
+            
+            keyboard;
 
         end
      end

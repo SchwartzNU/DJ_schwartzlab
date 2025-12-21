@@ -12,8 +12,9 @@ for d=1:N_datasets
         aka.PairedSpotsParams & ...
         datasets_struct(d),'*');
 
-    N_epochs = length(epochs_in_dataset);
-
+    N_epochs = length(epochs_in_dataset);    
+    clear('single_spot_data');
+    clear('paired_spot_data');
     for i=1:N_epochs
         fprintf('working on epoch %d.\n', i);
         if i==1 %setup stuff for first epoch
@@ -28,7 +29,7 @@ for d=1:N_datasets
             empty_single_struct = struct('resp', []);
             empty_pair_struct = struct('distance',[], ...
                 'resp',[], ...
-                'center', []);
+                'center', []);            
             for c=1:Ncontrasts
                 single_spot_data{c} = empty_dict_single;
                 paired_spot_data{c} = empty_dict_paired;
