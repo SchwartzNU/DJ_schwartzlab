@@ -122,8 +122,8 @@ for d=1:N_datasets
 
     %convert dictionaries to structs so they can be stored in the database
     %will convert them back when we read them
-    for c=1:contrasts
-        d = single_spot_data{c}
+    for c=1:Ncontrasts
+        d = single_spot_data{c};
 
         k = d.keys;           % string array (or cellstr)
         v = d.values;         % struct array
@@ -136,8 +136,8 @@ for d=1:N_datasets
         end
         single_spot_data_struct{c} = S;
     end
-    for c=1:contrasts
-        d = paired_spot_data{c}
+    for c=1:Ncontrasts
+        d = paired_spot_data{c};
 
         k = d.keys;           % string array (or cellstr)
         v = d.values;         % struct array
