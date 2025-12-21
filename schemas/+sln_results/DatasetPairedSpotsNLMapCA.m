@@ -95,13 +95,13 @@ classdef DatasetPairedSpotsNLMapCA < dj.Computed
                 nli_key = compute_paired_nli(single_spot_struct, paired_spots_struct);
                 fnames_nli = fieldnames(nli_key);
                 for f=1:length(fnames_nli)
-                    key.(fnames_nli){c} = nli_key.(fnames_nli);
+                    key.(fnames_nli{f}){c} = nli_key.(fnames_nli{f});
                 end
                 
                 maps_key = build_paired_nli_maps(single_spot_struct, paired_spots_struct);
                 fnames_maps = fieldnames(maps_key);
                 for f=1:length(fnames_maps)
-                    key.(fnames_maps){c} = maps_key.(fnames_maps);
+                    key.(fnames_maps{f}){c} = maps_key.(fnames_maps{f});
                 end             
                 
                 %insert part
