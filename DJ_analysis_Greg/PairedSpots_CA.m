@@ -123,10 +123,10 @@ for d=1:N_datasets
     %convert dictionaries to structs so they can be stored in the database
     %will convert them back when we read them
     for c=1:Ncontrasts
-        d = single_spot_data{c};
+        dict = single_spot_data{c};
 
-        k = d.keys;           % string array (or cellstr)
-        v = d.values;         % struct array
+        k = dict.keys;           % string array (or cellstr)
+        v = dict.values;         % struct array
 
         k = matlab.lang.makeValidName(k);   % sanitize for struct fields
 
@@ -137,10 +137,10 @@ for d=1:N_datasets
         single_spot_data_struct{c} = S;
     end
     for c=1:Ncontrasts
-        d = paired_spot_data{c};
+        dict = paired_spot_data{c};
 
-        k = d.keys;           % string array (or cellstr)
-        v = d.values;         % struct array
+        k = dict.keys;           % string array (or cellstr)
+        v = dict.values;         % struct array
 
         k = matlab.lang.makeValidName(k);   % sanitize for struct fields
 
