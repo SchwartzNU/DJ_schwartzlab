@@ -154,8 +154,8 @@ for d=1:N_datasets
         paired_spot_data_struct{c} = S;
     end
 
-    catch 
-
+    catch ME
+        disp(ME);
     end
 
     if ~err
