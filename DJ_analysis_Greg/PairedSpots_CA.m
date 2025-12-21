@@ -7,7 +7,8 @@ R = sln_results.table_definition_from_template('PairedSpots_CA',N_datasets);
 for d=1:N_datasets
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
-
+    err = false;
+    try
     epochs_in_dataset = fetch(sln_symphony.DatasetEpoch * ...
         aka.PairedSpotsParams & ...
         datasets_struct(d),'*');
@@ -16,7 +17,7 @@ for d=1:N_datasets
     clear('single_spot_data');
     clear('paired_spot_data');
     for i=1:N_epochs
-        fprintf('working on epoch %d.\n', i);
+        fprintf('working on epoch %d.\n', i);        
         if i==1 %setup stuff for first epoch
             meanLevel = epochs_in_dataset(i).mean_level;
             spot_contrast = (epochs_in_dataset(i).epoch_intensity - meanLevel) / meanLevel;
@@ -40,7 +41,8 @@ for d=1:N_datasets
             sln_symphony.SpikeTrain * ...  
             sln_symphony.ExperimentChannel & epochs_in_dataset(i);
         if ~exists(ep_data)
-            error("No SpikeTrain table found for epoch %d\n.",epochs_in_dataset(i).epoch_number);
+            error("No SpikeTrain table found for epoch %d\n.",i);
+            err = true;
         end
         sp = fetch1(ep_data,'spike_indices');
         spot_size = epochs_in_dataset(i).spot_size;
@@ -152,20 +154,26 @@ for d=1:N_datasets
         paired_spot_data_struct{c} = S;
     end
 
-    %set table variables
-    R.file_name{d} = datasets_struct(d).file_name;
-    R.dataset_name(d) = datasets_struct(d).dataset_name;
-    R.source_id(d) = datasets_struct(d).source_id;
-    R.sample_rate(d) = sample_rate;
-    R.n_epochs(d) = N_epochs;
-    R.spot_size(d) = spot_size;
-    R.rstar_mean(d) = rstar_mean;
-    R.contrasts{d} = contrasts;
-    R.spot_pre_frames(d) = spot_pre_frames;
-    R.spot_stim_frames(d) = spot_stim_frames;
-    R.spot_tail_frames(d) = spot_tail_frames;
-    R.single_spot_data{d} = single_spot_data_struct;
-    R.paired_spot_data{d} = paired_spot_data_struct;
+    catch 
+
+    end
+
+    if ~err
+        %set table variables
+        R.file_name{d} = datasets_struct(d).file_name;
+        R.dataset_name(d) = datasets_struct(d).dataset_name;
+        R.source_id(d) = datasets_struct(d).source_id;
+        R.sample_rate(d) = sample_rate;
+        R.n_epochs(d) = N_epochs;
+        R.spot_size(d) = spot_size;
+        R.rstar_mean(d) = rstar_mean;
+        R.contrasts{d} = contrasts;
+        R.spot_pre_frames(d) = spot_pre_frames;
+        R.spot_stim_frames(d) = spot_stim_frames;
+        R.spot_tail_frames(d) = spot_tail_frames;
+        R.single_spot_data{d} = single_spot_data_struct;
+        R.paired_spot_data{d} = paired_spot_data_struct;
+    end
 end
 
     function val = response_for_spot(sp, ...
