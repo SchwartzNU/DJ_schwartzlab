@@ -67,9 +67,9 @@ classdef DatasetPairedSpotsNLMapCA < dj.Computed
                 idx = count > 0;
                 map(idx) = accum(idx) ./ count(idx);
 
-                key.single_spots_resp_map = map;
-                key.single_spots_map_x = xv;
-                key.single_spots_map_y = yv;
+                key.single_spots_resp_map{c} = map;
+                key.single_spots_map_x{c} = xv;
+                key.single_spots_map_y{c} = yv;
 
                 % now the paired spots data
                 paired_spots_struct = R.paired_spot_data{c};
@@ -90,11 +90,19 @@ classdef DatasetPairedSpotsNLMapCA < dj.Computed
                     end
                 end
 
-                key.paired_spots_distance = dists;
+                key.paired_spots_distance{c} = dists;
 
                 nli_key = compute_paired_nli(single_spot_struct, paired_spots_struct);
-                key = mergeStruct(key, nli_key);
-                key = build_paired_nli_maps(single_spot_struct, paired_spots_struct, key);
+                fnames_nli = fieldnames(nli_key);
+                for f=1:length(fnames_nli)
+                    key.(fnames_nli){c} = nli_key.(fnames_nli);
+                end
+                
+                maps_key = build_paired_nli_maps(single_spot_struct, paired_spots_struct);
+                fnames_maps = fieldnames(maps_key);
+                for f=1:length(fnames_maps)
+                    key.(fnames_maps){c} = maps_key.(fnames_maps);
+                end             
                 
                 %insert part
                 C = dj.conn;
@@ -234,7 +242,7 @@ end
 end
 
 %% build_paired_nli_maps (REPLACE existing version)
-function key = build_paired_nli_maps(single_spot_struct, paired_spots_struct, key, varargin)
+function key = build_paired_nli_maps(single_spot_struct, paired_spots_struct)
 fn = fieldnames(paired_spots_struct);
 m = numel(fn);
 centers = nan(m,2);
