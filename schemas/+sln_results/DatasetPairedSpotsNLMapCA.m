@@ -96,7 +96,7 @@ classdef DatasetPairedSpotsNLMapCA < dj.Computed
                 key = mergeStruct(key, nli_key);
                 key = build_paired_nli_maps(single_spot_struct, paired_spots_struct, key);
                 
-                sln_results.insert(key);
+                sln_results.insert(key, 'Dataset', true);
             end
         end
     end
