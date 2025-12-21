@@ -125,7 +125,11 @@ classdef DatasetPairedSpotsNLMapCA < dj.Computed
             end
 
             key.git_tag = tag_name;
-            insert(self, key, 'REPLACE');
+            try
+                insert(self, key, 'REPLACE');
+            catch 
+                disp('insert error');
+            end
         end
     end
 end
