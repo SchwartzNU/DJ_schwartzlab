@@ -1,7 +1,23 @@
-% PairedSpotsNLMapCA.m
-% Computed table class and helper functions (all in one file)
+%{
+# DatasetPairedSpotsNLMapCA
+-> sln_results.DatasetPairedSpotsCA
+---
+single_spots_resp_map : longblob     # rasterized single-spot responses (matrix)
+single_spots_map_x    : longblob     # x vector for single_spots_resp_map
+single_spots_map_y    : longblob     # y vector for single_spots_resp_map
+paired_spots_distance : longblob     # vector of measured pair distances
+paired_spots_nli      : longblob     # NLI values for each paired entry
+predicted_resp        : longblob     # predicted responses (RA+RB) per paired entry
+actual_resp           : longblob     # actual paired responses (Rp) per paired entry
+distance_vals             : longblob  # unique integer distance bins (vector)
+paired_spots_nli_maps     : longblob  # cell array of 2D maps (one per distance)
+paired_spots_maps_x       : longblob  # cell array of x vectors (per map)
+paired_spots_maps_y       : longblob  # cell array of y vectors (per map)
+analysis_entry_time = CURRENT_TIMESTAMP : timestamp # when this was entered into db
+git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
+%}
 
-classdef PairedSpotsNLMapCA < dj.Computed
+classdef DatasetPairedSpotsNLMapCA < dj.Computed
     properties
         keySource = sln_results.DatasetPairedSpotsCA;
     end
