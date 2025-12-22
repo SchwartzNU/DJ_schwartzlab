@@ -517,7 +517,6 @@ function fname = build_single_fieldname(coords, varargin)
 % Optional name/value pairs:
 %   'Prefix'   : leading letter (default 'x')
 %   'AsChar'   : return char (true) or string (false). Default true.
-%
 % Examples:
 %   build_single_fieldname([135, -78])        -> 'x135__78'
 %   build_single_fieldname([-30, -156])      -> 'x_30__156'
