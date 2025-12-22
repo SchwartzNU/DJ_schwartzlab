@@ -83,15 +83,15 @@ for d=1:N_datasets
                 if isKey(single_spot_data{contrast_ind},this_key) %existing entry
                     single_struct = single_spot_data{contrast_ind}(this_key);
                     single_struct.resp = [single_struct.resp; sp_count];
-                    single_struct.raster_x = [single_struct.raster_x; ...
-                        ones(sp_count,1)*length(single_struct.resp)];
                     single_struct.raster_y = [single_struct.raster_y; ...
-                        sp_times];
+                        ones(sp_count,1)*length(single_struct.resp)];
+                    single_struct.raster_x = [single_struct.raster_x; ...
+                        sp_times'];
                 else %new entry
                     single_struct = empty_single_struct;                    
                     single_struct.resp = sp_count;
-                    single_struct.raster_x = ones(sp_count,1);
-                    single_struct.raster_y = sp_times;   
+                    single_struct.raster_y = ones(sp_count,1);
+                    single_struct.raster_x = sp_times';   
                 end
                 single_spot_data{contrast_ind}(this_key) = single_struct;
             else %paired spots
@@ -99,23 +99,22 @@ for d=1:N_datasets
                 if isKey(paired_spot_data{contrast_ind},this_key) %existing entry
                     pair_struct = paired_spot_data{contrast_ind}(this_key);
                     pair_struct.resp = [pair_struct.resp; sp_count];
-                    pair_struct.raster_x = [pair_struct.raster_x; ...
-                        ones(sp_count,1)*length(pair_struct.resp)];
                     pair_struct.raster_y = [pair_struct.raster_y; ...
-                        sp_times];
+                        ones(sp_count,1)*length(pair_struct.resp)];
+                    pair_struct.raster_x = [pair_struct.raster_x; ...
+                        sp_times'];
                 else %new entry
                     pair_struct = empty_pair_struct;
                     pair_struct.distance = pdist2([spotA_x(s),spotA_y(s)],[spotB_x(s),spotB_y(s)]);
                     pair_struct.center = [mean([spotA_x(s),spotB_x(s)]), mean([spotA_y(s),spotB_y(s)])];
                     pair_struct.resp = sp_count;
-                    pair_struct.raster_x = ones(sp_count,1);
-                    pair_struct.raster_y = sp_times;                    
+                    pair_struct.raster_y = ones(sp_count,1);
+                    pair_struct.raster_x = sp_times';                    
                 end
                 paired_spot_data{contrast_ind}(this_key) = pair_struct;
             end
-
+            
         end
-        %keyboard;
 
     end
 
@@ -190,7 +189,7 @@ end
         end_sample = start_sample + round(frame_samples * (spot_stim_frames + spot_tail_frames));
         
         ind = sp >= start_sample & sp < end_sample;
-        sp_times = (sp(ind) - start_sample) / sample_rate;
+        sp_times = double((sp(ind) - start_sample)) / sample_rate;
 
         val = sum(ind);        
     end
