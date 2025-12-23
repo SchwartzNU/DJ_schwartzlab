@@ -22,8 +22,8 @@ classdef WholeBrainImage < dj.Manual
             end
             [key.folder, name, ext] = fileparts(filepath);
             try
-                key.slide_n = slide_n;
-                key.brain_n = brain_n;
+                key.slide_num = slide_n;
+                key.brain_num = brain_n;
                 key.tissue_id = tissue_id;
                 %see if the row alreay in database
                 query = fetch(sln_image.WholeBrainImage & key, 'file_name');
@@ -49,8 +49,6 @@ classdef WholeBrainImage < dj.Manual
                 %return the inserted ref_id
                 inserted = fetch(sln_image.WholeBrainImage & key);
                 ref_image_id = inserted.ref_image_id;
-                %Warning: usually this safe to do, unless there are more than 1
-                %process insert this database at the same time
 
             catch ME
                 if (exist('C', 'var'))
