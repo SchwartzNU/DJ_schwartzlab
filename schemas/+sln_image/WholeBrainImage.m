@@ -59,8 +59,27 @@ classdef WholeBrainImage < dj.Manual
             end
         end
 
-        function prior_s = count_slice_before(ref_image_id)
-            % TO DO
+        function dist_from_first_slice = count_slice_before(ref_image_id)
+            q.ref_image_id = ref_image_id;
+            thick_data = fetch(sln_image.WholeBrainImage * sln_tissue.BrainSliceBatch & q, '*');
+           
+            %number of brain slice has a smaller slice number
+            sen1 = sprintf('tissue_id = %d', thick_data.tissue_id);
+            sen2 = sprintf('slice_number < %d', thick_data.slide_num);
+            small_s = proj(sln_image.WholeBrainImage & sen1 & sen2);
+            small_s = fetch(small_s);
+            slide_sn = numel(small_s);
+
+            %number of brain slice has a smaller brain number but with the same slide bumber
+            sen2 = sprintf('slice_number = %d', thick_data.slide_num);
+            sen3 = sprintf('brain_num < %d', thick_data.brain_num);
+            small_b = proj(sln_image.WholeBrainImage & sen1 & sen2 & sen3);
+            small_b = fetch(small_b);
+            brain_sn = numel(small_b);
+
+            %add up
+            dist_from_first_slice = thick_data.thickness * (slide_sn + brain_sn);
+
         end
     end
 end

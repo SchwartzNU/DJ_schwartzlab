@@ -172,11 +172,12 @@ classdef Image < dj.Manual
 
                     fprintf('Loading %d slices * %d channels\n', key.n_slices, N_channels);             
                     if (interleaved)
-                        raw_image_interleaved = uint16(zeros(key.height, key.height, key.n_slices*N_channels));
+                        raw_image_interleaved = uint16(zeros(key.height, key.width, key.n_slices*N_channels));
                         for i=1:key.n_slices*N_channels
                             raw_image_interleaved(:,:,i) = imread(filename,i);
                         end
                         for i=1:N_channels
+
                             key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:key.n_slices*N_channels);
                         end
 
@@ -507,7 +508,7 @@ classdef Image < dj.Manual
                 error("Image load error: unknown file type");
             end
             fprintf('Inserting.\n');
-            key
+
             insert(sln_image.Image,key);
             fprintf('Done.\n');
         end
