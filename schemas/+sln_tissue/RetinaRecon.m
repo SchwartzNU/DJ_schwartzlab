@@ -10,15 +10,18 @@ reproj:blob@raw #reprojected coordinates
 
 classdef RetinaRecon < dj.Manual
 methods (Static)
-    function [x,y] = retistruct_azimuth(lambda, phi)
+    function [x,y] = retistruct_azimuth(lambda, phi, side)
         %this is a strange 'azimuth equal distance projection' from retistruct R code, very different from the standard formula
         %potentially the retistruct coordinate systems is rotated 90 degree to the equator thus skip the trouble of calculating scaleing function
         rho = pi/2+phi;
         x = rho.*cos(lambda);
+        if (strcmp(side, 'Right'))
+            x = -x;
+        end
         y = rho.*sin(lambda);
     end
 
-    function upload_retina_recon(folder, animalid, cell_idlist, sph_arr, reproj_arr)
+    function upload_retina_recon(folder, animalid, cell_idlist, sph_arr, side, reproj_arr)
         %sph_arr is an n*2 array, first column is the lambda of retistruct reconstruction number,  
         %second column is the phi of reconstruction result. 
         arguments
@@ -26,6 +29,7 @@ methods (Static)
             animalid
             cell_idlist 
             sph_arr 
+            side = 'Left'
             reproj_arr = nan
         end
         try
@@ -50,7 +54,7 @@ methods (Static)
             key.folder = convertStringsToChars(folder);
             key.spherical = sph_arr;
             if (isnan(reproj_arr))
-                [x,y] = sln_tissue.RetinaRecon.retistruct_azimuth(sph_arr(:, 1), sph_arr(:, 2));
+                [x,y] = sln_tissue.RetinaRecon.retistruct_azimuth(sph_arr(:, 1), sph_arr(:, 2), side);
             end
             reproj_arr = zeros(size(sph_arr));
             reproj_arr(:, 1) = x;

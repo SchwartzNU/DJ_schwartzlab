@@ -24,7 +24,12 @@ classdef AxonCoordinate < dj.Computed
                     ap_all(i) = result.distance_from_fist_slice;
                     ml_all(i) = result.medial_lateral;
                 end
-
+                
+               fprintf('Axon %d...\n', qstruct.axon_id);
+                fprintf('Medial lateral: \n');
+                disp(ml_all);
+                fprintf('Anterior Posterior: \n');
+                disp(ap_all);
                 key.medial_lateral = mean(ml_all);
                 key.anterior_posterior = mean(ap_all);
 
