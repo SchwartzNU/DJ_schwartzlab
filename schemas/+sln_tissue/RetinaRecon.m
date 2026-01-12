@@ -16,7 +16,10 @@ methods (Static)
         rho = pi/2+phi;
         x = rho.*cos(lambda);
         if (strcmp(side, 'Right'))
+            fprintf('Flipping the x coordinates for right eye...\n');
             x = -x;
+        else
+            fprintf('uploading left eye...\n');
         end
         y = rho.*sin(lambda);
     end
