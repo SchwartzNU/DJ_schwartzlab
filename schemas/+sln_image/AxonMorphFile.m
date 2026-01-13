@@ -16,8 +16,9 @@ classdef AxonMorphFile < dj.Manual
                 key.image_id = im_id;
                 if (isempty(new_folder))
                     %the folder is the same one in the database
-
+                    
                     im_data = fetch(sln_image.Image & key, 'folder');
+                    fprintf('Using deault folder %s\n', im_data.folder);
                     new_folder = im_data.folder;
                 end
                 files = dir(new_folder);
