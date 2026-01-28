@@ -68,5 +68,21 @@ classdef AxonMorphFile < dj.Manual
             end
 
         end
+        
+        function coords= get_trace_coords(image_id)
+            %combine all swc file into 1 matrix?
+            query = sprintf('image_id  = %d', image_id);
+            data = fetch(sln_image.AxonMorphFile & query, '*');
+
+            coords = [];
+            for i = 1:numel(data.trace_coordinates)
+                x = data.trace_coordinates{i}.x;
+                y = data.trace_coordinates{i}.y;
+                z = data.trace_coordinates{i}.z;
+
+                coords = [coords; [x, y, z]]; % Concatenate coordinates from each SWC file
+
+            end
+        end
     end
 end

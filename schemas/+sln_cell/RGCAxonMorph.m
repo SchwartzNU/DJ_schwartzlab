@@ -20,9 +20,7 @@ classdef  RGCAxonMorph< dj.Manual
             %TODO a function returns the ids of the axon ids that are missing morphlogy
         end
 
-        function analyze_axon_morph(axon_id)
-            %fill the axon morphology parameters
-        end
+        
 
     end
 end
