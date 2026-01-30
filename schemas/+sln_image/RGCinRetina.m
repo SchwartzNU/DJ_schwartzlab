@@ -112,8 +112,8 @@ methods (Static)
         arguments
             imageid               
             cellid 
-            background = NaN
-            maskpath = NaN
+            background = []
+            maskpath = []
             color = NaN;
         end
         try
@@ -128,14 +128,14 @@ methods (Static)
             end
             %get background from folder in sln_image.Image if left empty
             imdata = fetch(query1, 'folder');
-            if (isnan(background))
+            if (isempty(background))
                 background = fullfile(imdata.folder, 'background.roi');
                 if (~isfile(background))
                     error('Cannot find background roi in the folder by table sln_image: %s\n', background);
                 end
             end 
 
-            if (isnan(maskpath))
+            if (isempty(maskpath))
                 maskpath = fullfile(imdata.folder, 'mask.tif');
                 if (~isfile(maskpath))
                     error('Cannot find mask.tif in folder by sln_image.Image: %s\n', imdata.folder);
@@ -154,11 +154,15 @@ methods (Static)
                 insert(sln_image.RetinalCellImage, assokey);
             else
                 fprintf('Image and rgc association already exists!\n');
-                disk(assokey);
+                disp(assokey);
             end
 
-            
-
+            queryself = sprintf('image_id = %d', imageid);
+            dupcheck = fetch(sln_image.RGCinRetina & queryself);
+            if (~isempty(dupcheck))
+                fprintf('Image already in table sln_image.RGCinRetina, skipping...\n');
+                return;
+            end
            
             if (endsWith(background, '.roi'))
                 roi = ReadImageJROI(background);
@@ -189,7 +193,7 @@ methods (Static)
 
             %reduce the value of true pixel in mask to 1
             %mask_ar = mask_ar/max(mask_ar, [], 'all');
-            key.maskpath = maskpath;
+            %key.maskpath = maskpath;
 
             if (isnan(color))
                 query.image_id = imageid;
@@ -211,14 +215,13 @@ methods (Static)
             end
 
             key.color_pixel = color;
-            key.mask_rgc = mask_data;
-            
-            key.cell_unid = cellid;
+            key.mask_rgc = mask_data; 
+            %key.cell_unid = cellid;
 
             insert(sln_image.RGCinRetina, key);
             C.commitTransaction;
             fprintf('Insert successful:')
-            disp(key)
+            disp(key);
 
         catch ME
             rethrow (ME)
