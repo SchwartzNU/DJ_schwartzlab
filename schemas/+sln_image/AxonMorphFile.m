@@ -3,11 +3,13 @@
 ->sln_image.AxonInBrain
 ---
 trace_coordinates: blob@raw #trees of the traced axon, is cell array, each cell is 1 swc file
+axon_axis: blob@raw #a starting point plus the slope and intercept of the axis that goes through the axon
 %}
+
 classdef AxonMorphFile < dj.Manual
 
     methods (Static)
-        function insert_new_swc(im_id, new_folder)
+        function insert_new_morphfile(im_id, new_folder) %image DJID and the folder of the image (if changed from original image upload)
             arguments
                 im_id
                 new_folder = {};
@@ -21,13 +23,12 @@ classdef AxonMorphFile < dj.Manual
                     fprintf('Using deault folder %s\n', im_data.folder);
                     new_folder = im_data.folder;
                 end
-                files = dir(new_folder);
-                files = files(~[files.isdir]);
+                files = get_files_of_folder(new_folder);
+
+                %part 1: upload swc file into coordinate
                 indexes = find(endsWith({files.name}, 'swc'));
                 swc_files =files(indexes);
-
                 swc_load = cell(1, numel(swc_files));
-
                 for i = 1:numel(swc_files)
                     filename = fullfile(new_folder, swc_files(i).name);
                     fid = fopen(filename, 'r', 'n', 'UTF-8');
@@ -57,8 +58,17 @@ classdef AxonMorphFile < dj.Manual
                     swc.parent = data(:,7);
                     swc_load{i} = swc; % Store the SWC structure in the cell array
                 end
+
+                %part 2 uploading the axis file, manually labeled from axonskwer app
+                idx = strcmp('Orthogonal.mat', {files.name});
+                if ~sum(idx)
+                    error('Cannot find axon axis in folder: %s!\n', new_folder);
+                end
+
+                ax_f = load(fullfile(new_folder, files(idx)));
                 %inserting
                 key.trace_coordinates = swc_load;
+                key.axon_axis = ax_f.result;
                 insert(sln_image.AxonMorphFile, key);
 
                 fprintf('.swc files uploaded for image folder: %s\n', new_folder);
