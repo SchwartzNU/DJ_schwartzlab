@@ -109,11 +109,16 @@ for i=1:length(D)
                             break;
                         else
                             frpintf('Cell id not confirmed... redo\n');
+                            continue;
                         end
+                    else
+                        fprintf('Cell id is not in the list.\n');
+                        continue;
                     end
-                    fprintf('Please type the one of the cell id\n');
+                else
+                    fprintf('Input is not a number\n');
                 end
-                fprintf('Input is not a number\n');
+                
             end
             
             %upload processs... 
