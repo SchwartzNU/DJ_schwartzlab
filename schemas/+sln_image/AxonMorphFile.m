@@ -65,7 +65,7 @@ classdef AxonMorphFile < dj.Manual
                     error('Cannot find axon axis in folder: %s!\n', new_folder);
                 end
 
-                ax_f = load(fullfile(new_folder, files(idx)));
+                ax_f = load(fullfile(new_folder, files(idx).name));
                 %inserting
                 key.trace_coordinates = swc_load;
                 key.axon_axis = ax_f.result;
