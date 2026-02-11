@@ -84,8 +84,9 @@ classdef  AxonImageMorph< dj.Manual
 
                     %this may not be the optimal thing to do, could take a lot of time to calculate
                     %is this a branch?
-                    if (paidx == i-1)
+                    if (paidx ~= j-1)
                         tbranch(i) = tbranch(i) + 1; % Increment branch count
+                        fprintf('current node: %d; parent node: %d\n', j, paidx);
                     end
                 end                 
             end
