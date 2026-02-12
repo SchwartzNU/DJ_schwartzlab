@@ -6,6 +6,7 @@ trace_coordinates: blob@raw #trees of the traced axon, is cell array, each cell 
 axon_axis: blob@raw #a starting point plus the slope and intercept of the axis that goes through the axon
 %}
 
+%NOTE: please exclude the axon fiber that forms the axon terminal bundle from being uploaded
 classdef AxonMorphFile < dj.Manual
 
     methods (Static)
@@ -24,6 +25,14 @@ classdef AxonMorphFile < dj.Manual
                     new_folder = im_data.folder;
                 end
                 files = get_files_of_folder(new_folder);
+
+                %sanity check: is the data already in the database
+                q = sprintf('image_id = %d', im_id);
+                test = fetch(sln_image.AxonMorphFile & q);
+                if (~isempty(test))
+                    fprintf('image %d alreayd has morphology file in the database, please procced to analysis\n', im_id);
+                    return
+                end
 
                 %part 1: upload swc file into coordinate
                 indexes = find(endsWith({files.name}, 'swc'));

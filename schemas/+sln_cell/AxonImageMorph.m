@@ -49,6 +49,7 @@ classdef  AxonImageMorph< dj.Manual
             yall = [];
             %note: remeber the unit change-- which is pixel which is micron
             for i = 1:bundle_n
+                fprintf('Processing swc file: %d out of %d.\n', i, bundle_n);
                 bundle = trace.trace_coordinates{i}; 
                 density_this = zeros([numel(bundle.x)-1, 2]);
                 xall = [xall; bundle.x];
@@ -104,8 +105,8 @@ classdef  AxonImageMorph< dj.Manual
             hull_cy = mean(yall(hull_idx), 'all');
 
             %offset all dots in traces
-            x_offseted  = bundle.x - hull_cx;
-            y_offseted = bundle.y - hull_cy;
+            x_offseted  = xall - hull_cx;
+            y_offseted = yall - hull_cy;
 
             cov_matrix = cov([x_offseted, y_offseted]);
             [~, eigenvalues] = eig(cov_matrix);
