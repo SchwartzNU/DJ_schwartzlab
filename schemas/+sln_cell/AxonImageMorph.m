@@ -101,12 +101,12 @@ classdef  AxonImageMorph< dj.Manual
             density_area = sum(len_each, 'all')/hull_area;
             %eccentricity.
             %TODO check if this is accurate later
-            hull_cx = mean(xall(hull_idx), 'all');
-            hull_cy = mean(yall(hull_idx), 'all');
+            hull_cx = mean(hull(:, 1), 'all');
+            hull_cy = mean(hull(:, 2), 'all');
 
             %offset all dots in traces
-            x_offseted  = xall - hull_cx;
-            y_offseted = yall - hull_cy;
+            x_offseted  = hull(:, 1) - hull_cx;
+            y_offseted = hull(:, 2) - hull_cy;
 
             cov_matrix = cov([x_offseted, y_offseted]);
             [~, eigenvalues] = eig(cov_matrix);
