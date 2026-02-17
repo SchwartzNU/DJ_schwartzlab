@@ -4,7 +4,7 @@ query_name                   : varchar(128)   # unique name
 -> sln_lab.User
 ---
 -> [nullable] sln_lab.Project
-sql_query : varchar(4096)
+sql_query : varchar(65536)
 %}
 
 classdef Query < dj.Manual
