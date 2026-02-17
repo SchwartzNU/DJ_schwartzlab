@@ -8,6 +8,12 @@ sql_query : varchar(4096)
 %}
 
 classdef Query < dj.Manual
-    methods(Static)
+    methods
+        function result = runAndFetch(query)
+            q_str = fetch1(query, 'sql_query');
+            q_str = sprintf('SELECT * from %s', q_str);
+            C = dj.conn;
+            result = C.query(q_str);            
+        end
     end
 end
