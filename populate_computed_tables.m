@@ -14,8 +14,8 @@ run_first = {'sln_results.SpikeDetectCC',...
 schemas = {'sln_results','sln_funcimage'};
 %schemas = {'sln_results'};
 
-skip_tables = {'sln_results.DatasetPaiedSpotsNLMapCA' ...
-    'sln_results.DatasetPaiedSpotsNLMapCC'};
+skip_tables = {'sln_results.DatasetPairedSpotsNLMapCA' ...
+    'sln_results.DatasetPairedSpotsNLMapCC'};
 
 current_time = datetime;
 time_str = datestr(current_time,'yyyy-mm-dd_HH-MM-SS');
