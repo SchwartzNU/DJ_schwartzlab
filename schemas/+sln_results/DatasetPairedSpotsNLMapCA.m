@@ -277,13 +277,7 @@ for i = 1:m
     if isfield(s,'distance')
         distances(i) = to_scalar(s.distance);
     else
-        distances(i) = NaN;
-    end
-
-    % center: prefer stored center; fallback to parsed coords from fieldname
-    if isfield(s,'center') && numel(s.center)==2 && all(~isnan(s.center))
-        centers(i,:) = double(s.center(:)');
-    else
+        distances(i) = NaN;                     lk;jsad;lkjasdfkjdflkjsadfklj
         [coordA, coordB] = parse_pair_fieldname(fn{i});
         if ~any(isnan(coordA)) && ~any(isnan(coordB))
             centers(i,:) = mean([coordA; coordB],1);
