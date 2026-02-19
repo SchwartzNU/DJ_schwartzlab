@@ -24,14 +24,15 @@ methods (Static)
         y = rho.*sin(lambda);
     end
 
-    function upload_retina_recon(folder, animalid, cell_idlist, sph_arr, side, reproj_arr)
+    function upload_retina_recon(folder, animalid, cell_idlist, lambda, phi, side, reproj_arr)
         %sph_arr is an n*2 array, first column is the lambda of retistruct reconstruction number,  
         %second column is the phi of reconstruction result. 
         arguments
             folder 
             animalid
             cell_idlist 
-            sph_arr 
+            lambda
+            phi
             side = 'Left'
             reproj_arr = nan
         end
@@ -55,11 +56,11 @@ methods (Static)
             fprintf('Checking cell_unid finished, no error found.\n');
             
             key.folder = convertStringsToChars(folder);
-            key.spherical = sph_arr;
+            key.spherical = [lambda, phi];
             if (isnan(reproj_arr))
-                [x,y] = sln_tissue.RetinaRecon.retistruct_azimuth(sph_arr(:, 1), sph_arr(:, 2), side);
+                [x,y] = sln_tissue.RetinaRecon.retistruct_azimuth(lambda, phi, side);
             end
-            reproj_arr = zeros(size(sph_arr));
+            reproj_arr = zeros(numel(lambda), 2);
             reproj_arr(:, 1) = x;
             reproj_arr(:, 2) = y;
             key.reproj = reproj_arr;
