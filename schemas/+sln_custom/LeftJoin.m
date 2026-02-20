@@ -17,7 +17,7 @@ classdef LeftJoin < dj.internal.GeneralRelvar
 
             joinSql = sprintf('%s AS t1 LEFT JOIN %s AS t2 USING (%s)', ...
                 table1.sql, table2.sql, ...
-                matchColumn)
+                matchColumn);
             self.fullTableName = joinSql;
             self.schema = sln_custom.getSchema();
             %self.fullTableName = sprintf('(%s) AS %s', joinSql, 'LeftTable');
