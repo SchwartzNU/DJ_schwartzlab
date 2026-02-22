@@ -15,12 +15,17 @@ classdef LeftJoin < dj.internal.GeneralRelvar
             attr = vertcat(attr1,table2.header.attributes(ind));
             self.tableHeader = dj.internal.Header.initFromAttributes(attr, 'LeftJoin', 'LeftJoin');
 
-            joinSql = sprintf('%s AS t1 LEFT JOIN %s AS t2 USING (%s)', ...
-                table1.sql, table2.sql, ...
-                matchColumn);
+            if length(matchColumn)==1
+                joinSql = sprintf('%s LEFT JOIN %s USING (%s)', ...
+                    table1.sql, table2.sql, ...
+                    matchColumn{1});
+            else
+                joinSql = sprintf('%s LEFT JOIN %s USING (%s)', ...
+                    table1.sql, table2.sql, ...
+                    strjoin(matchColumn,','));
+            end
             self.fullTableName = joinSql;
             self.schema = sln_custom.getSchema();
-            %self.fullTableName = sprintf('(%s) AS %s', joinSql, 'LeftTable');
             self.init('table', {self});
         end
     end
