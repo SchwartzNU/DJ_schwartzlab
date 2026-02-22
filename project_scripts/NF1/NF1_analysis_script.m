@@ -17,7 +17,7 @@ fprintf("%d total animals\n", animals.count);
 fprintf("%d male; %d female\n", males.count, females.count);
 fprintf("%d NF1 het; %d NF1 WT\n", het.count, WT.count);
 
-cells = sln_cell.Cell * proj(sln_cell.RetinaQuadrant,'image_id->quad_image_id','*') * sln_cell.AssignType.current & proj(data_group,'image_id->not_used');
+cells = sln_cell.Cell * sln_cell.RetinaQuadrant * sln_cell.AssignType.current & proj(data_group);
 all_types = unique(fetchn(cells, 'cell_type'));
 
 fprintf("-----------\n");
