@@ -4,6 +4,10 @@
 %2. MultiPulse, Current-clamp, CC_MP, to measure intrinsic electrical properties
 %3. SpotsMultiSize, Voltage-clamp, VC_SMS, to measure synaptic inputs 
 
+%And some control data
+%4. SMS WT CA data (at least for a few cell types)
+%5. MP control data CC
+
 %We will compare cells (within type) from high fat diet (HFD) animals and
 %sibling controls. We can also query larger sets of control data down the
 %line.
@@ -21,6 +25,10 @@ q_CC_MP = sln_lab.Query & 'query_name="HFD_and_siblings_CC_MP"';
 %3
 q_VC_SMS = sln_lab.Query & 'query_name="HFD_and_siblings_VC_SMS"';
    
+%5 
+q_MP_control = sln_lab.Query & 'query_name="MP_control_CC_WIP"';
+
+
 %% fetch all the data from each one (the slow step)
 %Once this is done once, you can just save them and load them directly from
 %the .mat files
@@ -29,12 +37,26 @@ data_CA_SMS = q_CA_SMS.runAndFetchAnalysisResult('DatasetSMSCA');
 fprintf('CA SMS data fetch took %f seconds\n', toc);
 
 tic;
-data_CC_MP = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
+data_CC_MP_features = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
 fprintf('CC MP data fetch took %f seconds\n', toc);
+
+tic;
+data_CC_MP_FI = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulseFIcurve');
+fprintf('CC MP data fetch took %f seconds\n', toc);
+
+tic;
+data_MP_control_features = q_MP_control.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
+fprintf('CC MP control data fetch took %f seconds\n', toc);
+
+tic;
+data_MP_control_FI = q_MP_control.runAndFetchAnalysisResult('DatasetMultiPulseFIcurve');
+fprintf('CC MP control data fetch took %f seconds\n', toc);
+
 
 tic;
 data_VC_SMS = q_VC_SMS.runAndFetchAnalysisResult('DatasetSMSVC');
 fprintf('VC SMS data fetch took %f seconds\n', toc);
+
 
 %% Each of these is a struct with entries corresponding to datasets. 
 %For example:
