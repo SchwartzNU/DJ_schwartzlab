@@ -16,6 +16,10 @@ classdef AxonCoordinate < dj.Computed
             try
                 qstruct.axon_id = key.axon_id;
                 association = fetch( sln_image.AxonImageAssociation & qstruct, 'image_id');
+                if (isempty(association))
+                    warning('No associated image found for axon %d, skipping...\n', key.axon_id);
+                    return
+                end
                 ap_all = zeros([numel(association), 1]);
                 ml_all = zeros([numel(association),1]);
                 for i = 1:numel(association)
