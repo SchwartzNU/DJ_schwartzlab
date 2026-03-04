@@ -25,6 +25,7 @@ classdef Axon < dj.Manual
                 ids = fetch(sln_cell.Axon&key, 'axon_id');
                 axon_id = max([ids.axon_id]);
                 fprintf('New axon added: %d\n', axon_id);
+                C.commitTransaction;
             catch ME
                 rethrow (ME)
             end
