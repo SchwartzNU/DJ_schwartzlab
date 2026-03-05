@@ -14,7 +14,7 @@ try
         end
     end
 
-    if strcmp(event_type, 'EyeInjection') %need to get or add Eye object
+    if strcmp(event_type, 'EyeInjection') || strcmp(event_type, 'EyeSuture')  %need to get or add Eye object
         thisEye = sln_animal.Eye & sprintf('animal_id = %d', key.animal_id) & sprintf('side = "%s"', key.side);
         if ~thisEye.exists
             key_eye.animal_id = key.animal_id;
