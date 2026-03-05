@@ -35,6 +35,7 @@ classdef CCEpochStats < dj.Computed
                 thisEpoch = sln_symphony.ExperimentEpochBlock * ...
                     sln_symphony.ExperimentEpochGroup * ...
                     sln_symphony.ExperimentEpochChannel * ...
+                    aka.Epoch * ...
                     sln_symphony.ExperimentChannel & key;
 
                 prot_name = fetch1(thisEpoch,'protocol_name');
@@ -47,17 +48,34 @@ classdef CCEpochStats < dj.Computed
                         contains(prot_name,'spot_field') %error joining epoch and block params
                      thisEpoch =  thisEpoch * ...
                         aka.BlockParams(sqlProtName2ProtName(prot_name));
+                elseif contains(sqlProtName2ProtName(prot_name),'AutoCenter') || ...
+                        contains(sqlProtName2ProtName(prot_name),'SetMeanLevel')
+                    %can't get params for these. Not even entered in
+                    %the database as a protocol
                 else
+                    sqlProtName2ProtName(prot_name)
                     thisEpoch =  thisEpoch * ...
                         aka.BlockParams(sqlProtName2ProtName(prot_name)) * ...
                         aka.EpochParams(sqlProtName2ProtName(prot_name));
                 end
 
                 if ~thisEpoch.exists
-                    error('Epoch query error for %s\n', prot_name);
+                    fprintf('Epoch query error for %s\n', prot_name);
+                    fprintf('Trying without protocol stats.\n');
+                    thisEpoch = sln_symphony.ExperimentEpochBlock * ...
+                        sln_symphony.ExperimentEpochGroup * ...
+                        sln_symphony.ExperimentEpochChannel * ...
+                        aka.Epoch * ...
+                        sln_symphony.ExperimentChannel & key;
                 end
                 thisEpoch_struct = fetch(thisEpoch,'*');
                 
+                %HACK: If not pre_time and stim_time, just guess
+                if ~isfield(thisEpoch_struct, 'pre_time')
+                    thisEpoch_struct.pre_time = 250;
+                    thisEpoch_struct.stim_time = thisEpoch_struct.epoch_duration - 500;
+                end
+
                 %HACK: 100 ms pre_time if there is none
                 if thisEpoch_struct.pre_time == 0 
                     thisEpoch_struct.pre_time = 100;
