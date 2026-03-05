@@ -54,7 +54,7 @@ classdef CCEpochStats < dj.Computed
                 end
 
                 if ~thisEpoch.exists
-                    error('Epoch query error');
+                    error('Epoch query error for %s\n', prot_name);
                 end
                 thisEpoch_struct = fetch(thisEpoch,'*');
                 
