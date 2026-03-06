@@ -41,6 +41,12 @@ classdef AxonImageAssociation< dj.Manual
                         for i = 1:length(axon_arry)
                             key.axon_id = axon_arry(i);
                             key.image_id = img_array(i);
+                            %sanity check to prevent error breaks the function
+                            instance = fetch(sln_image.AxonImageAssociation & key);
+                            if (~isempty(instance))
+                                fprintf('Axon %d -- image %d already linked, skipping...\n', key.axon_id, key.image_id);
+                                continue;
+                            end
                             insert(sln_image.AxonImageAssociation, key);
                             fprintf('Inserted axon %d with image %d\n', key.axon_id, key.image_id);
                         end
