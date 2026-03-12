@@ -33,7 +33,39 @@ plot(raw_data');
 subplot(2,1,2);
 plot(stimulus);
 
+tau_1 = nan(size(raw_data,1), 1);
+tau_2 = nan(size(raw_data,1), 1);
 
+for i = 1 : size(raw_data,1)
 
+post_stim_data = raw_data(i, ((pre_time + stim_time) * sample_rate) : ((pre_time + stim_time + 0.2) * sample_rate));
+
+[~, idx] = min(post_stim_data);
+idx = idx + (pre_time + stim_time) * sample_rate;
+y = raw_data(i, idx : (idx + (5 * sample_rate)));
+t = [0:length(y)-1] / sample_rate * 1000;
+
+ft = fittype( 'exp2' );
+opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+opts.Algorithm = 'Levenberg-Marquardt';
+opts.Display = 'Off';
+opts.StartPoint = [-45.6079302262768 -0.000184482499308884 -19.8845504137804 0.000168607590000871];
+
+% Fit model to data.
+[xData, yData] = prepareCurveData( t, y );
+
+[fitresult, gof] = fit( xData, yData, ft, opts );
+
+x = [0:5000];
+figure;
+hold on;
+plot(x, fitresult.a * exp(x * fitresult.b) + fitresult.c)
+plot(x, fitresult.a * exp(x * fitresult.b) + fitresult.c * (exp(x * fitresult.d)))
+plot(fitresult.c * (exp(x * fitresult.d)))
+plot(t, y)
+
+tau_1(i) = -1/fitresult.b;
+tau_2(i) = -1/fitresult.d;
+end
 
 end
