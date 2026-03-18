@@ -7,6 +7,7 @@ N_datasets = datasets.count;
 R = sln_results.table_definition_from_template('SMSVC',N_datasets);
 
 for d=1:N_datasets
+    try
     tic;
     fprintf('Processing %d of %d, %s_sourceid%d:%s\n', d, N_datasets, datasets_struct(d).file_name, datasets_struct(d).source_id, datasets_struct(d).dataset_name);
 
@@ -118,6 +119,10 @@ for d=1:N_datasets
     R.holding_current_mean(d) = holding_current_mean;
     R.holding_voltage(d) = holding_voltage;
     fprintf('Elapsed time = %d seconds\n', round(toc));
+    catch ME
+        warning('error')
+
+    end
 end
 
 
