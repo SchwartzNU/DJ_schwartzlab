@@ -14,8 +14,10 @@ for d=1:N_datasets
         sln_symphony.ExperimentChannel * ...
         sln_symphony.ExperimentEpochChannel * ...
         aka.EpochParams('SpotsMultiSize') * ...
-        aka.BlockParams('SpotsMultiSize') & ...
-        datasets_struct(d),'*');
+        aka.BlockParams('SpotsMultiSize') * ...
+        sln_symphony.ExperimentElectrode & ...
+        datasets_struct(d) ...
+        & 'channel_name = "Amp1" or channel_name = "Amp2"','*');
     N_epochs = length(epochs_in_dataset);
 
     if N_epochs == 0
@@ -49,7 +51,7 @@ for d=1:N_datasets
     charge_tail_sem = zeros(N_spot_sizes,1);
     holding_current_vector = zeros(N_spot_sizes,1);
     mean_traces = zeros(N_spot_sizes, total_samples);
-
+    holding_voltage = epochs_in_dataset(1).hold;
     for s=1:N_spot_sizes
         ind = find(all_spot_sizes == spot_sizes(s));
         N_epochs_per_size(s) = length(ind);
@@ -114,7 +116,7 @@ for d=1:N_datasets
     R.charge_tail_sem{d} = charge_tail_sem;
     R.mean_traces{d} = mean_traces;
     R.holding_current_mean(d) = holding_current_mean;
-
+    R.holding_voltage(d) = holding_voltage;
     fprintf('Elapsed time = %d seconds\n', round(toc));
 end
 
