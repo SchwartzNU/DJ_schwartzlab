@@ -17,32 +17,56 @@
 
 %% load saved queries
 
+%SMS controls
 q_CA_ON_alpha = sln_lab.Query & 'query_name="SMS_CA_ON_alpha_clean"';
 q_CA_OFF_tr_alpha = sln_lab.Query & 'query_name="SMS_CA_OFF_trans_alpha_clean"';
 q_CA_OFF_sus_alpha = sln_lab.Query & 'query_name="SMS_CA_OFF_sus_alpha_clean"';
 q_CA_ON_tr_MeRF = sln_lab.Query & 'query_name="SMS_CA_ON_tr_MeRF_clean"';
 
+%SMS HFD
+q_CA_SMS_HFD = sln_lab.Query & 'query_name="SMS_CA_HFD_all_clean"';
 
+%CC controls
+q_MP_control = sln_lab.Query & 'query_name="MP_control_RGCs"';
 
-%1
-q_CA_SMS = sln_lab.Query & 'query_name="HFD_and_siblings_CA_SMS"';
+%CC HFD
+q_CC_MP_HFD = sln_lab.Query & 'query_name="MP_HFD_all_clean"';
 
-%2
-q_CC_MP = sln_lab.Query & 'query_name="HFD_and_siblings_CC_MP"';
+%VC SMS 
+q_VC_SMS_HFD_exc = sln_lab.Query & 'query_name="SMS_VC_HFD_exc"';
+q_VC_SMS_HFD_inh = sln_lab.Query & 'query_name="SMS_VC_HFD_inh"';
 
-%3
-q_VC_SMS = sln_lab.Query & 'query_name="HFD_and_siblings_VC_SMS"';
-   
-%5 
-q_MP_control = sln_lab.Query & 'query_name="MP_control_CC_WIP"';
-
+q_VC_SMS_control_exc = sln_lab.Query & 'query_name="SMS_VC_control_clean_exc"';
+q_VC_SMS_control_inh = sln_lab.Query & 'query_name="SMS_VC_control_clean_inh"';
 
 %% fetch all the data from each one (the slow step)
 %Once this is done once, you can just save them and load them directly from
 %the .mat files
 tic;
-data_CA_SMS = q_CA_SMS.runAndFetchAnalysisResult('DatasetSMSCA');
+ON_alpha_temp = q_CA_ON_alpha.runAndFetchAnalysisResult('DatasetSMSCA');
+OFF_tr_alpha_temp = q_CA_OFF_tr_alpha.runAndFetchAnalysisResult('DatasetSMSCA');
+OFF_sus_alpha_temp = q_CA_OFF_sus_alpha.runAndFetchAnalysisResult('DatasetSMSCA');
+ON_tr_MeRF_temp = q_CA_ON_tr_MeRF.runAndFetchAnalysisResult('DatasetSMSCA');
 fprintf('CA SMS data fetch took %f seconds\n', toc);
+
+control_type_var_names = {'ON_alpha_temp', ...
+    'OFF_tr_alpha_temp', ...
+    'OFF_sus_alpha_temp', ...
+    'ON_tr_MeRF_temp'...
+    };
+
+for i=1:length(control_type_var_names)
+    cur_struct = eval(control_type_var_names{i});    
+    if i == 1
+        SMS_CA_controls = cur_struct;
+    else
+        fnames = fieldnames(SMS_CA_controls);
+        for f=1:length(fnames)
+            cur_field = fnames{f};
+            SMS_CA_controls.(cur_field) = [SMS_CA_controls.(cur_field); cur_struct.(cur_field)];
+        end
+    end
+end
 
 tic;
 data_CC_MP_features = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
