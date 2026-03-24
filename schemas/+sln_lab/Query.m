@@ -98,27 +98,7 @@ classdef Query < dj.Manual
             end
 
             function metadata_rows = fetchMetadataRows(dataset_keys)
-                dataset_rel = aka.Dataset & dataset_keys;
-                metadata_rel = dataset_rel ...
-                    * aka.Cell ...
-                    * proj(sln_symphony.ExperimentRetina, ...
-                        'source_id->retina_id', ...
-                        'source_id->source_id_retina', ...
-                        'side', ...
-                        'experimenter', ...
-                        'orientation') ...
-                    * sln_cell.Cell ...
-                    * proj(sln_cell.AssignType.current(), 'event_id', 'cell_type', 'cell_class') ...
-                    * sln_cell.CellName ...
-                    * proj(sln_animal.Animal, 'source_id->animal_source', '*');
-                metadata_rel = proj(metadata_rel, '*', ...
-                    'IF((x = 0 AND y = 0) OR (side LIKE "Unknown%"), null, IF((side = "Left" AND x < 0) OR (side = "Right" AND x > 0), IF(y < 0, "VT", "DT"), IF(y < 0, "VN", "DN"))) -> retina_quadrant');
-                metadata_rows = dedupeByDataset(fetch(metadata_rel, '*'));
-                metadata_rows = addDependentMetadata(metadata_rows);
-
-                if numel(metadata_rows) ~= numel(dataset_keys)
-                    error('Metadata expansion returned %d unique dataset rows for %d input datasets', numel(metadata_rows), numel(dataset_keys));
-                end
+                metadata_rows = addDependentMetadata(dataset_keys);
             end
 
             function result_rows = mergeMetadataRows(rows, metadata_rows)
@@ -137,32 +117,24 @@ classdef Query < dj.Manual
                 result_rows = vertcat(row_cells{:});
             end
 
-            function unique_rows = dedupeByDataset(all_rows)
-                if isempty(all_rows)
-                    unique_rows = all_rows;
-                    return
-                end
-                keep = false(numel(all_rows), 1);
-                seen = containers.Map('KeyType', 'char', 'ValueType', 'logical');
-                for j = 1:numel(all_rows)
-                    row_key = datasetKey(all_rows(j));
-                    if ~isKey(seen, row_key)
-                        seen(row_key) = true;
-                        keep(j) = true;
-                    end
-                end
-                unique_rows = all_rows(keep);
-            end
-
             function enriched_rows = addDependentMetadata(rows)
                 row_cells = cell(numel(rows), 1);
                 for k = 1:numel(rows)
                     row = rows(k);
+                    key_row = struct( ...
+                        'file_name', row.file_name, ...
+                        'source_id', row.source_id, ...
+                        'dataset_name', row.dataset_name);
 
                     exp_cell = singleFetch(sln_symphony.ExperimentCell & ...
                         struct('file_name', row.file_name, 'source_id', row.source_id), ...
                         sprintf('experiment cell for dataset %s', row.dataset_name));
                     row = mergeStruct(row, exp_cell, {'file_name', 'source_id'});
+
+                    cell_row = singleFetch(sln_cell.Cell & ...
+                        struct('file_name', row.file_name, 'source_id', row.source_id), ...
+                        sprintf('cell metadata for dataset %s', row.dataset_name));
+                    row = mergeStruct(row, cell_row, {'file_name', 'source_id'});
 
                     type_rel = sln_cell.AssignType.current() & struct('cell_unid', row.cell_unid);
                     if exists(type_rel)
@@ -206,8 +178,11 @@ classdef Query < dj.Manual
 
                     animal_row = singleFetch(sln_animal.Animal & struct('animal_id', animal_id), ...
                         sprintf('animal metadata for dataset %s', row.dataset_name));
-                    row = mergeStruct(row, animal_row);
+                    row = mergeStruct(row, animal_row, {'source_id'});
                     row.animal_source = normalizeFetchedField(animal_row, 'source_id', []);
+                    row.file_name = key_row.file_name;
+                    row.source_id = key_row.source_id;
+                    row.dataset_name = key_row.dataset_name;
 
                     row_cells{k} = row;
                 end

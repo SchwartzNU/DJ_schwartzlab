@@ -42,6 +42,8 @@ q_VC_SMS_control_inh = sln_lab.Query & 'query_name="SMS_VC_control_clean_inh"';
 %% fetch all the data from each one (the slow step)
 %Once this is done once, you can just save them and load them directly from
 %the .mat files
+
+%% SMS CA
 tic;
 ON_alpha_temp = q_CA_ON_alpha.runAndFetchAnalysisResult('DatasetSMSCA');
 OFF_tr_alpha_temp = q_CA_OFF_tr_alpha.runAndFetchAnalysisResult('DatasetSMSCA');
@@ -49,25 +51,13 @@ OFF_sus_alpha_temp = q_CA_OFF_sus_alpha.runAndFetchAnalysisResult('DatasetSMSCA'
 ON_tr_MeRF_temp = q_CA_ON_tr_MeRF.runAndFetchAnalysisResult('DatasetSMSCA');
 fprintf('CA SMS data fetch took %f seconds\n', toc);
 
-control_type_var_names = {'ON_alpha_temp', ...
-    'OFF_tr_alpha_temp', ...
-    'OFF_sus_alpha_temp', ...
-    'ON_tr_MeRF_temp'...
-    };
+SMS_CA_controls = [ON_alpha_temp; ...
+    OFF_tr_alpha_temp; ...
+    OFF_sus_alpha_temp; ...
+    ON_tr_MeRF_temp  ...
+    ];
 
-for i=1:length(control_type_var_names)
-    cur_struct = eval(control_type_var_names{i});    
-    if i == 1
-        SMS_CA_controls = cur_struct;
-    else
-        fnames = fieldnames(SMS_CA_controls);
-        for f=1:length(fnames)
-            cur_field = fnames{f};
-            SMS_CA_controls.(cur_field) = [SMS_CA_controls.(cur_field); cur_struct.(cur_field)];
-        end
-    end
-end
-
+%% MP CC
 tic;
 data_CC_MP_features = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
 fprintf('CC MP data fetch took %f seconds\n', toc);
