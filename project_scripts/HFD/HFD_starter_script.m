@@ -16,6 +16,14 @@
 %%post screenshots. 
 
 %% load saved queries
+
+q_CA_ON_alpha = sln_lab.Query & 'query_name="SMS_CA_ON_alpha_clean"';
+q_CA_OFF_tr_alpha = sln_lab.Query & 'query_name="SMS_CA_OFF_trans_alpha_clean"';
+q_CA_OFF_sus_alpha = sln_lab.Query & 'query_name="SMS_CA_OFF_sus_alpha_clean"';
+q_CA_ON_tr_MeRF = sln_lab.Query & 'query_name="SMS_CA_ON_tr_MeRF_clean"';
+
+
+
 %1
 q_CA_SMS = sln_lab.Query & 'query_name="HFD_and_siblings_CA_SMS"';
 
