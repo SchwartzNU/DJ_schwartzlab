@@ -57,6 +57,56 @@ SMS_CA_controls = [ON_alpha_temp; ...
     ON_tr_MeRF_temp  ...
     ];
 
+%strip fields
+SMS_CA_controls = rmfield(SMS_CA_controls, ...
+    { ...
+    'notes', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+SMS_CA_HFD = q_CA_SMS_HFD.runAndFetchAnalysisResult('DatasetSMSCA');
+
+%strip fields
+SMS_CA_HFD = rmfield(SMS_CA_HFD, ...
+    { ...
+    'notes', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+%add feeding_condition
+SMS_CA_controls_copy = SMS_CA_controls;
+for i=1:length(SMS_CA_controls)
+    q = sln_symphony.UserParamAnimalFeedingCondition & SMS_CA_controls(i);
+    if exists(q)
+        SMS_CA_controls_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        SMS_CA_controls_copy(i).feeding_condition = '';
+    end
+end
+SMS_CA_controls = SMS_CA_controls_copy;
+clear SMS_CA_controls_copy;
+
+SMS_CA_HFD_copy = SMS_CA_HFD;
+for i=1:length(SMS_CA_HFD)
+    q = sln_symphony.UserParamAnimalFeedingCondition & SMS_CA_HFD(i);
+    if exists(q)
+        SMS_CA_HFD_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        SMS_CA_HFD_copy(i).feeding_condition = '';
+    end
+end
+SMS_CA_HFD = SMS_CA_HFD_copy;
+clear SMS_CA_HFD_copy;
+
+T_controls = struct2table(SMS_CA_controls);
+T_HFD = struct2table(SMS_CA_HFD);
+
+T_SMS_CA_FULL = [T_controls; T_HFD];
+
 %% MP CC
 tic;
 data_CC_MP_features = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
