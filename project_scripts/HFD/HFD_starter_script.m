@@ -27,7 +27,7 @@ q_CA_ON_tr_MeRF = sln_lab.Query & 'query_name="SMS_CA_ON_tr_MeRF_clean"';
 q_CA_SMS_HFD = sln_lab.Query & 'query_name="SMS_CA_HFD_all_clean"';
 
 %CC controls
-q_MP_control = sln_lab.Query & 'query_name="MP_control_RGCs"';
+q_CC_MP_control = sln_lab.Query & 'query_name="MP_CC_control_RGCs"';
 
 %CC HFD
 q_CC_MP_HFD = sln_lab.Query & 'query_name="MP_HFD_all_clean"';
@@ -107,28 +107,222 @@ T_HFD = struct2table(SMS_CA_HFD);
 
 T_SMS_CA_FULL = [T_controls; T_HFD];
 
-%% MP CC
+%% SMS VC
 tic;
-data_CC_MP_features = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
-fprintf('CC MP data fetch took %f seconds\n', toc);
+SMS_VC_control_exc = q_VC_SMS_control_exc.runAndFetchAnalysisResult('DatasetSMSVC');
+SMS_VC_control_inh = q_VC_SMS_control_inh.runAndFetchAnalysisResult('DatasetSMSVC');
 
-tic;
-data_CC_MP_FI = q_CC_MP.runAndFetchAnalysisResult('DatasetMultiPulseFIcurve');
-fprintf('CC MP data fetch took %f seconds\n', toc);
-
-tic;
-data_MP_control_features = q_MP_control.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
-fprintf('CC MP control data fetch took %f seconds\n', toc);
-
-tic;
-data_MP_control_FI = q_MP_control.runAndFetchAnalysisResult('DatasetMultiPulseFIcurve');
-fprintf('CC MP control data fetch took %f seconds\n', toc);
-
-
-tic;
-data_VC_SMS = q_VC_SMS.runAndFetchAnalysisResult('DatasetSMSVC');
+SMS_VC_HFD_exc = q_VC_SMS_HFD_exc.runAndFetchAnalysisResult('DatasetSMSVC');
+SMS_VC_HFD_inh = q_VC_SMS_HFD_inh.runAndFetchAnalysisResult('DatasetSMSVC');
 fprintf('VC SMS data fetch took %f seconds\n', toc);
 
+SMS_VC_control_exc = rmfield(SMS_VC_control_exc, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+SMS_VC_control_inh = rmfield(SMS_VC_control_inh, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+SMS_VC_HFD_exc = rmfield(SMS_VC_HFD_exc, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+SMS_VC_HFD_inh = rmfield(SMS_VC_HFD_inh, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+%add feeding_condition
+SMS_VC_control_exc_copy = SMS_VC_control_exc;
+for i=1:length(SMS_VC_control_exc)
+    q = sln_symphony.UserParamAnimalFeedingCondition & SMS_VC_control_exc(i);
+    if exists(q)
+        SMS_VC_control_exc_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        SMS_VC_control_exc_copy(i).feeding_condition = '';
+    end
+end
+SMS_VC_control_exc = SMS_VC_control_exc_copy;
+clear SMS_VC_control_exc_copy;
+
+%add feeding_condition
+SMS_VC_control_inh_copy = SMS_VC_control_inh;
+for i=1:length(SMS_VC_control_inh)
+    q = sln_symphony.UserParamAnimalFeedingCondition & SMS_VC_control_inh(i);
+    if exists(q)
+        SMS_VC_control_inh_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        SMS_VC_control_inh_copy(i).feeding_condition = '';
+    end
+end
+SMS_VC_control_inh = SMS_VC_control_inh_copy;
+clear SMS_VC_control_inh_copy;
+
+%add feeding_condition
+SMS_VC_HFD_exc_copy = SMS_VC_HFD_exc;
+for i=1:length(SMS_VC_HFD_exc)
+    q = sln_symphony.UserParamAnimalFeedingCondition & SMS_VC_HFD_exc(i);
+    if exists(q)
+        SMS_VC_HFD_exc_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        SMS_VC_HFD_exc_copy(i).feeding_condition = '';
+    end
+end
+SMS_VC_HFD_exc = SMS_VC_HFD_exc_copy;
+clear SMS_VC_HFD_exc_copy;
+
+%add feeding_condition
+SMS_VC_HFD_inh_copy = SMS_VC_HFD_inh;
+for i=1:length(SMS_VC_HFD_inh)
+    q = sln_symphony.UserParamAnimalFeedingCondition & SMS_VC_HFD_inh(i);
+    if exists(q)
+        SMS_VC_HFD_inh_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        SMS_VC_HFD_inh_copy(i).feeding_condition = '';
+    end
+end
+SMS_VC_HFD_inh = SMS_VC_HFD_inh_copy;
+clear SMS_VC_HFD_inh_copy;
+
+SMS_VC_full = [SMS_VC_control_exc; SMS_VC_control_inh; SMS_VC_HFD_exc; SMS_VC_HFD_inh];
+data = SMS_VC_full;
+data = rmfield(data,'mean_traces');
+save('SMS_CV_full', 'data');
+
+%% MP CC
+tic;
+data_CC_MP_control_features = q_CC_MP_control.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
+fprintf('CC MP control data fetch took %f seconds\n', toc);
+
+tic;
+data_CC_MP_control_FI = q_CC_MP_control.runAndFetchAnalysisResult('DatasetMultiPulseFIcurve');
+fprintf('CC MP control data fetch took %f seconds\n', toc);
+
+tic;
+data_CC_MP_HFD_features = q_CC_MP_HFD.runAndFetchAnalysisResult('DatasetMultiPulsevaryCurrentFeatureExtract');
+fprintf('CC MP HFD data fetch took %f seconds\n', toc);
+
+tic;
+data_CC_MP_HFD_FI = q_CC_MP_HFD.runAndFetchAnalysisResult('DatasetMultiPulseFIcurve');
+fprintf('CC MP HFD data fetch took %f seconds\n', toc);
+
+data_CC_MP_control_FI = rmfield(data_CC_MP_control_FI, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+data_CC_MP_HFD_FI = rmfield(data_CC_MP_HFD_FI, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+%add feeding_condition
+data_CC_MP_control_FI_copy = data_CC_MP_control_FI;
+for i=1:length(data_CC_MP_control_FI)
+    q = sln_symphony.UserParamAnimalFeedingCondition & data_CC_MP_control_FI(i);
+    if exists(q)
+        data_CC_MP_control_FI_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        data_CC_MP_control_FI_copy(i).feeding_condition = '';
+    end
+end
+data_CC_MP_control_FI = data_CC_MP_control_FI_copy;
+clear data_CC_MP_control_FI_copy;
+
+%add feeding_condition
+data_CC_MP_HFD_FI_copy = data_CC_MP_HFD_FI;
+for i=1:length(data_CC_MP_HFD_FI)
+    q = sln_symphony.UserParamAnimalFeedingCondition & data_CC_MP_HFD_FI(i);
+    if exists(q)
+        data_CC_MP_HFD_FI_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        data_CC_MP_HFD_FI_copy(i).feeding_condition = '';
+    end
+end
+data_CC_MP_HFD_FI = data_CC_MP_HFD_FI_copy;
+clear data_CC_MP_HFD_FI_copy;
+
+data = [data_CC_MP_control_FI; data_CC_MP_HFD_FI];
+save('MP_CC_FI_full','data');
+
+data_CC_MP_control_features = rmfield(data_CC_MP_control_features, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'example_traces', ...
+    'mean_traces', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+data_CC_MP_HFD_features = rmfield(data_CC_MP_HFD_features, ...
+    { ...
+    'notes', ...
+    'user_name', ...
+    'example_traces', ...
+    'mean_traces', ...
+    'git_tag', ...
+    'entry_time', ...
+    'event_id' ...
+    });
+
+%add feeding_condition
+data_CC_MP_control_features_copy = data_CC_MP_control_features;
+for i=1:length(data_CC_MP_control_features)
+    q = sln_symphony.UserParamAnimalFeedingCondition & data_CC_MP_control_features(i);
+    if exists(q)
+        data_CC_MP_control_features_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        data_CC_MP_control_features_copy(i).feeding_condition = '';
+    end
+end
+data_CC_MP_control_features = data_CC_MP_control_features_copy;
+clear data_CC_MP_control_features_copy;
+
+%add feeding_condition
+data_CC_MP_HFD_features_copy = data_CC_MP_HFD_features;
+for i=1:length(data_CC_MP_HFD_features)
+    q = sln_symphony.UserParamAnimalFeedingCondition & data_CC_MP_HFD_features(i);
+    if exists(q)
+        data_CC_MP_HFD_features_copy(i).feeding_condition = fetch1(q,'feeding_condition');
+    else
+        data_CC_MP_HFD_features_copy(i).feeding_condition = '';
+    end
+end
+data_CC_MP_HFD_features = data_CC_MP_HFD_features_copy;
+clear data_CC_MP_HFD_features_copy;
+
+data = [data_CC_MP_control_features; data_CC_MP_HFD_features];
+save('MP_CC_features_full','data');
 
 %% Each of these is a struct with entries corresponding to datasets. 
 %For example:
