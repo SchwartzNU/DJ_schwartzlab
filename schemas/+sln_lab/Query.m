@@ -13,7 +13,10 @@ classdef Query < dj.Manual
             q_str = fetch1(query, 'sql_query');
             q_str = sprintf('SELECT * from %s', q_str);
             C = dj.conn;
-            result = C.query(q_str);            
+            tmp = C.query(q_str);  
+            result = struct('file_name', tmp.file_name, ...
+                     'source_id', num2cell(tmp.source_id), ...
+                     'dataset_name', tmp.dataset_name);
         end
 
         function result = add_metadata(query, base_result)
@@ -251,12 +254,20 @@ classdef Query < dj.Manual
         end
 
         function result = runAndFetchAnalysisResult(query, resultName)
+            if nargin < 2
+                resultName = [];
+            end
             q_str = fetch1(query, 'sql_query');
-            q_str = strrep(q_str,',`user_name`',''); %conflicts with result fields
-            q_str = strrep(q_str,',`entry_time`',''); %conflicts with result fields    
-            result_table = eval(sprintf('sln_results.%s',resultName));
-            result_table_name = result_table.sql;
-            q_str = sprintf('SELECT * from %s NATURAL JOIN %s', result_table_name, q_str);
+%            q_str = strrep(q_str,',`user_name`',''); %conflicts with result fields
+%            q_str = strrep(q_str,',`entry_time`',''); %conflicts with result fields 
+             if isempty(resultName)
+                q_str = sprintf('SELECT * from %s', q_str);
+            else
+                result_table = eval(sprintf('sln_results.%s',resultName));
+                result_table_name = result_table.sql;
+                q_str = sprintf('SELECT * from %s NATURAL JOIN %s', result_table_name, q_str);
+            end
+
             C = dj.conn;
             result = query.add_metadata(C.query(q_str));
         end
