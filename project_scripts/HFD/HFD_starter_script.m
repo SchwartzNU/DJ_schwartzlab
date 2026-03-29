@@ -207,7 +207,7 @@ clear SMS_VC_HFD_inh_copy;
 SMS_VC_full = [SMS_VC_control_exc; SMS_VC_control_inh; SMS_VC_HFD_exc; SMS_VC_HFD_inh];
 data = SMS_VC_full;
 data = rmfield(data,'mean_traces');
-save('SMS_CV_full', 'data');
+save('SMS_VC_full', 'data');
 
 %% MP CC
 tic;
