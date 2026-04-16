@@ -51,7 +51,7 @@ for d=1:N_datasets
     if tail_time > 1
         fit_time = 1;
     else
-        fit_time = tail_time-0.5;
+        fit_time = tail_time - 0.2;
 
     end
     for i = 1 : size(raw_data,1)
@@ -69,11 +69,14 @@ for d=1:N_datasets
         opts.StartPoint = [-45.6079302262768 -0.000184482499308884 -19.8845504137804 0.000168607590000871];
 
         [xData, yData] = prepareCurveData(t, y);
-
-        [fitresult, gof] = fit( xData, yData, ft, opts );
-        tau_1(i) = -1/fitresult.b;
-        tau_2(i) = -1/fitresult.d;
-
+        try
+            [fitresult, gof] = fit( xData, yData, ft, opts );
+            tau_1(i) = -1/fitresult.b;
+            tau_2(i) = -1/fitresult.d;
+        catch ME
+            disp(ME.identifier)
+            warning('Cannot fit');
+        end
         %find current for first peak
         pre_time_point = pre_time * sample_rate;
         stim_end_point = (pre_time + stim_time) * sample_rate;
@@ -94,9 +97,15 @@ for d=1:N_datasets
         else
             spikes_idx_stim = find((spike_idx > pre_time_point) & (spike_idx < stim_end_point));
             spikes_stim = spike_idx(spikes_idx_stim);
-            spike_instantaneous_freq = 1 ./ (double((spikes_stim(2:end) - spikes_stim(1:end-1))) ./ sample_rate);
-            max_spike_freq(i) = max(spike_instantaneous_freq);
-            block_current(i) = stimulus(spikes_stim(end));
+            if length(spikes_stim) > 1
+                spike_instantaneous_freq = 1 ./ (double((spikes_stim(2:end) - spikes_stim(1:end-1))) ./ sample_rate);
+                max_spike_freq(i) = max(spike_instantaneous_freq);
+                
+            else
+                max_spike_freq(i) = 1 / stim_time;
+            
+            end
+                
         end
 
 
