@@ -207,6 +207,7 @@ methods (Static)
                     %get mask into numeric array and pixel colors
                     maskframe = imread(maskpath, s);
                     mask_data(:, :, s) = imread(maskpath, index = s);
+                    fprintf('Processing frame %d, total pixel number %d.\n', s, sum(mask_data(:, :, s), 'all'));
                     
                     color{end+1} = sln_image.RGCinRetina.extract_single_frame(data.raw_image(:, :, s, :), key.background_roi, maskframe);
                     %pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)

@@ -10,7 +10,30 @@ certainty: enum('Certain', 'Uncertain')
 
 classdef CellAxonMatch <dj.Manual
     methods (Static)
-        function insertMatch(axonId, cellId, userName, certainty)
+        function inssertMatch_arrays(axonAr, cellAr, userName, certaintyAr)
+            %check array lengths
+            lengths = zeros([3, 1]);
+            lengths(1) = numel(axonAr);
+            lengths(2) = numel(cellAr);
+            lengths(3) = numel(certaintyAr);
+
+            if numunique(lengths)~=1
+                error('Check the input arrays! Multiple lengths! No insertion\n');
+            end
+
+            %try insert
+            try
+                for i = 1:lengths(1)
+                    sln_cell.CellAxonMatch.insertMatch_single(axonAr(i), ...
+                        cellAr(i), userName, certaintyAr{i});
+                end
+            catch ME
+                throw (ME);
+            end
+
+        end
+
+        function insertMatch_single(axonId, cellId, userName, certainty)
             key.axon_id = axonId;
             key.cell_unid = cellId;
             key.user_name = userName;
@@ -19,8 +42,7 @@ classdef CellAxonMatch <dj.Manual
             %check if there is already one
             result = fetch(sln_cell.CellAxonMatch & key);
             if (~isempty(result))
-                warning('This axon - cell pair already exists!\n');
-                return
+                error('This axon - cell pair already exists!\n');
             end
 
             try
