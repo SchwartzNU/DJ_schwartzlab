@@ -42,7 +42,9 @@ classdef CellAxonMatch <dj.Manual
             %check if there is already one
             result = fetch(sln_cell.CellAxonMatch & key);
             if (~isempty(result))
-                error('This axon - cell pair already exists!\n');
+                warning('This axon - cell pair already exists! skipping...\n');
+                disp(key);
+                return;
             end
 
             try
