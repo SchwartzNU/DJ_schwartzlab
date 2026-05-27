@@ -50,15 +50,15 @@ methods (Static)
         try
             %basic check to eliminate double insert or no image inserting
             key.image_id = imageid;
-           
+
             query1 = sln_image.Image & key;
-            
+
             if (~exists(query1))
                 error('Image not found in the sln_image.Image');
             end
             key.whole_brain = wholebrainid;
             query2 = sln_image.AxonInBrain & key;
-            
+
             if (exists(query2))
                 fprintf('Image already annotated!');
                 return
@@ -82,7 +82,7 @@ methods (Static)
                 bg_reformt(4) = roi.vnRectBounds(3);
             end
             key.background_roi = bg_reformt;
-            
+
             %load the tif mask image
             if (iscell(maskpath))
                 maskpath = maskpath{1};
@@ -93,7 +93,7 @@ methods (Static)
             im_h = infopack(1).Height;
             im_w = infopack(1).Width;
             mask_ar = uint8(zeros(im_h, im_w, slice_total));
-        
+
             if (isnan(color))
                 query.image_id = imageid;
                 fprintf('No exisiting pixel value input, extracting now....');
@@ -108,7 +108,7 @@ methods (Static)
                     fprintf('filtering slice %d, total %d\n', s, slice_total);
                     color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), key.background_roi, mask_ar(:, :, s));
                 end
-                 %directly load color
+                %directly load color
             elseif (endsWith(color, 'mat'))
                 buffer = load(color);
                 if (isvector(buffer))
@@ -133,5 +133,54 @@ methods (Static)
             rethrow (ME)
         end
     end
+    function filtered_image = get_filtered_axonIm(image_id, outfolder)
+        arguments
+            image_id
+            outfolder = [];
+        end
+        query = sprintf('image_id = %d', image_id);
+        data = fetch(sln_image.Image * sln_image.AxonInBrain & query, 'raw_image', 'n_channels', 'n_slices', 'mask_image');
+        if (isempty(data))
+            Error('The image %d is not in table sln_image.AxonInBrain. please check the number!\n', image_id);
+        end
+
+        filtered_image = data.raw_image .* cast(logical(data.mask_image), 'like', data.raw_image);
+        nZ = data.n_slices;
+        nC = data.n_channels;
+        %[H, W, ~, ~] = size(data.raw_image);
+        if (~isempty(outfolder))
+            %check folder
+            if (isfolder(outfolder))
+                file_name = sprintf('%d_filtered.tif', image_id);
+                outpath = fullfile(outfolder, file_name);
+                ijMeta = sprintf(['ImageJ=1.52a\n' ...
+                    'images=%d\nchannels=%d\nslices=%d\n' ...
+                    'hyperstack=true\nmode=grayscale\nloop=false\n'], ...
+                    nZ*nC, nC, nZ);
+
+                first = true;
+                for z = 1:nZ
+                    for c = 1:nC                   % ImageJ order: C fastest, then Z
+                        if first
+                            imwrite(filtered_image(:,:,z,c), outpath, ...
+                                'Compression', 'none', ...
+                                'Description', ijMeta);
+                            first = false;
+                        else
+                            imwrite(filtered_image(:,:,z,c), outpath, ...
+                                'WriteMode', 'append', ...
+                                'Compression', 'none');
+                        end
+                    end
+                end
+            end
+
+
+        else
+            Error('Cannot find folder : %s\n', outfolder);
+        end
+
+    end
+
 end
 end
