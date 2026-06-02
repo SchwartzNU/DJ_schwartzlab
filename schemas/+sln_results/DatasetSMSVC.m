@@ -12,6 +12,7 @@ charge_tail_sem=NULL : longblob # charge duriung tail time, standard error of th
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 holding_current_mean=NULL : float # mean holding current across all spot sizes
+holding_voltage = NULL : float # holding voltage (mV)
 mean_traces=NULL : longblob # mean trace for each spot size
 n_epochs_per_size=NULL : longblob # vector with how many trials for each spot size
 peak_stim_mean=NULL : longblob # peak current in stim time, mean

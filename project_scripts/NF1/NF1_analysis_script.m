@@ -90,25 +90,6 @@ if recompute
         T.quadrant(i) = thisCell.quadrant;
         T.cell_type(i) = thisCell.cell_type;
 
-        %Fit DOG model to data
-        %     yvals = R.spikes_stim_mean{i} - R.baseline_rate_hz(i); %subtract baseline rate
-        %     xvals = R.spot_sizes{i};
-        %
-        %     if strcmp(thisCell.cell_type, 'ON alpha')
-        %         init_params = [max(yvals), 100, max(yvals)/2, 400];
-        %     else
-        %         init_params = [min(yvals), 100, min(yvals)/2, 400];
-        %     end
-        %
-        %     fit_params = nlinfit(xvals,yvals,@diffCumGauss,init_params);
-        %     y_fit = diffCumGauss(fit_params,xvals);
-        %     figure(1);
-        %     scatter(xvals,yvals,'kx');
-        %     hold('on');
-        %     plot(xvals,y_fit,'r');
-        %     hold('off');
-        %     pause;
-
         T.peak_FR(i) = max(R.sms_psth{i}(:));
         [T.peak_spikes_ON(i), ind_ON_max] = max(R.spikes_stim_mean{i});
         T.peak_size_ON(i) = R.spot_sizes{i}(ind_ON_max);

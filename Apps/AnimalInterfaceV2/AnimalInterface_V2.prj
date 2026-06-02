@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.webdeploy" plugin-version="1.0">
-  <configuration build-checksum="98021703" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
+  <configuration build-checksum="3702608082" file="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2/AnimalInterface_V2.prj" location="/Users/gregschwartz/matlab/DJ_schwartzlab/Apps/AnimalInterfaceV2" name="AnimalInterface_V2" target="target.webdeploy" target-name="Web App Compiler">
     <param.appname>AnimalInterface_V2</param.appname>
     <param.intermediate>${PROJECT_ROOT}/AnimalInterface_V2</param.intermediate>
     <param.files.only>${PROJECT_ROOT}/AnimalInterface_V2</param.files.only>
@@ -23,55 +23,6 @@
       <file>${PROJECT_ROOT}/AnimalInterfaceV2.mlapp</file>
     </fileset.web.main>
     <fileset.resources>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/AutoPopulate.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Declare.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/ExternalMapping.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/ExternalTable.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/GeneralRelvar.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Header.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Master.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Settings.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/Table.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/TableAccessor.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/UserRelation.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/ask.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/fromCamelCase.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/hash.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/shorthash.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+internal/toCamelCase.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/DataHash.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/HMAC.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/getpass.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/isString.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/saveJSONfile.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/+lib/startsWith.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/AutoPopulate.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/BatchPopulate.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Computed.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Connection.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/ERD.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Hidden.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Imported.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Jobs.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Lookup.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Manual.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Part.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Relvar.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Schema.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Shared.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/Table.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/close.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/config.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/conn.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/createSchema.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/kill.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/kill_quick.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/new.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/reload.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/setPassword.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/setup.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/struct.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/datajoint-matlab/+dj/version.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/initialize.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/install.m</file>
       <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/GHToolbox/+ghtb/package.m</file>
@@ -116,6 +67,7 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Deceased.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Eye.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/EyeInjection.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/EyeSuture.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GeneLocus.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/Genotype.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/GenotypeResult.m</file>
@@ -125,6 +77,7 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/IPInjection.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/InjectionSubstance.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/InjectionSubstanceActive.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/OtherProcedure.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/ReservedForProject.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/ReservedForSession.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/SocialBehaviorSession.m</file>
@@ -196,20 +149,6 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentPart.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProjectorSettings.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocol.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolContrastResponseV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolContrastResponseV1EpochParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolDriftingGratingsV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolDriftingGratingsV1EpochParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolFlashedBarV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolFlashedBarV1EpochParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolLightStepV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolMovingBarV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolMovingBarV1EpochParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolMovingObjectV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolMovingObjectV1EpochParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolMultiPulseV1BlockParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolMultiPulseV1EpochParameters.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocolPulseV1EpochParameters.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentProtocols.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentRetina.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentSource.m</file>
@@ -226,7 +165,46 @@
     </fileset.resources>
     <fileset.depfun>
       <file>${MATLAB_ROOT}/toolbox/local/userpath.m</file>
-      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexa64/mym.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/AutoPopulate.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Declare.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/ExternalMapping.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/ExternalTable.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/GeneralRelvar.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Header.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Master.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Settings.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/Table.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/TableAccessor.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/UserRelation.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/ask.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/fromCamelCase.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/hash.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/shorthash.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+internal/toCamelCase.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/DataHash.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/getpass.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/isString.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/saveJSONfile.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/+lib/startsWith.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Connection.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/ERD.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Hidden.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Imported.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Lookup.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Manual.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Part.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Relvar.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Schema.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Shared.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/Table.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/config.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/conn.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/setup.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/DataJoint/+dj/struct.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.m</file>
+      <file>/Users/gregschwartz/Library/Application Support/MathWorks/MATLAB Add-Ons/Toolboxes/mym/distribution/mexmaci64/mym.mexmaci64</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/+aka/Alias.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/+aka/Epoch.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/CellTypeNameMatches.mat</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/H5Utils/loadSymphony2.mexmaci64</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/Datajoint_utils/changeCase.m</file>
@@ -256,12 +234,17 @@
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/HeaderAnimalEvent.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/InjectionSubstance.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sl/getSchema.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_animal/CageRoomActive.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/Cell.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/CellEvent.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/CellType.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/add_cell_types_from_cellData.m</file>
       <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/add_event.m</file>
-      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_cell/init_cells_from_ExperimentCells.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentBrain.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentBrainCell.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentBrainElectrode.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/ExperimentBrainSlice.m</file>
+      <file>/Users/gregschwartz/matlab/DJ_schwartzlab/schemas/+sln_symphony/get_all_user_param_in_db.m</file>
     </fileset.depfun>
     <fileset.package />
     <build-deliverables>
@@ -312,7 +295,7 @@
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>10.16</osver>
+      <osver>26.2</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>
