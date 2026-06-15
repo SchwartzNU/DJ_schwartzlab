@@ -174,8 +174,6 @@ methods (Static)
                     end
                 end
             end
-
-
         else
             Error('Cannot find folder : %s\n', outfolder);
         end
