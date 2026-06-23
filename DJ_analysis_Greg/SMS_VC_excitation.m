@@ -75,10 +75,10 @@ for d = 1:N_datasets
         filtered_data = nan(size(raw_data));
         baseline_substracted_data = nan(size(raw_data));
 
-        peak_stim = nan(size(raw_data,1));
-        peak_tail = nan(size(raw_data,1));
-        charge_stim = nan(size(raw_data,1));
-        charge_tail = nan(size(raw_data,1));
+        peak_stim = nan(size(raw_data,1), 1);
+        peak_tail = nan(size(raw_data,1), 1);
+        charge_stim = nan(size(raw_data,1), 1);
+        charge_tail = nan(size(raw_data,1), 1);
 
         for r = 1 : size(raw_data, 1)
             filtered_row = filtfilt(Hd.sosMatrix, Hd.ScaleValues, raw_data(r,:));
@@ -87,11 +87,11 @@ for d = 1:N_datasets
             holding_current_vector(r, 1) = baseline;
             baseline_substracted_data(r, :) = filtered_row - baseline;
 
-            peak_stim(r, 1) = min(baseline_substracted_data(pre_samples : stim_stop_idx));
-            peak_tail(r, 1) = min(baseline_substracted_data(stim_stop_idx + 1 : total_samples));
+            peak_stim(r, 1) = min(baseline_substracted_data(r, pre_samples : stim_stop_idx));
+            peak_tail(r, 1) = min(baseline_substracted_data(r, stim_stop_idx + 1 : total_samples));
 
-            charge_stim(r,1) = sum(baseline_substracted_data(pre_samples : stim_stop_idx)) / sample_rate;
-            charge_tail(r,1) = sum(baseline_substracted_data(stim_stop_idx + 1 : total_samples)) / sample_rate;
+            charge_stim(r,1) = sum(baseline_substracted_data(r, pre_samples : stim_stop_idx)) / sample_rate;
+            charge_tail(r,1) = sum(baseline_substracted_data(r, stim_stop_idx + 1 : total_samples)) / sample_rate;
         end
 
         for s = 1 : N_spot_sizes
