@@ -67,8 +67,8 @@ for d = 1:N_datasets
         mean_zeroed_traces = zeros(N_spot_sizes, total_samples);
         holding_voltage = epochs_in_dataset(1).hold;
 
-        if holding_voltage > -60
-            warning('Holding voltage %f > -60 mV', holding_voltage)
+        if holding_voltage < 0
+            warning('Holding voltage %f < 0 mV', holding_voltage)
         end
 
         raw_data = vertcat(epochs_in_dataset.raw_data);
