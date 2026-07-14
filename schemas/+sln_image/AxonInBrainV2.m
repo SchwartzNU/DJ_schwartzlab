@@ -1,0 +1,185 @@
+%{
+#table for traced axon segment in high-resolution brain image
+-> sln_image.Image
+seg_id: int unsigned
+---
+(whole_brain)->sln_image.WholeBrainImage
+medial_lateral: double
+distance_from_fist_slice:double
+centroid_x: double
+centroid_y: double
+centroid_radius: double
+mask_image: blob@raw
+background_roi: blob@raw #2 vertical and 2 horizontal lines that defines the region, PIXEL VALUE
+pixel_color: blob@raw
+%}
+
+classdef AxonInBrainV2 < dj.Manual
+methods (Static)
+    %todo: need to add the extract background function.... 
+    function pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)
+        [row, col] = find(mask_frame~=0);
+        indx = sub2ind(size(image_frame), row, col);
+
+        dim = size(image_frame);
+        channel_N = dim(end);
+
+        total_nonzero =nnz(mask_frame);
+        pixel_color = uint16(zeros(total_nonzero, channel_N));
+
+        for c = 1: channel_N
+            channelFrame = reshape(image_frame(:, :, :, c), dim(1), dim(2));
+            background = channelFrame(bg_line(1):bg_line(2), bg_line(3):bg_line(4));
+            background = mean(background, 'all');
+            filteredframe = channelFrame(indx);
+            pixel_color(:, c) = filteredframe-background;
+        end
+    end
+    function assign_axon_in_brain(imageid, wholebrainid, cx, cy, r, background, maskpath,ml, ap, color)
+        arguments
+            imageid
+            wholebrainid
+            cx
+            cy
+            r
+            background
+            maskpath
+            ml
+            ap
+            color = NaN;
+        end
+        try
+            %basic check to eliminate double insert or no image inserting
+            key.image_id = imageid;
+
+            query1 = sln_image.Image & key;
+
+            if (~exists(query1))
+                error('Image not found in the sln_image.Image');
+            end
+            key.whole_brain = wholebrainid;
+            query2 = sln_image.AxonInBrain & key;
+
+            if (exists(query2))
+                fprintf('Image already annotated!');
+                return
+            end
+
+            %build other parts of the key
+            key.centroid_x = cx;
+            key.centroid_y = cy;
+            key.centroid_radius = r;
+            key.medial_lateral = ml;
+            key.distance_from_fist_slice = ap;
+            if (endsWith(background, '.roi')) %background is an roi file from image J
+                roi = ReadImageJROI(background);
+                if (iscell(roi))
+                    roi = roi{1};
+                end
+                bg_reformt = zeros([1,4]);
+                bg_reformt(1) = roi.vnRectBounds(2);
+                bg_reformt(2) = roi.vnRectBounds(4);
+                bg_reformt(3) = roi.vnRectBounds(1);
+                bg_reformt(4) = roi.vnRectBounds(3);
+            end
+            key.background_roi = bg_reformt;
+
+            %load the tif mask image
+            if (iscell(maskpath))
+                maskpath = maskpath{1};
+            end
+            infopack = imfinfo(maskpath);
+            slice_total = numel(infopack);
+
+            im_h = infopack(1).Height;
+            im_w = infopack(1).Width;
+            mask_ar = uint8(zeros(im_h, im_w, slice_total));
+
+            if (isnan(color))
+                query.image_id = imageid;
+                fprintf('No exisiting pixel value input, extracting now....');
+                data = fetch(sln_image.Image & query, 'raw_image');
+                %key.color = extract_pixel_color(data.raw_image, background,mask_ar);
+                color = {};
+                for s = 1:slice_total
+                    %loop through all the slices of the z stack image, not
+                    %idea but only once
+                    %get mask into numeric array and pixel colors
+                    mask_ar(:, :, s) = imread(maskpath, index = s);
+                    fprintf('filtering slice %d, total %d\n', s, slice_total);
+                    color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), key.background_roi, mask_ar(:, :, s));
+                end
+                %directly load color
+            elseif (endsWith(color, 'mat'))
+                buffer = load(color);
+                if (isvector(buffer))
+                    color = buffer;
+                else
+                    error ('color .mat file content not a vector');
+                end
+            else
+                error('Cannot recognize the format of the color file!')
+            end
+
+            key.mask_image = mask_ar;
+            key.pixel_color = color;
+            C = dj.conn;
+            C.startTransaction;
+            insert(sln_image.AxonInBrain, key);
+            C.commitTransaction;
+            fprintf('Insert successful:')
+            disp(key)
+
+        catch ME
+            rethrow (ME)
+        end
+    end
+    function filtered_image = get_filtered_axonIm(image_id, outfolder)
+        arguments
+            image_id
+            outfolder = [];
+        end
+        query = sprintf('image_id = %d', image_id);
+        data = fetch(sln_image.Image * sln_image.AxonInBrain & query, 'raw_image', 'n_channels', 'n_slices', 'mask_image');
+        if (isempty(data))
+            Error('The image %d is not in table sln_image.AxonInBrain. please check the number!\n', image_id);
+        end
+
+        filtered_image = data.raw_image .* cast(logical(data.mask_image), 'like', data.raw_image);
+        nZ = data.n_slices;
+        nC = data.n_channels;
+        %[H, W, ~, ~] = size(data.raw_image);
+        if (~isempty(outfolder))
+            %check folder
+            if (isfolder(outfolder))
+                file_name = sprintf('%d_filtered.tif', image_id);
+                outpath = fullfile(outfolder, file_name);
+                ijMeta = sprintf(['ImageJ=1.52a\n' ...
+                    'images=%d\nchannels=%d\nslices=%d\n' ...
+                    'hyperstack=true\nmode=grayscale\nloop=false\n'], ...
+                    nZ*nC, nC, nZ);
+
+                first = true;
+                for z = 1:nZ
+                    for c = 1:nC                   % ImageJ order: C fastest, then Z
+                        if first
+                            imwrite(filtered_image(:,:,z,c), outpath, ...
+                                'Compression', 'none', ...
+                                'Description', ijMeta);
+                            first = false;
+                        else
+                            imwrite(filtered_image(:,:,z,c), outpath, ...
+                                'WriteMode', 'append', ...
+                                'Compression', 'none');
+                        end
+                    end
+                end
+            end
+        else
+            Error('Cannot find folder : %s\n', outfolder);
+        end
+
+    end
+
+end
+end
