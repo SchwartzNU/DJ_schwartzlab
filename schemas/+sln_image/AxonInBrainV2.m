@@ -17,6 +17,19 @@ pixel_color: blob@raw
 classdef AxonInBrainV2 < dj.Manual
 methods (Static)
     %todo: need to add the extract background function.... 
+
+    function seg = get_newest_seg_id(image_id)
+        query = sprintf('image_id = %d', image_id);
+        image_inT = fetch(sln_image.AxonInBrainV2 & query, 'seg_id', 'whole_brain');
+        if (~isempty(image_inT))
+            old_segs = [image_inT.seg_id];
+            seg = max(old_segs)+1;
+        else
+            fprintf('No segment linked to %d in sln_image.AxonInBrainV2\n', image_id);
+            seg = 1;
+        end
+    end
+    
     function pixel_color = extract_single_frame(image_frame, bg_line, mask_frame)
         [row, col] = find(mask_frame~=0);
         indx = sub2ind(size(image_frame), row, col);
@@ -35,7 +48,7 @@ methods (Static)
             pixel_color(:, c) = filteredframe-background;
         end
     end
-    function assign_axon_in_brain(imageid, wholebrainid, cx, cy, r, background, maskpath,ml, ap, color)
+    function assign_axon_in_brain(imageid, wholebrainid, cx, cy, r, background, maskpath,ml, ap, seg, color)
         arguments
             imageid
             wholebrainid
@@ -46,7 +59,8 @@ methods (Static)
             maskpath
             ml
             ap
-            color = NaN;
+             seg = 0; 
+            color = NaN;       
         end
         try
             %basic check to eliminate double insert or no image inserting
@@ -119,6 +133,12 @@ methods (Static)
                 end
             else
                 error('Cannot recognize the format of the color file!')
+            end
+
+            if (seg==0)
+                fprintf('No input segment id, generate auto increment....\n');
+                key.seg_id = sln_image.AxonInBrainV2.get_newest_seg_id(imageid);
+                
             end
 
             key.mask_image = mask_ar;
