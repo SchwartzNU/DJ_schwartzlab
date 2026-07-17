@@ -144,6 +144,11 @@ methods (Static)
            
             %linking image with cell
             assokey.cell_unid = cellid;
+
+            %TO DOdealing with spd image no confocal
+            %q = sprintf('cell_unid = %d', cellid);
+
+            %insert
             assokey.image_id = imageid;
             asso = fetch(sln_image.RetinalCellImage & assokey);
             C = dj.conn;

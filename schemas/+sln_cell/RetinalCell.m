@@ -7,4 +7,5 @@ x = NULL: smallint #microns from optic nerve, x direction
 y = NULL: smallint
 %}
 classdef RetinalCell < dj.Manual
+
 end

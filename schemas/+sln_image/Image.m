@@ -177,7 +177,6 @@ classdef Image < dj.Manual
                             raw_image_interleaved(:,:,i) = imread(filename,i);
                         end
                         for i=1:N_channels
-
                             key.raw_image(:,:,:,i) = raw_image_interleaved(:,:,i:N_channels:key.n_slices*N_channels);
                         end
 

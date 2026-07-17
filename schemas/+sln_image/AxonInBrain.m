@@ -28,6 +28,7 @@ methods (Static)
 
         for c = 1: channel_N
             channelFrame = reshape(image_frame(:, :, :, c), dim(1), dim(2));
+
             background = channelFrame(bg_line(1):bg_line(2), bg_line(3):bg_line(4));
             background = mean(background, 'all');
             filteredframe = channelFrame(indx);

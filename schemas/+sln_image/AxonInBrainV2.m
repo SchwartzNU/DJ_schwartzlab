@@ -65,6 +65,7 @@ methods (Static)
         try
             %basic check to eliminate double insert or no image inserting
             key.image_id = imageid;
+            
 
             query1 = sln_image.Image & key;
 
@@ -72,7 +73,8 @@ methods (Static)
                 error('Image not found in the sln_image.Image');
             end
             key.whole_brain = wholebrainid;
-            query2 = sln_image.AxonInBrain & key;
+            key.seg_id = seg;
+            query2 = sln_image.AxonInBrainV2 & key;
 
             if (exists(query2))
                 fprintf('Image already annotated!');
@@ -121,7 +123,7 @@ methods (Static)
                     %get mask into numeric array and pixel colors
                     mask_ar(:, :, s) = imread(maskpath, index = s);
                     fprintf('filtering slice %d, total %d\n', s, slice_total);
-                    color{end+1} = sln_image.AxonInBrain.extract_single_frame(data.raw_image(:, :, s,:), key.background_roi, mask_ar(:, :, s));
+                    color{end+1} = sln_image.AxonInBrainV2.extract_single_frame(data.raw_image(:, :, s,:), key.background_roi, mask_ar(:, :, s));
                 end
                 %directly load color
             elseif (endsWith(color, 'mat'))
@@ -138,14 +140,15 @@ methods (Static)
             if (seg==0)
                 fprintf('No input segment id, generate auto increment....\n');
                 key.seg_id = sln_image.AxonInBrainV2.get_newest_seg_id(imageid);
-                
+            else
+                key.seg_id = seg;                
             end
 
             key.mask_image = mask_ar;
             key.pixel_color = color;
             C = dj.conn;
             C.startTransaction;
-            insert(sln_image.AxonInBrain, key);
+            insert(sln_image.AxonInBrainV2, key);
             C.commitTransaction;
             fprintf('Insert successful:')
             disp(key)
@@ -160,7 +163,7 @@ methods (Static)
             outfolder = [];
         end
         query = sprintf('image_id = %d', image_id);
-        data = fetch(sln_image.Image * sln_image.AxonInBrain & query, 'raw_image', 'n_channels', 'n_slices', 'mask_image');
+        data = fetch(sln_image.Image * sln_image.AxonInBrainV2 & query, 'raw_image', 'n_channels', 'n_slices', 'mask_image');
         if (isempty(data))
             Error('The image %d is not in table sln_image.AxonInBrain. please check the number!\n', image_id);
         end
