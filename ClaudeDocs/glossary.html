@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary &amp;middot; Schwartz Lab Database</title>
+<meta name="description" content="Plain, SQL-free definitions of the terms used around the Schwartz Lab database.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav"><div class="nav-inner">
+  <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
+  <button class="nav-toggle" aria-label="Menu">MENU</button>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item active" href="glossary.html">Glossary</a></div>
+</div></nav>
+
+<main class="wrap narrow">
+  <header class="pagehead">
+    <p class="eyebrow">Glossary</p>
+    <h1>The words you&rsquo;ll keep hearing</h1>
+    <p class="lead">Plain definitions for the terms that come up around this database. None of them require
+    knowing SQL &mdash; that&rsquo;s the point of DataJoint.</p>
+  </header>
+  <section class="section"><div class="glossary"><div class="term"><dt>DataJoint<span class="also">the tool</span></dt><dd>The framework that runs this whole database. You describe data in MATLAB and DataJoint turns it into a real MySQL database &mdash; and writes all the SQL for you. You almost never write SQL yourself.</dd></div><div class="term"><dt>Schema<span class="also">a folder of tables</span></dt><dd>A named group of related tables, like <span class='id'>sln_symphony</span> (recordings) or <span class='id'>sln_animal</span> (the colony). In the code, one schema is one <span class='id'>+folder</span>.</dd></div><div class="term"><dt>Table<span class="also">a grid of rows</span></dt><dd>A grid where every row is one thing (one epoch, one cell) and every column is one fact about it. In MATLAB you refer to a table as <span class='id'>schema.TableName</span>.</dd></div><div class="term"><dt>Primary key<span class="also">what makes a row unique</span></dt><dd>The column(s) that identify a row, shown <b>above the dashed line</b> in a table&rsquo;s definition and marked with a dot on the <a href='tables.html'>table cards</a>. No two rows can share the same primary key.</dd></div><div class="term"><dt>Foreign key<span class="also">a link to a parent</span></dt><dd>A field that says &ldquo;this row belongs to that row in another table&rdquo;, written <span class='id'>-&gt; schema.Table</span>. Foreign keys are the arrows in the <a href='levels.html'>levels ladder</a> &mdash; they carry the parent&rsquo;s key down into the child.</dd></div><div class="term"><dt>Restrict<span class="also">keep only some rows</span></dt><dd>Narrowing a table to the rows you want, with the <span class='id'>&amp;</span> operator: <span class='id'>sln_symphony.Dataset &amp; 'source_id = 3'</span>. Like a filter.</dd></div><div class="term"><dt>Join<span class="also">combine two tables</span></dt><dd>Gluing two tables together on their shared key, with the <span class='id'>*</span> operator. Because tables share keys, DataJoint knows how to line them up &mdash; you never spell out the join by hand.</dd></div><div class="term"><dt>Projection<span class="also">pick / rename columns</span></dt><dd>Choosing or renaming columns with <span class='id'>proj(...)</span>. Handy when two tables both call something <span class='id'>source_id</span> and you need to tell them apart.</dd></div><div class="term"><dt>Fetch<span class="also">pull data into MATLAB</span></dt><dd>Actually reading rows out of the database into MATLAB variables: <span class='id'>fetch(query, 'baseline_rate_hz')</span>. A query on its own doesn&rsquo;t touch the database until you fetch (or count).</dd></div><div class="term"><dt>Populate<span class="also">compute the missing rows</span></dt><dd>Telling a computed table to run its analysis on every input that doesn&rsquo;t have a result yet: <span class='id'>populate(sln_results.SMSCARunner)</span>. The engine behind <a href='analysis.html'>Writing an analysis</a>.</dd></div><div class="term"><dt>Tier<span class="also">what kind of table</span></dt><dd>How a table gets its data. <b>Manual</b>: typed in by people or apps. <b>Lookup</b>: a fixed reference list. <b>Imported</b>: read from raw files. <b>Computed</b>: produced by an analysis. <b>Part</b>: a piece that only exists with its parent. Each has a color on the <a href='tables.html'>table cards</a>.</dd></div><div class="term"><dt>Dataset<span class="also">a curated group of epochs</span></dt><dd>A hand-picked set of trials for one analysis &mdash; the unit almost every result is built on. Not to be confused with the whole recording <b>file</b>. Made in the DataGrouper app.</dd></div><div class="term"><dt>Epoch<span class="also">one trial</span></dt><dd>A single presentation of a stimulus, with a start time and a duration. The smallest unit of the recording. Many epochs make a <b>dataset</b>.</dd></div><div class="term"><dt>Protocol<span class="also">a stimulus program</span></dt><dd>The stimulus that was run &mdash; <span class='id'>spots_multi_size</span>, <span class='id'>moving_bar</span>, and so on. Its parameters live in the auto-generated <span class='id'>&hellip;bp</span> / <span class='id'>&hellip;ep</span> tables you&rsquo;ll see grouped on the <a href='tables.html'>Tables</a> page.</dd></div><div class="term"><dt>aka.*<span class="also">friendly shortcuts</span></dt><dd>The <span class='id'>+aka</span> folder holds aliases that bundle common queries under a plain name &mdash; <span class='id'>aka.Dataset</span>, <span class='id'>aka.Epoch</span>, <span class='id'>aka.SMSparams</span>. Analyses use these so you don&rsquo;t rebuild the same join every time.</dd></div><div class="term"><dt>git tag<span class="also">the code version</span></dt><dd>A stamp of which version of the code produced a result, stored on every result row. It&rsquo;s how the lab can tell whether a number needs recomputing after a bug fix.</dd></div></div>
+  <div class="note tip"><span class="tag">Still stuck on a word?</span>
+    The official <a href="https://datajoint.com/docs/">DataJoint documentation</a> covers the query operators
+    (<span class="id">&amp;</span>, <span class="id">*</span>, <span class="id">proj</span>) in more depth, with
+    examples in both MATLAB and Python.</div>
+  </section>
+</main>
+<footer class="footer"><div class="wrap">
+  <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
+  <span><a href="https://github.com/SchwartzNU/DJ_schwartzlab">GitHub repository</a> &middot; <a href="https://datajoint.com/docs/">DataJoint docs</a></span>
+</div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

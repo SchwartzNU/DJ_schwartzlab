@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing an analysis &amp;middot; Schwartz Lab Database</title>
+<meta name="description" content="Build a new analysis class and its result_table_template, step by step.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav"><div class="nav-inner">
+  <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
+  <button class="nav-toggle" aria-label="Menu">MENU</button>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item active" href="analysis.html">Writing an analysis</a><a class="item" href="glossary.html">Glossary</a></div>
+</div></nav>
+
+<main class="wrap narrow">
+  <header class="pagehead">
+    <p class="eyebrow">Writing an analysis</p>
+    <h1>From a question to a result table</h1>
+    <p class="lead">An &ldquo;analysis&rdquo; here is a small MATLAB function that takes some datasets, computes
+    numbers, and hands back a table &mdash; plus a bit of wiring so the pipeline can run it for you on every
+    matching dataset and store the results. Four files, one pattern. We&rsquo;ll follow a real one:
+    <span class="id">SMS_CA</span> (spots-multi-size, cell-attached).</p>
+    <p class="toc"><a href="#big">The idea</a><a href="#fn">1&nbsp;&middot;&nbsp;The function</a><a href="#tmpl">2&nbsp;&middot;&nbsp;The template</a><a href="#tbl">3&nbsp;&middot;&nbsp;The result table</a><a href="#runner">4&nbsp;&middot;&nbsp;The runner</a><a href="#run">Running it</a><a href="#check">Checklist</a></p>
+  </header>
+
+  <section class="section" id="big">
+    <h2>The shape of it</h2>
+    <p>Three pieces do the work, and one ties them together:</p>
+    <div class="grid two">
+      <div class="pathcard" style="cursor:default"><span class="num">the maths</span>
+        <h3>An analysis function</h3><p>Plain MATLAB. In: datasets. Out: a table with one row per dataset.</p></div>
+      <div class="pathcard" style="cursor:default"><span class="num">the shape</span>
+        <h3>A result-table template</h3><p>A three-column spreadsheet naming each output field and its type.</p></div>
+      <div class="pathcard" style="cursor:default"><span class="num">the store</span>
+        <h3>A result table</h3><p>A DataJoint table (<span class="id">sln_results.Dataset&hellip;</span>) that holds the rows.</p></div>
+      <div class="pathcard" style="cursor:default"><span class="num">the trigger</span>
+        <h3>A runner</h3><p>A computed table that finds matching datasets and calls your function on each.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="fn">
+    <div class="step" style="padding-bottom:0">
+      <h3>1 &middot; Write the analysis function</h3>
+      <p>It receives a <b>data group</b> (a set of datasets), asks the template for an empty table of the right
+      shape, then fills one row per dataset. Keep the identifying fields
+      (<span class="id">file_name</span>, <span class="id">dataset_name</span>, <span class="id">source_id</span>)
+      &mdash; the pipeline needs them to know which cell each row belongs to.</p>
+      <span class="filelabel">DJ_analysis_Greg/SMS_CA.m  (trimmed)</span><pre><span class="k">function</span> R = SMS_CA(data_group, params)
+<span class="c">% One row of results per dataset in data_group.</span>
+<span class="k">if</span> <span class="k">nargin</span> &lt; 2, binSize = 10; <span class="k">else</span>, binSize = params.binSize; <span class="k">end</span>
+
+<span class="c">% 1. Which datasets are we working on?</span>
+datasets = aka.Dataset &amp; data_group;           <span class="c">% restrict to the datasets handed in</span>
+datasets_struct = fetch(datasets);
+N_datasets = datasets.count;
+
+<span class="c">% 2. Ask for an empty results table shaped like the template.</span>
+R = sln_results.table_definition_from_template(&#x27;SMSCA&#x27;, N_datasets);
+
+<span class="c">% 3. Fill it in, one dataset (one row) at a time.</span>
+<span class="k">for</span> d = 1:N_datasets
+    <span class="c">% ... pull this dataset&#x27;s epochs, count spikes per spot size ...</span>
+    R.file_name{d}       = datasets_struct(d).file_name;
+    R.dataset_name(d)    = datasets_struct(d).dataset_name;
+    R.source_id(d)       = datasets_struct(d).source_id;
+    R.spot_sizes{d}      = spot_sizes&#x27;;
+    R.spikes_stim_mean{d}= spikes_stim_mean;
+    R.baseline_rate_hz(d)= baseline_rate;
+<span class="k">end</span>
+<span class="k">end</span></pre>
+      <div class="note tip"><span class="tag">The one helper to remember</span>
+        <span class="id">sln_results.table_definition_from_template('SMSCA', N)</span> reads
+        <span class="id">result_table_templates/SMSCA.xlsx</span> and hands you an empty <span class="id">N</span>-row
+        MATLAB table with the right columns and types. You just fill it.</div>
+    </div>
+  </section>
+
+  <section class="section" id="tmpl">
+    <div class="step" style="padding-bottom:0">
+      <h3>2 &middot; Make the template</h3>
+      <p>The template is the single source of truth for your output columns. You can type the spreadsheet by hand,
+      but the easy way is to build one example table <span class="id">R</span> in MATLAB (with variable descriptions set),
+      then let the lab helper write the file for you:</p>
+      <span class="filelabel">in MATLAB</span><pre>sln_results.write_table_template(R, &#x27;SMSCA&#x27;);
+<span class="c">% writes result_table_templates/SMSCA.xlsx from R&#x27;s columns</span></pre>
+      <div class="note sql" style="border-left-color:var(--tier-part)">
+      <span class="tag">What a template looks like</span>
+      A template is a tiny spreadsheet with three columns. Each row describes one output field:
+      <div style="overflow:auto;margin-top:10px">
+      <table style="border-collapse:collapse;font-size:.85rem;width:100%">
+        <tr style="text-align:left;color:var(--muted);font-family:var(--font-mono);font-size:.72rem">
+          <th style="padding:4px 12px 4px 0">Field</th><th style="padding:4px 12px">Type</th><th style="padding:4px 0">Description</th></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:5px 12px 5px 0"><span class="id">dataset_name</span></td><td style="padding:5px 12px"><span class="id">string</span></td><td style="padding:5px 0;color:var(--muted)">dataset name</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:5px 12px 5px 0"><span class="id">source_id</span></td><td style="padding:5px 12px"><span class="id">uint16</span></td><td style="padding:5px 0;color:var(--muted)">identifies the cell</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:5px 12px 5px 0"><span class="id">baseline_rate_hz</span></td><td style="padding:5px 12px"><span class="id">double</span></td><td style="padding:5px 0;color:var(--muted)">baseline firing rate (Hz)</td></tr>
+        <tr style="border-top:1px solid var(--line)"><td style="padding:5px 12px 5px 0"><span class="id">sms_psth</span></td><td style="padding:5px 12px"><span class="id">cell</span></td><td style="padding:5px 0;color:var(--muted)">the PSTH image</td></tr>
+      </table></div>
+      <p style="margin:12px 0 0">Type is a MATLAB variable type: <span class="id">string</span> and
+      <span class="id">double</span> for single values, <span class="id">cell</span> for anything with a
+      vector or matrix in each row (it becomes a <span class="id">longblob</span> in the table).</p>
+    </div>
+    </div>
+  </section>
+
+  <section class="section" id="tbl">
+    <div class="step" style="padding-bottom:0">
+      <h3>3 &middot; Define the result table</h3>
+      <p>This is the DataJoint table that actually stores results, in the <span class="id">sln_results</span> schema.
+      Its header lists the <b>same</b> identifying fields above the <span class="id">---</span> line and your output
+      fields below it, plus three housekeeping fields the pipeline fills automatically:
+      <span class="id">user</span>, <span class="id">entry_time</span>, and <span class="id">git_tag</span>
+      (so every result records who made it, when, and with which version of the code).</p>
+      <span class="filelabel">schemas/+sln_results/DatasetSMSCA.m  (trimmed)</span><pre><span class="c">%{</span>
+# DatasetSMSCA
+file_name    : varchar(128)   <span class="c">% file name from symphony</span>
+dataset_name : varchar(128)   <span class="c">% dataset name</span>
+source_id    : int unsigned   <span class="c">% identifies the cell the dataset belongs to</span>
+---
+-&gt; sln_lab.User                                <span class="c">% who computed this</span>
+baseline_rate_hz=NULL : float                  <span class="c">% baseline firing rate (Hz)</span>
+entry_time = CURRENT_TIMESTAMP : timestamp     <span class="c">% when it was computed</span>
+git_tag : varchar(128)                         <span class="c">% code version used</span>
+spot_sizes=NULL   : longblob                   <span class="c">% set of spot sizes (microns)</span>
+sms_psth=NULL     : longblob                   <span class="c">% the full PSTH image</span>
+<span class="c">%}</span>
+<span class="k">classdef</span> DatasetSMSCA &lt; dj.Manual
+<span class="k">end</span></pre>
+      <div class="note warn"><span class="tag">Keep them in sync</span>
+        The template columns and the table&rsquo;s below-the-line fields describe the same outputs. Change one,
+        change the other. <span class="id">sln_results.createTableFromTemplate</span> can scaffold the table file
+        from a template so they match to begin with.</div>
+    </div>
+  </section>
+
+  <section class="section" id="runner">
+    <div class="step" style="padding-bottom:0">
+      <h3>4 &middot; Write the runner</h3>
+      <p>The runner is a <b>computed</b> table &mdash; it&rsquo;s what makes the whole thing automatic. Its
+      <span class="id">keySource</span> is a query describing <i>which datasets this analysis applies to</i>
+      (here: cell-attached &ldquo;spots multi size&rdquo; recordings). For every matching dataset that hasn&rsquo;t
+      been done yet, DataJoint calls <span class="id">makeTuples</span> once, where you run your function and store
+      the result.</p>
+      <span class="filelabel">schemas/+sln_results/SMSCARunner.m  (trimmed)</span><pre><span class="c">%{</span>
+# SMSCARunner
+-&gt; sln_symphony.Dataset
+---
+analysis_name : varchar(128)
+analysis_entry_time = CURRENT_TIMESTAMP : timestamp
+git_tag : varchar(128)
+<span class="c">%}</span>
+<span class="k">classdef</span> SMSCARunner &lt; dj.Computed
+    <span class="k">properties</span>
+        <span class="c">% keySource = the datasets this analysis SHOULD run on:</span>
+        <span class="c">% cell-attached &quot;spots multi size&quot; recordings.</span>
+        keySource = sln_symphony.Dataset &amp; ( ...
+            sln_symphony.Dataset * sln_symphony.DatasetEpoch * aka.Epoch * ...
+            sln_symphony.ExperimentEpochBlock * sln_symphony.ExperimentElectrode &amp; ...
+            &#x27;protocol_name=&quot;spots_multi_size&quot;&#x27; &amp; &#x27;amp_mode=&quot;Cell attached&quot;&#x27;)
+    <span class="k">end</span>
+    <span class="k">methods</span>(Access=protected)
+        <span class="k">function</span> makeTuples(self, key)      <span class="c">% called once per un-computed dataset</span>
+            key.analysis_name = &#x27;SMS_CA&#x27;;
+            R = SMS_CA(key);                                 <span class="c">% run the analysis</span>
+            sln_results.insert(R, &#x27;Dataset&#x27;, &#x27;false&#x27;);       <span class="c">% write the results table</span>
+            q = sln_results.DatasetSMSCA &amp; key &amp; &#x27;LIMIT 1 PER source_id ORDER BY entry_time DESC&#x27;;
+            key.git_tag = fetch1(q, &#x27;git_tag&#x27;);
+            self.insert(key);                                <span class="c">% mark this dataset done</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span></pre>
+      <div class="note tip"><span class="tag">Two helpers here</span>
+        <span class="id">sln_results.insert(R, 'Dataset', 'false')</span> writes your filled table
+        <span class="id">R</span> into the matching <span class="id">sln_results.Dataset&hellip;</span> table.
+        <span class="id">self.insert(key)</span> then records that this dataset is finished, so it won&rsquo;t be
+        recomputed.</div>
+    </div>
+  </section>
+
+  <section class="section" id="run">
+    <h2>Running it</h2>
+    <p>Once the four files exist, you don&rsquo;t call anything by hand for each cell. You populate the runner and
+    DataJoint marches through every un-computed dataset:</p>
+    <span class="filelabel">in MATLAB</span><pre>populate(sln_results.SMSCARunner);   <span class="c">% just yours</span>
+<span class="c">% or, on the server, everything that&#x27;s out of date:</span>
+populate_computed_tables;</pre>
+    <p>Then read your results back like any other table &mdash; restricting by cell, animal, or genotype as needed:</p>
+    <span class="filelabel">in MATLAB</span><pre>R = sln_results.DatasetSMSCA &amp; &#x27;source_id = 3&#x27;;
+rates = fetch(R, &#x27;baseline_rate_hz&#x27;, &#x27;sms_psth&#x27;);</pre>
+  </section>
+
+  <hr class="hr">
+
+  <section class="section" id="check">
+    <h2>Your checklist for a new analysis</h2>
+    <div class="steps">
+      <div class="step"><h3>Name it</h3><p>Pick a short name like <span class="id">MovingBar_CA</span>. The
+        <span class="id">_CA</span>/<span class="id">_CC</span>/<span class="id">_VC</span> suffix says the recording
+        mode (cell-attached, current-clamp, voltage-clamp).</p></div>
+      <div class="step"><h3>Write the function</h3><p><span class="id">DJ_analysis_Greg/&lt;Name&gt;.m</span> &mdash;
+        in: a data group; out: a table from the template with one row per dataset. Steal the closest existing
+        analysis as a starting point.</p></div>
+      <div class="step"><h3>Create the template</h3><p>Build an example <span class="id">R</span>, then
+        <span class="id">sln_results.write_table_template(R, '&lt;Name&gt;')</span>.</p></div>
+      <div class="step"><h3>Create the result table</h3><p><span class="id">schemas/+sln_results/Dataset&lt;Name&gt;.m</span>,
+        identifying fields on top, outputs plus <span class="id">user</span>/<span class="id">entry_time</span>/<span class="id">git_tag</span> below.</p></div>
+      <div class="step"><h3>Write the runner</h3><p><span class="id">&lt;Name&gt;Runner.m</span> as a
+        <span class="id">dj.Computed</span> table; set <span class="id">keySource</span> to the datasets it applies to.</p></div>
+      <div class="step"><h3>Populate &amp; check</h3><p><span class="id">populate(sln_results.&lt;Name&gt;Runner)</span>,
+        then fetch a few rows to sanity-check before running it lab-wide.</p></div>
+    </div>
+    <div class="note tip"><span class="tag">Best first move</span>
+      Copy the analysis whose data looks most like yours (there are ~40 in <span class="id">DJ_analysis_Greg/</span>
+      with matching templates in <span class="id">result_table_templates/</span>) and change it a piece at a time.
+      Reading two or three of them side by side teaches the pattern faster than any single explanation.</div>
+  </section>
+</main>
+<footer class="footer"><div class="wrap">
+  <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
+  <span><a href="https://github.com/SchwartzNU/DJ_schwartzlab">GitHub repository</a> &middot; <a href="https://datajoint.com/docs/">DataJoint docs</a></span>
+</div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data levels &amp;middot; Schwartz Lab Database</title>
+<meta name="description" content="How the Schwartz Lab data nests: Animal, Eye, Cell, Dataset, Epoch, and Spike train.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav"><div class="nav-inner">
+  <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
+  <button class="nav-toggle" aria-label="Menu">MENU</button>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item active" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item" href="glossary.html">Glossary</a></div>
+</div></nav>
+
+<main class="wrap narrow">
+  <header class="pagehead">
+    <p class="eyebrow">Data levels</p>
+    <h1>How the data nests</h1>
+    <p class="lead">The whole database is built around one idea: <b>bigger things contain smaller things</b>.
+    A mouse has eyes; an eye&rsquo;s retina gives you cells; a cell&rsquo;s recording is sliced into trials.
+    DataJoint encodes that nesting with <b>primary keys</b> &mdash; a child row carries its parent&rsquo;s key,
+    so &ldquo;this epoch&rsquo;s cell&rsquo;s animal&rsquo;s genotype&rdquo; is always answerable.</p>
+  </header>
+
+  <section class="section">
+    <h2>The main ladder</h2>
+    <p>This is the path most physiology questions travel. Each arrow names the field that ties the two levels together.</p>
+    <div class="ladder"><div class="level "><span class="lvl-mark">&#128045;</span><span class="lvl-body"><span class="lvl-name">Animal</span> <span class="lvl-sql">sln_animal.Animal</span><div class="lvl-note">One mouse. Everything traces back here. Keyed by <span class='id'>animal_id</span>.</div></span></div><div class="connector"><span class="fk">linked by <b>animal_id</b></span></div><div class="level is-eye"><span class="lvl-mark">&#128064;</span><span class="lvl-body"><span class="lvl-name">Eye</span> <span class="lvl-sql">sln_animal.Eye</span><div class="lvl-note">The left or right eye of that mouse. Its retina is what you record from.</div></span></div><div class="connector"><span class="fk">the retina becomes a recording <b>source</b></span></div><div class="level "><span class="lvl-mark">&#9673;</span><span class="lvl-body"><span class="lvl-name">Cell</span> <span class="lvl-sql">sln_symphony.ExperimentCell</span><div class="lvl-note">One neuron you patched or recorded, e.g. <span class='id'>101323Ac3</span>. Keyed by <span class='id'>cell_number</span>.</div></span></div><div class="connector"><span class="fk">its trials are grouped into a <b>dataset</b></span></div><div class="level is-data"><span class="lvl-mark">&#9636;</span><span class="lvl-body"><span class="lvl-name">Dataset</span> <span class="lvl-sql">sln_symphony.Dataset</span><div class="lvl-note">A curated bundle of epochs for one analysis (e.g. all the &ldquo;spots multi size&rdquo; trials for this cell).</div></span></div><div class="connector"><span class="fk">a dataset is made of many <b>epochs</b></span></div><div class="level "><span class="lvl-mark">&#8942;</span><span class="lvl-body"><span class="lvl-name">Epoch</span> <span class="lvl-sql">sln_symphony.ExperimentEpoch</span><div class="lvl-note">A single trial &mdash; one presentation of the stimulus. Keyed by <span class='id'>epoch_id</span>.</div></span></div><div class="connector"><span class="fk">spikes detected in it become a <b>spike train</b></span></div><div class="level "><span class="lvl-mark">&#9776;</span><span class="lvl-body"><span class="lvl-name">Spike train</span> <span class="lvl-sql">sln_symphony.SpikeTrain</span><div class="lvl-note">The detected spikes for that epoch &mdash; the thing most spike analyses count.</div></span><svg class="lvl-trace" width="86" height="30" viewBox="0 0 86 30" fill="none" aria-hidden="true"><path d="M0 22h10l3-1 2 2 3-14 3 20 2-9 3 3 4-1h8l3-1 2 2 3-15 3 21 2-10 3 3 4-1h12" stroke="var(--trace)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+  </section>
+
+  <div class="note tip"><span class="tag">Why this matters for queries</span>
+    Because every level carries the keys above it, you can <b>restrict</b> at any level and the rest follows.
+    Restrict datasets to one <span class="id">animal_id</span>, or restrict spike trains to one
+    <span class="id">cell_number</span> &mdash; DataJoint walks the links for you. You never write a
+    <span class="id">JOIN</span> by hand.</div>
+
+  <section class="section">
+    <h3>Animal <span class="lvl-sql" style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted)">sln_animal.Animal</span></h3>
+    <p>The root of everything. One row per mouse, with an auto-assigned <span class="id">animal_id</span>,
+    date of birth, sex, and its <span class="id">strain</span>. The colony apps write here; you mostly read from it
+    to group results by genotype or age.</p>
+
+    <h3>Eye <span class="lvl-sql" style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted)">sln_animal.Eye</span></h3>
+    <p>Each animal has up to a few eyes (<span class="id">Left</span>, <span class="id">Right</span>, or unknown).
+    On the recording side, an eye&rsquo;s retina shows up as a <b>source</b> in a Symphony file
+    (<span class="id">sln_symphony.ExperimentRetina</span>), which links back here by
+    <span class="id">animal_id</span>. This is the bridge between the <i>colony</i> world and the <i>recording</i> world.</p>
+
+    <h3>Cell <span class="lvl-sql" style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted)">sln_symphony.ExperimentCell &middot; sln_cell.Cell</span></h3>
+    <p>One recorded neuron. In a file it&rsquo;s an <span class="id">ExperimentCell</span> with a
+    <span class="id">cell_number</span> and its position (<span class="id">x</span>, <span class="id">y</span> microns
+    from the optic nerve). The lab-wide <span class="id">sln_cell.Cell</span> gives that same neuron a permanent
+    <span class="id">cell_unid</span> and is where a <b>cell type</b> gets attached. Cell names read like
+    <span class="id">101323Ac3</span> &mdash; date, rig, cell number.</p>
+
+    <h3>Dataset <span class="lvl-sql" style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted)">sln_symphony.Dataset</span></h3>
+    <p>A <b>curated group of epochs</b> a person picked out for one analysis &mdash; for example, every good
+    &ldquo;spots multi size&rdquo; trial from this cell. Datasets are the unit almost every result table is built on
+    (one row of results per dataset). Made in the DataGrouper app; the pairing of epochs to datasets lives in
+    <span class="id">sln_symphony.DatasetEpoch</span>.</p>
+
+    <h3>Epoch <span class="lvl-sql" style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted)">sln_symphony.ExperimentEpoch</span></h3>
+    <p>A single trial: one presentation of the stimulus, with a start time and duration. The raw trace for an epoch
+    lives in <span class="id">ExperimentEpochChannel</span>; the stimulus parameters for that trial live in the
+    protocol&rsquo;s <span class="id">&hellip;ep</span> table.</p>
+
+    <h3>Spike train <span class="lvl-sql" style="font-family:var(--font-mono);font-size:.8rem;color:var(--muted)">sln_symphony.SpikeTrain</span></h3>
+    <p>After spike detection (manual or automatic), each epoch channel gets a <span class="id">SpikeTrain</span> with a
+    <span class="id">spike_count</span> and the <span class="id">spike_indices</span>. Spike-based analyses like
+    <span class="id">SMS_CA</span> and <span class="id">MovingBar_CA</span> depend on this existing.</p>
+  </section>
+
+  <hr class="hr">
+
+  <section class="section">
+    <h2>The other view: the raw file</h2>
+    <p>The ladder above is the <i>biological</i> story. The raw <span class="id">.h5</span> file organizes the same
+    recordings a little differently &mdash; worth recognizing, because block- and epoch-level tables follow this shape,
+    and it&rsquo;s where <span class="id">protocol_name</span> comes from.</p>
+    <div class="ladder"><div class="level "><span class="lvl-mark">&#128193;</span><span class="lvl-body"><span class="lvl-name">Experiment</span> <span class="lvl-sql">sln_symphony.Experiment</span><div class="lvl-note">One <span class='id'>.h5</span> file = one recording day on one rig, e.g. <span class='id'>101323A</span>. Keyed by <span class='id'>file_name</span>.</div></span></div><div class="connector"><span class="fk">a file contains one or more <b>sources</b></span></div><div class="level "><span class="lvl-mark">&#9678;</span><span class="lvl-body"><span class="lvl-name">Source</span> <span class="lvl-sql">sln_symphony.ExperimentSource</span><div class="lvl-note">A thing being recorded: a retina, a cell, or a cell pair. Keyed by <span class='id'>file_name + source_id</span>.</div></span></div><div class="connector"><span class="fk">a source runs several <b>epoch groups</b></span></div><div class="level "><span class="lvl-mark">&#9707;</span><span class="lvl-body"><span class="lvl-name">Epoch group</span> <span class="lvl-sql">sln_symphony.ExperimentEpochGroup</span><div class="lvl-note">A labelled stretch of the session, e.g. &ldquo;control&rdquo; vs &ldquo;drug&rdquo;.</div></span></div><div class="connector"><span class="fk">each group holds <b>epoch blocks</b></span></div><div class="level "><span class="lvl-mark">&#9636;</span><span class="lvl-body"><span class="lvl-name">Epoch block</span> <span class="lvl-sql">sln_symphony.ExperimentEpochBlock</span><div class="lvl-note">One run of one protocol &mdash; this is where <span class='id'>protocol_name</span> lives.</div></span></div><div class="connector"><span class="fk">each block is many <b>epochs</b></span></div><div class="level "><span class="lvl-mark">&#8942;</span><span class="lvl-body"><span class="lvl-name">Epoch</span> <span class="lvl-sql">sln_symphony.ExperimentEpoch</span><div class="lvl-note">A single trial. The same epoch a <b>dataset</b> groups for analysis.</div></span></div></div>
+    <div class="note warn"><span class="tag">The join point</span>
+      A <b>dataset</b> and a raw <b>epoch block</b> both ultimately group <b>epochs</b>. That&rsquo;s the seam where the
+      curated analysis world meets the raw recording world &mdash; and why analyses so often join
+      <span class="id">DatasetEpoch</span> with an epoch or block table.</div>
+  </section>
+</main>
+<footer class="footer"><div class="wrap">
+  <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
+  <span><a href="https://github.com/SchwartzNU/DJ_schwartzlab">GitHub repository</a> &middot; <a href="https://datajoint.com/docs/">DataJoint docs</a></span>
+</div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
