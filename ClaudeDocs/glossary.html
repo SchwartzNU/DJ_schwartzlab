@@ -210,8 +210,14 @@ code, kbd { font-family: var(--font-mono); font-size: 0.86em; }
 
 .schema-head { margin: 30px 0 6px; }
 .schema-head h2 { margin: 0; }
+.schema-head h2 .db { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); font-weight: 400; margin-left: 8px; letter-spacing: 0; }
 .schema-head .db { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
 .schema-head p { margin: 6px 0 0; color: var(--muted); max-width: 70ch; }
+
+/* sub-categories within a schema (used by sln_symphony) */
+.subsection { margin: 24px 0 8px; }
+.subhead { font-family: var(--font-display); font-size: 1.12rem; margin: 22px 0 2px; padding-bottom: 6px; border-bottom: 2px solid var(--trace-wash); color: var(--ink); }
+.subnote { color: var(--muted); font-size: 0.9rem; margin: 6px 0 12px; max-width: 74ch; }
 
 /* table cards */
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 18px 0; }
@@ -282,6 +288,37 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
 .term dd { margin: 0; color: var(--ink-soft); font-size: 0.96rem; }
 @media (max-width: 680px) { .term { grid-template-columns: 1fr; gap: 6px; } }
 
+/* ---------- app screenshots + interface map ---------- */
+.shot { margin: 22px 0; }
+.shot img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--card); }
+.shot figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+.shot.narrow-shot img { max-width: 640px; }
+
+.imap { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; align-items: start; margin: 22px 0; }
+@media (max-width: 820px) { .imap { grid-template-columns: 1fr; } }
+.imap svg { width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--card); }
+.legend { margin: 0; padding: 0; list-style: none; }
+.legend li { display: grid; grid-template-columns: 26px 1fr; gap: 11px; padding: 7px 0; border-top: 1px solid var(--line-soft); align-items: baseline; font-size: 0.92rem; }
+.legend li:first-child { border-top: 0; }
+.legend .b { width: 22px; height: 22px; border-radius: 50%; background: var(--trace); color: #fff; font-family: var(--font-mono); font-size: 0.76rem; display: grid; place-items: center; }
+.legend b { font-family: var(--font-display); font-weight: 500; }
+.imap-box { fill: var(--card); stroke: var(--trace); stroke-width: 1.4; }
+.imap-box.alt { stroke: var(--light); }
+.imap-box.strip { fill: var(--trace-wash); stroke: var(--line); }
+.imap-label { font-family: var(--font-body); font-size: 12px; fill: var(--ink-soft); }
+.imap-num { font-family: var(--font-mono); font-size: 12px; font-weight: 600; fill: #fff; }
+.imap-numbg { fill: var(--trace); }
+
+/* app hub cards */
+.appgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin: 22px 0; }
+.appcard { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; color: var(--ink); border-top: 3px solid var(--trace); transition: transform .16s, box-shadow .16s; }
+.appcard:hover { text-decoration: none; transform: translateY(-3px); box-shadow: 0 10px 30px -18px rgba(22,34,43,.4); }
+.appcard h3 { margin: 0 0 4px; }
+.appcard .role { font-family: var(--font-mono); font-size: 0.72rem; color: var(--trace); letter-spacing: .06em; text-transform: uppercase; }
+.appcard p { margin: 10px 0 0; color: var(--muted); font-size: 0.93rem; }
+.appcard.secondary { border-top-color: var(--tier-lookup); }
+.appcard.secondary .role { color: var(--tier-lookup); }
+
 /* footer */
 .footer { border-top: 1px solid var(--line); margin-top: 70px; padding: 34px 0 60px; color: var(--muted); font-size: 0.85rem; }
 .footer .wrap { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; align-items: center; }
@@ -301,7 +338,7 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
 <nav class="nav"><div class="nav-inner">
   <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
   <button class="nav-toggle" aria-label="Menu">MENU</button>
-  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item active" href="glossary.html">Glossary</a></div>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="apps.html">Apps</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item active" href="glossary.html">Glossary</a></div>
 </div></nav>
 
 <main class="wrap narrow">
@@ -367,14 +404,21 @@ document.addEventListener('click', function (e) {
         if (ok) { anyInSection++; shown++; }
       });
 
-      // protocol group counts toward its section if schema matches
-      var pg = sec.querySelector('.protogroup');
-      if (pg) {
+      // there can be several grouped pill-lists (e.g. tags + protocol params)
+      sec.querySelectorAll('.protogroup').forEach(function (pg) {
         var pgHay = pg.dataset.search || '';
         var pgOk = schemaMatch && (q === '' || pgHay.indexOf(q) !== -1);
         pg.style.display = pgOk ? '' : 'none';
         if (pgOk) anyInSection++;
-      }
+      });
+
+      // hide any sub-section whose cards and groups are all hidden
+      sec.querySelectorAll('.subsection').forEach(function (sub) {
+        var visible = sub.querySelectorAll('.tcard, .protogroup');
+        var anyVis = false;
+        visible.forEach(function (el) { if (el.style.display !== 'none') anyVis = true; });
+        sub.style.display = anyVis ? '' : 'none';
+      });
 
       sec.style.display = anyInSection ? '' : 'none';
     });
