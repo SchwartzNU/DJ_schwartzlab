@@ -210,8 +210,14 @@ code, kbd { font-family: var(--font-mono); font-size: 0.86em; }
 
 .schema-head { margin: 30px 0 6px; }
 .schema-head h2 { margin: 0; }
+.schema-head h2 .db { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); font-weight: 400; margin-left: 8px; letter-spacing: 0; }
 .schema-head .db { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
 .schema-head p { margin: 6px 0 0; color: var(--muted); max-width: 70ch; }
+
+/* sub-categories within a schema (used by sln_symphony) */
+.subsection { margin: 24px 0 8px; }
+.subhead { font-family: var(--font-display); font-size: 1.12rem; margin: 22px 0 2px; padding-bottom: 6px; border-bottom: 2px solid var(--trace-wash); color: var(--ink); }
+.subnote { color: var(--muted); font-size: 0.9rem; margin: 6px 0 12px; max-width: 74ch; }
 
 /* table cards */
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 18px 0; }
@@ -365,8 +371,19 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
         a named <span class="id">Dataset</span>.</p></a>
       <a class="appcard" href="app-spikedetector.html"><span class="role">Detect spikes</span>
         <h3>Spike Detector</h3>
-        <p>Turn raw traces into spike times: threshold, cluster in feature space, hand-correct, and push
-        the result to the <span class="id">SpikeTrain</span> table.</p></a>
+        <p>Turn raw traces into spike times: threshold, review, hand-correct, and push the result to the
+        <span class="id">SpikeTrain</span> table.</p></a>
+      <a class="appcard" href="app-roitool.html"><span class="role">Calcium imaging &middot; ROIs</span>
+        <h3>ROI Tool</h3>
+        <p>Draw or auto-detect regions of interest on a functional-imaging run, pull their fluorescence traces,
+        and write the ROIs to the database.</p></a>
+      <a class="appcard secondary" href="app-plotdesigner.html"><span class="role">Part of DataGrouper</span>
+        <h3>Plot Designer</h3>
+        <p>Lay out a reusable grid of plot panels that DataGrouper can arrange results into.</p></a>
+      <a class="appcard" href="app-diaryplotter.html"><span class="role">Recording timeline</span>
+        <h3>Diary Plotter</h3>
+        <p>See how a current-clamp cell&rsquo;s per-epoch stats drift across a session, mark condition windows, and
+        compare two stretches waveform-by-waveform.</p></a>
     </div>
   </section>
 
@@ -439,14 +456,21 @@ document.addEventListener('click', function (e) {
         if (ok) { anyInSection++; shown++; }
       });
 
-      // protocol group counts toward its section if schema matches
-      var pg = sec.querySelector('.protogroup');
-      if (pg) {
+      // there can be several grouped pill-lists (e.g. tags + protocol params)
+      sec.querySelectorAll('.protogroup').forEach(function (pg) {
         var pgHay = pg.dataset.search || '';
         var pgOk = schemaMatch && (q === '' || pgHay.indexOf(q) !== -1);
         pg.style.display = pgOk ? '' : 'none';
         if (pgOk) anyInSection++;
-      }
+      });
+
+      // hide any sub-section whose cards and groups are all hidden
+      sec.querySelectorAll('.subsection').forEach(function (sub) {
+        var visible = sub.querySelectorAll('.tcard, .protogroup');
+        var anyVis = false;
+        visible.forEach(function (el) { if (el.style.display !== 'none') anyVis = true; });
+        sub.style.display = anyVis ? '' : 'none';
+      });
 
       sec.style.display = anyInSection ? '' : 'none';
     });

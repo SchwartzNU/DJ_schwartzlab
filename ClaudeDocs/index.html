@@ -210,8 +210,14 @@ code, kbd { font-family: var(--font-mono); font-size: 0.86em; }
 
 .schema-head { margin: 30px 0 6px; }
 .schema-head h2 { margin: 0; }
+.schema-head h2 .db { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); font-weight: 400; margin-left: 8px; letter-spacing: 0; }
 .schema-head .db { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
 .schema-head p { margin: 6px 0 0; color: var(--muted); max-width: 70ch; }
+
+/* sub-categories within a schema (used by sln_symphony) */
+.subsection { margin: 24px 0 8px; }
+.subhead { font-family: var(--font-display); font-size: 1.12rem; margin: 22px 0 2px; padding-bottom: 6px; border-bottom: 2px solid var(--trace-wash); color: var(--ink); }
+.subnote { color: var(--muted); font-size: 0.9rem; margin: 6px 0 12px; max-width: 74ch; }
 
 /* table cards */
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 18px 0; }
@@ -369,11 +375,13 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
         <p>The ladder above, explained &mdash; plus how it maps onto the raw Symphony file.</p></a>
       <a class="pathcard" href="tables.html"><span class="num">02</span><h3>Tables</h3>
         <p>Search every table in every schema, with its fields and links in plain language.</p></a>
-      <a class="pathcard" href="analysis.html"><span class="num">03</span><h3>Writing an analysis</h3>
-        <p>Build a new analysis and its result table, step by step, from a real example.</p></a>
+      <a class="pathcard" href="apps.html"><span class="num">03</span><h3>Apps</h3>
+        <p>The GUI tools &mdash; DataGrouper, QueryBrowser, Curator, Spike Detector &mdash; and how to use them.</p></a>
     </div>
-    <div class="grid two" style="margin-top:18px">
-      <a class="pathcard" href="glossary.html"><span class="num">04</span><h3>Glossary</h3>
+    <div class="grid three" style="margin-top:18px">
+      <a class="pathcard" href="analysis.html"><span class="num">04</span><h3>Writing an analysis</h3>
+        <p>Build a new analysis and its result table, step by step, from a real example.</p></a>
+      <a class="pathcard" href="glossary.html"><span class="num">05</span><h3>Glossary</h3>
         <p>Primary key, foreign key, restrict, join, fetch, populate &mdash; the words you&rsquo;ll keep hearing.</p></a>
       <a class="pathcard" href="https://github.com/SchwartzNU/DJ_schwartzlab"><span class="num">&#8599;</span><h3>The code</h3>
         <p>The <span class="id">DJ_schwartzlab</span> repository: schemas, apps, and analysis functions.</p></a>
@@ -382,8 +390,8 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
 
   <div class="note tip"><span class="tag">First day?</span>
     Skim <a href="levels.html">Data levels</a> once, keep <a href="tables.html">Tables</a> open in a
-    tab while you work, and come back to <a href="analysis.html">Writing an analysis</a> when you have
-    your first real question to answer.</div>
+    tab while you work, meet the <a href="apps.html">apps</a> you&rsquo;ll click daily, and come back to
+    <a href="analysis.html">Writing an analysis</a> when you have your first real question to answer.</div>
 </main>
 <footer class="footer"><div class="wrap">
   <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
@@ -434,14 +442,21 @@ document.addEventListener('click', function (e) {
         if (ok) { anyInSection++; shown++; }
       });
 
-      // protocol group counts toward its section if schema matches
-      var pg = sec.querySelector('.protogroup');
-      if (pg) {
+      // there can be several grouped pill-lists (e.g. tags + protocol params)
+      sec.querySelectorAll('.protogroup').forEach(function (pg) {
         var pgHay = pg.dataset.search || '';
         var pgOk = schemaMatch && (q === '' || pgHay.indexOf(q) !== -1);
         pg.style.display = pgOk ? '' : 'none';
         if (pgOk) anyInSection++;
-      }
+      });
+
+      // hide any sub-section whose cards and groups are all hidden
+      sec.querySelectorAll('.subsection').forEach(function (sub) {
+        var visible = sub.querySelectorAll('.tcard, .protogroup');
+        var anyVis = false;
+        visible.forEach(function (el) { if (el.style.display !== 'none') anyVis = true; });
+        sub.style.display = anyVis ? '' : 'none';
+      });
 
       sec.style.display = anyInSection ? '' : 'none';
     });
