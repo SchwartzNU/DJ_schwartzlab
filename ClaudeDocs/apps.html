@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Schwartz Lab Database &amp;middot; Guide for new members</title>
-<meta name="description" content="A friendly, SQL-free guide to the Schwartz Lab DataJoint database.">
+<title>GUI apps &amp;middot; Schwartz Lab Database</title>
+<meta name="description" content="The main MATLAB GUI apps for working with the Schwartz Lab database, no SQL needed.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -332,58 +332,63 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
 <nav class="nav"><div class="nav-inner">
   <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
   <button class="nav-toggle" aria-label="Menu">MENU</button>
-  <div class="nav-links"><a class="item active" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="apps.html">Apps</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item" href="glossary.html">Glossary</a></div>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item active" href="apps.html">Apps</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item" href="glossary.html">Glossary</a></div>
 </div></nav>
 
-<header class="hero"><div class="wrap narrow">
-  <p class="eyebrow">Lab database guide</p>
-  <h1>The lab&rsquo;s data, from a whole mouse down to a single spike.</h1>
-  <p class="lede">This is a friendly guide to the Schwartz Lab <b>DataJoint</b> pipeline &mdash;
-  the database where every retinal recording, animal, and analysis result lives. Written for a
-  first-year student who has never touched SQL.</p>
-</div></header>
+<main class="wrap narrow">
+  <header class="pagehead">
+    <p class="eyebrow">GUI apps</p>
+    <h1>The apps you&rsquo;ll actually click</h1>
+    <p class="lead">Most day-to-day work with the database happens through MATLAB App Designer GUIs &mdash;
+    no SQL, no query code. You launch one by typing its name in the MATLAB Command Window (e.g.
+    <span class="id">DataGrouper_V2</span>) and pressing Enter. These pages walk through the main ones.</p>
+  </header>
 
-<main class="wrap">
-  <section class="section narrow">
-    <p class="lead">You don&rsquo;t query this database with raw SQL. You describe the rows you want in
-    MATLAB, and DataJoint writes the SQL for you. So the two things worth understanding first are
-    <b>what the tables mean</b> and <b>how they nest inside each other</b> &mdash; which is exactly
-    what the ladder below shows.</p>
-  </section>
+  <div class="note tip"><span class="tag">Before any app will work</span>
+    You need DataJoint set up in MATLAB, a VPN or on-site network connection, the FSMResfiles share
+    mounted, and an up-to-date clone of <span class="id">DJ_schwartzlab</span> on your MATLAB path.
+    Apps can be slow &mdash; give them a moment after launch and don&rsquo;t click too fast.</div>
 
   <section class="section">
-    <h2 style="text-align:center">The levels of the data</h2>
-    <p class="lead" style="text-align:center;max-width:56ch;margin:0 auto 8px">
-      Read it top to bottom: each level sits <i>inside</i> the one above it.
-      The label on each arrow is the field that links them.</p>
-    <div class="ladder"><div class="level "><span class="lvl-mark">&#128045;</span><span class="lvl-body"><span class="lvl-name">Animal</span> <span class="lvl-sql">sln_animal.Animal</span><div class="lvl-note">One mouse. Everything traces back here. Keyed by <span class='id'>animal_id</span>.</div></span></div><div class="connector"><span class="fk">linked by <b>animal_id</b></span></div><div class="level is-eye"><span class="lvl-mark">&#128064;</span><span class="lvl-body"><span class="lvl-name">Eye</span> <span class="lvl-sql">sln_animal.Eye</span><div class="lvl-note">The left or right eye of that mouse. Its retina is what you record from.</div></span></div><div class="connector"><span class="fk">the retina becomes a recording <b>source</b></span></div><div class="level "><span class="lvl-mark">&#9673;</span><span class="lvl-body"><span class="lvl-name">Cell</span> <span class="lvl-sql">sln_symphony.ExperimentCell</span><div class="lvl-note">One neuron you patched or recorded, e.g. <span class='id'>101323Ac3</span>. Keyed by <span class='id'>cell_number</span>.</div></span></div><div class="connector"><span class="fk">its trials are grouped into a <b>dataset</b></span></div><div class="level is-data"><span class="lvl-mark">&#9636;</span><span class="lvl-body"><span class="lvl-name">Dataset</span> <span class="lvl-sql">sln_symphony.Dataset</span><div class="lvl-note">A curated bundle of epochs for one analysis (e.g. all the &ldquo;spots multi size&rdquo; trials for this cell).</div></span></div><div class="connector"><span class="fk">a dataset is made of many <b>epochs</b></span></div><div class="level "><span class="lvl-mark">&#8942;</span><span class="lvl-body"><span class="lvl-name">Epoch</span> <span class="lvl-sql">sln_symphony.ExperimentEpoch</span><div class="lvl-note">A single trial &mdash; one presentation of the stimulus. Keyed by <span class='id'>epoch_id</span>.</div></span></div><div class="connector"><span class="fk">spikes detected in it become a <b>spike train</b></span></div><div class="level "><span class="lvl-mark">&#9776;</span><span class="lvl-body"><span class="lvl-name">Spike train</span> <span class="lvl-sql">sln_symphony.SpikeTrain</span><div class="lvl-note">The detected spikes for that epoch &mdash; the thing most spike analyses count.</div></span><svg class="lvl-trace" width="86" height="30" viewBox="0 0 86 30" fill="none" aria-hidden="true"><path d="M0 22h10l3-1 2 2 3-14 3 20 2-9 3 3 4-1h8l3-1 2 2 3-15 3 21 2-10 3 3 4-1h12" stroke="var(--trace)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
-    <p style="text-align:center"><a href="levels.html">See each level explained in full &rarr;</a></p>
-  </section>
-
-  <hr class="hr">
-
-  <section class="section">
-    <h2>Where to go next</h2>
-    <div class="grid three" style="margin-top:18px">
-      <a class="pathcard" href="levels.html"><span class="num">01</span><h3>Data levels</h3>
-        <p>The ladder above, explained &mdash; plus how it maps onto the raw Symphony file.</p></a>
-      <a class="pathcard" href="tables.html"><span class="num">02</span><h3>Tables</h3>
-        <p>Search every table in every schema, with its fields and links in plain language.</p></a>
-      <a class="pathcard" href="analysis.html"><span class="num">03</span><h3>Writing an analysis</h3>
-        <p>Build a new analysis and its result table, step by step, from a real example.</p></a>
-    </div>
-    <div class="grid two" style="margin-top:18px">
-      <a class="pathcard" href="glossary.html"><span class="num">04</span><h3>Glossary</h3>
-        <p>Primary key, foreign key, restrict, join, fetch, populate &mdash; the words you&rsquo;ll keep hearing.</p></a>
-      <a class="pathcard" href="https://github.com/SchwartzNU/DJ_schwartzlab"><span class="num">&#8599;</span><h3>The code</h3>
-        <p>The <span class="id">DJ_schwartzlab</span> repository: schemas, apps, and analysis functions.</p></a>
+    <div class="appgrid">
+      <a class="appcard" href="app-datagrouper.html"><span class="role">Find &middot; curate &middot; analyze</span>
+        <h3>DataGrouper V2</h3>
+        <p>The hub. Search the database, group epochs into datasets, add and create tags, assign cell
+        types, run analyses, plot results, and export &mdash; all in one window.</p></a>
+      <a class="appcard" href="app-querybrowser.html"><span class="role">Re-run saved queries</span>
+        <h3>QueryBrowser</h3>
+        <p>Browse every query the lab has saved, filter by person or project, and re-run one to pull its
+        datasets or analysis results straight into MATLAB.</p></a>
+      <a class="appcard" href="app-curator.html"><span class="role">Build datasets</span>
+        <h3>Curator</h3>
+        <p>Step through a cell&rsquo;s epochs, filter out the bad or unwanted ones, and save a clean set as
+        a named <span class="id">Dataset</span>.</p></a>
+      <a class="appcard" href="app-spikedetector.html"><span class="role">Detect spikes</span>
+        <h3>Spike Detector</h3>
+        <p>Turn raw traces into spike times: threshold, cluster in feature space, hand-correct, and push
+        the result to the <span class="id">SpikeTrain</span> table.</p></a>
     </div>
   </section>
 
-  <div class="note tip"><span class="tag">First day?</span>
-    Skim <a href="levels.html">Data levels</a> once, keep <a href="tables.html">Tables</a> open in a
-    tab while you work, and come back to <a href="analysis.html">Writing an analysis</a> when you have
-    your first real question to answer.</div>
+  <section class="section">
+    <h2>How they fit together</h2>
+    <p>A typical path from raw recording to a plotted result touches several of these in turn:</p>
+    <div class="steps">
+      <div class="step"><h3>Group epochs into a dataset</h3><p>In <a href="app-datagrouper.html">DataGrouper</a>
+        you find a cell, then send it <b>To Curator</b> to pick the good epochs and save a
+        <a href="levels.html">Dataset</a>.</p></div>
+      <div class="step"><h3>Detect its spikes</h3><p>For spiking data, <b>To Spike Detector</b> turns the raw
+        traces into <span class="id">SpikeTrain</span> rows.</p></div>
+      <div class="step"><h3>Tag, analyze, and explore</h3><p>Back in DataGrouper, add tags, run an analysis
+        on the datasets, and plot the results.</p></div>
+      <div class="step"><h3>Save the query for later</h3><p>Save the query so you (or a labmate) can re-run it
+        anytime from <a href="app-querybrowser.html">QueryBrowser</a>.</p></div>
+    </div>
+    <p style="color:var(--muted);font-size:.9rem">Other apps you may run into &mdash; <span class="id">CellTyper</span>,
+    <span class="id">QueryBuilder</span>, <span class="id">DataExplorer</span>, <span class="id">PlotDesigner</span>,
+    <span class="id">H5_Exporter</span>, the <span class="id">AnimalInterface</span>, and the imaging tools &mdash;
+    follow the same launch-by-name pattern.</p>
+  </section>
 </main>
 <footer class="footer"><div class="wrap">
   <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
