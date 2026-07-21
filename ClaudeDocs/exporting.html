@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Glossary &amp;middot; Schwartz Lab Database</title>
-<meta name="description" content="Plain, SQL-free definitions of the terms used around the Schwartz Lab database.">
+<title>Exporting data &middot; Schwartz Lab Database</title>
+<meta name="description" content="How to export data groups, result tables, and files (.mat, .h5, CSV) from the pipeline.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -338,22 +338,118 @@ pre .n { color: #d98f8f; }                            /* number-ish / special */
 <nav class="nav"><div class="nav-inner">
   <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
   <button class="nav-toggle" aria-label="Menu">MENU</button>
-  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="apps.html">Apps</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item" href="exporting.html">Exporting data</a><a class="item" href="exporting.html">Exporting data</a><a class="item active" href="glossary.html">Glossary</a></div>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item" href="apps.html">Apps</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item active" href="exporting.html">Exporting data</a><a class="item" href="glossary.html">Glossary</a></div>
 </div></nav>
 
 <main class="wrap narrow">
   <header class="pagehead">
-    <p class="eyebrow">Glossary</p>
-    <h1>The words you&rsquo;ll keep hearing</h1>
-    <p class="lead">Plain definitions for the terms that come up around this database. None of them require
-    knowing SQL &mdash; that&rsquo;s the point of DataJoint.</p>
+    <p class="eyebrow">Getting data out</p>
+    <h1>Exporting data</h1>
+    <p class="lead">Once you&rsquo;ve found or computed something, there are two ways to take it with you: point-and-click
+    from <a href="app-datagrouper.html">DataGrouper</a>, or a couple of lines at the MATLAB command line. It helps to
+    think in terms of two questions &mdash; <b>what</b> you&rsquo;re exporting, and <b>what form</b> you want it in.</p>
   </header>
-  <section class="section"><div class="glossary"><div class="term"><dt>DataJoint<span class="also">the tool</span></dt><dd>The framework that runs this whole database. You describe data in MATLAB and DataJoint turns it into a real MySQL database &mdash; and writes all the SQL for you. You almost never write SQL yourself.</dd></div><div class="term"><dt>Schema<span class="also">a folder of tables</span></dt><dd>A named group of related tables, like <span class='id'>sln_symphony</span> (recordings) or <span class='id'>sln_animal</span> (the colony). In the code, one schema is one <span class='id'>+folder</span>.</dd></div><div class="term"><dt>Table<span class="also">a grid of rows</span></dt><dd>A grid where every row is one thing (one epoch, one cell) and every column is one fact about it. In MATLAB you refer to a table as <span class='id'>schema.TableName</span>.</dd></div><div class="term"><dt>Primary key<span class="also">what makes a row unique</span></dt><dd>The column(s) that identify a row, shown <b>above the dashed line</b> in a table&rsquo;s definition and marked with a dot on the <a href='tables.html'>table cards</a>. No two rows can share the same primary key.</dd></div><div class="term"><dt>Foreign key<span class="also">a link to a parent</span></dt><dd>A field that says &ldquo;this row belongs to that row in another table&rdquo;, written <span class='id'>-&gt; schema.Table</span>. Foreign keys are the arrows in the <a href='levels.html'>levels ladder</a> &mdash; they carry the parent&rsquo;s key down into the child.</dd></div><div class="term"><dt>Restrict<span class="also">keep only some rows</span></dt><dd>Narrowing a table to the rows you want, with the <span class='id'>&amp;</span> operator: <span class='id'>sln_symphony.Dataset &amp; 'source_id = 3'</span>. Like a filter.</dd></div><div class="term"><dt>Join<span class="also">combine two tables</span></dt><dd>Gluing two tables together on their shared key, with the <span class='id'>*</span> operator. Because tables share keys, DataJoint knows how to line them up &mdash; you never spell out the join by hand.</dd></div><div class="term"><dt>Projection<span class="also">pick / rename columns</span></dt><dd>Choosing or renaming columns with <span class='id'>proj(...)</span>. Handy when two tables both call something <span class='id'>source_id</span> and you need to tell them apart.</dd></div><div class="term"><dt>Fetch<span class="also">pull data into MATLAB</span></dt><dd>Actually reading rows out of the database into MATLAB variables: <span class='id'>fetch(query, 'baseline_rate_hz')</span>. A query on its own doesn&rsquo;t touch the database until you fetch (or count).</dd></div><div class="term"><dt>Populate<span class="also">compute the missing rows</span></dt><dd>Telling a computed table to run its analysis on every input that doesn&rsquo;t have a result yet: <span class='id'>populate(sln_results.SMSCARunner)</span>. The engine behind <a href='analysis.html'>Writing an analysis</a>.</dd></div><div class="term"><dt>Tier<span class="also">what kind of table</span></dt><dd>How a table gets its data. <b>Manual</b>: typed in by people or apps. <b>Lookup</b>: a fixed reference list. <b>Imported</b>: read from raw files. <b>Computed</b>: produced by an analysis. <b>Part</b>: a piece that only exists with its parent. Each has a color on the <a href='tables.html'>table cards</a>.</dd></div><div class="term"><dt>Dataset<span class="also">a curated group of epochs</span></dt><dd>A hand-picked set of trials for one analysis &mdash; the unit almost every result is built on. Not to be confused with the whole recording <b>file</b>. Made in the DataGrouper app.</dd></div><div class="term"><dt>Epoch<span class="also">one trial</span></dt><dd>A single presentation of a stimulus, with a start time and a duration. The smallest unit of the recording. Many epochs make a <b>dataset</b>.</dd></div><div class="term"><dt>Protocol<span class="also">a stimulus program</span></dt><dd>The stimulus that was run &mdash; <span class='id'>spots_multi_size</span>, <span class='id'>moving_bar</span>, and so on. Its parameters live in the auto-generated <span class='id'>&hellip;bp</span> / <span class='id'>&hellip;ep</span> tables you&rsquo;ll see grouped on the <a href='tables.html'>Tables</a> page.</dd></div><div class="term"><dt>aka.*<span class="also">friendly shortcuts</span></dt><dd>The <span class='id'>+aka</span> folder holds aliases that bundle common queries under a plain name &mdash; <span class='id'>aka.Dataset</span>, <span class='id'>aka.Epoch</span>, <span class='id'>aka.SMSparams</span>. Analyses use these so you don&rsquo;t rebuild the same join every time.</dd></div><div class="term"><dt>git tag<span class="also">the code version</span></dt><dd>A stamp of which version of the code produced a result, stored on every result row. It&rsquo;s how the lab can tell whether a number needs recomputing after a bug fix.</dd></div></div>
-  <div class="note tip"><span class="tag">Still stuck on a word?</span>
-    The official <a href="https://docs.datajoint.com/">DataJoint documentation</a> covers the query operators
-    (<span class="id">&amp;</span>, <span class="id">*</span>, <span class="id">proj</span>) in more depth, with
-    examples in both MATLAB and Python.</div>
+
+  <section class="section">
+    <h2>What you can export</h2>
+    <ul style="list-style:none;padding:0;margin:14px 0">
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>A data group</b> &mdash; the datasets you selected,
+      with their metadata, and optionally the <b>raw traces</b> and <b>spike times</b>.</li>
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>A computed result</b> &mdash; the rows of one
+      analysis&rsquo;s result table (e.g. <span class="id">sln_results.DatasetSMSCA</span>).</li>
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>A saved query&rsquo;s output</b> &mdash; its
+      datasets or its analysis results, straight from <a href="app-querybrowser.html">QueryBrowser</a>.</li>
+    </ul>
   </section>
+
+  <section class="section">
+    <h2>What form it can take</h2>
+    <ul style="list-style:none;padding:0;margin:14px 0">
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>The MATLAB workspace</b> &mdash; a struct (and
+      table) you can poke at interactively. Best for &ldquo;let me just look at this now.&rdquo;</li>
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>A standard MATLAB table</b> &mdash; a
+      <span class="id">table</span> object you can sort, join, and <span class="id">writetable</span> to CSV/Excel.</li>
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>A <span class="id">.mat</span> file</b> &mdash; for
+      picking the same data group back up later in MATLAB, or handing to another MATLAB user.</li>
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>An <span class="id">.h5</span> (HDF5) file</b> &mdash;
+      language-agnostic and good for large arrays: read it from Python (<span class="id">h5py</span>), share it, or
+      archive it.</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>1 &middot; Export a data group from DataGrouper</h2>
+    <div class="steps">
+      <div class="step"><h3>Select the datasets</h3><p>Query and select the datasets you want in the Browser.</p></div>
+      <div class="step"><h3>Choose what to bundle</h3><p>Tick <b>Include raw traces</b> and/or <b>Include spike times</b>
+        if you need the signals, not just the metadata. (Leaving them off keeps the export small.)</p></div>
+      <div class="step"><h3>Pick the destination</h3><p>The <b>File / Command line</b> rocker decides where it goes:
+        <b>File</b> saves a <span class="id">.mat</span>, and <b>Command line</b> drops
+        <span class="id">data_group</span> and <span class="id">data_group_struct</span> into your MATLAB workspace.</p></div>
+      <div class="step"><h3>Export</h3><p>Click <b>Export Full DataGroup</b>.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>2 &middot; Fetch a result table at the command line</h2>
+    <p>Any analysis result is a table you can restrict and pull directly (see
+    <a href="analysis.html">Writing an analysis</a> for how they&rsquo;re built):</p>
+    <span class="filelabel">in MATLAB</span><pre><span class="c">% Grab one analysis's results, restricted to the cells you care about:</span>
+R = sln_results.DatasetSMSCA &amp; 'source_id = 3';
+
+<span class="c">% Pull every column into a MATLAB struct array (one element per row):</span>
+s = fetch(R, '*');
+
+<span class="c">% ...or just the columns you need, as arrays:</span>
+[rate, psth] = fetchn(R, 'baseline_rate_hz', 'sms_psth');</pre>
+    <p><span class="id">fetch(R, '*')</span> gives you a struct array (one element per row);
+    <span class="id">fetchn</span> gives you each column as its own array.</p>
+  </section>
+
+  <section class="section">
+    <h2>3 &middot; Turn it into a standard MATLAB table</h2>
+    <p>A struct array is fine, but a <span class="id">table</span> is easier to slice, join, and save:</p>
+    <span class="filelabel">in MATLAB</span><pre><span class="c">% Turn the fetched struct array into a standard MATLAB table:</span>
+T = struct2table(s);
+
+<span class="c">% Now it behaves like any table -- sort, group, join, or write out:</span>
+T = sortrows(T, 'baseline_rate_hz');
+writetable(T, 'sms_results.csv');     <span class="c">% -&gt; CSV / Excel, no DataJoint needed</span></pre>
+    <div class="note tip"><span class="tag">Why bother</span>
+      Once it&rsquo;s a <span class="id">table</span> you get <span class="id">writetable</span> for CSV/Excel,
+      easy filtering, and clean joins with other tables &mdash; and columns that held vectors or images
+      (<span class="id">longblob</span>) come through as cell columns you can index into.</div>
+  </section>
+
+  <section class="section">
+    <h2>4 &middot; Write it to an HDF5 (.h5) file</h2>
+    <p>For sharing outside MATLAB or archiving, HDF5 is the format to reach for. From DataGrouper:</p>
+    <ul style="list-style:none;padding:0;margin:14px 0">
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>To HDF5</b> &mdash; writes the single stored result
+      you&rsquo;ve selected in <b>Results in database</b> to an <span class="id">.h5</span> file. (<b>To command line</b>
+      sends that same result to the workspace instead.)</li>
+      <li style="border-top:1px solid var(--line);padding:12px 0"><b>Export Results</b> / <b>Export Selection</b> &mdash;
+      hand the current selection to the <span class="id">H5_Exporter</span>, which builds a structured
+      <span class="id">.h5</span> of the whole data group.</li>
+    </ul>
+    <div class="note tip"><span class="tag">Reading it back</span>
+      An <span class="id">.h5</span> opens anywhere &mdash; <span class="id">h5read</span> in MATLAB, or
+      <span class="id">h5py</span> in Python &mdash; which makes it the right choice when a collaborator isn&rsquo;t on
+      the DataJoint pipeline.</div>
+  </section>
+
+  <section class="section">
+    <h2>5 &middot; From a saved query (QueryBrowser)</h2>
+    <p>If the data lives behind a saved query, you don&rsquo;t need to rebuild it. In
+    <a href="app-querybrowser.html">QueryBrowser</a>, select the query and click <b>Fetch</b> to get its
+    <span class="id">datasets</span> in the workspace, or pick a result table and click <b>Fetch result</b> &mdash; the
+    <b>Result to</b> switch sends it to the command line or a file.</p>
+  </section>
+
+  <div class="note warn"><span class="tag">Which should I use?</span>
+    Quick look now &rarr; command line. Tabular analysis or a spreadsheet &rarr; a MATLAB
+    <span class="id">table</span> / CSV. Reuse in MATLAB later &rarr; <span class="id">.mat</span>. Sharing with
+    non-MATLAB tools or archiving &rarr; <span class="id">.h5</span>.</div>
 </main>
 <footer class="footer"><div class="wrap">
   <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
@@ -376,71 +472,6 @@ document.addEventListener('click', function (e) {
   card.querySelectorAll('.field.hidden-field').forEach(function (f) { f.classList.remove('hidden-field'); });
   b.remove();
 });
-
-/* ---------- table browser ---------- */
-(function () {
-  var root = document.getElementById('browser');
-  if (!root) return;
-
-  var search = document.getElementById('search');
-  var countEl = document.getElementById('count');
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.schema-tab'));
-  var sections = Array.prototype.slice.call(document.querySelectorAll('.schema-block'));
-
-  var activeSchema = 'all';
-
-  function apply() {
-    var q = (search.value || '').trim().toLowerCase();
-    var shown = 0;
-
-    sections.forEach(function (sec) {
-      var schemaMatch = (activeSchema === 'all' || sec.dataset.schema === activeSchema);
-      var anyInSection = 0;
-
-      sec.querySelectorAll('.tcard').forEach(function (card) {
-        var hay = card.dataset.search || '';
-        var ok = schemaMatch && (q === '' || hay.indexOf(q) !== -1);
-        card.style.display = ok ? '' : 'none';
-        if (ok) { anyInSection++; shown++; }
-      });
-
-      // there can be several grouped pill-lists (e.g. tags + protocol params)
-      sec.querySelectorAll('.protogroup').forEach(function (pg) {
-        var pgHay = pg.dataset.search || '';
-        var pgOk = schemaMatch && (q === '' || pgHay.indexOf(q) !== -1);
-        pg.style.display = pgOk ? '' : 'none';
-        if (pgOk) anyInSection++;
-      });
-
-      // hide any sub-section whose cards and groups are all hidden
-      sec.querySelectorAll('.subsection').forEach(function (sub) {
-        var visible = sub.querySelectorAll('.tcard, .protogroup');
-        var anyVis = false;
-        visible.forEach(function (el) { if (el.style.display !== 'none') anyVis = true; });
-        sub.style.display = anyVis ? '' : 'none';
-      });
-
-      sec.style.display = anyInSection ? '' : 'none';
-    });
-
-    countEl.textContent = shown + (shown === 1 ? ' table' : ' tables');
-    var empty = document.getElementById('empty');
-    if (empty) empty.style.display = shown === 0 ? '' : 'none';
-  }
-
-  tabs.forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      tabs.forEach(function (t) { t.classList.remove('active'); });
-      tab.classList.add('active');
-      activeSchema = tab.dataset.schema;
-      apply();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
-
-  search.addEventListener('input', apply);
-  apply();
-})();
 </script>
 </body>
 </html>
