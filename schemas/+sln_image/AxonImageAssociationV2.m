@@ -49,7 +49,7 @@ classdef AxonImageAssociationV2< dj.Manual
                                 fprintf('Axon %d -- image %d already linked, skipping...\n', key.axon_id, key.image_id);
                                 continue;
                             end
-                            insert(sln_image.AxonImageAssociation, key);
+                            insert(sln_image.AxonImageAssociationV2, key);
                             fprintf('Inserted axon %d with image %d\n', key.axon_id, key.image_id);
                         end
                         fprintf('All axon-image associations inserted!\n');

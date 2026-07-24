@@ -185,6 +185,7 @@ classdef Image < dj.Manual
                             key.raw_image(:,:,i,:) = imread(filename, i);
                         end
                     end
+                    
 
                     fprintf('Done loading.\n');
                     if (isprop(SI, 'hRoiManager') || isfield(SI, 'hRoiManager'))
