@@ -16,23 +16,24 @@ eccentricity_by_convhull: float #eccentricity measurement by the convex hull
 classdef  AxonImageMorphV2< dj.Manual
 
     methods(Static)
-        function axon_trace_data = get_axon_morFile(image_id)
+        function axon_trace_data = get_axon_morFile(image_id, seg_id)
             if(isnumeric(image_id))
-                q = sprintf('image_id = %d', image_id);
+                q.image_id = image_id;
+                q.seg_id = seg_id;
             else
                 error('Axon id should be a number!\n');
             end
 
-            result = sln_image.AxonMorphFile & q;
+            result = fetch(sln_image.AxonMorphFileV2 & q);
             if (~isempty(result))
-                axon_trace_data = fetch(result, 'trace_coordinates', 'axon_axis');
+                axon_trace_data = fetch(sln_image.AxonMorphFileV2 & q, 'trace_coordinates', 'axon_axis');
             else
                 error('Cannot trace for axon %d\n', image_id);
             end
         end
 
         function axon_morph_analyze(image_id, seg_id)
-            trace = sln_image.AxonImageMorphV2.get_axon_morFile(image_id); %traces in matlab strutct
+            trace = sln_image.AxonImageMorphV2.get_axon_morFile(image_id, seg_id); %traces in matlab strutct
             bundle_n = numel(trace.trace_coordinates); %number of the axon bundles
             hull = []; %convex hull ffor each bundle
             len_each = zeros([bundle_n, 1]); %total length of each bundle
@@ -42,7 +43,9 @@ classdef  AxonImageMorphV2< dj.Manual
             %area_dense_each = zeros([bundle_n, 1]);
             %ecc_h = zeros([bundle_n, 1]);
             %each bundle is a cell in trace_coordinate
-            q = sprintf('image_id = %d', image_id);
+            %q = sprintf('image_id = %d', image_id);
+            q.image_id = image_id;
+            q.seg_id =seg_id;
             scales = fetch(sln_image.Image & q, 'x_scale', 'y_scale', 'z_scale');
 
             xall = [];
