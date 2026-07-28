@@ -292,7 +292,6 @@ classdef Image < dj.Manual
 
             file_info = dir(filename);
             key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
-            %key.size_in_bytes = file_info.bytes;
             if (file_info.bytes>4294967295)
                 key.size_in_bytes = 4294967295;
                 fprintf('Warning: size of this image is larger than the 2^32, using the max instead.\n');
@@ -432,7 +431,6 @@ classdef Image < dj.Manual
 
             file_info = dir(filename);
             key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
-            %key.size_in_bytes = file_info.bytes;
             if (file_info.bytes>4294967295)
                 key.size_in_bytes = 4294967295;
                 fprintf('Warning: size of this image is larger than the 2^32, using the max instead.\n');
