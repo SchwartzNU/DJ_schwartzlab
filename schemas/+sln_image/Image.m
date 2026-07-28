@@ -133,7 +133,14 @@ classdef Image < dj.Manual
                 end
                 file_info = dir(filename);
                 key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
-                key.size_in_bytes = file_info.bytes;
+                   %wacky fix: in the rare case the image is larger than 4.4 GB
+                if (file_info.bytes>4294967295)
+                    key.size_in_bytes = 4294967295;
+                    fprintf('Warning: size of this image is larger than the 2^32, using the max instead.\n');
+                else
+                    key.size_in_bytes = file_info.bytes;
+                end
+                
                 key.folder = file_info.folder;
                 [~, name, ext] = fileparts(filename);
                 key.image_filename = strcat(name, ext);
@@ -285,7 +292,13 @@ classdef Image < dj.Manual
 
             file_info = dir(filename);
             key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
-            key.size_in_bytes = file_info.bytes;
+            %key.size_in_bytes = file_info.bytes;
+            if (file_info.bytes>4294967295)
+                key.size_in_bytes = 4294967295;
+                fprintf('Warning: size of this image is larger than the 2^32, using the max instead.\n');
+            else
+                key.size_in_bytes = file_info.bytes;
+            end
             key.folder = file_info.folder;
             [~, name, ext] = fileparts(filename);
             key.image_filename = [name ext];                
@@ -419,7 +432,13 @@ classdef Image < dj.Manual
 
             file_info = dir(filename);
             key.creation_date = datestr(file_info.datenum,'yyyy-mm-dd');
-            key.size_in_bytes = file_info.bytes;
+            %key.size_in_bytes = file_info.bytes;
+            if (file_info.bytes>4294967295)
+                key.size_in_bytes = 4294967295;
+                fprintf('Warning: size of this image is larger than the 2^32, using the max instead.\n');
+            else
+                key.size_in_bytes = file_info.bytes;
+            end
             key.folder = file_info.folder;
             [~, name, ext] = fileparts(filename);
             key.image_filename = [name ext];  
@@ -515,16 +534,29 @@ classdef Image < dj.Manual
 
         function match = get_db_match(file_info)
             %file_info is a struct from the 'dir' command
-            match = sln_image.Image & ...
-                sprintf('image_filename="%s"', file_info.name) & ...
-                sprintf('creation_date="%s"', datestr(file_info.datenum,'yyyy-mm-dd')) & ...
-                sprintf('size_in_bytes=%d', file_info.bytes);            
+            if (file_info.bytes > 4294967295)
+                match = sln_image.Image & ...
+                    sprintf('image_filename="%s"', file_info.name) & ...
+                    sprintf('creation_date="%s"', datestr(file_info.datenum,'yyyy-mm-dd')) & ...
+                    sprintf('size_in_bytes=%d', 4294967295);
+            else
+                match = sln_image.Image & ...
+                    sprintf('image_filename="%s"', file_info.name) & ...
+                    sprintf('creation_date="%s"', datestr(file_info.datenum,'yyyy-mm-dd')) & ...
+                    sprintf('size_in_bytes=%d', file_info.bytes);
+            end
         end
         function match = get_db_match_nodaterestrict(file_info)
             %file_info is a struct from the 'dir' command
-            match = sln_image.Image & ...
+            if (file_info.bytes > 4294967295)
                 sprintf('image_filename="%s"', file_info.name) & ...
-                sprintf('size_in_bytes=%d', file_info.bytes);
+                    %sprintf('creation_date="%s"', datestr(file_info.datenum,'yyyy-mm-dd')) & ...
+                sprintf('size_in_bytes=%d', 4294967295)
+            else
+                match = sln_image.Image & ...
+                    sprintf('image_filename="%s"', file_info.name) & ...
+                    sprintf('size_in_bytes=%d', file_info.bytes);
+            end
         end
 
         function is_in_db = inDB(file_info)
