@@ -1,5 +1,5 @@
 %{
-#DatasetDG_OSI_by_cell
+#DatasetDGOSIbycell
 file_name : varchar(128) # file name from symphony
 dataset_name : varchar(128) # dataset name
 source_id : int unsigned # source id used to identify the cell to which the dataset belongs
@@ -16,5 +16,5 @@ OSI_by_condition=NULL : longblob # orientation selectivity index for each condit
 preferred_angle_by_condition=NULL : longblob # preferredn angle for each condition
 speed_used=NULL  :  longblob # filtered speed for computation
 %}
-classdef DatasetDG_OSI_by_cell < dj.Manual
+classdef DatasetDGOSIbycell < dj.Manual
 end
