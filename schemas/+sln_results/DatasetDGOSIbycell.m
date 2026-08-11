@@ -7,13 +7,13 @@ source_id : int unsigned # source id used to identify the cell to which the data
 -> sln_lab.User # user who entered this result
 contrasts=NULL   : longblob  # set of contrasts
 contrast_by_condition=NULL  : longblob # contrast for each condition
-dsi_by_condition : longblob # direction selectivity index for each condition
+dsi_by_condition=NULL : longblob # direction selectivity index for each condition
 entry_time = CURRENT_TIMESTAMP  : timestamp # when it was computed
 git_tag : varchar(128) # code version used
 halfwidths=NULL : longblob  # set of cyclej (bar) halfwidths (microns)
 halfwidth_by_condition=NULL  : longblob # halfwidth for each condition
-osi_by_condition : longblob # orientation selectivity index for each condition
-preferred_angle_by_condition : longblob # preferred angle for each condition
+osi_by_condition=NULL : longblob # orientation selectivity index for each condition
+preferred_angle_by_condition=NULL : longblob # preferred angle for each condition
 speed_used=NULL  :  longblob # filtered speed for computation
 %}
 classdef DatasetDGOSIbycell < dj.Manual
