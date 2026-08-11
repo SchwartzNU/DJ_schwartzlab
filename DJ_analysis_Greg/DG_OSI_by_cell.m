@@ -69,8 +69,8 @@ function R = DG_OSI_by_cell(data_group, params)
             R.halfwidth_by_condition{d} = [];
             R.contrast_by_condition{d} = [];
             R.preferred_angle_by_condition{d} = [];
-            R.DSI_by_condition{d} = [];
-            R.OSI_by_condition{d} = [];
+            R.dsi_by_condition{d} = [];
+            R.osi_by_condition{d} = [];
             continue;
         end
 
@@ -95,8 +95,8 @@ function R = DG_OSI_by_cell(data_group, params)
         halfwidth_by_condition = zeros(Nconditions, 1);
         contrast_by_condition = zeros(Nconditions, 1);
         preferred_angle_by_condition = zeros(Nconditions, 1);
-        DSI_by_condition = zeros(Nconditions, 1);
-        OSI_by_condition = zeros(Nconditions, 1);
+        dsi_by_condition = zeros(Nconditions, 1);
+        osi_by_condition = zeros(Nconditions, 1);
 
         c = 1;
         for w = 1:N_halfwidths
@@ -143,18 +143,18 @@ function R = DG_OSI_by_cell(data_group, params)
 
                 % --- DSI: raw-angle vector sum (direction, 0-360 deg) ---
                 dsi_vector = sum(amp .* exp(1i * theta));
-                DSI = abs(dsi_vector) / sum(amp);
+                dsi = abs(dsi_vector) / sum(amp);
                 pref_angle = mod(rad2deg(angle(dsi_vector)), 360);
 
                 % --- OSI: doubled-angle vector sum (folds 0/180 together) ---
                 osi_vector = sum(amp .* exp(1i * 2 * theta));
-                OSI = abs(osi_vector) / sum(amp);
+                osi = abs(osi_vector) / sum(amp);
 
                 halfwidth_by_condition(c) = halfwidths(w);
                 contrast_by_condition(c) = contrasts(con);
                 preferred_angle_by_condition(c) = pref_angle;
-                DSI_by_condition(c) = DSI;
-                OSI_by_condition(c) = OSI;
+                dsi_by_condition(c) = dsi;
+                osi_by_condition(c) = osi;
 
                 c = c + 1;
             end
@@ -170,8 +170,8 @@ function R = DG_OSI_by_cell(data_group, params)
         R.halfwidth_by_condition{d} = halfwidth_by_condition;
         R.contrast_by_condition{d} = contrast_by_condition;
         R.preferred_angle_by_condition{d} = preferred_angle_by_condition;
-        R.DSI_by_condition{d} = DSI_by_condition;
-        R.OSI_by_condition{d} = OSI_by_condition;
+        R.dsi_by_condition{d} = DSI_by_condition;
+        R.osi_by_condition{d} = OSI_by_condition;
 
         fprintf('Elapsed time = %d seconds\n', round(toc));
     end
