@@ -170,8 +170,8 @@ function R = DG_OSI_by_cell(data_group, params)
         R.halfwidth_by_condition{d} = halfwidth_by_condition;
         R.contrast_by_condition{d} = contrast_by_condition;
         R.preferred_angle_by_condition{d} = preferred_angle_by_condition;
-        R.dsi_by_condition{d} = DSI_by_condition;
-        R.osi_by_condition{d} = OSI_by_condition;
+        R.dsi_by_condition{d} = dsi_by_condition;
+        R.osi_by_condition{d} = osi_by_condition;
 
         fprintf('Elapsed time = %d seconds\n', round(toc));
     end
