@@ -69,6 +69,7 @@ function R = DG_OSI_by_cell(data_group, params)
             R.halfwidth_by_condition{d} = [];
             R.contrast_by_condition{d} = [];
             R.preferred_angle_by_condition{d} = [];
+            R.preferred_orientation_by_condition{d} = [];
             R.dsi_by_condition{d} = [];
             R.osi_by_condition{d} = [];
             continue;
@@ -95,6 +96,7 @@ function R = DG_OSI_by_cell(data_group, params)
         halfwidth_by_condition = zeros(Nconditions, 1);
         contrast_by_condition = zeros(Nconditions, 1);
         preferred_angle_by_condition = zeros(Nconditions, 1);
+        preferred_orientation_by_condition = zeros(Nconditions,1);
         dsi_by_condition = zeros(Nconditions, 1);
         osi_by_condition = zeros(Nconditions, 1);
 
@@ -149,10 +151,12 @@ function R = DG_OSI_by_cell(data_group, params)
                 % --- OSI: doubled-angle vector sum (folds 0/180 together) ---
                 osi_vector = sum(amp .* exp(1i * 2 * theta));
                 osi = abs(osi_vector) / sum(amp);
+                pref_orientation = mod(rad2deg(angle(osi_vector)) / 2, 180);
 
                 halfwidth_by_condition(c) = halfwidths(w);
                 contrast_by_condition(c) = contrasts(con);
                 preferred_angle_by_condition(c) = pref_angle;
+                preferred_orientation_by_condition(c) = pref_orientation;
                 dsi_by_condition(c) = dsi;
                 osi_by_condition(c) = osi;
 
@@ -170,6 +174,7 @@ function R = DG_OSI_by_cell(data_group, params)
         R.halfwidth_by_condition{d} = halfwidth_by_condition;
         R.contrast_by_condition{d} = contrast_by_condition;
         R.preferred_angle_by_condition{d} = preferred_angle_by_condition;
+        R.preferred_orientation_by_condition{d} = preferred_orientation_by_condition
         R.dsi_by_condition{d} = dsi_by_condition;
         R.osi_by_condition{d} = osi_by_condition;
 
