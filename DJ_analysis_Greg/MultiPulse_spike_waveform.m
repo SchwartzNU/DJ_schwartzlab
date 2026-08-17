@@ -57,12 +57,15 @@ for d = 1:N_datasets
             spike_indice = spike_indices{i};
             background_spike = find(spike_indice < pre_samples, 3);
 
-            if isempty(background_spike)
+            if length(background_spike) < 3
                 stim_spike_idx = find(spike_indice > pre_samples & spike_indice < pre_stim_samples, 1);
                 if ~isempty(stim_spike_idx)
                     single_spike(spike_idx, :) = raw_data(i, spike_indice(stim_spike_idx)-PADDING : spike_indice(stim_spike_idx) + PADDING);
                     rheobase(spike_idx, 1) = c;
                     spike_idx = spike_idx + 1;
+                else
+                    idx = idx + 1;
+                    
                 end
             else
 
