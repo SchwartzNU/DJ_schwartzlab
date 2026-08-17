@@ -28,7 +28,7 @@ classdef MultiPulseSpikeWaveformRunner < dj.Computed
                 self.insert(key);
             else
                 try
-                    R = MultiPulse_FIcurve(key);
+                    R = MultiPulse_spike_waveform(key);
                     sln_results.insert(R,'Dataset','false');
                     q = sln_results.DatasetMultiPulsespikewaveform & key & 'LIMIT 1 PER source_id ORDER BY entry_time DESC';
                     key.git_tag = fetch1(q,'git_tag');
