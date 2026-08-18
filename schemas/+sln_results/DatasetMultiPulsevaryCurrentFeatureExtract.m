@@ -28,6 +28,7 @@ max_ahp_after_depol_injection=NULL : longblob # max ahp after depol (to a find w
 max_isi_cv=NULL : longblob # max isi cv of depol eps from each trial
 max_latency_of_spike=NULL : longblob # max latency to first spike (ms)
 max_number_of_spike=NULL : longblob # max number of spikes from any depolarization eps
+max_rebound_spike_rate=NULL : float # max spiking rate looking at 100ms after negative current turned off
 max_slope=NULL : longblob # max ap slope of first ap (vs)
 mean_traces=NULL : longblob # waveforms of mean traces (mV)
 min_63_percent_decay_time=NULL : longblob # min time during depol current inj that ap decay 1e (ms)
