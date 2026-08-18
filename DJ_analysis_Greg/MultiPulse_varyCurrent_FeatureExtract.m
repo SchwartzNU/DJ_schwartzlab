@@ -190,6 +190,10 @@ for d=1:N_datasets
         hyper_epoch_less_than_minus50 = find(hyper_current_level_pA > -50); % INJECTED CURRENT LESS HYPERPOLARIZING THAN -50
         
         ft = fittype("a + b*exp(-x*c)", 'independent', 'x'); %One parameter exp fit with asymt to Vinf
+        opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+        opts.Algorithm = 'Levenberg-Marquardt';
+        opts.Display = 'Off';
+        opts.StartPoint = [-60,10,30];
         tau_array = zeros(length(hyper_epoch_less_than_minus50),1);
          
         for i=1:length(hyper_epoch_less_than_minus50)
@@ -198,7 +202,7 @@ for d=1:N_datasets
             %  use ohm's law to predict the deltaV -> b param
             % d = ~time_in_s(start_time)
             % a ~ resting_vm(trial)
-            % c ~ 1/(average capacticance for a neuron * resting_vm(trial)
+            % c ~ 1/(average capacitance for a neuron * resting_vm(trial)
             % 2) needs bounds
             dt = time_in_s(2)-time_in_s(1);
             endInd = start_time+round(0.05/dt);
@@ -208,11 +212,13 @@ for d=1:N_datasets
             %xval = [time_in_s(start_time:end_time)]';
             %yval = hyper_Vm(start_time:end_time, hyper_epoch_less_than_minus50(i));
             %plot(time_in_s,hyper_Vm(:,hyper_epoch_less_than_minus50(i)))%
+            [xval, yval] = prepareCurveData(xval, yval);
             try
-                [f,gof] = fit(xval,yval , ft, 'StartPoint',[-60,10,30]);
-                tau_array(i) =  f.c;
-            catch
+                [f,gof] = fit(xval,yval , ft, opts);
+                tau_array(i) =  f.c; 
+            catch ME
                 disp('tau fit error');
+                rethrow(ME);
                 tau_array(i) =  nan;
             end           
         end
