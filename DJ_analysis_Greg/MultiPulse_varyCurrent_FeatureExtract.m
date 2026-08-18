@@ -155,30 +155,34 @@ for d=1:N_datasets
     curr = [epochs_in_dataset.pulse_1_curr];
 
     unique_curr = sort(unique(curr));
-    
+
     currs_under_70 = find(unique_curr < 0 & unique_curr > -200);
     if ~isempty(currs_under_70)
-    t_arr = nan(length(currs_under_70), 1);
-    rs = nan(length(currs_under_70), 1);
-    for c = 1 : length(currs_under_70)
-        idx_tau = find(curr == unique_curr(currs_under_70(c)));
-        raw_data_hyper = vertcat(epochs_in_dataset(idx_tau).raw_data);
-        y = mean(raw_data_hyper);
-        y_1 = y(pre_samples : pre_samples + 2000);
+        try
+            t_arr = nan(length(currs_under_70), 1);
+            rs = nan(length(currs_under_70), 1);
+            for c = 1 : length(currs_under_70)
+                idx_tau = find(curr == unique_curr(currs_under_70(c)));
+                raw_data_hyper = vertcat(epochs_in_dataset(idx_tau).raw_data);
+                y = mean(raw_data_hyper);
+                y_1 = y(pre_samples : pre_samples + 2000);
 
-        ft = fittype("a + b*exp(-x*c)", 'independent', 'x');
-        opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
-        opts.Algorithm = 'Levenberg-Marquardt';
-        opts.Display = 'Off';
-        opts.StartPoint = [-60, 10, 100];
-        xval = [0:length(y_1)-1] ./ 50000;
-        yval = y_1;
-        [xval, yval] = prepareCurveData(xval, yval);
-        [f,gof] = fit(xval,yval , ft, opts);
-        t_arr(c,1) = 1/f.c;
-        rs(c,1) = gof.adjrsquare;
-    end
-        tau = mean(t_arr(find(rs > 0.85)));
+                ft = fittype("a + b*exp(-x*c)", 'independent', 'x');
+                opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+                opts.Algorithm = 'Levenberg-Marquardt';
+                opts.Display = 'Off';
+                opts.StartPoint = [-60, 10, 100];
+                xval = [0:length(y_1)-1] ./ 50000;
+                yval = y_1;
+                [xval, yval] = prepareCurveData(xval, yval);
+                [f,gof] = fit(xval,yval , ft, opts);
+                t_arr(c,1) = 1/f.c;
+                rs(c,1) = gof.adjrsquare;
+            end
+            tau = mean(t_arr(find(rs > 0.85)));
+        catch ME
+            warning(ME.message);
+        end
     end
 
 
