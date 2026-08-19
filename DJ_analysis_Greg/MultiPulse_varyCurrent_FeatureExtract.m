@@ -164,7 +164,7 @@ for d=1:N_datasets
             for c = 1 : length(currs_under_70)
                 idx_tau = find(curr == unique_curr(currs_under_70(c)));
                 raw_data_hyper = vertcat(epochs_in_dataset(idx_tau).raw_data);
-                y = mean(raw_data_hyper);
+                y = mean(raw_data_hyper, 1);
                 y_1 = y(pre_samples : pre_samples + 2000);
 
                 ft = fittype("a + b*exp(-x*c)", 'independent', 'x');
@@ -179,7 +179,7 @@ for d=1:N_datasets
                 t_arr(c,1) = 1/f.c;
                 rs(c,1) = gof.adjrsquare;
             end
-            tau = mean(t_arr(find(rs > 0.80)), 'omitnan');
+            tau = mean(t_arr(find(rs > 0.80) & t_arr > 0), 'omitnan');
         catch ME
             warning(ME.message);
         end
@@ -283,6 +283,7 @@ for d=1:N_datasets
         %% Max Depol Overshoot
         depol_overshoot = nan;
         if ~onlyNeg
+            %WTF Agniva??????
             try
                 depol_epoch_greater_than_minus50 = find(depol_current_level_pA > -50);
 
