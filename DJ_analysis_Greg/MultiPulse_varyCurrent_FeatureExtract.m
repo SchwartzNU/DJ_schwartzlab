@@ -482,6 +482,7 @@ for d=1:N_datasets
     end % Feature Extraction end. Don't paste things outside of this loop.
 
     hyper_curr_idx = find(all_currents < 0);
+    max_rebound_spike_rate = 0;
     if hyper_curr_idx
         AFTER_HYPER_POL_WINDOW = 100 * 10^-3 * sample_rate; %100ms
         spike_indices = {epochs_in_dataset.spike_indices};
@@ -491,10 +492,11 @@ for d=1:N_datasets
             end_stim_sample = pre_samples + stim_samples;
             rebound_spike_rate(ij, 1) = sum(sum(spike_indice > end_stim_sample & spike_indice < (end_stim_sample + AFTER_HYPER_POL_WINDOW)));
         end
-    end
+    
     rebound_spike_rate = rebound_spike_rate ./ 0.1; %Hz
     max_rebound_spike_rate = max(rebound_spike_rate);
-    
+        
+    end
     if std(resting_Vm) > 5
         warning('Resting membrane potential changed between trial.')
         warning('Check Access resistance')
