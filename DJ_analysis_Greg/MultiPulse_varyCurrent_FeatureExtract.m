@@ -141,8 +141,8 @@ for d=1:N_datasets
     half_max_spike_current = nan(number_of_trials, 1);
     Nspike_max_vs_last_epoch_ratio = nan(number_of_trials, 1);
     max_AHP_after_depol_injection = nan(number_of_trials, 1);
-    max_63_percent_decay_time = nan(number_of_trials, 1);
-    min_63_percent_decay_time = nan(number_of_trials, 1);
+    max_63_percent_decay_time = zeros(number_of_trials, 1);
+    min_63_percent_decay_time = zeros(number_of_trials, 1);
     spontenous_spike_amplitude_cv = zeros(number_of_trials, 1);
     resting_Vm = nan(number_of_trials, 1);
     resting_Vm_range = nan(number_of_trials, 1);
@@ -179,7 +179,14 @@ for d=1:N_datasets
                 t_arr(c,1) = 1/f.c;
                 rs(c,1) = gof.adjrsquare;
             end
-            tau = mean(t_arr(rs > 0.80 & t_arr > 0), 'omitnan');
+            tau = mean(t_arr(rs > 0.80 & t_arr > 0 & t_arr < 0.1), 'omitnan');
+            if isnan(tau)
+                [~, idx_rs] = sort(rs);
+                acceptable_tau_idx = idx_rs(find(t_arr(idx_rs) > 0 & t_arr(idx_rs) < 0.1, 1));
+                tau = t_arr(acceptable_tau_idx);
+
+                
+            end
         catch ME
             warning(ME.message);
         end
@@ -427,13 +434,13 @@ for d=1:N_datasets
 
                     decay_to_63_percent(epoch) = locs(spike_63_loc) / sample_rate * 1e3; %ms
                 else
-                    decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
+                    decay_to_63_percent(epoch) = 0; %(end_time - start_time)/ sample_rate*1e3;
                 end
             catch
                 warning('Found 0 AP during depol at %.3f pA in trial %d', depol_current_level_pA(epoch), trial)
                 latency_to_first_spike(epoch) =  NaN;
                 spike_numbers(epoch) = length(spikes);
-                decay_to_63_percent(epoch) = NaN; %(end_time - start_time)/ sample_rate*1e3;
+                decay_to_63_percent(epoch) = 0; %(end_time - start_time)/ sample_rate*1e3;
 
             end
         end
@@ -487,7 +494,7 @@ for d=1:N_datasets
     if hyper_curr_idx
         AFTER_HYPER_POL_WINDOW = 100 * 10^-3 * sample_rate; %100ms
         spike_indices = {epochs_in_dataset.spike_indices};
-        rebound_spike_rate = nan(length(hyper_curr_idx),1);
+        rebound_spike_rate = zeros(length(hyper_curr_idx),1);
         for ij = 1:length(hyper_curr_idx)
             spike_indice = spike_indices{ij};
             end_stim_sample = pre_samples + stim_samples;
@@ -530,7 +537,7 @@ for d=1:N_datasets
     % Feature parts. Everything is returned into a cell of n trials
     R.resistance{d} =rmoutliers(resistance_array_MOhm, "median") ;
     R.resistance_rsquared{d} =resistance_Adjusted_RSquare ;
-    R.tau{d} = tau;%rmoutliers(tau_array_ms,"median") ;
+    R.tau(d) = tau;%rmoutliers(tau_array_ms,"median") ;
     R.capacitance{d} =rmoutliers(capacitance_array_pF,"median") ;
     R.sag_amplitude(d) =sag_amplitude ;
     R.depol_overshoot{d} = depol_overshoot;
