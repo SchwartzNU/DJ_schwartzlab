@@ -143,7 +143,7 @@ for d=1:N_datasets
     max_AHP_after_depol_injection = nan(number_of_trials, 1);
     max_63_percent_decay_time = nan(number_of_trials, 1);
     min_63_percent_decay_time = nan(number_of_trials, 1);
-    spontenous_spike_amplitude_cv = nan(number_of_trials, 1);
+    spontenous_spike_amplitude_cv = zeros(number_of_trials, 1);
     resting_Vm = nan(number_of_trials, 1);
     resting_Vm_range = nan(number_of_trials, 1);
 
@@ -179,7 +179,7 @@ for d=1:N_datasets
                 t_arr(c,1) = 1/f.c;
                 rs(c,1) = gof.adjrsquare;
             end
-            tau = mean(t_arr(find(rs > 0.80) & t_arr > 0), 'omitnan');
+            tau = mean(t_arr(rs > 0.80 & t_arr > 0), 'omitnan');
         catch ME
             warning(ME.message);
         end
