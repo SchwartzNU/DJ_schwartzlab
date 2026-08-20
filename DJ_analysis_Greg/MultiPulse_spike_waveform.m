@@ -81,7 +81,7 @@ for d = 1:N_datasets
     R.dataset_name{d} = datasets_struct(d).dataset_name;
     R.source_id(d) = datasets_struct(d).source_id;
     R.average_spike{d} = mean(single_spike);
-    R.rheobase_mean(d) = mean(rheobase);
+    R.rheobase_mean(d) = mean(rheobase, "omitmissing");
     R.time_vector{d} = time_vector;
     R.spike_diff{d} = diff(mean(single_spike)) * (sample_rate/1000); %mV/ms
 
