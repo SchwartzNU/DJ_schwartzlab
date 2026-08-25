@@ -6,7 +6,7 @@ source_id : int unsigned # source id used to identify the cell to which the data
 ---
 -> sln_lab.User # user who entered this result
 baseline_rate_hz=NULL : float # baseline firing rate (in pre time) averaged across spot sizes (Hz)
-baseline_rate_all=NULL : longblob # baseline firing rate (in pre time) for each trial (Hz)
+baseline_rate_var=NULL : float # variance in baseline firing rate (in pre time) over all trials (Hz)
 entry_time = CURRENT_TIMESTAMP : timestamp # time the result was entered
 git_tag : varchar(128) # git tag of current version of DJ_ROOT folder
 n_epochs_per_size=NULL : longblob # vector with how many trials for each spot size

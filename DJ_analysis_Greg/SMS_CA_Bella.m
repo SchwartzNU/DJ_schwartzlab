@@ -89,6 +89,7 @@ for d=1:N_datasets
     end
 
     baseline_rate = mean(spikes_pre_mean) / (pre_stim_tail.pre_time / 1E3); %baseline rate in Hz
+    baseline_rate_var = var(baseline_rate_all);
     
     %set table variables
     R.file_name{d} = datasets_struct(d).file_name;
@@ -107,7 +108,7 @@ for d=1:N_datasets
     R.spikes_tail_var{d} = spikes_tail_var;
     R.spikes_stim_sem{d} = spikes_stim_sem;
     R.spikes_tail_sem{d} = spikes_tail_sem;
-    R.baseline_rate_all{d} = baseline_rate_all';
+    R.baseline_rate_var(d) = baseline_rate_var;
     R.sms_psth{d} = sms_psth;
     R.psth_x{d} = psth_x;
     R.baseline_rate_hz(d) = baseline_rate;
