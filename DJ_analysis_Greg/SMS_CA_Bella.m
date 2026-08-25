@@ -1,5 +1,5 @@
 function R = SMS_CA_Bella(data_group, params)
-if nargin < 2
+ if nargin < 2 || isempty(params)
     binSize = 10;
 else
     binSize = params.binSize;
