@@ -49,8 +49,8 @@ classdef BrainSliceBatch < dj.Manual
                 disp(key);
 
             catch ME
-                 C.cancelTransaction;
-                rethrow(ME);                
+                 %C.cancelTransaction;
+                 rethrow(ME);                
             end
         end
     end

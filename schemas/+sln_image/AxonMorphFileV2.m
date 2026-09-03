@@ -10,10 +10,11 @@ axon_axis: blob@raw #a starting point plus the slope and intercept of the axis t
 classdef AxonMorphFileV2 < dj.Manual
 
     methods (Static)
-        function insert_new_morphfile(im_id, seg_id, new_folder) %image DJID and the folder of the image (if changed from original image upload)
+        function insert_new_morphfile(im_id, seg_id, brainRegion, new_folder) %image DJID and the folder of the image (if changed from original image upload)
             arguments
                 im_id
                 seg_id
+                brainRegion
                 new_folder = {};
             end
             try
@@ -28,7 +29,8 @@ classdef AxonMorphFileV2 < dj.Manual
                 files = get_files_of_folder(new_folder);
 
                 %sanity check: is the data already in the database
-                q = sprintf('image_id = %d', im_id);
+                q.image_id = im_id;
+                q.seg_id = seg_id;
                 test = fetch(sln_image.AxonMorphFileV2 & q);
                 if (~isempty(test))
                     fprintf('image %d alreayd has morphology file in the database, please procced to analysis\n', im_id);
@@ -64,15 +66,23 @@ classdef AxonMorphFileV2 < dj.Manual
                     swc.x      = data(:,3);
                     swc.y      = data(:,4);
                     swc.z      = data(:,5);
-                    %swc.r      = data(:,6);
                     swc.parent = data(:,7);
                     swc_load{i} = swc; % Store the SWC structure in the cell array
                 end
 
                 %part 2 uploading the axis file, manually labeled from axonskwer app
-                idx = strcmp('Orthogonal.mat', {files.name});
-                if ~sum(idx)
-                    error('Cannot find axon axis in folder: %s!\n', new_folder);
+                if (strcmp(brainRegion, 'SCs'))
+                    idx = strcmp('Orthogonal.mat', {files.name});
+                    if ~sum(idx)
+                        error('Cannot find axon axis in folder: %s!\n', new_folder);
+                    end
+                elseif (strcmp(brainRegion, 'dLGN'))
+                    idx = strcmp('dLGN_annot.mat', {files.name});
+                    if ~sum(idx)
+                        error('Cannot find dLGN annotation in folder %s!\n', new_folder);
+                    end
+                else
+                    error('The input brain region is not supported!\n');
                 end
 
                 ax_f = load(fullfile(new_folder, files(idx).name));
