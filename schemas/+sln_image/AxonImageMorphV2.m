@@ -1,5 +1,5 @@
 %{
-#Store the morphology information of axons, new version for AxonInBrainV2
+#Store the morphology information of SCs axons, new version for AxonInBrainV2
 ->sln_image.AxonInBrainV2
 ---
 axon_proportion_along_depth: blob@raw #for SC axon, currently SC only 
