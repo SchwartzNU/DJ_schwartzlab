@@ -32,7 +32,8 @@ classdef  AxonImageMorphV2< dj.Manual
             end
         end
 
-        function axon_morph_analyze(image_id, seg_id)
+        function axon_morph_analyze(image_id, seg_id,if_sc)
+
             trace = sln_image.AxonImageMorphV2.get_axon_morFile(image_id, seg_id); %traces in matlab strutct
             bundle_n = numel(trace.trace_coordinates); %number of the axon bundles
             hull = []; %convex hull ffor each bundle
