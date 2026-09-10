@@ -76,16 +76,18 @@ classdef AxonMorphFileV2 < dj.Manual
                     if ~sum(idx)
                         error('Cannot find axon axis in folder: %s!\n', new_folder);
                     end
+                    
                 elseif (strcmp(brainRegion, 'dLGN'))
                     idx = strcmp('dLGN_annot.mat', {files.name});
                     if ~sum(idx)
                         error('Cannot find dLGN annotation in folder %s!\n', new_folder);
                     end
+                   
                 else
                     error('The input brain region is not supported!\n');
                 end
+                ax_f = load(fullfile(new_folder, files.name{find(idx)}));
 
-                ax_f = load(fullfile(new_folder, files(idx).name));
                 %inserting
                 key.trace_coordinates = swc_load;
                 key.axon_axis = ax_f.result;

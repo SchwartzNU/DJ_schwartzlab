@@ -41,10 +41,7 @@ classdef  AxonImageMorphV2< dj.Manual
 
             density_dep = cell([bundle_n,1]);
             tbranch = zeros([bundle_n, 1])+1;%branch number
-            %area_dense_each = zeros([bundle_n, 1]);
-            %ecc_h = zeros([bundle_n, 1]);
-            %each bundle is a cell in trace_coordinate
-            %q = sprintf('image_id = %d', image_id);
+
             q.image_id = image_id;
             q.seg_id =seg_id;
             scales = fetch(sln_image.Image & q, 'x_scale', 'y_scale', 'z_scale');
@@ -103,24 +100,25 @@ classdef  AxonImageMorphV2< dj.Manual
             %area of the convex hull and density of axon part inside it...
             hull_area = polyarea(hull(:, 1), hull(:, 2));
             density_area = sum(len_each, 'all')/hull_area;
+
             %eccentricity.
-            %TODO check if this is accurate later
-            hull_cx = mean(hull(:, 1), 'all');
-            hull_cy = mean(hull(:, 2), 'all');
-
-            %offset all dots in traces
-            x_offseted  = hull(:, 1) - hull_cx;
-            y_offseted = hull(:, 2) - hull_cy;
-
-            cov_matrix = cov([x_offseted, y_offseted]);
-            [~, eigenvalues] = eig(cov_matrix);
-            lambda = diag(eigenvalues);
-            % Principal axes lengths (proportional to sqrt of eigenvalues)
-            maxlambda = max(lambda);
-            minlambda = min(lambda);
-            a = sqrt(maxlambda);  % semi-major axis
-            b = sqrt(minlambda);  % semi-minor axis
-            ecc_h = sqrt(1-(b/a)^2);
+            % %TODO check if this is accurate later
+            % hull_cx = mean(hull(:, 1), 'all');
+            % hull_cy = mean(hull(:, 2), 'all');
+            % 
+            % %offset all dots in traces
+            % x_offseted  = hull(:, 1) - hull_cx;
+            % y_offseted = hull(:, 2) - hull_cy;
+            % 
+            % cov_matrix = cov([x_offseted, y_offseted]);
+            % [~, eigenvalues] = eig(cov_matrix);
+            % lambda = diag(eigenvalues);
+            % % Principal axes lengths (proportional to sqrt of eigenvalues)
+            % maxlambda = max(lambda);
+            % minlambda = min(lambda);
+            % a = sqrt(maxlambda);  % semi-major axis
+            % b = sqrt(minlambda);  % semi-minor axis
+            ecc_h = sln_image.Morph_Util.ecc_fromConvHull(hull);
 
             binmin = 0;
             binmax = 2893; %sqrt(2048^2 + 2044^2), number of hypothetical pixel number along the diagonal line of the image
@@ -184,28 +182,6 @@ classdef  AxonImageMorphV2< dj.Manual
 
         end
 
-        function dis = eudistance(p1, p2, xs, ys, zs)
-            %is this right? regarding the scale issue
-            x_d = (p1(1)-p2(1))^2*xs^2;
-            y_d = (p1(2)- p2(2))^2 * ys^2;
-            z_d = (p1(3) - p2(3))^2 * zs^2;
-            dis = sqrt(x_d+y_d+z_d);
-        end
-
-        function [newx, newy] = project_to_ax(p1x, p1y,  slope, intercept)
-            linep1y = p1x*slope + intercept;
-            linep2y = p1x*0.5*slope + intercept;
-
-            linep1 = [p1x linep1y];
-            linep2 = [0.5*p1x linep2y];
-
-            line_vec = linep1- linep2;
-            to_dot = [p1x p1y] - linep1;
-            t = dot(to_dot, line_vec)/dot(line_vec, line_vec);
-            nearest_p = linep1 + t*line_vec;
-            newx = nearest_p(1);
-            newy = nearest_p(2);
-        end
 
 
 
