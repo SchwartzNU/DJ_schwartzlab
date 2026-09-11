@@ -5,7 +5,7 @@
 dlgn_loop: blob@raw #a closed loops of coordinates of dLGN
 lateral_idx = NULL:blob@raw #rows that label the lateral side of dLGN
 medial_idx= NULL:blob@raw #rows that label the medial side of dLGN
-dm_pole_idx:tinyint unsigned #which point is the dorsal medial pole of dLGN
+dm_pole_idx=NULL:tinyint unsigned #which point is the dorsal medial pole of dLGN
 dm_line=NULL: blob@raw #line that contains the dorsal medial pole
 vl_pole_idx= NULL: tinyint unsigned #which point is the ventral lateral pole of dLGN
 vl_line=NULL:blob@raw #line that contains the ventral medial pole
