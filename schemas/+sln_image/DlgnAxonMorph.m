@@ -42,6 +42,13 @@ classdef DlgnAxonMorph < dj.Manual
                 end
             end
 
+            %sanity check: duplicate
+            dupcheck = fetch(sln_image.DlgnAxonMorph & query);
+            if (~isempty(dupcheck))
+                fprintf('im %d - %d already been analyzed\n', image_id, seg_id);
+                return
+            end
+
             %part 2 density vs dlgn lateral thing
             bundle_n = numel(trace.trace_coordinates); %number of the axon bundles
             hull = []; %convex hull ffor each bundle

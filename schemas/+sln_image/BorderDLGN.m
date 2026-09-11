@@ -17,7 +17,7 @@ classdef BorderDLGN < dj.Manual
             flag1 = isnan(data.dm_pole_idx);
             flag2 = isnan(data.vl_pole_idx);
 
-            if ~(flag1 || flag2)
+            if flag1&&flag2
                 error('At least one of the poles should be labaled!');
             end
 
