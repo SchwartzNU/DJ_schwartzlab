@@ -121,5 +121,67 @@ classdef Morph_Util
             names{idx} = newName;
             s = cell2struct(struct2cell(s), names, 1);
         end
+
+        function [pk, n] = djPrimaryKey(tbl)
+            %DJPRIMARYKEY Names and count of the primary-key attributes of a DataJoint table.
+            %
+            %   [PK, N] = DJPRIMARYKEY(TBL) returns PK, a 1-by-N cell array of
+            %   primary-key attribute names in definition order, and N = numel(PK).
+            %
+            %   TBL may be:
+            %     * a DataJoint relvar or query object (dj.GeneralRelvar subclass), or
+            %     * a class name, e.g. 'retina.Cell' (char or string scalar).
+            %
+            %   The returned key includes attributes inherited through foreign keys,
+            %   which is what you want when building a restriction struct.
+            %
+            %   Example:
+            %       [pk, n] = djPrimaryKey('retina.Cell');
+            %       key = cell2struct(repmat({[]}, n, 1), pk(:), 1);
+
+            rel = iResolveRelvar(tbl);
+
+            pk = rel.primaryKey;
+            if ~iscell(pk)
+                pk = cellstr(pk);
+            end
+            pk = reshape(pk, 1, []);
+            n  = numel(pk);
+        end
+
+
+
     end
+end
+
+function rel = iResolveRelvar(tbl)
+% Accept an already-instantiated relvar, or build one from a class name.
+
+    if iIsRelvar(tbl)
+        rel = tbl;
+        return
+    end
+
+    if ~(ischar(tbl) || (isstring(tbl) && isscalar(tbl)))
+        error('djPrimaryKey:BadInput', ...
+            'TBL must be a DataJoint relvar or a class name; got %s.', class(tbl));
+    end
+
+    name = char(tbl);
+    if exist(name, 'class') ~= 8
+        error('djPrimaryKey:UnknownClass', ...
+            'No class named ''%s'' is visible on the MATLAB path.', name);
+    end
+
+    rel = feval(name);
+    if ~iIsRelvar(rel)
+        error('djPrimaryKey:NotATable', ...
+            '''%s'' is a class but does not expose a primaryKey property.', name);
+    end
+end
+
+function tf = iIsRelvar(x)
+% True for anything that walks like a DataJoint relvar, regardless of which
+% package the base class lives in across DataJoint versions.
+    tf = isobject(x) && ismember('primaryKey', properties(x));
 end

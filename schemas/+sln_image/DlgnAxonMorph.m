@@ -10,7 +10,7 @@ pix_tol_raw:blob@raw
 pix_sandwitch_raw:blob@raw
 branch_total: int unsigned#total number of the branch in this image
 branch_each:blob@raw#for each axon bundle
-total_length: float #the total length of all the 
+total_length: float #the total length of all traces, unit: micron
 length_each: blob@raw #axon length of each swc, unit micron, incase there are many 
 convex_hull_xy: blob@raw #1 total convex hull of the whole image
 axon_density_2dconv: float #axon length divided by the area of the convex hull
@@ -129,7 +129,7 @@ classdef DlgnAxonMorph < dj.Manual
             for i = 1:bundle_n
                bundle = trace.trace_coordinates{i};
                 exc_coord =[x_exc_prim{i} y_exc_prim{i} z_exc_prim{i} pid_exc_prim{i}];
-                for j = 2:height(x_exc_prim)
+                for j = 2:height(exc_coord)
                     p1 = [exc_coord(j, 1) exc_coord(j, 2) exc_coord(j, 3)];
 
                     parent_idx = exc_coord(j, 4);
@@ -144,6 +144,7 @@ classdef DlgnAxonMorph < dj.Manual
             hull = [xall(hull_idx) yall(hull_idx)];
             %area of the convex hull and density of axon part inside it...
             hull_area = polyarea(hull(:, 1), hull(:, 2));
+            hull_area = hull_area * scales.x_scale*scales.y_scale;
             density_area = sum(len_each, 'all')/hull_area;
             ecc_h = sln_image.Morph_Util.ecc_fromConvHull(hull);
 

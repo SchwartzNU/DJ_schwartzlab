@@ -37,6 +37,17 @@ classdef AxonMorphFileV2 < dj.Manual
                     return
                 end
 
+                %sanity check: if the image file name matches
+               imageq = sprintf('image_id = %d', im_id);
+               imagename = fetch(sln_image.Image & imageq, 'image_filename');
+               image_fp = fullfile(new_folder, imagename.image_filename);
+               image_matches = isfile(image_fp);
+               if (~image_matches && ~isempty(imagename))
+
+                   warning('Cannot find %s image (image id %d) inside folder %s\n Please double check!\n', ...
+                       imagename.image_filename, im_id, new_folder);
+               end
+
                 %part 1: upload swc file into coordinate
                 indexes = find(endsWith({files.name}, 'swc'));
                 swc_files =files(indexes);
