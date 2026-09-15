@@ -37,6 +37,17 @@ classdef AxonMorphFileV2 < dj.Manual
                     return
                 end
 
+                %sanity check: if the image file name matches
+               imageq = sprintf('image_id = %d', im_id);
+               imagename = fetch(sln_image.Image & imageq, 'image_filename');
+               image_fp = fullfile(new_folder, imagename.image_filename);
+               image_matches = isfile(image_fp);
+               if (~image_matches && ~isempty(imagename))
+
+                   warning('Cannot find %s image (image id %d) inside folder %s\n Please double check!\n', ...
+                       imagename.image_filename, im_id, new_folder);
+               end
+
                 %part 1: upload swc file into coordinate
                 indexes = find(endsWith({files.name}, 'swc'));
                 swc_files =files(indexes);
@@ -76,16 +87,21 @@ classdef AxonMorphFileV2 < dj.Manual
                     if ~sum(idx)
                         error('Cannot find axon axis in folder: %s!\n', new_folder);
                     end
+                     auxilary_file = files(idx);
+                     ax_f = load(fullfile(new_folder, auxilary_file.name));
                 elseif (strcmp(brainRegion, 'dLGN'))
                     idx = strcmp('dLGN_annot.mat', {files.name});
                     if ~sum(idx)
-                        error('Cannot find dLGN annotation in folder %s!\n', new_folder);
+                        warning('Cannot find dLGN annotation in folder ');
+                        fprintf('%s!\n', new_folder);
+                        ax_f.result = 0;
+                    else
+                        auxilary_file = files(idx);
+                        ax_f = load(fullfile(new_folder, auxilary_file.name));
                     end
                 else
                     error('The input brain region is not supported!\n');
                 end
-
-                ax_f = load(fullfile(new_folder, files(idx).name));
                 %inserting
                 key.trace_coordinates = swc_load;
                 key.axon_axis = ax_f.result;
