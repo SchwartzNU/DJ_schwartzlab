@@ -104,7 +104,7 @@ function R = DG_OSI_by_cell(data_group, params)
         for w = 1:N_halfwidths
             for con = 1:N_contrasts
                 % compute cycle_avg_amplitude at each direction, for this
-                % halfwidth/contrast, exactly as DriftingGratings_CC.m does
+                % halfwidth/contrast
                 cycle_avg_amplitude = zeros(N_directions, 1);
 
                 for dir = 1:N_directions
