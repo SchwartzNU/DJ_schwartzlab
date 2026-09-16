@@ -1,53 +1,52 @@
 %{
-#tabble to store the annotated border of dLGN for each dLGN axon images
+#tabble to store the annotated border of SCs for each SCs axon images
 ->sln_image.AxonInBrainV2
 ---
-pix_tol_hc: blob@raw 
-edges_pixl_hc:blob@raw
+pix_to_up_hc: blob@raw 
+edges_pixup_hc:blob@raw
 pix_sandwitch_hc:blob@raw
 edges_pixsand_hc:blob@raw
-pix_tol_raw:blob@raw
-pix_sandwitch_raw:blob@raw 
+pix_to_up_raw:blob@raw
+pix_sandwitch_raw:blob@raw
 branch_total: int unsigned#total number of the branch in this image
 branch_each:blob@raw#for each axon bundle
 total_length: float #the total length of all traces, unit: micron
 length_each: blob@raw #axon length of each swc, unit micron, incase there are many 
 convex_hull_xy: blob@raw #1 total convex hull of the whole image
-axon_density_2dconv: float #axon length (unit: micron) divided by the area of the convex hull (unit: micron^2)
+axon_density_2dconv: float #axon length divided by the area of the convex hull
 eccentricity_by_convhull: float #eccentricity measurement by the convex hull
 %}
-classdef DlgnAxonMorph < dj.Manual
+classdef SCsAxonMorph < dj.Manual
     methods (Static)
-        function morph_analyze(image_id, seg_id)
-            %part 1 fetch morph data
+              function morph_analyze(image_id, seg_id)
+                        
+            %get image scales. swc file is in pixel number only 
             query.image_id = image_id;
-            dlgn_ano = fetch(sln_image.BorderDLGN & query, '*');
-            if (isempty(dlgn_ano))
-                error('Cannot find annotation for image %d\n', image_id);
-            end
-            dlgn_lb = dlgn_ano.dlgn_loop(dlgn_ano.lateral_idx, :);
-            dlgn_mb = dlgn_ano.dlgn_loop(dlgn_ano.medial_idx, :);
+             scales = fetch(sln_image.Image & query, 'x_scale', 'y_scale', 'z_scale');
 
-            scales = fetch(sln_image.Image & query, 'x_scale', 'y_scale', 'z_scale');
-            trace = sln_image.AxonImageMorphV2.get_axon_morFile(image_id, seg_id); %traces in matlab strutct
-
-            %sanity checki: is this segment/image really an axon in dLGN??
+            %sanity checki: is this segment/image really an axon in SCs??
             query.seg_id = seg_id;
             axoncheck = fetch(sln_image.AxonImageAssociationV2 * sln_cell.Axon & query, '*');
             if (isempty(axoncheck))
                 warning('No axon associated with image %d segment %d!!\n', image_id, seg_id);
             else
-                if (~strcmp(axoncheck.brain_region, 'dLGN'))
-                    error('This image %d - %d is not an axon in dLGN!\n', image_id, seg_id);
+                if (~strcmp(axoncheck.brain_region, 'SCs'))
+                    error('This image %d - %d is not an axon in SCs!\n', image_id, seg_id);
                 end
             end
 
             %sanity check: duplicate
-            dupcheck = fetch(sln_image.DlgnAxonMorph & query);
+            dupcheck = fetch(sln_image.SCsAxonMorph & query);
             if (~isempty(dupcheck))
                 fprintf('im %d - %d already been analyzed\n', image_id, seg_id);
                 return
             end
+
+            %getting data
+            morph_data = fetch(sln_image.AxonMorphFileV2 & query, '*');
+            trace = morph_data.trace_coordinates; %traces in matlab strutct
+            sc_upper = morph_data.axon_axis.result.upper_xy;
+            sc_lower = morph_data.axon_axis.result.lower_xy;
 
             %part 2 density vs dlgn lateral thing
             bundle_n = numel(trace.trace_coordinates); %number of the axon bundles
@@ -88,7 +87,7 @@ classdef DlgnAxonMorph < dj.Manual
                 %xall = [xall; bundle.x];
                 %yall = [yall; bundle.y];
                 
-                exprim_filt = find(bundle.type~=2); %Tag axon -- 2
+                exprim_filt = find(bundle.type~=2); %Tag axon -- 2, excluded from some calculation
                 x_exc_prim{end+1} =bundle.x(exprim_filt);
                 y_exc_prim {end+1} =  bundle.y(exprim_filt);
                 z_exc_prim{end+1} = bundle.z(exprim_filt);
@@ -104,8 +103,8 @@ classdef DlgnAxonMorph < dj.Manual
 
                     %density as pixel to the lateral border of dlgn
                     p1_flat = p1(1:2);                  
-                    density_pix_lat(j) = sln_image.Morph_Util.point2polyline(p1_flat, dlgn_lb);
-                    density_pix_med(j) = sln_image.Morph_Util.point2polyline(p1_flat, dlgn_mb);
+                    density_pix_lat(j) = sln_image.Morph_Util.point2polyline(p1_flat, sc_upper);
+                    density_pix_med(j) = sln_image.Morph_Util.point2polyline(p1_flat, sc_lower);
 
                     %counting branch
                     if (paidx ~= j-1)
@@ -152,11 +151,11 @@ classdef DlgnAxonMorph < dj.Manual
             key = {};
             key.image_id = image_id;
             key.seg_id = seg_id;
-            key.pix_tol_hc = pix_toL_hc;
-            key.edges_pixl_hc = edges_pixL_hc;
+            key.pix_to_up_hc = pix_toL_hc;
+            key.edges_pixup_hc = edges_pixL_hc;
             key.pix_sandwitch_hc = pix_sandwitch_hc;
             key.edges_pixsand_hc = edges_pixsand_hc;
-            key.pix_tol_raw = pix_toL_raw;
+            key.pix_to_up_raw = pix_toL_raw;
             key.pix_sandwitch_raw = pix_sandwitch_raw;
             key.branch_total = sum(tbranch, 'all') + bundle_n;
             key.branch_each = tbranch;
