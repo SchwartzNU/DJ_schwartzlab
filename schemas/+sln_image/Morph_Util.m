@@ -149,8 +149,32 @@ classdef Morph_Util
             n  = numel(pk);
         end
 
+        function upload_analyze_morph(image_id, seg_id, brainRegion, folder, morph_folder)
+            arguments
+                image_id 
+                seg_id 
+                brainRegion 
+                folder 
+                morph_folder = folder;
+            end
+            scflag = strcmp(brainRegion, 'SCs');
+            dlflag = strcmp(brainRegion, 'dLGN');
+            if (~scflag) && (~dlflag)
+                error('Brain region is not suporrted!\n');
+            end
+            sln_image.AxonMorphFileV2.insert_new_morphfile(image_id, seg_id, brainRegion, folder);
+            if (scflag)
+                %TODO add SC annotation uploading
+                sln_image.SCsAxonMorph.morph_analyze(image_id, seg_id);
+            else
+                sln_image.BorderDLGN.load_dlgn_fromFolder(morph_folder, image_id);
+                sln_image.DlgnAxonMorph.morph_analyze(image_id, seg_id);
+            end
+            fprintf('Analysis finished.\n');
 
-
+        end
+        
+        
     end
 end
 
