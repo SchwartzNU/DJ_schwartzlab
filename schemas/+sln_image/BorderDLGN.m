@@ -26,12 +26,21 @@ classdef BorderDLGN < dj.Manual
             if (numel(loopsize)~=2 || loopsize(2)~=2)
                 error('The shape of dlgn loops is not correct!\n');
             end
+
+            %check if duplicate
+            q = sprintf('image_id = %d', image_id);
+            dup = fetch(sln_image.BorderDLGN & q);
+            if(~isempty(dup))
+                fprintf('dLGN border of image %d is already in!\n', image_id);
+                return
+            end
             
             key = data;
             key = sln_image.Morph_Util.renameStructField(key, 'loop_xy', 'dlgn_loop');
             key = sln_image.Morph_Util.renameStructField(key, 'dm_idx', 'dm_line');
             key = sln_image.Morph_Util.renameStructField(key, 'vl_idx', 'vl_line');
             key = rmfield(key, 'region');
+            key = rmfield(key, 'transformed');
             key.image_id = image_id; 
             insert(sln_image.BorderDLGN, key);
             disp(key);

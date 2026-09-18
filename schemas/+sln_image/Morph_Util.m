@@ -174,7 +174,20 @@ classdef Morph_Util
 
         end
         
-        
+        function visualize_dlgn_trace(image_id, seg_id)
+            key.image_id = image_id;
+            border = fetch(sln_image.BorderDLGN & key, '*');
+
+            %key.seg_id = seg_id;
+            traces = sln_image.AxonMorphFileV2.get_trace_coords(image_id, seg_id);
+
+            %plotting
+            clf;
+            hold on;
+            plot(border.dlgn_loop(:, 1), border.dlgn_loop(:, 2));
+            scatter(traces(:, 1), traces(:, 2), 'filled');
+            hold off;
+        end
     end
 end
 

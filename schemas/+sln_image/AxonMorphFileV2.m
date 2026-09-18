@@ -116,9 +116,10 @@ classdef AxonMorphFileV2 < dj.Manual
 
         end
         
-        function coords= get_trace_coords(image_id)
+        function coords= get_trace_coords(image_id, seg_id)
             %combine all swc file into 1 matrix?
-            query = sprintf('image_id  = %d', image_id);
+            query.image_id = image_id;
+            query.seg_id = seg_id;
             data = fetch(sln_image.AxonMorphFileV2 & query, '*');
 
             coords = [];
