@@ -83,7 +83,7 @@ classdef AxonMorphFileV2 < dj.Manual
 
                 %part 2 uploading the axis file, manually labeled from axonskwer app
                 if (strcmp(brainRegion, 'SCs'))
-                    idx = strcmp('Orthogonal.mat', {files.name});
+                    idx = strcmp('SC_border.mat', {files.name});
                     if ~sum(idx)
                         error('Cannot find axon axis in folder: %s!\n', new_folder);
                     end

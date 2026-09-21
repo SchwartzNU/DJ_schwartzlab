@@ -29,7 +29,9 @@ classdef DlgnAxonMorph < dj.Manual
             dlgn_mb = dlgn_ano.dlgn_loop(dlgn_ano.medial_idx, :);
 
             scales = fetch(sln_image.Image & query, 'x_scale', 'y_scale', 'z_scale');
-            trace = sln_image.AxonImageMorphV2.get_axon_morFile(image_id, seg_id); %traces in matlab strutct
+
+            query.seg_id = seg_id;
+            trace = fetch(sln_image.AxonMorphFileV2 & query, '*'); %traces in matlab strutct
 
             %sanity checki: is this segment/image really an axon in dLGN??
             query.seg_id = seg_id;

@@ -30,7 +30,7 @@ classdef SCsAxonMorph < dj.Manual
             if (isempty(axoncheck))
                 warning('No axon associated with image %d segment %d!!\n', image_id, seg_id);
             else
-                if (~strcmp(axoncheck.brain_region, 'SCs'))
+                if (~strcmp(axoncheck.brain_region, 'Scs'))
                     error('This image %d - %d is not an axon in SCs!\n', image_id, seg_id);
                 end
             end
@@ -44,12 +44,12 @@ classdef SCsAxonMorph < dj.Manual
 
             %getting data
             morph_data = fetch(sln_image.AxonMorphFileV2 & query, '*');
-            trace = morph_data.trace_coordinates; %traces in matlab strutct
-            sc_upper = morph_data.axon_axis.result.upper_xy;
-            sc_lower = morph_data.axon_axis.result.lower_xy;
+            %trace = morph_data.trace_coordinates; %traces in matlab strutct
+            sc_upper = morph_data.axon_axis.upper_xy;
+            sc_lower = morph_data.axon_axis.lower_xy;
 
             %part 2 density vs dlgn lateral thing
-            bundle_n = numel(trace.trace_coordinates); %number of the axon bundles
+            bundle_n = numel(morph_data.trace_coordinates); %number of the axon bundles
             hull = []; %convex hull ffor each bundle
             len_each = zeros([bundle_n, 1]); %total length of each bundle
 
@@ -78,7 +78,7 @@ classdef SCsAxonMorph < dj.Manual
             %note: remeber the unit change-- which is pixel which is micron
             for i = 1:bundle_n
                 fprintf('Processing swc file: %d out of %d.\n', i, bundle_n);
-                bundle = trace.trace_coordinates{i}; 
+                bundle = morph_data.trace_coordinates{i}; 
                 density_pix_lat = zeros([numel(bundle.x), 1]);
                 density_pix_med = zeros([numel(bundle.x), 1]);
                 %density_pix_sand = zeros([numel(bundle.x), 1]);
@@ -92,7 +92,7 @@ classdef SCsAxonMorph < dj.Manual
                 y_exc_prim {end+1} =  bundle.y(exprim_filt);
                 z_exc_prim{end+1} = bundle.z(exprim_filt);
                 pid_exc_prim{end+1} = bundle.parent(exprim_filt);
-                xall = [xall; bundle.x(exprim_filt)];
+                xall = [xall; bundle.x(exprim_filt)]; %convex hull exlude the primary long axon
                 yall = [yall; bundle.y(exprim_filt)];
                 
                 
@@ -126,7 +126,7 @@ classdef SCsAxonMorph < dj.Manual
 
             %measurement iterations that excludes the Tag 'Axon'
             for i = 1:bundle_n
-               bundle = trace.trace_coordinates{i};
+               bundle = morph_data.trace_coordinates{i};
                 exc_coord =[x_exc_prim{i} y_exc_prim{i} z_exc_prim{i} pid_exc_prim{i}];
                 for j = 2:height(exc_coord)
                     p1 = [exc_coord(j, 1) exc_coord(j, 2) exc_coord(j, 3)];
@@ -167,7 +167,7 @@ classdef SCsAxonMorph < dj.Manual
             fprintf('image %d seg %d, dLGN morph data: \n', image_id, seg_id);
             disp(key);
 
-            insert(sln_image.DlgnAxonMorph, key);
+            insert(sln_image.SCsAxonMorph, key);
             fprintf('Insert succed!\n')
         end
        
