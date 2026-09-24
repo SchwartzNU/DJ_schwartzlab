@@ -27,11 +27,15 @@ classdef SCsAxonMorph < dj.Manual
             %sanity checki: is this segment/image really an axon in SCs??
             query.seg_id = seg_id;
             axoncheck = fetch(sln_image.AxonImageAssociationV2 * sln_cell.Axon & query, '*');
+            axoncheck.brain_region = lower(axoncheck.brain_region);
+            %for some resason there are apparently 'SCs' and 'Scs' both in the database
             if (isempty(axoncheck))
                 warning('No axon associated with image %d segment %d!!\n', image_id, seg_id);
             else
-                if (~strcmp(axoncheck.brain_region, 'Scs'))
-                    error('This image %d - %d is not an axon in SCs!\n', image_id, seg_id);
+                if (~strcmp(axoncheck.brain_region, 'scs'))
+                    
+                    error('This image %d - %d is not an axon in SCs! but an axon of %s\n', image_id, seg_id, ...
+                        axon_check.brain_region);
                 end
             end
 
