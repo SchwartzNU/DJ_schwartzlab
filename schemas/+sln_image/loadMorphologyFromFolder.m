@@ -85,6 +85,9 @@ for i=1:length(D)
                     key.convexity_index = appdata.arborStats.convexityIndex;
                     key.arbor_density = appdata.arborStats.arborDensity;
                 end
+
+                %adding: soma size
+                key.soma_size = appdata.soma_size;
                 disp('Inserting sln_image.RetinalCellMorphology');
                 insert(sln_image.RetinalCellMorphology,key);
                 disp('Done');
