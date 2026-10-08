@@ -27,6 +27,7 @@ polygon_area_upper=null     : float                         #
 convexity_index_upper=null  : float                         # 
 arbor_density_upper=null    : float                         # 
 arbor_density_lower=null    : float                         # 
+soma_size=null              : float                         
 %}
 classdef RetinalCellMorphology < dj.Manual
 

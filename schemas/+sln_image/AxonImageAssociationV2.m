@@ -14,7 +14,7 @@ classdef AxonImageAssociationV2< dj.Manual
                     key.axon_id = axon_arry;
                     key.image_id = img_array;
                     key.seg_id = seg_array;
-                    q = fetch(sln_image.AxonImageAssociation & key);
+                    q = fetch(sln_image.AxonImageAssociationV2 & key);
                     if (~isempty(q))
                         fprintf('Axon %d -- image %d, segment %d already linked!\n', axon_arry, img_array, seg_array);
                         return;
@@ -44,12 +44,12 @@ classdef AxonImageAssociationV2< dj.Manual
                             key.image_id = img_array(i);
                             key.seg_id = seg_array(i);
                             %sanity check to prevent error breaks the function
-                            instance = fetch(sln_image.AxonImageAssociation & key);
+                            instance = fetch(sln_image.AxonImageAssociationV2 & key);
                             if (~isempty(instance))
                                 fprintf('Axon %d -- image %d already linked, skipping...\n', key.axon_id, key.image_id);
                                 continue;
                             end
-                            insert(sln_image.AxonImageAssociation, key);
+                            insert(sln_image.AxonImageAssociationV2, key);
                             fprintf('Inserted axon %d with image %d\n', key.axon_id, key.image_id);
                         end
                         fprintf('All axon-image associations inserted!\n');

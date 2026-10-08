@@ -15,7 +15,7 @@ classdef AxonCoordinate < dj.Computed
         function makeTuples(self, key)
             try
                 qstruct.axon_id = key.axon_id;
-                association = fetch( sln_image.AxonImageAssociation & qstruct, 'image_id');
+                association = fetch(sln_image.AxonImageAssociationV2 & qstruct, 'image_id', 'seg_id');
                 if (isempty(association))
                     warning('No associated image found for axon %d, skipping...\n', key.axon_id);
                     return
@@ -24,7 +24,8 @@ classdef AxonCoordinate < dj.Computed
                 ml_all = zeros([numel(association),1]);
                 for i = 1:numel(association)
                     im.image_id = association(i).image_id;
-                    result = fetch(sln_image.AxonInBrain & im, 'medial_lateral', 'distance_from_fist_slice');
+                    im.seg_id = association(i).seg_id;
+                    result = fetch(sln_image.AxonInBrainV2 & im, 'medial_lateral', 'distance_from_fist_slice');
                     ap_all(i) = result.distance_from_fist_slice;
                     ml_all(i) = result.medial_lateral;
                 end
