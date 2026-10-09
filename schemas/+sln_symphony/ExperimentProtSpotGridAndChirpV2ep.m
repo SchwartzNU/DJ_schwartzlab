@@ -2,8 +2,8 @@
 #e parameters for SpotGridAndChirp (2) 
 -> sln_symphony.ExperimentEpoch
 ---
-cx : tinyblob
-cy : tinyblob
+cx : blob
+cy : blob
 protocol_version : float
 trial_type : varchar(64)
 %}
