@@ -215,7 +215,9 @@ classdef ExperimentProtocols < handle
           end
           % there are no matches at all
           if nnz(matching)
-            [~,versions,~] = regexp(tables(matching), 'V([0-9]+)Block','match','tokens');
+            % class names end in V<n>bp (the old 'V<n>Block' pattern never matched, so the
+            % version lookup crashed with "Index exceeds array bounds" instead of generating)
+            [~,versions,~] = regexp(tables(matching), 'V([0-9]+)bp$','match','tokens');
             versions = cellfun(@(x) str2double(x{1}{1}), versions);
             if isempty(versions)
                 version = 1;
