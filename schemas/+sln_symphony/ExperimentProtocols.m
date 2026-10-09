@@ -135,8 +135,10 @@ classdef ExperimentProtocols < handle
             return
           end
           tables = sln_symphony.getSchema().classNames;
-          matching = startsWith(tables, ['sln_symphony.ExperimentProt', protocol_name])...
-              & endsWith(tables, 'bp');
+          % exact protocol name + version only: a prefix match made CenterSurround see the
+          % CenterSurroundNoise tables (and get numbered V7 as a brand-new protocol)
+          matching = ~cellfun(@isempty, regexp(tables, ...
+              ['^sln_symphony\.ExperimentProt', protocol_name, 'V\d+bp$'], 'once'));
           success = false;
           emptyMatches = {};
           for match = tables(matching)
@@ -197,7 +199,8 @@ classdef ExperimentProtocols < handle
               return
           end
           loc = fileparts(which(class(self)));
-          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'*bp.m']));
+          k = dir(fullfile(loc, ['ExperimentProt', protocol_name ,'V*bp.m']));
+          k = k(~cellfun(@isempty, regexp({k.name}, ['^ExperimentProt', protocol_name, 'V\d+bp\.m$'], 'once')));
           if ~isempty(k)
               matches = arrayfun(@(x) ['sln_symphony.', x.name(1:end-2)],k,'uni',0);
               matches = setdiff(matches, tables(matching));
