@@ -48,7 +48,11 @@ classdef Experiment < dj.Manual
 
 
             if isa(key,'char')
-                key = loadSymphony2(fullfile(getenv('RAW_DATA_FOLDER'), key));
+                h5path = fullfile(getenv('RAW_DATA_FOLDER'), key);
+                key = loadSymphony2(h5path);
+                % Symphony 3 writes the git state of the acquisition code as experiment
+                % properties (codeVersion_<repo>); older files have none.
+                key.code_versions = readCodeVersions(h5path, key.experiment.file_name);
             elseif ~isa(key,'struct')
                 error('Key must be the name of a file or a struct derived from a Symphony file.');
             end
@@ -205,6 +209,9 @@ classdef Experiment < dj.Manual
                 %    key.brain_cells = rmfield(key.brain_cells,"brain_region");
                 %end %hacky fix Trung 06/05/25
                 insert@dj.Manual(self, key.experiment);
+                if isfield(key, 'code_versions')
+                    insertIfNotEmpty(sln_symphony.ExperimentCodeVersion(),key.code_versions);
+                end
                 insertIfNotEmpty(sln_symphony.ExperimentSource(),key.sources);
                 insertIfNotEmpty(sln_symphony.ExperimentRetina(),key.retinas);
                 insertIfNotEmpty(sln_symphony.ExperimentBrain(),key.brains);
@@ -252,5 +259,40 @@ if ~isempty(varargin{1})
     tic;
     ret = table.insert(varargin{:});
     fprintf(' done (took %.02f seconds).\n',toc);
+end
+end
+
+function rows = readCodeVersions(h5path, file_name)
+% Experiment properties named codeVersion_<repository> (written by Symphony 3,
+% symphonyui.app.CodeStatus) -> rows for sln_symphony.ExperimentCodeVersion.
+% Value format: '<branch>@<commit> ahead=<n> dirty=<0|1>'. Files without them
+% (Symphony 2, or Symphony 3 before 2026-10-12) give an empty struct array.
+rows = struct('file_name', {}, 'repository', {}, 'branch', {}, 'commit_hash', {}, 'ahead', {}, 'dirty', {});
+try
+    info = h5info(h5path, '/');
+    names = {info.Groups.Name};
+    exp = names(startsWith(names, '/experiment'));
+    if isempty(exp), return; end
+    props = h5info(h5path, [exp{1} '/properties']);
+    for i = 1:numel(props.Attributes)
+        a = props.Attributes(i);
+        if ~startsWith(a.Name, 'codeVersion_') || strcmp(a.Name, 'codeVersion_checkedAt')
+            continue;
+        end
+        v = a.Value;
+        if iscell(v), v = v{1}; end
+        v = strtrim(char(v));
+        t = regexp(v, '^(\S+)@([0-9a-fA-F]+)\s+ahead=(\d+)\s+dirty=(\d+)', 'tokens', 'once');
+        if isempty(t), continue; end
+        repo = strrep(a.Name(numel('codeVersion_')+1:end), '_', '-');
+        repo = regexprep(repo, '^symphony3-matlab$', 'symphony3_matlab');
+        repo = regexprep(repo, '^stage3-testbed$', 'stage3_testbed');
+        repo = regexprep(repo, '^stagepc-(.*)$', 'stagepc/$1');
+        repo = regexprep(repo, '^(stagepc/)stage3-testbed$', '$1stage3_testbed');
+        rows(end+1) = struct('file_name', file_name, 'repository', repo, 'branch', t{1}, ...
+            'commit_hash', t{2}, 'ahead', str2double(t{3}), 'dirty', str2double(t{4})); %#ok<AGROW>
+    end
+catch ME
+    warning('Could not read code versions from %s: %s', h5path, ME.message);
 end
 end
