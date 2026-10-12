@@ -30,6 +30,7 @@ h1,h2,h3,h4 { font-family:var(--font-display); font-weight:500; line-height:1.12
 h1 { font-size:clamp(2.4rem,5vw,3.6rem); letter-spacing:-0.01em; margin:0 0 .3em; }
 h2 { font-size:clamp(1.5rem,3vw,2rem); margin:1.5em 0 .5em; letter-spacing:-0.01em; }
 h3 { font-size:1.22rem; margin:1.8em 0 .4em; }
+h4 { font-size:0.95rem; margin:14px 0 2px; }
 p { margin:0 0 1.05em; }
 code,kbd { font-family:var(--font-mono); font-size:0.86em; }
 .id,code:not(pre code) { font-family:var(--font-mono); background:var(--trace-wash); color:var(--trace-deep); padding:1px 6px; border-radius:3px; font-size:0.83em; white-space:nowrap; }
@@ -55,7 +56,6 @@ code,kbd { font-family:var(--font-mono); font-size:0.86em; }
 .note .tag { font-family:var(--font-mono); font-size:0.72rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:6px; }
 .note.tip { border-left:3px solid var(--trace); } .note.tip .tag { color:var(--trace); }
 .note.warn { border-left:3px solid var(--light); } .note.warn .tag { color:#9a6410; }
-.note.sql { border-left:3px solid var(--tier-part); } .note.sql .tag { color:#5f5296; }
 pre { background:var(--ink); color:#dfe8e7; border-radius:var(--radius-lg); padding:18px 20px; overflow:auto; font-family:var(--font-mono); font-size:0.82rem; line-height:1.65; margin:0 0 14px; border:1px solid #0c161c; }
 pre .c { color:#7f9aa0; font-style:italic; }
 .filelabel { font-family:var(--font-mono); font-size:0.72rem; color:var(--muted); background:var(--paper-2); border:1px solid var(--line); border-bottom:0; border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:6px 13px; display:inline-block; margin:14px 0 -16px; position:relative; z-index:1; }
@@ -77,6 +77,7 @@ pre .c { color:#7f9aa0; font-style:italic; }
 .ex .goal { font-size:0.82rem; font-family:var(--font-mono); color:var(--trace); letter-spacing:.04em; text-transform:uppercase; margin:16px 0 2px; }
 .ex.adv .goal { color:#5f5296; }
 .ex h3 { margin:2px 0 10px; }
+.ex h4 { font-family:var(--font-mono); font-size:0.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:16px 0 6px; }
 .ex .tbls { font-size:0.86rem; color:var(--muted); margin-top:12px; } .ex .tbls .id { font-size:0.82em; }
 .badge { display:inline-block; font-family:var(--font-mono); font-size:0.64rem; letter-spacing:.04em; text-transform:uppercase; color:var(--tier-manual); border:1px solid var(--tier-manual); border-radius:20px; padding:1px 8px; margin-left:8px; vertical-align:middle; }
 .footer { border-top:1px solid var(--line); margin-top:70px; padding:34px 0 60px; color:var(--muted); font-size:0.85rem; }
@@ -100,8 +101,8 @@ pre .c { color:#7f9aa0; font-style:italic; }
     <h1>Building a query</h1>
     <p class="lead">A query is just a filter &mdash; &ldquo;give me the rows that match.&rdquo; You build the same
     filter three ways: by clicking in <a href="app-datagrouper.html">DataGrouper</a>, or with one line in
-    <b>MATLAB or Python</b>. Below: the operators you combine for any query (each with a real, verified example),
-    then computed columns, summaries, and saving a query for reuse.</p>
+    <b>MATLAB or Python</b>. Below: the operators you combine for any query (each with a real example), then computed
+    columns, summaries, and saving a query for reuse.</p>
   </header>
 
   <section class="section">
@@ -123,7 +124,7 @@ pre .c { color:#7f9aa0; font-style:italic; }
     <div class="note warn"><span class="tag">The one real difference</span>
       Union is <span class="id">|</span> in MATLAB but <span class="id">+</span> in Python. Everything else is spelled the
       same. (Schema loading in Python is up to you &mdash; the snippets assume <span class="id">sln_symphony</span> etc.
-      are already imported; there&rsquo;s no <span class="id">aka.*</span> in Python.)</div>
+      are imported; there&rsquo;s no <span class="id">aka.*</span> in Python.)</div>
   </section>
 
   <hr class="hr">
@@ -159,9 +160,8 @@ len(good)             <span class="c"># -> 15650</span></pre>
 dd.count              <span class="c">% -> 16447</span></pre>
       <span class="filelabel py">Python</span><pre>dd = sln_symphony.Dataset * sln_symphony.UserParamDatasetDrugPresent
 len(dd)               <span class="c"># -> 16447</span></pre>
-      <p class="tbls">Joins line two tables up on their shared keys. (More rows than datasets here because a dataset can
-      have several drug entries.) &mdash; but watch out when a column name is shared <i>by accident</i>; see
-      <b>Advanced</b> below.</p>
+      <p class="tbls">Joins line two tables up on their shared keys. Watch out when a column name is shared <i>by
+      accident</i> &mdash; see <b>Advanced</b> below.</p>
     </div>
 
     <div class="ex">
@@ -180,9 +180,29 @@ len(pos)              <span class="c"># -> 7950</span></pre>
     (sln_symphony.Dataset &amp; 'file_name LIKE "101323B%"');</pre>
       <span class="filelabel py">Python</span><pre>s = ((sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"')
      + (sln_symphony.Dataset &amp; 'file_name LIKE "101323B%"'))</pre>
-      <p class="tbls">Remember: MATLAB <span class="id">|</span>, Python <span class="id">+</span>. Nothing runs until you
-      ask &mdash; add <span class="id">.count</span> / <span class="id">len()</span>, or fetch
-      (<a href="exporting.html">Exporting data</a>).</p>
+      <p class="tbls">MATLAB <span class="id">|</span>, Python <span class="id">+</span>. Nothing runs until you ask &mdash;
+      add <span class="id">.count</span> / <span class="id">len()</span>, or fetch (<a href="exporting.html">Exporting
+      data</a>).</p>
+    </div>
+
+    <div class="ex">
+      <p class="goal">More examples, by domain</p>
+      <h3>Real restrictions &amp; joins from across the pipeline</h3>
+      <p>Same operators, different schemas. Python is identical here &mdash; same operators, raw
+      <span class="id">sln_*</span> tables.</p>
+      <h4>Restrict</h4>
+      <span class="filelabel mat">MATLAB (Python: same)</span><pre>sln_animal.Animal &amp; 'sex = "Female"'          <span class="c">% female mice</span>
+sln_animal.Animal &amp; 'strain_name = "NF1-KO"'  <span class="c">% one strain</span>
+sln_cell.CellType &amp; 'cell_class = "RGC"'      <span class="c">% the RGC cell-type catalog</span>
+sln_results.DatasetSMSCA &amp; 'baseline_rate_hz > 5'   <span class="c">% SMS results firing > 5 Hz</span>
+sln_symphony.ExperimentEpochBlock &amp; 'protocol_name = "spots_multi_size"'  <span class="c">% one protocol</span></pre>
+      <h4>Join (across domains)</h4>
+      <span class="filelabel mat">MATLAB (Python: same)</span><pre>sln_symphony.Dataset * sln_results.DatasetSMSCA   <span class="c">% dataset + its baseline rate  (symphony x results)</span>
+sln_animal.Animal * sln_symphony.ExperimentRetina <span class="c">% recorded retina + its mouse's sex/strain  (animal x symphony)</span>
+sln_cell.Cell * sln_animal.Animal                 <span class="c">% lab-wide cell + its animal  (cell x animal)</span></pre>
+      <p class="tbls">Each pair shares a key (a dataset&rsquo;s <span class="id">file_name/source_id</span>, a retina&rsquo;s
+      or cell&rsquo;s <span class="id">animal_id</span>), so the join just works. Browse the
+      <a href="tables.html">Tables</a> page to see which keys any two tables have in common.</p>
     </div>
   </section>
 
@@ -191,19 +211,18 @@ len(pos)              <span class="c"># -> 7950</span></pre>
   <section class="section">
     <h2>Advanced: computed columns &amp; summaries</h2>
     <p>Two operators do the heavy lifting the GUI can&rsquo;t: <b>proj</b> computes/renames columns, and <b>aggr</b>
-    summarizes groups. These examples are drawn straight from functions the lab already runs.</p>
+    summarizes groups. These are drawn straight from functions the lab already runs.</p>
 
     <div class="ex adv">
       <p class="goal">Projection that computes &middot; <span class="id">sln_cell.CellName</span></p>
       <h3>Build a readable name from parts</h3>
-      <span class="filelabel mat">MATLAB</span><pre><span class="c">% exactly what sln_cell.CellName does:</span>
-cells = proj(sln_symphony.ExperimentCell, ...
+      <span class="filelabel mat">MATLAB</span><pre>cells = proj(sln_symphony.ExperimentCell, ...
              'concat(file_name, "c", cell_number) -> cell_name');
 fetch(cells, 'cell_name')     <span class="c">% e.g. "101323Ac3"</span></pre>
       <span class="filelabel py">Python</span><pre>cells = sln_symphony.ExperimentCell.proj(
             cell_name='concat(file_name, "c", cell_number)')
 cells.fetch('cell_name')      <span class="c"># e.g. "101323Ac3"</span></pre>
-      <p class="tbls">proj can make a <i>new</i> column from a SQL expression. MATLAB puts it all in a string with
+      <p class="tbls">proj can make a <i>new</i> column from a SQL expression. MATLAB puts it in a string with
       <span class="id">-&gt;</span>; Python uses <span class="id">new_name='expression'</span>. (proj never changes the
       row count.)</p>
     </div>
@@ -214,33 +233,47 @@ cells.fetch('cell_name')      <span class="c"># e.g. "101323Ac3"</span></pre>
       <p>A retina&rsquo;s key is <span class="id">source_id</span>; a cell refers to its retina through a column called
       <span class="id">retina_id</span>. A plain <span class="id">ExperimentCell * ExperimentRetina</span> would try to
       match the cell&rsquo;s own <span class="id">source_id</span> against the retina&rsquo;s &mdash; wrong things, same
-      name. Rename first, then join (this is the move inside <span class="id">sln_cell.RetinaQuadrant</span>):</p>
-      <span class="filelabel mat">MATLAB</span><pre><span class="c">% rename source_id -> retina_id, keep all other columns ('*'), then join:</span>
-retinas = proj(sln_symphony.ExperimentRetina, 'source_id -> retina_id', '*');
+      name. Rename first, then join (the move inside <span class="id">sln_cell.RetinaQuadrant</span>):</p>
+      <span class="filelabel mat">MATLAB</span><pre>retinas = proj(sln_symphony.ExperimentRetina, 'source_id -> retina_id', '*');
 cells   = sln_symphony.ExperimentCell * retinas;</pre>
       <span class="filelabel py">Python</span><pre>retinas = sln_symphony.ExperimentRetina.proj(..., retina_id='source_id')
 cells   = sln_symphony.ExperimentCell * retinas</pre>
-      <p class="tbls">The same thing bites when you join a <b>result table</b> to the dataset and both carry
-      <span class="id">user_name</span> (who <i>recorded</i> the data vs. who <i>computed</i> the result) &mdash; the join
-      collapses to almost nothing. Rename one side first, e.g.
-      <span class="id">proj(sln_results.DatasetSMSCA, 'user_name -> analysis_user', '*')</span>, then <span class="id">*</span>.
-      In MATLAB <span class="id">'*'</span> keeps all columns; in Python the <span class="id">...</span> does.</p>
+      <p class="tbls">Same trap when you join a <b>result table</b> to the dataset and both carry
+      <span class="id">user_name</span> (who <i>recorded</i> vs who <i>computed</i>) &mdash; the join collapses to almost
+      nothing. Rename one side first:
+      <span class="id">proj(sln_results.DatasetSMSCA, 'user_name -> analysis_user', '*')</span>. In MATLAB
+      <span class="id">'*'</span> keeps all columns; in Python the <span class="id">...</span> does.</p>
     </div>
 
     <div class="ex adv">
       <p class="goal">Aggregation &middot; <span class="id">aggr</span></p>
       <h3>Summarize a group into one number</h3>
-      <span class="filelabel mat">MATLAB</span><pre><span class="c">% how many epochs are in each dataset?</span>
-counts = aggr(sln_symphony.Dataset, sln_symphony.DatasetEpoch, ...
+      <span class="filelabel mat">MATLAB</span><pre>counts = aggr(sln_symphony.Dataset, sln_symphony.DatasetEpoch, ...
               'count(*) -> n_epochs');</pre>
       <span class="filelabel py">Python</span><pre>counts = sln_symphony.Dataset.aggr(
              sln_symphony.DatasetEpoch, n_epochs='count(*)')</pre>
-      <p class="tbls">Reads as: group <span class="id">Dataset</span>, count its <span class="id">DatasetEpoch</span> rows
-      into <span class="id">n_epochs</span>. Grouping table first, counted table second, computed attribute as
-      <span class="id">'expr -&gt; name'</span> (MATLAB) / <span class="id">name='expr'</span> (Python). Other
-      aggregations: <span class="id">avg(x)</span>, <span class="id">max(x)</span>, <span class="id">group_concat(&hellip;)</span>.
-      For a real production example nesting <span class="id">aggr</span> and <span class="id">proj</span>, read
-      <span class="id">sln_animal.GenotypeString</span>.</p>
+      <p class="tbls">Group <span class="id">Dataset</span>, count its <span class="id">DatasetEpoch</span> rows into
+      <span class="id">n_epochs</span>. Other aggregations: <span class="id">avg(x)</span>, <span class="id">max(x)</span>,
+      <span class="id">group_concat(&hellip;)</span>. For a real example nesting <span class="id">aggr</span> and
+      <span class="id">proj</span>, read <span class="id">sln_animal.GenotypeString</span>.</p>
+    </div>
+
+    <div class="ex adv">
+      <p class="goal">Stimulus-protocol parameters &middot; <span class="id">aka.BlockParams</span> / <span class="id">aka.EpochParams</span></p>
+      <h3>Don&rsquo;t query the per-version protocol tables directly</h3>
+      <p>Protocol parameters (spot size, bar speed, contrast&hellip;) are split across one table per protocol
+      <i>version</i> &mdash; e.g. <span class="id">ExperimentProtSpotsMultiSizeV1ep &hellip; V12ep</span>. The
+      <span class="id">aka</span> helpers union every version and join the block-level and epoch-level params for you:</p>
+      <span class="filelabel mat">MATLAB</span><pre>p = aka.BlockParams('SpotsMultiSize') * aka.EpochParams('SpotsMultiSize');
+p = aka.SMSparams;     <span class="c">% ready-made alias for the exact same thing</span>
+
+<span class="c">% every spot-size value in one dataset:</span>
+sizes = aka.EpochParams('SpotsMultiSize') &amp; 'dataset_name = "..."';</pre>
+      <p class="tbls">The argument is the protocol&rsquo;s CamelCase base name (the stored
+      <span class="id">protocol_name</span> is the snake_case form, e.g. <span class="id">spots_multi_size</span>).
+      <span class="id">aka</span> is MATLAB-only &mdash; in Python you union the versioned
+      <span class="id">sln_symphony.ExperimentProt&hellip;</span> tables yourself. The
+      <a href="tables.html">Tables page</a> lists every protocol and its parameters.</p>
     </div>
   </section>
 
@@ -248,9 +281,9 @@ counts = aggr(sln_symphony.Dataset, sln_symphony.DatasetEpoch, ...
 
   <section class="section">
     <h2>Build once, reuse</h2>
-    <p>Some filters (e.g. &ldquo;all ON-alpha cells&rdquo;) are too tangled to type &mdash; a cell&rsquo;s type is its
-    latest assignment event, so the real query spans ~10 joins. For those, build the query once and <b>save</b> it.
-    Two ways, same result &mdash; a row in <span class="id">sln_lab.Query</span>:</p>
+    <p>Some filters (e.g. &ldquo;all ON-alpha cells&rdquo;) are too tangled to type &mdash; the real query spans ~10
+    joins. Build those once and <b>save</b> them: a saved query becomes a row in <span class="id">sln_lab.Query</span>
+    that anyone can re-run from <a href="app-querybrowser.html">QueryBrowser</a>. Two ways to create one:</p>
     <div class="steps">
       <div class="step"><h3>In DataGrouper</h3><p>Build it visually, then <b>Save query</b> under a name and project.</p></div>
       <div class="step"><h3>From the command line</h3><p>You don&rsquo;t have to use the GUI &mdash; save any relation you
@@ -260,16 +293,16 @@ counts = aggr(sln_symphony.Dataset, sln_symphony.DatasetEpoch, ...
 sln_lab.saveQuery(rel, 'rigA_101323');                       <span class="c">% minimal</span>
 sln_lab.saveQuery(rel, 'rigA_101323', 'my_project', true);   <span class="c">% project + overwrite</span></pre>
     <div class="steps">
-      <div class="step"><h3>Reuse it anywhere</h3><p>Re-run by name from <a href="app-querybrowser.html">QueryBrowser</a>,
-        or from code:</p></div>
+      <div class="step"><h3>Reuse it anywhere</h3><p>Re-run by name from
+        <a href="app-querybrowser.html">QueryBrowser</a>, or from code:</p></div>
     </div>
     <span class="filelabel mat">MATLAB</span><pre>q = sln_lab.Query &amp; 'query_name = "Ref_SMS_CA_ON_alpha"';
 datasets = q.runAndFetch();</pre>
     <div class="note tip"><span class="tag">There's already a library</span>
       The lab has 70+ saved queries in <span class="id">sln_lab.Query</span> &mdash; browse them in
       <a href="app-querybrowser.html">QueryBrowser</a> before building a new one. (<span class="id">saveQuery</span> is a
-      MATLAB helper; from Python you insert into <span class="id">sln_lab.Query</span> directly with your relation&rsquo;s
-      SQL. And <span class="id">query_name</span> can repeat across users &mdash; add
+      MATLAB helper; from Python you insert into <span class="id">sln_lab.Query</span> directly. And
+      <span class="id">query_name</span> can repeat across users &mdash; add
       <span class="id">&amp; 'user_name = "&hellip;"'</span> if a fetch is ambiguous.)</div>
   </section>
 
