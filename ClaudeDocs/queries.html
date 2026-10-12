@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building a query &middot; Schwartz Lab Database</title>
+<meta name="description" content="How to filter the data — in DataGrouper, MATLAB, and Python — with worked, verified examples.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>:root {
+  --ink:#16222b; --ink-soft:#33454f; --muted:#5d6f76; --faint:#8a99a0;
+  --paper:#eef2f2; --paper-2:#f8fafa; --card:#ffffff; --line:#d6dedd; --line-soft:#e5ebea;
+  --trace:#0f7c82; --trace-deep:#0a565b; --trace-wash:#e2efef; --light:#d8901f; --light-wash:#f7ecd6;
+  --tier-manual:#1f8a70; --tier-lookup:#6b7a86; --tier-imported:#2f6db0; --tier-computed:#c0483f; --tier-part:#9a8dc4;
+  --radius:4px; --radius-lg:8px; --maxw:1140px;
+  --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --font-body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation:none!important;transition:none!important;} }
+body { margin:0; font-family:var(--font-body); color:var(--ink); background:var(--paper); line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased; }
+.wrap { max-width:var(--maxw); margin:0 auto; padding:0 28px; position:relative; z-index:1; }
+.narrow { max-width:760px; }
+a { color:var(--trace-deep); text-decoration:none; }
+a:hover { text-decoration:underline; text-underline-offset:3px; }
+h1,h2,h3,h4 { font-family:var(--font-display); font-weight:500; line-height:1.12; color:var(--ink); }
+h1 { font-size:clamp(2.4rem,5vw,3.6rem); letter-spacing:-0.01em; margin:0 0 .3em; }
+h2 { font-size:clamp(1.5rem,3vw,2rem); margin:1.5em 0 .5em; letter-spacing:-0.01em; }
+h3 { font-size:1.22rem; margin:1.8em 0 .4em; }
+p { margin:0 0 1.05em; }
+code,kbd { font-family:var(--font-mono); font-size:0.86em; }
+.id,code:not(pre code) { font-family:var(--font-mono); background:var(--trace-wash); color:var(--trace-deep); padding:1px 6px; border-radius:3px; font-size:0.83em; white-space:nowrap; }
+.nav { position:sticky; top:0; z-index:20; background:rgba(238,242,242,0.9); backdrop-filter:saturate(1.4) blur(8px); border-bottom:1px solid var(--line); }
+.nav-inner { display:flex; align-items:center; gap:8px; max-width:var(--maxw); margin:0 auto; padding:12px 28px; }
+.brand { display:flex; align-items:center; gap:11px; margin-right:auto; font-family:var(--font-display); font-size:1.05rem; color:var(--ink); }
+.brand:hover { text-decoration:none; }
+.brand .glyph { width:26px; height:26px; flex:none; }
+.nav a.item { font-size:0.9rem; color:var(--ink-soft); padding:6px 11px; border-radius:4px; font-weight:500; }
+.nav a.item:hover { background:var(--trace-wash); color:var(--trace-deep); text-decoration:none; }
+.nav a.item.active { color:var(--trace-deep); background:var(--trace-wash); }
+.nav-toggle { display:none; }
+@media (max-width:820px){
+  .nav-links { position:absolute; top:100%; left:0; right:0; background:var(--paper); border-bottom:1px solid var(--line); flex-direction:column; padding:8px 20px 16px; gap:2px; display:none; }
+  .nav-links.open { display:flex; }
+  .nav a.item { padding:10px 12px; }
+  .nav-toggle { display:block; background:none; border:1px solid var(--line); border-radius:5px; padding:7px 10px; font-family:var(--font-mono); font-size:0.8rem; color:var(--ink); cursor:pointer; }
+}
+.section { padding:26px 0; }
+.lead { font-size:1.14rem; color:var(--ink-soft); }
+.hr { height:1px; background:var(--line); border:0; margin:46px 0; }
+.note { border:1px solid var(--line); background:var(--paper-2); border-radius:var(--radius-lg); padding:16px 18px; margin:20px 0; font-size:0.95rem; }
+.note .tag { font-family:var(--font-mono); font-size:0.72rem; letter-spacing:.08em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:6px; }
+.note.tip { border-left:3px solid var(--trace); } .note.tip .tag { color:var(--trace); }
+.note.warn { border-left:3px solid var(--light); } .note.warn .tag { color:#9a6410; }
+.note.sql { border-left:3px solid var(--tier-part); } .note.sql .tag { color:#5f5296; }
+pre { background:var(--ink); color:#dfe8e7; border-radius:var(--radius-lg); padding:18px 20px; overflow:auto; font-family:var(--font-mono); font-size:0.82rem; line-height:1.65; margin:0 0 14px; border:1px solid #0c161c; }
+pre .c { color:#7f9aa0; font-style:italic; }
+pre .k { color:#e6b866; }
+.filelabel { font-family:var(--font-mono); font-size:0.72rem; color:var(--muted); background:var(--paper-2); border:1px solid var(--line); border-bottom:0; border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:6px 13px; display:inline-block; margin:14px 0 -16px; position:relative; z-index:1; }
+.filelabel.py { color:#2f6db0; } .filelabel.mat { color:#9a6410; }
+.filelabel + pre { border-top-left-radius:0; }
+.steps { counter-reset:step; margin:24px 0; }
+.step { position:relative; padding:0 0 8px 52px; margin-bottom:26px; }
+.step::before { counter-increment:step; content:counter(step); position:absolute; left:0; top:0; width:34px; height:34px; border-radius:50%; background:var(--trace); color:#fff; font-family:var(--font-mono); font-size:0.95rem; display:grid; place-items:center; }
+.step::after { content:""; position:absolute; left:16px; top:40px; bottom:-20px; width:2px; background:var(--line); }
+.step:last-child::after { display:none; }
+.step h3 { margin:3px 0 6px; }
+.maptable { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.9rem; }
+.maptable th { text-align:left; font-family:var(--font-mono); font-size:0.68rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:600; padding:6px 14px 6px 0; }
+.maptable td { border-top:1px solid var(--line); padding:9px 14px 9px 0; vertical-align:top; }
+.maptable td:first-child { color:var(--muted); }
+.maptable .id { font-size:0.82em; }
+.ex { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--trace); border-radius:var(--radius-lg); padding:4px 22px 20px; margin:26px 0; }
+.ex .goal { font-size:0.82rem; font-family:var(--font-mono); color:var(--trace); letter-spacing:.04em; text-transform:uppercase; margin:16px 0 2px; }
+.ex h3 { margin:2px 0 10px; }
+.ex ul { margin:6px 0; padding-left:20px; } .ex ul li { margin:3px 0; }
+.ex .tbls { font-size:0.86rem; color:var(--muted); margin-top:12px; } .ex .tbls .id { font-size:0.82em; }
+.badge { display:inline-block; font-family:var(--font-mono); font-size:0.64rem; letter-spacing:.04em; text-transform:uppercase; color:var(--tier-manual); border:1px solid var(--tier-manual); border-radius:20px; padding:1px 8px; margin-left:8px; vertical-align:middle; }
+.footer { border-top:1px solid var(--line); margin-top:70px; padding:34px 0 60px; color:var(--muted); font-size:0.85rem; }
+.footer .wrap { display:flex; flex-wrap:wrap; gap:18px; justify-content:space-between; align-items:center; }
+.footer a { color:var(--ink-soft); }
+.pagehead { padding:34px 0 8px; }
+.pagehead .eyebrow { margin-bottom:14px; font-family:var(--font-mono); font-size:0.74rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--trace); font-weight:500; }
+.pagehead p.lead { max-width:62ch; }
+</style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner">
+  <a class="brand" href="index.html"><svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="16" r="13" stroke="var(--trace)" stroke-width="1.6"/><circle cx="16" cy="16" r="4.4" fill="var(--light)"/><path d="M3 16h5l2-5 3 10 2.5-7 2 4H29" stroke="var(--trace-deep)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Schwartz Lab Database</span></a>
+  <button class="nav-toggle" aria-label="Menu">MENU</button>
+  <div class="nav-links"><a class="item" href="index.html">Home</a><a class="item" href="levels.html">Data levels</a><a class="item" href="tables.html">Tables</a><a class="item active" href="queries.html">Queries</a><a class="item" href="apps.html">Apps</a><a class="item" href="analysis.html">Writing an analysis</a><a class="item" href="exporting.html">Exporting data</a><a class="item" href="glossary.html">Glossary</a></div>
+</div></nav>
+
+<main class="wrap narrow">
+  <header class="pagehead">
+    <p class="eyebrow">Finding your data</p>
+    <h1>Building a query</h1>
+    <p class="lead">A query is just a filter &mdash; &ldquo;give me the rows that match these conditions.&rdquo; Some
+    filters you can type in one line; others are complex enough that you build them visually in
+    <a href="app-datagrouper.html">DataGrouper</a> and save them to reuse. This page shows both, with the command line
+    in <b>MATLAB and Python</b> side by side.</p>
+  </header>
+
+  <section class="section">
+    <h2>The one idea that makes it click</h2>
+    <p>In DataGrouper you pick a <b>View level</b> (Dataset, Cell, Epoch&hellip;) and add <b>conditions</b>. On the
+    command line you start from a table and narrow it with the restriction operator <span class="id">&amp;</span>. The
+    key move is that you can <b>restrict one table by another</b> &mdash; which is exactly what DataGrouper&rsquo;s view
+    levels and <b>Restrict by selection</b> do under the hood. Because the tables share keys (see
+    <a href="levels.html">Data levels</a>), DataJoint works out the join for you.</p>
+
+    <h3>MATLAB &harr; Python cheat sheet</h3>
+    <p>The query <i>logic</i> is identical in both languages; only a few verbs differ.</p>
+    <table class="maptable">
+      <tr><th>Do this</th><th>MATLAB</th><th>Python</th></tr>
+      <tr><td>Restrict</td><td><span class="id">rel &amp; 'a = "x"'</span></td><td><span class="id">rel &amp; 'a = "x"'</span></td></tr>
+      <tr><td>AND (stack filters)</td><td><span class="id">rel &amp; c1 &amp; c2</span></td><td><span class="id">rel &amp; c1 &amp; c2</span></td></tr>
+      <tr><td>Join</td><td><span class="id">a * b</span></td><td><span class="id">a * b</span></td></tr>
+      <tr><td>How many rows?</td><td><span class="id">rel.count</span></td><td><span class="id">len(rel)</span></td></tr>
+      <tr><td>Pull the rows</td><td><span class="id">fetch(rel, '*')</span></td><td><span class="id">rel.fetch()</span></td></tr>
+      <tr><td>One value</td><td><span class="id">fetch1(rel, 'c')</span></td><td><span class="id">rel.fetch1('c')</span></td></tr>
+      <tr><td>As a table</td><td><span class="id">struct2table(fetch(rel,'*'))</span></td><td><span class="id">rel.fetch(format='frame')</span></td></tr>
+    </table>
+    <div class="note tip"><span class="tag">Python setup varies</span>
+      Everyone loads the schemas their own way, so the Python snippets assume the schema module is already bound to its
+      name (<span class="id">sln_symphony</span>, <span class="id">sln_cell</span>&hellip;) &mdash; e.g.
+      <span class="id">from your_pkg import sln_symphony</span> or a
+      <span class="id">dj.create_virtual_module(&hellip;)</span> call. The table names
+      (<span class="id">Dataset</span>, <span class="id">UserParamDatasetDrugPresent</span>&hellip;) are the same as in
+      MATLAB, so only that first binding line changes. Note there&rsquo;s no <span class="id">aka.*</span> in Python &mdash;
+      use the raw <span class="id">sln_*</span> tables.</div>
+  </section>
+
+  <hr class="hr">
+
+  <section class="section">
+    <h2>Simple filters you can write by hand</h2>
+
+    <div class="ex">
+      <p class="goal">Example 1 &middot; wildcards<span class="badge">&#10003; verified</span></p>
+      <h3>Everything recorded on one date / rig</h3>
+      <p>The <span class="id">file_name</span> encodes the date and rig (e.g. <span class="id">101323A</span> =
+      13&nbsp;Oct&nbsp;2023, rig&nbsp;A), so a <span class="id">LIKE</span> with a <span class="id">%</span> wildcard is
+      all you need. In DataGrouper: View level <b>Dataset</b> &rarr; <b>Add condition with attribute</b> on
+      <span class="id">file_name</span> &rarr; <b>IS LIKE</b> &rarr; <span class="id">101323A%</span> &rarr; <b>Run</b>.</p>
+      <span class="filelabel mat">MATLAB</span><pre>datasets = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"';
+datasets.count        <span class="c">% -> 32</span></pre>
+      <span class="filelabel py">Python</span><pre>datasets = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"'
+len(datasets)         <span class="c"># -> 32</span></pre>
+      <p class="tbls"><b>Tables:</b> just <span class="id">sln_symphony.Dataset</span>. (In MATLAB,
+      <span class="id">aka.Dataset</span> is a handy alias for the same table.)</p>
+    </div>
+
+    <div class="ex">
+      <p class="goal">Example 2 &middot; filter by a tag<span class="badge">&#10003; verified</span></p>
+      <h3>Datasets where a drug was present</h3>
+      <p>A tag is its own little table keyed to the dataset (see <a href="app-datagrouper.html">tags in DataGrouper</a>).
+      You filter the dataset <i>by</i> that table &mdash; the restrict-one-table-by-another idiom. In DataGrouper:
+      <b>Add condition with user param</b> &rarr; <b>DrugPresent</b> &rarr; <b>Run</b>.</p>
+      <span class="filelabel mat">MATLAB</span><pre><span class="c">% any dataset with a drug recorded:</span>
+drug = sln_symphony.Dataset &amp; ...
+       (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NOT NULL');
+drug.count            <span class="c">% -> 275</span>
+
+<span class="c">% ...or one specific drug:</span>
+gz = sln_symphony.Dataset &amp; ...
+     (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present LIKE "%gabazine%"');
+gz.count              <span class="c">% -> 24</span></pre>
+      <span class="filelabel py">Python</span><pre>drug = (sln_symphony.Dataset
+        &amp; (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NOT NULL'))
+len(drug)             <span class="c"># -> 275</span>
+
+gz = (sln_symphony.Dataset
+      &amp; (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present LIKE "%gabazine%"'))
+len(gz)               <span class="c"># -> 24</span></pre>
+      <p class="tbls"><b>Tables:</b> <span class="id">Dataset</span>,
+      <span class="id">UserParamDatasetDrugPresent</span> (attribute <span class="id">drug_present</span>).</p>
+    </div>
+
+    <div class="ex">
+      <p class="goal">Example 3 &middot; combine conditions</p>
+      <h3>Both at once &mdash; one rig, drug-free</h3>
+      <p>Each extra <span class="id">&amp;</span> is one more AND. (In DataGrouper, stacking conditions does the same.)</p>
+      <span class="filelabel mat">MATLAB</span><pre>sel = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"' &amp; ...
+      (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NULL');</pre>
+      <span class="filelabel py">Python</span><pre>sel = (sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"'
+       &amp; (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NULL'))</pre>
+      <p class="tbls">Nothing runs until you ask &mdash; add <span class="id">.count</span> /
+      <span class="id">len()</span> to see the size, or fetch/export (see <a href="exporting.html">Exporting
+      data</a>). That&rsquo;s the same as hitting <b>Run</b> in DataGrouper.</p>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <section class="section">
+    <h2>Complex filters: build once, reuse</h2>
+    <p>Some filters are too tangled to type. &ldquo;All ON-alpha cells&rdquo; is the classic one, because a cell&rsquo;s
+    type isn&rsquo;t a stored column &mdash; it&rsquo;s the <b>most recent type-assignment event</b>, which means joining
+    the cell to its assignment history and keeping the latest. Add a protocol and a couple of exclusions and the
+    generated SQL runs to dozens of lines:</p>
+    <span class="filelabel">roughly, what DataGrouper generates</span><pre><span class="c">-- the part you care about:</span>
+WHERE amp_mode   = "Cell attached"
+  AND protocol_name = "spots_multi_size"
+  AND cell_type  = "ON alpha"
+<span class="c">-- ...resting on ~10 joins you don't want to write by hand:</span>
+<span class="c">--   experiment -&gt; retina -&gt; cell -&gt; eye -&gt; animal,</span>
+<span class="c">--   assign_type &amp; cell_event (latest assignment = current type),</span>
+<span class="c">--   and a UNION over every spots_multi_size protocol version.</span></pre>
+    <p>So for anything beyond a simple attribute, the workflow is <b>build it in DataGrouper, then save it</b>:</p>
+    <div class="steps">
+      <div class="step"><h3>Build it visually</h3><p>View level <b>Dataset</b>; add a condition on
+        <span class="id">cell_type</span> (<span class="id">ON alpha</span>), another for the protocol, any exclusions;
+        <b>Run</b> to check the count.</p></div>
+      <div class="step"><h3>Save it</h3><p><b>Save query</b> stores it in <span class="id">sln_lab.Query</span> under a
+        name and project &mdash; as the SQL it generated.</p></div>
+      <div class="step"><h3>Reuse it anywhere</h3><p>You (or a labmate) re-run it by name from
+        <a href="app-querybrowser.html">QueryBrowser</a>, or from code:</p></div>
+    </div>
+    <span class="filelabel mat">MATLAB</span><pre>q = sln_lab.Query &amp; 'query_name = "Ref_SMS_CA_ON_alpha"';
+datasets = q.runAndFetch();      <span class="c">% runs the saved query, returns the datasets</span></pre>
+    <span class="filelabel py">Python</span><pre>sql = (sln_lab.Query &amp; 'query_name = "Ref_SMS_CA_ON_alpha"').fetch1('sql_query')
+import datajoint as dj
+rows = dj.conn().query(sql).fetchall()   <span class="c"># run the stored SQL on your connection</span></pre>
+    <div class="note tip"><span class="tag">There's already a library</span>
+      The lab has 70+ saved queries in <span class="id">sln_lab.Query</span> &mdash;
+      <span class="id">Ref_SMS_CA_ON_alpha</span>, <span class="id">SMS_CA_OFF_sus_alpha_clean</span>,
+      <span class="id">Ref_SMS_CA_by_cell_type</span>, and more. Before building a new one, browse what&rsquo;s there in
+      <a href="app-querybrowser.html">QueryBrowser</a>; odds are your filter, or a close starting point, already exists.</div>
+    <div class="note warn"><span class="tag">Heads up</span>
+      Cell type resolves to the <b>latest</b> assignment, so re-typing a cell changes what matches. And
+      <span class="id">query_name</span> can repeat across users &mdash; if
+      <span class="id">fetch1</span> complains, add <span class="id">&amp; 'user_name = "&hellip;"'</span>.</div>
+  </section>
+
+  <div class="note tip"><span class="tag">Once you have a query</span>
+    Everything downstream is the same whether you built it by clicking or typing: count it, plot it, run an
+    <a href="analysis.html">analysis</a> on it, or <a href="exporting.html">export</a> it.</div>
+</main>
+<footer class="footer"><div class="wrap">
+  <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
+  <span><a href="https://github.com/SchwartzNU/DJ_schwartzlab">GitHub repository</a> &middot; <a href="https://docs.datajoint.com/">DataJoint docs</a></span>
+</div></footer>
+<script>document.addEventListener('click', function (e) {
+  var t = e.target.closest('.nav-toggle');
+  if (t) { var links = document.querySelector('.nav-links'); if (links) links.classList.toggle('open'); }
+});</script>
+</body>
+</html>
