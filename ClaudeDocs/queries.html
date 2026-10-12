@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Building a query &middot; Schwartz Lab Database</title>
-<meta name="description" content="How to filter the data — in DataGrouper, MATLAB, and Python — with worked, verified examples.">
+<meta name="description" content="How to filter and summarize the data — in DataGrouper, MATLAB, and Python — with worked, verified examples.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -58,7 +58,6 @@ code,kbd { font-family:var(--font-mono); font-size:0.86em; }
 .note.sql { border-left:3px solid var(--tier-part); } .note.sql .tag { color:#5f5296; }
 pre { background:var(--ink); color:#dfe8e7; border-radius:var(--radius-lg); padding:18px 20px; overflow:auto; font-family:var(--font-mono); font-size:0.82rem; line-height:1.65; margin:0 0 14px; border:1px solid #0c161c; }
 pre .c { color:#7f9aa0; font-style:italic; }
-pre .k { color:#e6b866; }
 .filelabel { font-family:var(--font-mono); font-size:0.72rem; color:var(--muted); background:var(--paper-2); border:1px solid var(--line); border-bottom:0; border-radius:var(--radius-lg) var(--radius-lg) 0 0; padding:6px 13px; display:inline-block; margin:14px 0 -16px; position:relative; z-index:1; }
 .filelabel.py { color:#2f6db0; } .filelabel.mat { color:#9a6410; }
 .filelabel + pre { border-top-left-radius:0; }
@@ -74,9 +73,10 @@ pre .k { color:#e6b866; }
 .maptable td:first-child { color:var(--muted); }
 .maptable .id { font-size:0.82em; }
 .ex { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--trace); border-radius:var(--radius-lg); padding:4px 22px 20px; margin:26px 0; }
+.ex.adv { border-left-color:var(--tier-part); }
 .ex .goal { font-size:0.82rem; font-family:var(--font-mono); color:var(--trace); letter-spacing:.04em; text-transform:uppercase; margin:16px 0 2px; }
+.ex.adv .goal { color:#5f5296; }
 .ex h3 { margin:2px 0 10px; }
-.ex ul { margin:6px 0; padding-left:20px; } .ex ul li { margin:3px 0; }
 .ex .tbls { font-size:0.86rem; color:var(--muted); margin-top:12px; } .ex .tbls .id { font-size:0.82em; }
 .badge { display:inline-block; font-family:var(--font-mono); font-size:0.64rem; letter-spacing:.04em; text-transform:uppercase; color:var(--tier-manual); border:1px solid var(--tier-manual); border-radius:20px; padding:1px 8px; margin-left:8px; vertical-align:middle; }
 .footer { border-top:1px solid var(--line); margin-top:70px; padding:34px 0 60px; color:var(--muted); font-size:0.85rem; }
@@ -98,147 +98,184 @@ pre .k { color:#e6b866; }
   <header class="pagehead">
     <p class="eyebrow">Finding your data</p>
     <h1>Building a query</h1>
-    <p class="lead">A query is just a filter &mdash; &ldquo;give me the rows that match these conditions.&rdquo; Some
-    filters you can type in one line; others are complex enough that you build them visually in
-    <a href="app-datagrouper.html">DataGrouper</a> and save them to reuse. This page shows both, with the command line
-    in <b>MATLAB and Python</b> side by side.</p>
+    <p class="lead">A query is just a filter &mdash; &ldquo;give me the rows that match.&rdquo; You build the same
+    filter three ways: by clicking in <a href="app-datagrouper.html">DataGrouper</a>, or with one line in
+    <b>MATLAB or Python</b>. Below: the operators you combine for any query (each with a real, verified example),
+    then computed columns, summaries, and saving a query for reuse.</p>
   </header>
 
   <section class="section">
     <h2>The one idea that makes it click</h2>
-    <p>In DataGrouper you pick a <b>View level</b> (Dataset, Cell, Epoch&hellip;) and add <b>conditions</b>. On the
-    command line you start from a table and narrow it with the restriction operator <span class="id">&amp;</span>. The
-    key move is that you can <b>restrict one table by another</b> &mdash; which is exactly what DataGrouper&rsquo;s view
-    levels and <b>Restrict by selection</b> do under the hood. Because the tables share keys (see
-    <a href="levels.html">Data levels</a>), DataJoint works out the join for you.</p>
-
-    <h3>MATLAB &harr; Python cheat sheet</h3>
-    <p>The query <i>logic</i> is identical in both languages; only a few verbs differ.</p>
+    <p>On the command line you start from a table and combine it with a few operators &mdash; and most operators take
+    <b>another table</b> as their argument (&ldquo;datasets that have a drug tag,&rdquo; &ldquo;datasets <i>without</i> a
+    suspect flag&rdquo;), which is exactly what DataGrouper&rsquo;s view levels and <b>Restrict by selection</b> do under
+    the hood. Because the tables share keys (see <a href="levels.html">Data levels</a>), DataJoint works out the join.</p>
     <table class="maptable">
-      <tr><th>Do this</th><th>MATLAB</th><th>Python</th></tr>
-      <tr><td>Restrict</td><td><span class="id">rel &amp; 'a = "x"'</span></td><td><span class="id">rel &amp; 'a = "x"'</span></td></tr>
-      <tr><td>AND (stack filters)</td><td><span class="id">rel &amp; c1 &amp; c2</span></td><td><span class="id">rel &amp; c1 &amp; c2</span></td></tr>
-      <tr><td>Join</td><td><span class="id">a * b</span></td><td><span class="id">a * b</span></td></tr>
-      <tr><td>How many rows?</td><td><span class="id">rel.count</span></td><td><span class="id">len(rel)</span></td></tr>
-      <tr><td>Pull the rows</td><td><span class="id">fetch(rel, '*')</span></td><td><span class="id">rel.fetch()</span></td></tr>
-      <tr><td>One value</td><td><span class="id">fetch1(rel, 'c')</span></td><td><span class="id">rel.fetch1('c')</span></td></tr>
-      <tr><td>As a table</td><td><span class="id">struct2table(fetch(rel,'*'))</span></td><td><span class="id">rel.fetch(format='frame')</span></td></tr>
+      <tr><th>Operation</th><th>MATLAB</th><th>Python</th></tr>
+      <tr><td>Restrict (keep matches)</td><td><span class="id">rel &amp; cond</span></td><td><span class="id">rel &amp; cond</span></td></tr>
+      <tr><td>Exclude (drop matches)</td><td><span class="id">rel - other</span></td><td><span class="id">rel - other</span></td></tr>
+      <tr><td>Join (combine columns)</td><td><span class="id">a * b</span></td><td><span class="id">a * b</span></td></tr>
+      <tr><td>Project (pick/compute cols)</td><td><span class="id">proj(rel, &hellip;)</span></td><td><span class="id">rel.proj(&hellip;)</span></td></tr>
+      <tr><td>Aggregate (summarize groups)</td><td><span class="id">aggr(a, b, 'e-&gt;n')</span></td><td><span class="id">a.aggr(b, n='e')</span></td></tr>
+      <tr><td>Union (stack rows)</td><td><span class="id">a | b</span></td><td><span class="id">a + b</span></td></tr>
+      <tr><td>Count / fetch</td><td><span class="id">rel.count</span> &middot; <span class="id">fetch(rel,'*')</span></td><td><span class="id">len(rel)</span> &middot; <span class="id">rel.fetch()</span></td></tr>
     </table>
-    <div class="note tip"><span class="tag">Python setup varies</span>
-      Everyone loads the schemas their own way, so the Python snippets assume the schema module is already bound to its
-      name (<span class="id">sln_symphony</span>, <span class="id">sln_cell</span>&hellip;) &mdash; e.g.
-      <span class="id">from your_pkg import sln_symphony</span> or a
-      <span class="id">dj.create_virtual_module(&hellip;)</span> call. The table names
-      (<span class="id">Dataset</span>, <span class="id">UserParamDatasetDrugPresent</span>&hellip;) are the same as in
-      MATLAB, so only that first binding line changes. Note there&rsquo;s no <span class="id">aka.*</span> in Python &mdash;
-      use the raw <span class="id">sln_*</span> tables.</div>
+    <div class="note warn"><span class="tag">The one real difference</span>
+      Union is <span class="id">|</span> in MATLAB but <span class="id">+</span> in Python. Everything else is spelled the
+      same. (Schema loading in Python is up to you &mdash; the snippets assume <span class="id">sln_symphony</span> etc.
+      are already imported; there&rsquo;s no <span class="id">aka.*</span> in Python.)</div>
   </section>
 
   <hr class="hr">
 
   <section class="section">
-    <h2>Simple filters you can write by hand</h2>
+    <h2>The building blocks</h2>
+    <p>Five operators cover almost every filter. Each example is real; the counts are from the live database.</p>
 
     <div class="ex">
-      <p class="goal">Example 1 &middot; wildcards<span class="badge">&#10003; verified</span></p>
-      <h3>Everything recorded on one date / rig</h3>
-      <p>The <span class="id">file_name</span> encodes the date and rig (e.g. <span class="id">101323A</span> =
-      13&nbsp;Oct&nbsp;2023, rig&nbsp;A), so a <span class="id">LIKE</span> with a <span class="id">%</span> wildcard is
-      all you need. In DataGrouper: View level <b>Dataset</b> &rarr; <b>Add condition with attribute</b> on
-      <span class="id">file_name</span> &rarr; <b>IS LIKE</b> &rarr; <span class="id">101323A%</span> &rarr; <b>Run</b>.</p>
+      <p class="goal">Restriction &nbsp;<span class="id">&amp;</span><span class="badge">&#10003; verified</span></p>
+      <h3>Keep rows that match a condition</h3>
       <span class="filelabel mat">MATLAB</span><pre>datasets = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"';
 datasets.count        <span class="c">% -> 32</span></pre>
       <span class="filelabel py">Python</span><pre>datasets = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"'
 len(datasets)         <span class="c"># -> 32</span></pre>
-      <p class="tbls"><b>Tables:</b> just <span class="id">sln_symphony.Dataset</span>. (In MATLAB,
-      <span class="id">aka.Dataset</span> is a handy alias for the same table.)</p>
+      <p class="tbls">You can also restrict by <b>another table</b> &mdash; datasets carrying a drug tag:
+      <span class="id">Dataset &amp; (UserParamDatasetDrugPresent &amp; 'drug_present IS NOT NULL')</span> &rarr; <b>275</b>.</p>
     </div>
 
     <div class="ex">
-      <p class="goal">Example 2 &middot; filter by a tag<span class="badge">&#10003; verified</span></p>
-      <h3>Datasets where a drug was present</h3>
-      <p>A tag is its own little table keyed to the dataset (see <a href="app-datagrouper.html">tags in DataGrouper</a>).
-      You filter the dataset <i>by</i> that table &mdash; the restrict-one-table-by-another idiom. In DataGrouper:
-      <b>Add condition with user param</b> &rarr; <b>DrugPresent</b> &rarr; <b>Run</b>.</p>
-      <span class="filelabel mat">MATLAB</span><pre><span class="c">% any dataset with a drug recorded:</span>
-drug = sln_symphony.Dataset &amp; ...
-       (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NOT NULL');
-drug.count            <span class="c">% -> 275</span>
-
-<span class="c">% ...or one specific drug:</span>
-gz = sln_symphony.Dataset &amp; ...
-     (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present LIKE "%gabazine%"');
-gz.count              <span class="c">% -> 24</span></pre>
-      <span class="filelabel py">Python</span><pre>drug = (sln_symphony.Dataset
-        &amp; (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NOT NULL'))
-len(drug)             <span class="c"># -> 275</span>
-
-gz = (sln_symphony.Dataset
-      &amp; (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present LIKE "%gabazine%"'))
-len(gz)               <span class="c"># -> 24</span></pre>
-      <p class="tbls"><b>Tables:</b> <span class="id">Dataset</span>,
-      <span class="id">UserParamDatasetDrugPresent</span> (attribute <span class="id">drug_present</span>).</p>
+      <p class="goal">Exclusion &nbsp;<span class="id">-</span><span class="badge">&#10003; verified</span></p>
+      <h3>Drop rows that appear in another table</h3>
+      <span class="filelabel mat">MATLAB</span><pre>good = sln_symphony.Dataset - sln_symphony.UserParamDatasetQualitySuspect;
+good.count            <span class="c">% -> 15650  (datasets not flagged suspect)</span></pre>
+      <span class="filelabel py">Python</span><pre>good = sln_symphony.Dataset - sln_symphony.UserParamDatasetQualitySuspect
+len(good)             <span class="c"># -> 15650</span></pre>
     </div>
 
     <div class="ex">
-      <p class="goal">Example 3 &middot; combine conditions</p>
-      <h3>Both at once &mdash; one rig, drug-free</h3>
-      <p>Each extra <span class="id">&amp;</span> is one more AND. (In DataGrouper, stacking conditions does the same.)</p>
-      <span class="filelabel mat">MATLAB</span><pre>sel = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"' &amp; ...
-      (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NULL');</pre>
-      <span class="filelabel py">Python</span><pre>sel = (sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"'
-       &amp; (sln_symphony.UserParamDatasetDrugPresent &amp; 'drug_present IS NULL'))</pre>
-      <p class="tbls">Nothing runs until you ask &mdash; add <span class="id">.count</span> /
-      <span class="id">len()</span> to see the size, or fetch/export (see <a href="exporting.html">Exporting
-      data</a>). That&rsquo;s the same as hitting <b>Run</b> in DataGrouper.</p>
+      <p class="goal">Join &nbsp;<span class="id">*</span><span class="badge">&#10003; verified</span></p>
+      <h3>Pair rows and combine their columns</h3>
+      <span class="filelabel mat">MATLAB</span><pre>dd = sln_symphony.Dataset * sln_symphony.UserParamDatasetDrugPresent;
+dd.count              <span class="c">% -> 16447</span></pre>
+      <span class="filelabel py">Python</span><pre>dd = sln_symphony.Dataset * sln_symphony.UserParamDatasetDrugPresent
+len(dd)               <span class="c"># -> 16447</span></pre>
+      <p class="tbls">Joins line two tables up on their shared keys. (More rows than datasets here because a dataset can
+      have several drug entries.) &mdash; but watch out when a column name is shared <i>by accident</i>; see
+      <b>Advanced</b> below.</p>
+    </div>
+
+    <div class="ex">
+      <p class="goal">Projection &nbsp;<span class="id">proj</span><span class="badge">&#10003; verified</span></p>
+      <h3>Choose just the columns you want</h3>
+      <span class="filelabel mat">MATLAB</span><pre>pos = proj(sln_symphony.ExperimentCell, 'cell_number', 'x', 'y');
+pos.count             <span class="c">% -> 7950  (one row per cell)</span></pre>
+      <span class="filelabel py">Python</span><pre>pos = sln_symphony.ExperimentCell.proj('cell_number', 'x', 'y')
+len(pos)              <span class="c"># -> 7950</span></pre>
+    </div>
+
+    <div class="ex">
+      <p class="goal">Union &nbsp;<span class="id">|</span> / <span class="id">+</span><span class="badge">&#10003; verified</span></p>
+      <h3>Stack rows from same-shaped relations</h3>
+      <span class="filelabel mat">MATLAB</span><pre>s = (sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"') | ...
+    (sln_symphony.Dataset &amp; 'file_name LIKE "101323B%"');</pre>
+      <span class="filelabel py">Python</span><pre>s = ((sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"')
+     + (sln_symphony.Dataset &amp; 'file_name LIKE "101323B%"'))</pre>
+      <p class="tbls">Remember: MATLAB <span class="id">|</span>, Python <span class="id">+</span>. Nothing runs until you
+      ask &mdash; add <span class="id">.count</span> / <span class="id">len()</span>, or fetch
+      (<a href="exporting.html">Exporting data</a>).</p>
     </div>
   </section>
 
   <hr class="hr">
 
   <section class="section">
-    <h2>Complex filters: build once, reuse</h2>
-    <p>Some filters are too tangled to type. &ldquo;All ON-alpha cells&rdquo; is the classic one, because a cell&rsquo;s
-    type isn&rsquo;t a stored column &mdash; it&rsquo;s the <b>most recent type-assignment event</b>, which means joining
-    the cell to its assignment history and keeping the latest. Add a protocol and a couple of exclusions and the
-    generated SQL runs to dozens of lines:</p>
-    <span class="filelabel">roughly, what DataGrouper generates</span><pre><span class="c">-- the part you care about:</span>
-WHERE amp_mode   = "Cell attached"
-  AND protocol_name = "spots_multi_size"
-  AND cell_type  = "ON alpha"
-<span class="c">-- ...resting on ~10 joins you don't want to write by hand:</span>
-<span class="c">--   experiment -&gt; retina -&gt; cell -&gt; eye -&gt; animal,</span>
-<span class="c">--   assign_type &amp; cell_event (latest assignment = current type),</span>
-<span class="c">--   and a UNION over every spots_multi_size protocol version.</span></pre>
-    <p>So for anything beyond a simple attribute, the workflow is <b>build it in DataGrouper, then save it</b>:</p>
+    <h2>Advanced: computed columns &amp; summaries</h2>
+    <p>Two operators do the heavy lifting the GUI can&rsquo;t: <b>proj</b> computes/renames columns, and <b>aggr</b>
+    summarizes groups. These examples are drawn straight from functions the lab already runs.</p>
+
+    <div class="ex adv">
+      <p class="goal">Projection that computes &middot; <span class="id">sln_cell.CellName</span></p>
+      <h3>Build a readable name from parts</h3>
+      <span class="filelabel mat">MATLAB</span><pre><span class="c">% exactly what sln_cell.CellName does:</span>
+cells = proj(sln_symphony.ExperimentCell, ...
+             'concat(file_name, "c", cell_number) -> cell_name');
+fetch(cells, 'cell_name')     <span class="c">% e.g. "101323Ac3"</span></pre>
+      <span class="filelabel py">Python</span><pre>cells = sln_symphony.ExperimentCell.proj(
+            cell_name='concat(file_name, "c", cell_number)')
+cells.fetch('cell_name')      <span class="c"># e.g. "101323Ac3"</span></pre>
+      <p class="tbls">proj can make a <i>new</i> column from a SQL expression. MATLAB puts it all in a string with
+      <span class="id">-&gt;</span>; Python uses <span class="id">new_name='expression'</span>. (proj never changes the
+      row count.)</p>
+    </div>
+
+    <div class="ex adv">
+      <p class="goal">Join that needs a rename &middot; <span class="id">sln_cell.RetinaQuadrant</span></p>
+      <h3>When two tables share a column name by accident</h3>
+      <p>A retina&rsquo;s key is <span class="id">source_id</span>; a cell refers to its retina through a column called
+      <span class="id">retina_id</span>. A plain <span class="id">ExperimentCell * ExperimentRetina</span> would try to
+      match the cell&rsquo;s own <span class="id">source_id</span> against the retina&rsquo;s &mdash; wrong things, same
+      name. Rename first, then join (this is the move inside <span class="id">sln_cell.RetinaQuadrant</span>):</p>
+      <span class="filelabel mat">MATLAB</span><pre><span class="c">% rename source_id -> retina_id, keep all other columns ('*'), then join:</span>
+retinas = proj(sln_symphony.ExperimentRetina, 'source_id -> retina_id', '*');
+cells   = sln_symphony.ExperimentCell * retinas;</pre>
+      <span class="filelabel py">Python</span><pre>retinas = sln_symphony.ExperimentRetina.proj(..., retina_id='source_id')
+cells   = sln_symphony.ExperimentCell * retinas</pre>
+      <p class="tbls">The same thing bites when you join a <b>result table</b> to the dataset and both carry
+      <span class="id">user_name</span> (who <i>recorded</i> the data vs. who <i>computed</i> the result) &mdash; the join
+      collapses to almost nothing. Rename one side first, e.g.
+      <span class="id">proj(sln_results.DatasetSMSCA, 'user_name -> analysis_user', '*')</span>, then <span class="id">*</span>.
+      In MATLAB <span class="id">'*'</span> keeps all columns; in Python the <span class="id">...</span> does.</p>
+    </div>
+
+    <div class="ex adv">
+      <p class="goal">Aggregation &middot; <span class="id">aggr</span></p>
+      <h3>Summarize a group into one number</h3>
+      <span class="filelabel mat">MATLAB</span><pre><span class="c">% how many epochs are in each dataset?</span>
+counts = aggr(sln_symphony.Dataset, sln_symphony.DatasetEpoch, ...
+              'count(*) -> n_epochs');</pre>
+      <span class="filelabel py">Python</span><pre>counts = sln_symphony.Dataset.aggr(
+             sln_symphony.DatasetEpoch, n_epochs='count(*)')</pre>
+      <p class="tbls">Reads as: group <span class="id">Dataset</span>, count its <span class="id">DatasetEpoch</span> rows
+      into <span class="id">n_epochs</span>. Grouping table first, counted table second, computed attribute as
+      <span class="id">'expr -&gt; name'</span> (MATLAB) / <span class="id">name='expr'</span> (Python). Other
+      aggregations: <span class="id">avg(x)</span>, <span class="id">max(x)</span>, <span class="id">group_concat(&hellip;)</span>.
+      For a real production example nesting <span class="id">aggr</span> and <span class="id">proj</span>, read
+      <span class="id">sln_animal.GenotypeString</span>.</p>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <section class="section">
+    <h2>Build once, reuse</h2>
+    <p>Some filters (e.g. &ldquo;all ON-alpha cells&rdquo;) are too tangled to type &mdash; a cell&rsquo;s type is its
+    latest assignment event, so the real query spans ~10 joins. For those, build the query once and <b>save</b> it.
+    Two ways, same result &mdash; a row in <span class="id">sln_lab.Query</span>:</p>
     <div class="steps">
-      <div class="step"><h3>Build it visually</h3><p>View level <b>Dataset</b>; add a condition on
-        <span class="id">cell_type</span> (<span class="id">ON alpha</span>), another for the protocol, any exclusions;
-        <b>Run</b> to check the count.</p></div>
-      <div class="step"><h3>Save it</h3><p><b>Save query</b> stores it in <span class="id">sln_lab.Query</span> under a
-        name and project &mdash; as the SQL it generated.</p></div>
-      <div class="step"><h3>Reuse it anywhere</h3><p>You (or a labmate) re-run it by name from
-        <a href="app-querybrowser.html">QueryBrowser</a>, or from code:</p></div>
+      <div class="step"><h3>In DataGrouper</h3><p>Build it visually, then <b>Save query</b> under a name and project.</p></div>
+      <div class="step"><h3>From the command line</h3><p>You don&rsquo;t have to use the GUI &mdash; save any relation you
+        built with <span class="id">sln_lab.saveQuery</span> (your user name is filled in automatically):</p></div>
+    </div>
+    <span class="filelabel mat">MATLAB</span><pre>rel = sln_symphony.Dataset &amp; 'file_name LIKE "101323A%"';
+sln_lab.saveQuery(rel, 'rigA_101323');                       <span class="c">% minimal</span>
+sln_lab.saveQuery(rel, 'rigA_101323', 'my_project', true);   <span class="c">% project + overwrite</span></pre>
+    <div class="steps">
+      <div class="step"><h3>Reuse it anywhere</h3><p>Re-run by name from <a href="app-querybrowser.html">QueryBrowser</a>,
+        or from code:</p></div>
     </div>
     <span class="filelabel mat">MATLAB</span><pre>q = sln_lab.Query &amp; 'query_name = "Ref_SMS_CA_ON_alpha"';
-datasets = q.runAndFetch();      <span class="c">% runs the saved query, returns the datasets</span></pre>
-    <span class="filelabel py">Python</span><pre>sql = (sln_lab.Query &amp; 'query_name = "Ref_SMS_CA_ON_alpha"').fetch1('sql_query')
-import datajoint as dj
-rows = dj.conn().query(sql).fetchall()   <span class="c"># run the stored SQL on your connection</span></pre>
+datasets = q.runAndFetch();</pre>
     <div class="note tip"><span class="tag">There's already a library</span>
-      The lab has 70+ saved queries in <span class="id">sln_lab.Query</span> &mdash;
-      <span class="id">Ref_SMS_CA_ON_alpha</span>, <span class="id">SMS_CA_OFF_sus_alpha_clean</span>,
-      <span class="id">Ref_SMS_CA_by_cell_type</span>, and more. Before building a new one, browse what&rsquo;s there in
-      <a href="app-querybrowser.html">QueryBrowser</a>; odds are your filter, or a close starting point, already exists.</div>
-    <div class="note warn"><span class="tag">Heads up</span>
-      Cell type resolves to the <b>latest</b> assignment, so re-typing a cell changes what matches. And
-      <span class="id">query_name</span> can repeat across users &mdash; if
-      <span class="id">fetch1</span> complains, add <span class="id">&amp; 'user_name = "&hellip;"'</span>.</div>
+      The lab has 70+ saved queries in <span class="id">sln_lab.Query</span> &mdash; browse them in
+      <a href="app-querybrowser.html">QueryBrowser</a> before building a new one. (<span class="id">saveQuery</span> is a
+      MATLAB helper; from Python you insert into <span class="id">sln_lab.Query</span> directly with your relation&rsquo;s
+      SQL. And <span class="id">query_name</span> can repeat across users &mdash; add
+      <span class="id">&amp; 'user_name = "&hellip;"'</span> if a fetch is ambiguous.)</div>
   </section>
 
   <div class="note tip"><span class="tag">Once you have a query</span>
-    Everything downstream is the same whether you built it by clicking or typing: count it, plot it, run an
-    <a href="analysis.html">analysis</a> on it, or <a href="exporting.html">export</a> it.</div>
+    Count it, plot it, run an <a href="analysis.html">analysis</a> on it, or <a href="exporting.html">export</a> it &mdash;
+    the same whether you built it by clicking or typing.</div>
 </main>
 <footer class="footer"><div class="wrap">
   <span>Schwartz Lab &middot; DataJoint pipeline (<span class="id">DJ_schwartzlab</span>) &middot; docs for new lab members</span>
